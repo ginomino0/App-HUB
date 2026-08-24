@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Studio Pro</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #1e293b;
+            --border: #334155;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            margin-bottom: 2px;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        /* Layout principale affiancato: Griglia a sinistra, Pannelli in orizzontale/colonna a destra */
+        .app-container {
+            display: flex;
+            gap: 25px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            align-items: flex-start;
+        }
+
+        .canvas-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #e2e8f0;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #pixelCanvas {
+            display: grid;
+            cursor: crosshair;
+            position: relative;
+        }
+
+        .pixel {
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            transition: background 0.05s;
+        }
+
+        /* Contenitore strumenti disposto in orizzontale a blocchi sequenziali */
+        .tools-panel {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            max-width: 650px;
+            flex-wrap: wrap;
+        }
+
+        .tool-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #111827;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            flex: 1 1 200px;
+        }
+
+        label {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .size-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .size-btn, .action-btn {
+            flex: 1;
+            background: #334155;
+            padding: 8px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+        }
+
+        .size-btn.active {
+            background: var(--accent);
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: 2px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .palette {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+        }
+
+        .palette-color {
+            width: 28px;
+            height: 28px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.1s;
+        }
+
+        .palette-color:hover {
+            transform: scale(1.1);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+
+        .checkbox-container input {
+            cursor: pointer;
+            width: 15px;
+            height: 15px;
+            accent-color: var(--accent);
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        button.secondary {
+            background: #334155;
+        }
+
+        button.secondary:hover {
+            background: #475569;
+        }
+
+        .active-tool {
+            background: #eab308 !important;
+            color: #000 !important;
+        }
+
+        .preview-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #livePreview {
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Pixel Art Studio Pro</h1>
+    <p>Crea, disegna e personalizza la tua pixel art</p>
+
+    <div class="app-container">
+        <!-- Area Griglia e Anteprima -->
+        <div class="canvas-area">
+            <div class="canvas-container">
+                <div id="pixelCanvas"></div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; width: 100%;">
+                <button class="secondary action-btn" onclick="undo()" title="Annulla (Ctrl+Z)">↩️ Undo</button>
+                <button class="secondary action-btn" onclick="redo()" title="Ripeti (Ctrl+Y)">↪️ Redo</button>
+            </div>
+        </div>
+
+        <!-- Pannello Strumenti in Sequenza Orizzontale -->
+        <div class="tools-panel">
+            
+            <!-- 1. GRUPPO: Grandezza Griglia -->
+            <div class="tool-section" style="flex-basis: 100%;">
+                <label>1. Dimensione Griglia</label>
+                <div class="size-selector">
+                    <button class="size-btn active" id="btn16" onclick="changeGridSize(16)">16x16</button>
+                    <button class="size-btn" id="btn32" onclick="changeGridSize(32)">32x32</button>
+                </div>
+            </div>
+
+            <!-- 2. GRUPPO: Strumenti di Disegno -->
+            <div class="tool-section" style="flex-basis: 100%;">
+                <label>2. Strumenti</label>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                    <button class="secondary active-tool" id="brushBtn" onclick="setTool('brush')">Pennello 🖌️</button>
+                    <button class="secondary" id="eraserBtn" onclick="setTool('eraser')">Gomma 🧽</button>
+                    <button class="secondary" id="fillBtn" onclick="setTool('fill')">Riempi 🪣</button>
+                    <button class="secondary" id="eyedropperBtn" onclick="setTool('eyedropper')">Contagocce 👁️</button>
+                    <button class="secondary" id="lineBtn" onclick="setTool('line')">Linea 📏</button>
+                    <button class="secondary" id="rectBtn" onclick="setTool('rect')">Rettangolo 🔲</button>
+                    <button class="secondary" id="circleBtn" onclick="setTool('circle')">Cerchio ⭕</button>
+                </div>
+            </div>
+
+            <!-- 3. GRUPPO: Colore e Palette -->
+            <div class="tool-section" style="flex: 1 1 260px;">
+                <label>3. Colore & Palette</label>
+                <div class="color-picker-wrapper" style="margin-bottom: 8px;">
+                    <input type="color" id="colorPicker" value="#6366f1" oninput="setCurrentColor(this.value)" onchange="setCurrentColor(this.value)">
+                    <span id="hexLabel" style="font-size: 0.85rem; font-family: monospace;">#6366F1</span>
+                </div>
+                <div class="palette" id="colorPalette"></div>
+            </div>
+
+            <!-- 4. GRUPPO: Opzioni e Azioni Finali -->
+            <div class="tool-section" style="flex: 1 1 260px;">
+                <label>4. Opzioni & Salvataggio</label>
+                <div style="display: flex; flex-direction: column; gap: 10px; justify-content: space-between; height: 100%;">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="mirrorToggle"> Simmetria Specchio ↔
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="transparentBg" checked> Sfondo Trasparente PNG
+                        </label>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="secondary" style="flex:1;" onclick="clearCanvas()">Pulisci 🗑️</button>
+                        <button style="flex:1;" onclick="downloadPNG()">Salva 💾</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anteprima Live (Compatta) -->
+            <div class="tool-section" style="flex-basis: 100%;">
+                <div class="preview-box">
+                    <label style="margin:0;">Anteprima Live (1:1)</label>
+                    <canvas id="livePreview" width="32" height="32"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <canvas id="exportCanvas" width="512" height="512" style="display:none;"></canvas>
+
+    <script>
+        let gridSize = 16;
+        let currentColor = '#6366f1';
+        let isDrawing = false;
+        let currentTool = 'brush';
+        let startX = 0, startY = 0;
+        let shapePreviewBackup = null;
+
+        let canvasData = {};
+        let historyStack = [];
+        let redoStack = [];
+
+        const canvas = document.getElementById('pixelCanvas');
+        const extendedColors = [
+            '#000000', '#1e293b', '#64748b', '#cbd5e1', '#ffffff', '#ff4500',
+            '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e',
+            '#10b981', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1', '#8b5cf6',
+            '#a855f7', '#d946ef', '#ec4899', '#f43f5e', '#78350f', '#451a03'
+        ];
+
+        const paletteContainer = document.getElementById('colorPalette');
+        extendedColors.forEach(hex => {
+            const div = document.createElement('div');
+            div.className = 'palette-color';
+            div.style.background = hex;
+            div.onclick = () => {
+                setTool('brush');
+                setCurrentColor(hex);
+                document.getElementById('colorPicker').value = hex;
+            };
+            paletteContainer.appendChild(div);
+        });
+
+        function setCurrentColor(hex) {
+            currentColor = hex;
+            document.getElementById('hexLabel').textContent = hex.toUpperCase();
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            ['brush', 'eraser', 'fill', 'eyedropper', 'line', 'rect', 'circle'].forEach(t => {
+                const btn = document.getElementById(t + 'Btn');
+                if(btn) btn.classList.toggle('active-tool', t === tool);
+            });
+        }
+
+        function changeGridSize(size) {
+            gridSize = size;
+            document.getElementById('btn16').classList.toggle('active', size === 16);
+            document.getElementById('btn32').classList.toggle('active', size === 32);
+            canvasData = {};
+            saveState();
+            initGrid();
+        }
+
+        function initGrid() {
+            const pixelSize = gridSize === 16 ? '22px' : '11px';
+            canvas.style.gridTemplateColumns = `repeat(${gridSize}, ${pixelSize})`;
+            canvas.style.gridTemplateRows = `repeat(${gridSize}, ${pixelSize})`;
+            
+            const checkerSize = gridSize === 16 ? '22px' : '11px';
+            canvas.style.backgroundImage = `
+                linear-gradient(45deg, #cbd5e1 25%, transparent 25%), 
+                linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #cbd5e1 75%), 
+                linear-gradient(-45deg, transparent 75%, #cbd5e1 75%)
+            `;
+            canvas.style.backgroundColor = '#f1f5f9';
+            canvas.style.backgroundSize = `${parseInt(checkerSize)*2}px ${parseInt(checkerSize)*2}px`;
+            
+            canvas.innerHTML = '';
+
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const pixel = document.createElement('div');
+                    pixel.className = 'pixel';
+                    pixel.dataset.x = x;
+                    pixel.dataset.y = y;
+                    pixel.style.width = pixelSize;
+                    pixel.style.height = pixelSize;
+                    
+                    pixel.addEventListener('mousedown', (e) => {
+                        startX = x; startY = y;
+                        if (['line', 'rect', 'circle'].includes(currentTool)) {
+                            shapePreviewBackup = { ...canvasData };
+                            isDrawing = true;
+                        } else if (['brush', 'eraser'].includes(currentTool)) {
+                            applyTool(x, y);
+                            isDrawing = true;
+                        } else {
+                            applyTool(x, y);
+                        }
+                        e.preventDefault();
+                    });
+
+                    pixel.addEventListener('mouseover', (e) => {
+                        if (!isDrawing) return;
+                        if (['brush', 'eraser'].includes(currentTool)) {
+                            applyTool(x, y);
+                        } else if (['line', 'rect', 'circle'].includes(currentTool)) {
+                            canvasData = { ...shapePreviewBackup };
+                            if (currentTool === 'line') drawLine(startX, startY, x, y);
+                            else if (currentTool === 'rect') drawRect(startX, startY, x, y);
+                            else if (currentTool === 'circle') drawCircle(startX, startY, x, y);
+                            renderCanvas();
+                        }
+                    });
+
+                    canvas.appendChild(pixel);
+                }
+            }
+            renderCanvas();
+        }
+
+        window.addEventListener('mouseup', () => {
+            if(isDrawing) {
+                isDrawing = false;
+                shapePreviewBackup = null;
+                saveState();
+            }
+        });
+
+        function renderCanvas() {
+            const pixels = canvas.querySelectorAll('.pixel');
+            pixels.forEach(p => {
+                const x = p.dataset.x;
+                const y = p.dataset.y;
+                p.style.background = canvasData[`${x},${y}`] || 'transparent';
+            });
+            updateLivePreview();
+        }
+
+        function applyTool(x, y) {
+            const key = `${x},${y}`;
+            const mirrorKey = `${gridSize - 1 - x},${y}`;
+            const isMirror = document.getElementById('mirrorToggle').checked;
+
+            if (currentTool === 'brush') {
+                canvasData[key] = currentColor;
+                if(isMirror) canvasData[mirrorKey] = currentColor;
+            } else if (currentTool === 'eraser') {
+                delete canvasData[key];
+                if(isMirror) delete canvasData[mirrorKey];
+            } else if (currentTool === 'fill') {
+                floodFill(x, y);
+                saveState();
+            } else if (currentTool === 'eyedropper') {
+                const col = canvasData[key];
+                if (col && col !== 'transparent') {
+                    setCurrentColor(col);
+                    document.getElementById('colorPicker').value = col;
+                    setTool('brush');
+                }
+            }
+            renderCanvas();
+        }
+
+        function drawLine(x0, y0, x1, y1) {
+            const dx = Math.abs(x1 - x0);
+            const dy = Math.abs(y1 - y0);
+            const sx = (x0 < x1) ? 1 : -1;
+            const sy = (y0 < y1) ? 1 : -1;
+            let err = dx - dy;
+
+            let x = x0, y = y0;
+            const isMirror = document.getElementById('mirrorToggle').checked;
+            while (true) {
+                canvasData[`${x},${y}`] = currentColor;
+                if (isMirror) canvasData[`${gridSize - 1 - x},${y}`] = currentColor;
+                if (x === x1 && y === y1) break;
+                let e2 = 2 * err;
+                if (e2 > -dy) { err -= dy; x += sx; }
+                if (e2 < dx) { err += dx; y += sy; }
+            }
+        }
+
+        function drawRect(x0, y0, x1, y1) {
+            const minX = Math.min(x0, x1);
+            const maxX = Math.max(x0, x1);
+            const minY = Math.min(y0, y1);
+            const maxY = Math.max(y0, y1);
+            const isMirror = document.getElementById('mirrorToggle').checked;
+
+            for(let x = minX; x <= maxX; x++) {
+                for(let y = minY; y <= maxY; y++) {
+                    if(x === minX || x === maxX || y === minY || y === maxY) {
+                        canvasData[`${x},${y}`] = currentColor;
+                        if (isMirror) canvasData[`${gridSize - 1 - x},${y}`] = currentColor;
+                    }
+                }
+            }
+        }
+
+        function drawCircle(x0, y0, x1, y1) {
+            const rx = Math.abs(x1 - x0);
+            const ry = Math.abs(y1 - y0);
+            const xc = x0, yc = y0;
+            const isMirror = document.getElementById('mirrorToggle').checked;
+
+            let a2 = rx * rx, b2 = ry * ry;
+            let twoA2 = 2 * a2, twoB2 = 2 * b2;
+            let x = 0, y = ry;
+            let sigma = a2 * b2 - a2 * ry + 0.25 * a2;
+
+            function plotPoints(xc, yc, x, y) {
+                const points = [[xc + x, yc + y], [xc - x, yc + y], [xc + x, yc - y], [xc - x, yc - y]];
+                points.forEach(([px, py]) => {
+                    if (px >= 0 && px < gridSize && py >= 0 && py < gridSize) {
+                        canvasData[`${px},${py}`] = currentColor;
+                        if (isMirror) canvasData[`${gridSize - 1 - px},${py}`] = currentColor;
+                    }
+                });
+            }
+
+            if (rx === 0 || ry === 0) {
+                drawLine(x0, y0, x1, y1);
+                return;
+            }
+
+            plotPoints(xc, yc, x, y);
+            while (a2 * y > b2 * x) {
+                x++;
+                if (sigma < 0) sigma += twoB2 * x + b2;
+                else { y--; sigma += twoB2 * x - twoA2 * y + b2; }
+                plotPoints(xc, yc, x, y);
+            }
+
+            sigma = b2 * (x + 0.5) * (x + 0.5) + a2 * (y - 1) * (y - 1) - a2 * b2;
+            while (y >= 0) {
+                y--;
+                if (sigma > 0) sigma += a2 - twoA2 * y;
+                else { x++; sigma += twoB2 * x - twoA2 * y + a2; }
+                plotPoints(xc, yc, x, y);
+            }
+        }
+
+        function floodFill(startX, startY) {
+            const key = `${startX},${startY}`;
+            const targetColor = canvasData[key] || 'transparent';
+            if (targetColor === currentColor) return;
+
+            const queue = [[startX, startY]];
+            const visited = {};
+
+            while (queue.length > 0) {
+                const [cx, cy] = queue.pop();
+                if (cx < 0 || cx >= gridSize || cy < 0 || cy >= gridSize) continue;
+                const cKey = `${cx},${cy}`;
+                if (visited[cKey]) continue;
+                visited[cKey] = true;
+
+                if ((canvasData[cKey] || 'transparent') === targetColor) {
+                    canvasData[cKey] = currentColor;
+                    queue.push([cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]);
+                }
+            }
+        }
+
+        function saveState() {
+            historyStack.push({ ...canvasData });
+            if(historyStack.length > 30) historyStack.shift();
+            redoStack = [];
+        }
+
+        function undo() {
+            if (historyStack.length <= 1) return;
+            redoStack.push(historyStack.pop());
+            canvasData = { ...historyStack[historyStack.length - 1] };
+            renderCanvas();
+        }
+
+        function redo() {
+            if (redoStack.length === 0) return;
+            const nextState = redoStack.pop();
+            historyStack.push(nextState);
+            canvasData = { ...nextState };
+            renderCanvas();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+                e.preventDefault();
+                undo();
+            } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+                e.preventDefault();
+                redo();
+            }
+        });
+
+        function updateLivePreview() {
+            const pCtx = document.getElementById('livePreview').getContext('2d');
+            pCtx.clearRect(0, 0, 32, 32);
+            const pSize = 32 / gridSize;
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const col = canvasData[`${x},${y}`];
+                    if (col && col !== 'transparent') {
+                        pCtx.fillStyle = col;
+                        pCtx.fillRect(x * pSize, y * pSize, pSize, pSize);
+                    }
+                }
+            }
+        }
+
+        function clearCanvas() {
+            if (confirm("Vuoi cancellare tutto il disegno?")) {
+                canvasData = {};
+                saveState();
+                renderCanvas();
+            }
+        }
+
+        function downloadPNG() {
+            const exportCanvas = document.getElementById('exportCanvas');
+            const ctx = exportCanvas.getContext('2d');
+            const isTransparent = document.getElementById('transparentBg').checked;
+            
+            ctx.clearRect(0, 0, 512, 512);
+            if (!isTransparent) {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 512, 512);
+            }
+            
+            const pixelSize = 512 / gridSize;
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const col = canvasData[`${x},${y}`];
+                    if (col && col !== 'transparent') {
+                        ctx.fillStyle = col;
+                        ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                    }
+                }
+            }
+
+            const link = document.createElement('a');
+            link.download = `pixel-art-${gridSize}x${gridSize}.png`;
+            link.href = exportCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        saveState();
+        initGrid();
+    </script>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Hub - Portale Globale Risorse Iconografiche</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --card-hover: #1f2937;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #38bdf8;
+            --border: #374151;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            max-width: 1100px;
+            margin: 0 auto 2rem auto;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"], select {
+            flex: 1;
+            min-width: 250px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-color);
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--accent);
+        }
+
+        .counter {
+            max-width: 1100px;
+            margin: 0 auto 1.5rem auto;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .grid-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .site-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .site-card:hover {
+            background-color: var(--card-hover);
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.12);
+        }
+
+        .site-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+        }
+
+        .site-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .site-badge {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .site-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 1.2rem;
+        }
+
+        .site-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 500;
+            border-top: 1px solid var(--border);
+            padding-top: 0.8rem;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-muted);
+            padding: 4rem;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Icon Hub</h1>
+        <p>Il portale definitivo per accedere ai migliori archivi di icone sul web con un clic</p>
+    </header>
+
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="Cerca portale o tipologia..." oninput="filterSites()">
+        <select id="categorySelect" onchange="filterSites()">
+            <option value="all">Tutte le categorie</option>
+            <option value="vettoriali">Librerie Vettoriali & UI</option>
+            <option value="motori">Motori di Ricerca & Archivi</option>
+            <option value="sistema">Icone OS & Applicazioni</option>
+            <option value="speciali">Stili Speciali (3D / Pixel / Retro)</option>
+        </select>
+    </div>
+
+    <div class="counter" id="siteCounter">Caricamento hub in corso...</div>
+
+    <div class="grid-container" id="siteGrid">
+        <!-- Generato via Script -->
+    </div>
+
+    <script>
+        // Database dei migliori siti web di icone suddivisi per categoria
+        const iconPortals = [
+            // Motori di Ricerca & Archivi enormi
+            { name: "Iconfinder", cat: "motori", url: "https://www.iconfinder.com/", desc: "Uno dei più grandi motori di ricerca al mondo con milioni di icone in ogni stile, formato e categoria (molte gratuite)." },
+            { name: "Flaticon", cat: "motori", url: "https://www.flaticon.com/", desc: "Il database di icone vettoriali più grande del web, organizzato in pack tematici pronti per il download immediato." },
+            { name: "Iconarchive", cat: "motori", url: "https://iconarchive.com/", desc: "Enorme archivio storico e moderno focalizzato specificamente su file in formato .ICO e .PNG per Windows e Mac." },
+            { name: "Find Icons", cat: "motori", url: "https://findicons.com/", desc: "Centinaia di migliaia di icone gratuite ricercabili per colore, dimensione e licenza con download diretto." },
+
+            // Librerie Vettoriali & UI moderne
+            { name: "Lucide Icons", cat: "vettoriali", url: "https://lucide.dev/", desc: "Oltre 1400 icone open source pulite, moderne e coerenti, ideali per interfacce e progetti tecnici." },
+            { name: "FontAwesome", cat: "vettoriali", url: "https://fontawesome.com/", desc: "Lo standard industriale per le icone vettoriali e simboli per qualsiasi tipo di interfaccia o applicazione." },
+            { name: "Tabler Icons", cat: "vettoriali", url: "https://tabler-icons.com/", desc: "Oltre 5000 icone vettoriali gratuite, personalizzabili nello spessore e scaricabili singolarmente in SVG o PNG." },
+            { name: "Remix Icon", cat: "vettoriali", url: "https://remixicon.com/", desc: "Collezione di icone neutre e ben curate per designer e sviluppatori, libere per uso commerciale." },
+            { name: "Heroicons", cat: "vettoriali", url: "https://heroicons.com/", desc: "Icone di altissima qualità create dai creatori di Tailwind CSS, disponibili in versione outline e solid." },
+            { name: "Phosphor Icons", cat: "vettoriali", url: "https://phosphoricons.com/", desc: "Famiglia di icone flessibile con molteplici varianti di peso (thin, light, regular, bold, fill, duotone)." },
+
+            // Icone OS & Applicazioni
+            { name: "Winbuzzer / Neumorphism", cat: "sistema", url: "https://www.deviantart.com/customization/icons", desc: "La sezione di DeviantArt dedicata ai pack di icone desktop personalizzate per Windows e personalizzazione." },
+            { name: "Neowin Customization", cat: "sistema", url: "https://www.neowin.net/", desc: "Community storica per trovare guide, temi e pacchetti di icone di sistema aggiornati." },
+
+            // Stili Speciali (3D, Pixel, Retro)
+            { name: "Pixelarticons", cat: "speciali", url: "https://pixelarticons.com/", desc: "Collezione di icone in stile pixel art retrò, perfette per progetti indie o interfacce nostalgiche." },
+            { name: "Open Peeps", cat: "speciali", url: "https://www.openpeeps.com/", desc: "Libreria di illustrazioni e avatar vettoriali componibili per mockup e interfacce." },
+            { name: "Spline 3D Vault", cat: "speciali", url: "https://spline.design/", desc: "Risorse per icone e oggetti 3D interattivi ad altissima definizione per progetti moderni." }
+        ];
+
+        function renderSites(list) {
+            const grid = document.getElementById('siteGrid');
+            const counter = document.getElementById('siteCounter');
+            grid.innerHTML = '';
+
+            counter.innerText = `Mostrando ${list.length} portali consigliati`;
+
+            if (list.length === 0) {
+                grid.innerHTML = '<div class="no-results">Nessun portale trovato con questi criteri.</div>';
+                return;
+            }
+
+            list.forEach(item => {
+                const card = document.createElement('a');
+                card.className = 'site-card';
+                card.href = item.url;
+                card.target = '_blank'; // Apre in una nuova scheda
+
+                card.innerHTML = `
+                    <div>
+                        <div class="site-header">
+                            <span class="site-title">${item.name}</span>
+                            <span class="site-badge">${item.cat}</span>
+                        </div>
+                        <p class="site-desc">${item.desc}</p>
+                    </div>
+                    <div class="site-footer">
+                        <span>Visita archivio &rarr;</span>
+                        <i data-lucide="external-link" style="width:16px; height:16px;"></i>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            lucide.createIcons();
+        }
+
+        function filterSites() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categorySelect').value;
+
+            const filtered = iconPortals.filter(item => {
+                const matchesQuery = item.name.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query);
+                const matchesCategory = (category === 'all' || item.cat === category);
+                return matchesQuery && matchesCategory;
+            });
+
+            renderSites(filtered);
+        }
+
+        // Avvio iniziale
+        renderSites(iconPortals);
+    </script>
+</body>
+</html>

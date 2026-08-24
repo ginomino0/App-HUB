@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertitore di Testo Stravagante</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 1e%, #1e1b4b 100%);
+            --panel-bg: rgba(255, 255, 255, 0.05);
+            --panel-border: rgba(255, 255, 255, 0.1);
+            --text-color: #f8fafc;
+            --accent: #8b5cf6;
+            --accent-hover: #7c3aed;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            text-align: center;
+            background: linear-gradient(to right, #c084fc, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 15px;
+            color: #fff;
+            font-size: 1rem;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .outputs-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .output-card {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .output-text {
+            font-size: 1.05rem;
+            word-break: break-all;
+            color: #e2e8f0;
+            min-height: 24px;
+        }
+
+        button.copy-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        button.copy-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        button.copy-btn.copied {
+            background: #10b981;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Text Transformer</h1>
+        <p class="subtitle">Digita qualcosa qui sotto e guardalo trasformarsi all'istante!</p>
+
+        <div class="input-group">
+            <label for="sourceText">Il tuo testo:</label>
+            <textarea id="sourceText" placeholder="Scrivi o incolla qui il testo..." oninput="transformText()">Ciao, questo è un test per il convertitore stravagante!</textarea>
+        </div>
+
+        <div class="outputs-grid" id="outputsContainer">
+            <!-- I box dei risultati verranno generati qui via JS -->
+        </div>
+    </div>
+
+    <script>
+        const transforms = [
+            { id: 'reverse', name: 'Al Contrario', fn: str => str.split('').reverse().join('') },
+            { id: 'mocking', name: 'Stile Meme (aLtErNaTo)', fn: str => {
+                let upper = false;
+                return str.split('').map(char => {
+                    if (!/[a-zA-ZÀ-ÿ]/.test(char)) return char;
+                    upper = !upper;
+                    return upper ? char.toUpperCase() : char.toLowerCase();
+                }).join('');
+            }},
+            { id: 'vaporwave', name: 'V a p o r w a v e (Spaziato)', fn: str => str.split('').join(' ') },
+            { id: 'upper', name: 'MAIUSCOLO FISSO', fn: str => str.toUpperCase() },
+            { id: 'dots', name: 'Con Punti tra le Lettere', fn: str => str.split('').filter(c => c.trim() !== '').join('•') },
+            { id: 'bold', name: 'Caratteri Grassetto (Matematici)', fn: str => {
+                // Converte l'alfabeto standard in caratteri grassetti sans-serif Unicode
+                const offsets = { a: 120276, A: 120250, 0: 120800 };
+                return str.split('').map(char => {
+                    let code = char.codePointAt(0);
+                    if (code >= 97 && code <= 122) return String.fromCodePoint(code - 97 + 120276);
+                    if (code >= 65 && code <= 90) return String.fromCodePoint(code - 65 + 120250);
+                    if (code >= 48 && code <= 57) return String.fromCodePoint(code - 48 + 120800);
+                    return char;
+                }).join('');
+            }}
+        ];
+
+        function transformText() {
+            const text = document.getElementById('sourceText').value;
+            const container = document.getElementById('outputsContainer');
+            container.innerHTML = '';
+
+            transforms.forEach((item, index) => {
+                const result = text ? item.fn(text) : '';
+                
+                const card = document.createElement('div');
+                card.className = 'output-card';
+                card.innerHTML = `
+                    <div class="output-header">
+                        <span>${item.name}</span>
+                        <button class="copy-btn" id="btn-${index}" onclick="copyText('${escapeHtml(result)}', ${index})">Copia</button>
+                    </div>
+                    <div class="output-text">${escapeHtml(result)}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function copyText(text, index) {
+            // Decodifica entità HTML di base se presenti nel testo copiato
+            const decodedText = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+            navigator.clipboard.writeText(decodedText).then(() => {
+                const btn = document.getElementById(`btn-${index}`);
+                btn.textContent = 'Copiato! ✓';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copia';
+                    btn.classList.remove('copied');
+                }, 1500);
+            });
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Esegui la trasformazione iniziale all'avvio
+        transformText();
+    </script>
+</body>
+</html>

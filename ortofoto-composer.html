@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ortofoto Composer — Multi-provider</title>
+<style>
+  :root{
+    --bg: #0d1117;
+    --panel: #131a24;
+    --panel-2: #0a0f16;
+    --line: #223042;
+    --text: #d9e2ec;
+    --muted: #7c93ab;
+    --accent: #3ea6ff;
+    --accent-dim: #1c3a52;
+    --good: #3ecf8e;
+    --warn: #e8b339;
+    --bad: #e8564f;
+    --mono: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    min-height:100vh;
+  }
+  .wrap{ max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  header{ margin-bottom: 22px; }
+  header .eyebrow{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  header h1{ font-size: 1.6em; font-weight: 600; letter-spacing: -0.01em; }
+  header p{ color: var(--muted); margin-top: 6px; font-size: 14px; max-width: 680px; line-height:1.5; }
+
+  .provider-switch{
+    display:flex; gap:8px; margin-top:16px; flex-wrap: wrap;
+  }
+  .provider-btn{
+    flex:1;
+    min-width: 200px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 12px 14px;
+    border-radius: 8px;
+    cursor:pointer;
+    text-align:left;
+    transition: border-color .15s, color .15s;
+  }
+  .provider-btn .name{ font-weight:600; font-size: 13.5px; color: var(--text); display:block; margin-bottom:2px; }
+  .provider-btn .desc{ font-size: 11.5px; color: var(--muted); }
+  .provider-btn.active{ border-color: var(--accent); background: var(--accent-dim); }
+  .provider-btn.active .name{ color: var(--accent); }
+
+  .layout{
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 18px;
+    margin-top: 18px;
+  }
+  @media (max-width: 880px){ .layout{ grid-template-columns: 1fr; } }
+
+  .card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .card-head{
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+    background: var(--panel-2);
+  }
+  .card-head h2{ font-size: 13px; font-weight:600; color: var(--text); }
+  .card-head .tag{
+    font-family: var(--mono); font-size: 10.5px; color: var(--muted);
+    background: #0d1520; border: 1px solid var(--line); padding: 2px 8px; border-radius: 20px;
+  }
+  .card-body{ padding: 16px; }
+
+  .field{ margin-bottom: 14px; }
+  .field:last-child{ margin-bottom: 0; }
+  .field label{
+    display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px;
+  }
+  .field .hint{ font-size: 11px; color: #55698080; margin-top: 4px; line-height:1.4; }
+  .row2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  input[type=text], input[type=number], select{
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 9px 10px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-family: var(--mono);
+  }
+  input:focus, select:focus{ outline: none; border-color: var(--accent); }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    width:100%;
+    padding: 11px 16px;
+    border-radius: 7px;
+    border: none;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: filter .15s, transform .05s;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn:disabled{ opacity: .35; cursor: not-allowed; }
+  .btn-accent{ background: var(--accent); color: #071019; }
+  .btn-accent:hover:not(:disabled){ filter: brightness(1.08); }
+  .btn-ghost{ background: transparent; border: 1px solid var(--line); color: var(--text); }
+  .btn-ghost:hover:not(:disabled){ border-color: var(--accent); color: var(--accent); }
+  .btn-stop{ background: var(--bad); color: white; }
+  .btn-small{ width:auto; padding: 7px 12px; font-size: 12px; }
+
+  .estimate{
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    line-height: 1.9;
+    color: var(--muted);
+    margin-top: 14px;
+  }
+  .estimate b{ color: var(--text); font-family: var(--mono); font-weight:600; }
+  .estimate .warn-row{ color: var(--warn); }
+  .estimate .bad-row{ color: var(--bad); }
+
+  .notice{
+    background: #1c1408;
+    border: 1px solid #3d2f0f;
+    color: var(--warn);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+
+  .viewport{
+    background: var(--panel-2);
+    min-height: 560px;
+    position: relative;
+    display:flex; align-items:center; justify-content:center;
+    overflow: hidden;
+  }
+  .viewport .empty{
+    color: #3d4f63; text-align:center; font-size: 13px; padding: 40px;
+  }
+  .viewport .empty .glyph{ font-size: 34px; margin-bottom: 10px; opacity:.6; }
+
+  #stage{
+    position: absolute; inset: 0;
+    cursor: grab;
+    overflow: hidden;
+  }
+  #stage.grabbing{ cursor: grabbing; }
+  #stageInner{
+    position: absolute;
+    transform-origin: 0 0;
+    image-rendering: pixelated;
+  }
+  #stageInner canvas{ display:block; }
+
+  .zoom-hud{
+    position: absolute; bottom: 12px; right: 12px;
+    background: rgba(10,15,22,0.85);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    display:flex; gap:10px; align-items:center;
+    backdrop-filter: blur(4px);
+  }
+
+  .progress-overlay{
+    position:absolute; inset:0;
+    background: rgba(10,15,22,0.96);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap: 16px;
+    padding: 30px;
+    z-index: 5;
+  }
+  .progress-overlay.hidden{ display:none; }
+
+  .progress-ring-wrap{ position:relative; width:140px; height:140px; }
+  .progress-ring-wrap svg{ transform: rotate(-90deg); }
+  .progress-ring-bg{ fill:none; stroke:#1a2432; stroke-width:8; }
+  .progress-ring-fg{ fill:none; stroke:var(--accent); stroke-width:8; stroke-linecap:round; transition: stroke-dashoffset .25s; }
+  .progress-ring-label{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family: var(--mono); font-size: 24px; font-weight:700; color: var(--accent);
+  }
+
+  .progress-overlay .lbl{ font-size: 13px; color: var(--muted); text-align:center; max-width: 380px; }
+  .progress-overlay .sublbl{ font-family: var(--mono); font-size: 11.5px; color: #55698c; text-align:center; }
+  .progress-track{
+    width: 320px; height: 6px; background: #1a2432; border-radius: 4px; overflow:hidden;
+  }
+  .progress-fill{ height:100%; width:0%; background: var(--accent); transition: width .2s; }
+  .grid-preview{
+    display:grid; gap:2px; margin-top: 6px; max-width: 320px;
+  }
+  .grid-cell{
+    width: 9px; height: 9px; border-radius: 2px; background: #1a2432;
+  }
+  .grid-cell.done{ background: var(--good); }
+  .grid-cell.err{ background: var(--bad); }
+  .grid-cell.active{ background: var(--accent); animation: pulse 1s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .toolbar{
+    display:flex; gap: 8px; padding: 10px 14px;
+    border-top: 1px solid var(--line);
+    background: var(--panel-2);
+    flex-wrap: wrap;
+  }
+  .toolbar .btn{ width:auto; padding: 8px 14px; font-size: 12.5px; }
+
+  .status-line{
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    padding: 10px 14px;
+    border-top: 1px solid var(--line);
+    background: var(--panel-2);
+    min-height: 34px;
+    display:flex; align-items:center; gap: 8px;
+  }
+  .status-line .dot{ width:6px; height:6px; border-radius:50%; background: var(--muted); flex-shrink:0; }
+  .status-line.ok .dot{ background: var(--good); }
+  .status-line.error{ color: var(--bad); }
+  .status-line.error .dot{ background: var(--bad); }
+
+  footer{ margin-top: 24px; font-size: 11.5px; color: #3d4f63; line-height: 1.6; }
+  footer a{ color: var(--muted); }
+
+  .hidden{ display:none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Composer di ortofoto ad alta risoluzione</div>
+    <h1>Ortofoto Composer</h1>
+    <p>Compone un'unica mappa ad alta risoluzione richiedendo direttamente al server geografico i ritagli esatti dell'area scelta — nessuno screenshot, nessuna giuntura approssimata: ogni pezzo viene posizionato per coordinate.</p>
+
+    <div class="provider-switch">
+      <button class="provider-btn active" data-provider="lombardia" id="provBtnLombardia">
+        <span class="name">Geoportale Lombardia</span>
+        <span class="desc">Ortofoto storiche 1954–2021, gratuito, nessuna chiave richiesta</span>
+      </button>
+      <button class="provider-btn" data-provider="esri" id="provBtnEsri">
+        <span class="name">ESRI World Imagery</span>
+        <span class="desc">Satellite mondiale, gratuito, nessuna chiave richiesta</span>
+      </button>
+      <button class="provider-btn" data-provider="osm" id="provBtnOsm">
+        <span class="name">OpenStreetMap</span>
+        <span class="desc">Mappa stradale (non ortofoto), gratuito, nessuna chiave</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- PANNELLO CONTROLLI -->
+    <div class="card">
+      <div class="card-head">
+        <h2>Area da acquisire</h2>
+        <span class="tag" id="crsTag">EPSG:4326</span>
+      </div>
+      <div class="card-body">
+
+        <div class="field">
+          <label>Centro area — Latitudine, Longitudine</label>
+          <input type="text" id="centerInput" placeholder="45.4642, 9.1900" value="45.4642, 9.1900">
+        </div>
+
+        <div class="field row2">
+          <div>
+            <label>Larghezza area (km)</label>
+            <input type="number" id="widthKm" value="2" min="0.1" step="0.1">
+          </div>
+          <div>
+            <label>Altezza area (km)</label>
+            <input type="number" id="heightKm" value="2" min="0.1" step="0.1">
+          </div>
+        </div>
+
+        <!-- Risoluzione: usata da Lombardia (metri/pixel diretti) -->
+        <div class="field" id="fieldRes">
+          <label>Risoluzione output</label>
+          <select id="resSelect">
+            <option value="0.2">Massima — 20 cm/pixel (nativa)</option>
+            <option value="0.5" selected>Alta — 50 cm/pixel</option>
+            <option value="1">Media — 1 m/pixel</option>
+            <option value="2">Bassa — 2 m/pixel</option>
+          </select>
+          <div class="hint" id="resHint">La risoluzione nativa del servizio varia per anno (fino a 20 cm/pixel per le ortofoto più recenti).</div>
+        </div>
+
+        <!-- Zoom: usato da ESRI e OSM (schema a livelli, non metri diretti) -->
+        <div class="field hidden" id="fieldZoom">
+          <label>Livello di zoom</label>
+          <select id="zoomSelect">
+            <option value="16">16 — visione d'insieme (~2.4 m/px)</option>
+            <option value="17">17 — dettaglio medio (~1.2 m/px)</option>
+            <option value="18" selected>18 — alto dettaglio (~0.6 m/px)</option>
+            <option value="19">19 — molto alto (~0.3 m/px)</option>
+            <option value="20">20 — massimo tipico (~0.15 m/px)</option>
+          </select>
+          <div class="hint" id="zoomHint">Il dettaglio reale dipende dalla copertura disponibile in quella zona: in aree rurali il livello 20 potrebbe non essere più nitido del 18.</div>
+        </div>
+
+        <!-- Blocco specifico Lombardia -->
+        <div class="field" id="fieldYear">
+          <label>Anno ortofoto</label>
+          <select id="yearSelect">
+            <option value="Ortofoto2021" selected>2021 — AGEA (20 cm)</option>
+            <option value="Ortofoto2018_2019">2018–2019 — AGEA (20 cm)</option>
+            <option value="ortofoto2015UTM32N">2015 — Consorzio TeA (20–45 cm)</option>
+            <option value="ortofoto2012UTM">2012 — AGEA (50 cm)</option>
+            <option value="arcgis1|ortofoto2007utm">2007 — AGEA (50 cm)</option>
+            <option value="ortofoto2003">2003 (1 m)</option>
+            <option value="ortofoto1975">1975 (b/n)</option>
+            <option value="Lombardia_GAI_UTM_image">1954–1955 — volo GAI (b/n)</option>
+          </select>
+          <div class="hint">Elenco ridotto agli anni verificati come funzionanti. Il volo GAI 1954-55 è in bianco/nero e a risoluzione inferiore (~70 cm/px) rispetto alle ortofoto moderne.</div>
+          <button class="btn btn-ghost btn-small" id="verifyBtn" style="margin-top:8px;">Verifica servizio</button>
+        </div>
+
+        <div class="notice hidden" id="esriNotice">
+          Copertura globale ma qualità non uniforme: nelle grandi città il dettaglio può arrivare a 3 cm/px, in aree rurali o meno popolate resta spesso su 1 m/px o peggio. Non esistono annate storiche selezionabili: è sempre l'immagine più recente disponibile per quella zona.
+        </div>
+        <div class="notice hidden" id="osmNotice">
+          OpenStreetMap non è un'ortofoto: mostra strade, edifici ed elementi disegnati dalla community, non foto aeree. Utile come mappa di riferimento o per confrontare toponimi con le ortofoto, non per il dettaglio del terreno.
+        </div>
+
+        <div class="estimate" id="estimateBox">—</div>
+
+        <div class="field" style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
+          <button class="btn btn-accent" id="startBtn">Genera mappa</button>
+          <button class="btn btn-stop" id="stopBtn" style="display:none;">Interrompi</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PANNELLO VISUALIZZAZIONE -->
+    <div class="card">
+      <div class="card-head">
+        <h2>Mappa composta</h2>
+        <span class="tag" id="sizeTag">—</span>
+      </div>
+      <div class="viewport">
+        <div class="empty" id="emptyState">
+          <div class="glyph">▦</div>
+          <div>Imposta l'area e premi "Genera mappa"</div>
+        </div>
+        <div id="stage" style="display:none;">
+          <div id="stageInner"></div>
+        </div>
+        <div class="zoom-hud" id="zoomHud" style="display:none;">
+          <span id="zoomPct">100%</span>
+          <span>·</span>
+          <span id="pxSize">—</span>
+        </div>
+        <div class="progress-overlay hidden" id="progressOverlay">
+          <div class="progress-ring-wrap">
+            <svg width="140" height="140">
+              <circle class="progress-ring-bg" cx="70" cy="70" r="60"></circle>
+              <circle class="progress-ring-fg" id="progressRing" cx="70" cy="70" r="60"
+                      stroke-dasharray="377" stroke-dashoffset="377"></circle>
+            </svg>
+            <div class="progress-ring-label" id="progressPct">0%</div>
+          </div>
+          <div class="lbl" id="progressLbl">Preparazione richieste...</div>
+          <div class="sublbl" id="progressSub"></div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="grid-preview" id="gridPreview"></div>
+        </div>
+        <div class="progress-overlay hidden" id="downloadOverlay">
+          <div class="progress-ring-wrap">
+            <svg width="140" height="140">
+              <circle class="progress-ring-bg" cx="70" cy="70" r="60"></circle>
+              <circle class="progress-ring-fg" id="downloadRing" cx="70" cy="70" r="60"
+                      stroke-dasharray="377" stroke-dashoffset="377"></circle>
+            </svg>
+            <div class="progress-ring-label" id="downloadPct">0%</div>
+          </div>
+          <div class="lbl" id="downloadLbl">Preparazione del file...</div>
+          <div class="sublbl" id="downloadSub"></div>
+        </div>
+      </div>
+      <div class="toolbar" id="toolbar" style="display:none;">
+        <button class="btn btn-ghost" id="zoomInBtn">Zoom +</button>
+        <button class="btn btn-ghost" id="zoomOutBtn">Zoom −</button>
+        <button class="btn btn-ghost" id="zoomResetBtn">Adatta</button>
+        <button class="btn btn-ghost" id="zoom100Btn">100% (pixel reali)</button>
+        <button class="btn btn-accent" id="downloadBtn" style="width:auto;">Scarica PNG</button>
+      </div>
+      <div class="status-line" id="statusLine"><span class="dot"></span><span id="statusText">In attesa.</span></div>
+    </div>
+
+  </div>
+
+  <footer>
+    <strong>Geoportale Lombardia</strong>: servizio ImageServer pubblico di Regione Lombardia (ortofoto storiche AGEA/TeA/GAI). Uso soggetto alle condizioni pubblicate dal fornitore.<br>
+    <strong>ESRI World Imagery</strong>: servizio pubblico Esri (fonti Esri, Maxar, Earthstar Geographics e community). Copertura mondiale, gratuito senza chiave, ma senza garanzie di continuità dichiarate da Esri per usi intensivi.<br>
+    <strong>OpenStreetMap</strong>: dati e tile della community OSM, licenza ODbL — mappa vettoriale, non foto aerea.<br>
+    Funzionamento: l'area richiesta viene suddivisa in una griglia di riquadri; ciascun riquadro viene richiesto al server con le sue coordinate geografiche esatte e disegnato su un'unica tela nella posizione calcolata — non è coinvolto alcun riconoscimento visivo dei bordi.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+
+  // ============================================================
+  // CONFIGURAZIONE PROVIDER
+  // ============================================================
+  const LOMBARDIA_BASE = 'https://www.cartografia.servizirl.it/arcgis2/rest/services/BaseMap';
+  const MAX_TILE_PX = 3000;
+  const MAX_CANVAS_PX = 14000;
+  const CONCURRENCY = 4;
+  const EARTH_R = 6378137;
+
+  const ESRI_TILE_URL = 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile';
+  const OSM_TILE_URL = 'https://tile.openstreetmap.org';
+  const XYZ_TILE_PX = 256; // dimensione standard tile Slippy Map (ESRI e OSM)
+
+  let currentProvider = 'lombardia';
+
+  // Alcuni anni storici del Geoportale Lombardia vivono su un'installazione ArcGIS diversa (arcgis1 invece di arcgis2).
+  // Il valore nel menu può quindi essere "nomeServizio" oppure "hostAlternativo|nomeServizio".
+  function resolveServiceUrl(rawValue){
+    if (rawValue.includes('|')){
+      const [host, name] = rawValue.split('|');
+      return { base: `https://www.cartografia.servizirl.it/${host}/rest/services/BaseMap`, name };
+    }
+    return { base: LOMBARDIA_BASE, name: rawValue };
+  }
+
+  // ============================================================
+  // RIFERIMENTI DOM
+  // ============================================================
+  const $ = id => document.getElementById(id);
+  const centerInput = $('centerInput');
+  const widthKm = $('widthKm');
+  const heightKm = $('heightKm');
+  const resSelect = $('resSelect');
+  const resHint = $('resHint');
+  const fieldRes = $('fieldRes');
+  const zoomSelect = $('zoomSelect');
+  const fieldZoom = $('fieldZoom');
+  const yearSelect = $('yearSelect');
+  const fieldYear = $('fieldYear');
+  const esriNotice = $('esriNotice');
+  const osmNotice = $('osmNotice');
+  const verifyBtn = $('verifyBtn');
+  const estimateBox = $('estimateBox');
+  const startBtn = $('startBtn');
+  const stopBtn = $('stopBtn');
+  const emptyState = $('emptyState');
+  const stage = $('stage');
+  const stageInner = $('stageInner');
+  const zoomHud = $('zoomHud');
+  const zoomPct = $('zoomPct');
+  const pxSize = $('pxSize');
+  const progressOverlay = $('progressOverlay');
+  const progressPct = $('progressPct');
+  const progressRing = $('progressRing');
+  const progressLbl = $('progressLbl');
+  const progressSub = $('progressSub');
+  const progressFill = $('progressFill');
+  const gridPreview = $('gridPreview');
+  const toolbar = $('toolbar');
+  const statusLine = $('statusLine');
+  const statusText = $('statusText');
+  const sizeTag = $('sizeTag');
+  const downloadBtn = $('downloadBtn');
+  const crsTag = $('crsTag');
+  const provBtnLombardia = $('provBtnLombardia');
+  const provBtnEsri = $('provBtnEsri');
+  const provBtnOsm = $('provBtnOsm');
+
+  let aborted = false;
+  let canvases = [];
+
+  const RING_CIRCUMFERENCE = 2 * Math.PI * 60;
+
+  // ============================================================
+  // SWITCH PROVIDER — cambia UI e vincoli in base alla scelta
+  // ============================================================
+  function setProvider(p){
+    currentProvider = p;
+    provBtnLombardia.classList.toggle('active', p === 'lombardia');
+    provBtnEsri.classList.toggle('active', p === 'esri');
+    provBtnOsm.classList.toggle('active', p === 'osm');
+
+    fieldYear.classList.toggle('hidden', p !== 'lombardia');
+    fieldRes.classList.toggle('hidden', p !== 'lombardia');
+    fieldZoom.classList.toggle('hidden', p === 'lombardia');
+    esriNotice.classList.toggle('hidden', p !== 'esri');
+    osmNotice.classList.toggle('hidden', p !== 'osm');
+
+    if (p === 'lombardia'){
+      crsTag.textContent = 'EPSG:4326';
+    } else if (p === 'esri'){
+      crsTag.textContent = 'XYZ tile';
+    } else {
+      crsTag.textContent = 'XYZ tile';
+    }
+    computeEstimate();
+  }
+  provBtnLombardia.addEventListener('click', () => setProvider('lombardia'));
+  provBtnEsri.addEventListener('click', () => setProvider('esri'));
+  provBtnOsm.addEventListener('click', () => setProvider('osm'));
+
+  // ============================================================
+  // CONVERSIONE COORDINATE
+  // ============================================================
+  function lonLatToMercator(lon, lat){
+    const x = lon * Math.PI / 180 * EARTH_R;
+    const y = Math.log(Math.tan(Math.PI/4 + (lat * Math.PI/180)/2)) * EARTH_R;
+    return { x, y };
+  }
+
+  // Conversione lat/lon -> coordinate pixel globali nello schema Slippy Map (usato da ESRI e OSM)
+  function lonLatToGlobalPixel(lon, lat, zoom){
+    const scale = XYZ_TILE_PX * Math.pow(2, zoom);
+    const x = (lon + 180) / 360 * scale;
+    const sinLat = Math.sin(lat * Math.PI / 180);
+    const y = (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale;
+    return { x, y };
+  }
+
+  function metersPerPixelAtZoom(lat, zoom){
+    return 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom);
+  }
+
+  function parseCenter(str){
+    const parts = str.split(',').map(s => parseFloat(s.trim()));
+    if (parts.length !== 2 || parts.some(isNaN)) return null;
+    const [lat, lon] = parts;
+    if (lat < -85 || lat > 85 || lon < -180 || lon > 180) return null;
+    return { lat, lon };
+  }
+
+  function setStatus(msg, kind){
+    statusText.textContent = msg;
+    statusLine.className = 'status-line' + (kind ? ' ' + kind : '');
+  }
+
+  // ============================================================
+  // STIMA
+  // ============================================================
+  function computeEstimate(){
+    const center = parseCenter(centerInput.value);
+    const w = parseFloat(widthKm.value);
+    const h = parseFloat(heightKm.value);
+
+    if (!center || !w || !h || w <= 0 || h <= 0){
+      estimateBox.innerHTML = 'Inserisci coordinate e dimensioni valide.';
+      return null;
+    }
+
+    if (currentProvider === 'lombardia'){
+      const res = parseFloat(resSelect.value);
+      const widthPx = Math.round((w * 1000) / res);
+      const heightPx = Math.round((h * 1000) / res);
+      const totalMPix = (widthPx * heightPx) / 1e6;
+
+      const tilesX = Math.ceil(widthPx / MAX_TILE_PX);
+      const tilesY = Math.ceil(heightPx / MAX_TILE_PX);
+      const totalTiles = tilesX * tilesY;
+      const estMB = totalMPix * 1.8;
+
+      let warnHtml = '';
+      if (widthPx > MAX_CANVAS_PX || heightPx > MAX_CANVAS_PX){
+        warnHtml = `<div class="warn-row">⚠ Immagine oltre ${MAX_CANVAS_PX}px di lato: verrà divisa in più file all'export.</div>`;
+      }
+      if (totalTiles > 400){
+        warnHtml += `<div class="bad-row">⚠ ${totalTiles} richieste al server: tempo stimato molto lungo.</div>`;
+      }
+
+      estimateBox.innerHTML = `
+        Dimensione immagine finale: <b>${widthPx.toLocaleString('it-IT')} × ${heightPx.toLocaleString('it-IT')} px</b> (${totalMPix.toFixed(0)} MP)<br>
+        Riquadri da scaricare: <b>${totalTiles}</b> (griglia ${tilesX}×${tilesY})<br>
+        Peso stimato: <b>~${estMB.toFixed(0)} MB</b><br>
+        Tempo stimato: <b>~${Math.ceil(totalTiles / CONCURRENCY * 1.2)} sec</b>
+        ${warnHtml}
+      `;
+      return { center, w, h, res, widthPx, heightPx, tilesX, tilesY, totalTiles, mode: 'exportImage' };
+
+    } else {
+      // ESRI / OSM: schema a tile XYZ standard, la "risoluzione" è determinata dal livello di zoom.
+      const zoom = parseInt(zoomSelect.value, 10);
+      const res = metersPerPixelAtZoom(center.lat, zoom);
+      const widthPx = Math.round((w * 1000) / res);
+      const heightPx = Math.round((h * 1000) / res);
+      const totalMPix = (widthPx * heightPx) / 1e6;
+
+      // quanti tile XYZ da 256px servono per coprire l'area
+      const centerPx = lonLatToGlobalPixel(center.lon, center.lat, zoom);
+      const halfWpx = widthPx / 2;
+      const halfHpx = heightPx / 2;
+      const tileXmin = Math.floor((centerPx.x - halfWpx) / XYZ_TILE_PX);
+      const tileXmax = Math.floor((centerPx.x + halfWpx) / XYZ_TILE_PX);
+      const tileYmin = Math.floor((centerPx.y - halfHpx) / XYZ_TILE_PX);
+      const tileYmax = Math.floor((centerPx.y + halfHpx) / XYZ_TILE_PX);
+      const tilesX = tileXmax - tileXmin + 1;
+      const tilesY = tileYmax - tileYmin + 1;
+      const totalTiles = tilesX * tilesY;
+      const estMB = totalMPix * (currentProvider === 'esri' ? 0.6 : 0.3); // jpg vs png più leggero
+
+      let warnHtml = '';
+      if (widthPx > MAX_CANVAS_PX || heightPx > MAX_CANVAS_PX){
+        warnHtml = `<div class="warn-row">⚠ Immagine oltre ${MAX_CANVAS_PX}px di lato: verrà divisa in più file all'export.</div>`;
+      }
+      if (totalTiles > 900){
+        warnHtml += `<div class="bad-row">⚠ ${totalTiles} tile da scaricare: tempo stimato molto lungo, valuta di abbassare lo zoom o ridurre l'area.</div>`;
+      }
+
+      estimateBox.innerHTML = `
+        Risoluzione a questo zoom: <b>~${res.toFixed(2)} m/px</b> (varia con la latitudine)<br>
+        Dimensione immagine finale: <b>${widthPx.toLocaleString('it-IT')} × ${heightPx.toLocaleString('it-IT')} px</b> (${totalMPix.toFixed(0)} MP)<br>
+        Tile da scaricare: <b>${totalTiles}</b> (griglia ${tilesX}×${tilesY}, 256×256 px l'uno)<br>
+        Peso stimato: <b>~${estMB.toFixed(0)} MB</b><br>
+        Tempo stimato: <b>~${Math.ceil(totalTiles / CONCURRENCY * 0.6)} sec</b>
+        ${warnHtml}
+      `;
+      return {
+        center, w, h, res, zoom, widthPx, heightPx, tilesX, tilesY, totalTiles,
+        tileXmin, tileYmin, centerPx, mode: 'xyz'
+      };
+    }
+  }
+
+  [centerInput, widthKm, heightKm, resSelect, zoomSelect].forEach(el => {
+    el.addEventListener('input', computeEstimate);
+  });
+
+  // ============================================================
+  // VERIFICA SERVIZIO (Lombardia) — controlla che l'anno scelto risponda
+  // ============================================================
+  verifyBtn.addEventListener('click', async () => {
+    const { base, name: serviceName } = resolveServiceUrl(yearSelect.value);
+    const testUrl = `${base}/${serviceName}/ImageServer?f=json`;
+    setStatus('Verifica del servizio in corso...', null);
+    verifyBtn.disabled = true;
+    try {
+      const resp = await fetch(testUrl);
+      const txt = await resp.text();
+      let json;
+      try { json = JSON.parse(txt); } catch(e){ json = null; }
+      if (json && !json.error && (json.name || json.serviceDescription)){
+        setStatus(`Servizio "${serviceName}" raggiungibile e valido.`, 'ok');
+      } else if (json && json.error){
+        setStatus(`Servizio "${serviceName}" non trovato (${json.error.message || 'errore sconosciuto'}).`, 'error');
+      } else {
+        setStatus(`Risposta inattesa dal servizio "${serviceName}". Potrebbe comunque funzionare: prova a generare la mappa.`, 'error');
+      }
+    } catch(e){
+      setStatus(`Impossibile contattare il servizio: ${e.message}.`, 'error');
+    }
+    verifyBtn.disabled = false;
+  });
+
+  // ============================================================
+  // GRIGLIA — LOMBARDIA (ArcGIS ImageServer, coordinate esatte via exportImage)
+  // ============================================================
+  function buildTileGridLombardia(params){
+    const { center, w, h, res, widthPx, heightPx, tilesX, tilesY } = params;
+    const centerM = lonLatToMercator(center.lon, center.lat);
+    const halfWm = (w * 1000) / 2;
+    const halfHm = (h * 1000) / 2;
+    const xmin = centerM.x - halfWm;
+    const ymax = centerM.y + halfHm;
+    const tileWpx = Math.ceil(widthPx / tilesX);
+    const tileHpx = Math.ceil(heightPx / tilesY);
+    const tileWm = tileWpx * res;
+    const tileHm = tileHpx * res;
+
+    const tiles = [];
+    for (let gy = 0; gy < tilesY; gy++){
+      for (let gx = 0; gx < tilesX; gx++){
+        const txmin = xmin + gx * tileWm;
+        const tymax = ymax - gy * tileHm;
+        const txmax = Math.min(txmin + tileWm, xmin + widthPx * res);
+        const tymin = tymax - tileHm;
+        const pxW = Math.round((txmax - txmin) / res);
+        const pxH = Math.round((tymax - tymin) / res);
+        tiles.push({
+          gx, gy, bbox: [txmin, tymin, txmax, tymax], pxW, pxH,
+          destX: gx * tileWpx, destY: gy * tileHpx
+        });
+      }
+    }
+    return { tiles, tileWpx, tileHpx };
+  }
+
+  function fetchTileLombardia(base, serviceName, tile, attempt){
+    attempt = attempt || 1;
+    const url = `${base}/${serviceName}/ImageServer/exportImage`
+      + `?bbox=${tile.bbox.join(',')}`
+      + `&bboxSR=3857&imageSR=3857`
+      + `&size=${tile.pxW},${tile.pxH}`
+      + `&format=png24&interpolation=RSP_BilinearInterpolation`
+      + `&f=image`;
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => {
+        if (attempt < 3){
+          setTimeout(() => fetchTileLombardia(base, serviceName, tile, attempt + 1).then(resolve).catch(reject), 500 * attempt);
+        } else {
+          reject(new Error('tile fallito dopo 3 tentativi'));
+        }
+      };
+      img.src = url;
+    });
+  }
+
+  // ============================================================
+  // GRIGLIA — SCHEMA XYZ (ESRI World Imagery / OpenStreetMap)
+  // Ogni tile ha indici interi (tileX, tileY) a un dato zoom: posizionamento
+  // matematico esatto, stesso principio del provider Lombardia ma con
+  // coordinate a griglia intera invece che bbox in metri.
+  // ============================================================
+  function buildTileGridXYZ(params){
+    const { tileXmin, tileYmin, tilesX, tilesY, centerPx, widthPx, heightPx, zoom } = params;
+    // origine pixel globale del canvas finale (angolo nord-ovest dell'area richiesta)
+    const halfWpx = widthPx / 2;
+    const halfHpx = heightPx / 2;
+    const canvasOriginX = centerPx.x - halfWpx;
+    const canvasOriginY = centerPx.y - halfHpx;
+
+    const tiles = [];
+    for (let gy = 0; gy < tilesY; gy++){
+      for (let gx = 0; gx < tilesX; gx++){
+        const tileX = tileXmin + gx;
+        const tileY = tileYmin + gy;
+        // posizione di questo tile (in pixel globali) rispetto all'origine del canvas
+        const tileGlobalPxX = tileX * XYZ_TILE_PX;
+        const tileGlobalPxY = tileY * XYZ_TILE_PX;
+        const destX = Math.round(tileGlobalPxX - canvasOriginX);
+        const destY = Math.round(tileGlobalPxY - canvasOriginY);
+        tiles.push({ gx, gy, tileX, tileY, destX, destY });
+      }
+    }
+    return tiles;
+  }
+
+  function fetchTileXYZ(provider, tileX, tileY, zoom, attempt){
+    attempt = attempt || 1;
+    let url;
+    if (provider === 'esri'){
+      url = `${ESRI_TILE_URL}/${zoom}/${tileY}/${tileX}`;
+    } else {
+      // OSM richiede sottodomini a rotazione e rispetto della tile usage policy (basso volume, no hammering)
+      url = `${OSM_TILE_URL}/${zoom}/${tileX}/${tileY}.png`;
+    }
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => {
+        if (attempt < 3){
+          setTimeout(() => fetchTileXYZ(provider, tileX, tileY, zoom, attempt + 1).then(resolve).catch(reject), 600 * attempt);
+        } else {
+          reject(new Error('tile fallito dopo 3 tentativi'));
+        }
+      };
+      img.src = url;
+    });
+  }
+
+  // ============================================================
+  // ESECUZIONE
+  // ============================================================
+  function updateProgressUI(done, total, errors){
+    const pct = Math.round((done/total)*100);
+    progressPct.textContent = pct + '%';
+    progressFill.style.width = pct + '%';
+    const offset = RING_CIRCUMFERENCE * (1 - pct/100);
+    progressRing.style.strokeDashoffset = offset;
+    progressLbl.textContent = `Riquadro ${done} di ${total}` + (errors ? ` — ${errors} falliti` : '');
+    progressSub.textContent = `${pct}% completato`;
+  }
+
+  async function runAcquisition(){
+    const params = computeEstimate();
+    if (!params){
+      setStatus('Parametri non validi.', 'error');
+      return;
+    }
+
+    aborted = false;
+    startBtn.style.display = 'none';
+    stopBtn.style.display = 'block';
+    progressOverlay.classList.remove('hidden');
+    emptyState.style.display = 'none';
+    progressRing.style.strokeDasharray = RING_CIRCUMFERENCE;
+    progressRing.style.strokeDashoffset = RING_CIRCUMFERENCE;
+
+    let tiles, serviceName, serviceBase;
+    if (currentProvider === 'lombardia'){
+      ({ tiles } = buildTileGridLombardia(params));
+      ({ base: serviceBase, name: serviceName } = resolveServiceUrl(yearSelect.value));
+    } else {
+      tiles = buildTileGridXYZ(params);
+    }
+
+    gridPreview.innerHTML = '';
+    gridPreview.style.gridTemplateColumns = `repeat(${params.tilesX}, 9px)`;
+    const cellEls = tiles.map(() => {
+      const c = document.createElement('div');
+      c.className = 'grid-cell';
+      gridPreview.appendChild(c);
+      return c;
+    });
+
+    canvases = [];
+    const needsSplit = params.widthPx > MAX_CANVAS_PX || params.heightPx > MAX_CANVAS_PX;
+
+    let masterCanvas, masterCtx;
+    if (!needsSplit){
+      masterCanvas = document.createElement('canvas');
+      masterCanvas.width = params.widthPx;
+      masterCanvas.height = params.heightPx;
+      masterCtx = masterCanvas.getContext('2d');
+    }
+
+    let done = 0, errors = 0;
+    const total = tiles.length;
+    updateProgressUI(0, total, 0);
+
+    async function processTile(tile, idx){
+      if (aborted) return;
+      cellEls[idx].classList.add('active');
+      try {
+        let img, drawW, drawH;
+        if (currentProvider === 'lombardia'){
+          img = await fetchTileLombardia(serviceBase, serviceName, tile);
+          drawW = tile.pxW; drawH = tile.pxH;
+        } else {
+          img = await fetchTileXYZ(currentProvider, tile.tileX, tile.tileY, params.zoom);
+          drawW = XYZ_TILE_PX; drawH = XYZ_TILE_PX;
+        }
+        if (aborted) return;
+
+        if (!needsSplit){
+          masterCtx.drawImage(img, tile.destX, tile.destY, drawW, drawH);
+        } else {
+          const c = document.createElement('canvas');
+          c.width = drawW; c.height = drawH;
+          c.getContext('2d').drawImage(img, 0, 0);
+          canvases.push({ canvas: c, destX: tile.destX, destY: tile.destY, gx: tile.gx, gy: tile.gy });
+        }
+        cellEls[idx].classList.remove('active');
+        cellEls[idx].classList.add('done');
+        done++;
+      } catch(e){
+        cellEls[idx].classList.remove('active');
+        cellEls[idx].classList.add('err');
+        errors++;
+        done++;
+      }
+      updateProgressUI(done, total, errors);
+    }
+
+    let cursor = 0;
+    async function worker(){
+      while (cursor < tiles.length && !aborted){
+        const idx = cursor++;
+        await processTile(tiles[idx], idx);
+      }
+    }
+    await Promise.all(Array.from({length: CONCURRENCY}, worker));
+
+    if (aborted){
+      setStatus('Interrotto dall\'utente.', 'error');
+      resetToolbarAfterRun();
+      progressOverlay.classList.add('hidden');
+      return;
+    }
+
+    stageInner.innerHTML = '';
+    if (!needsSplit){
+      stageInner.appendChild(masterCanvas);
+      sizeTag.textContent = `${params.widthPx}×${params.heightPx}px`;
+    } else {
+      stageInner.style.width = params.widthPx + 'px';
+      stageInner.style.height = params.heightPx + 'px';
+      canvases.forEach(c => {
+        c.canvas.style.position = 'absolute';
+        c.canvas.style.left = c.destX + 'px';
+        c.canvas.style.top = c.destY + 'px';
+        stageInner.appendChild(c.canvas);
+      });
+      sizeTag.textContent = `${params.widthPx}×${params.heightPx}px (${canvases.length} tessere)`;
+    }
+
+    stage.style.display = 'block';
+    toolbar.style.display = 'flex';
+    zoomHud.style.display = 'flex';
+    fitToViewport(params.widthPx, params.heightPx);
+    pxSize.textContent = currentProvider === 'lombardia'
+      ? `${params.res} m/px`
+      : `zoom ${params.zoom} (~${params.res.toFixed(2)} m/px)`;
+
+    progressOverlay.classList.add('hidden');
+    resetToolbarAfterRun();
+
+    if (errors > 0){
+      setStatus(`Completato con ${errors} riquadri falliti su ${total}.`, 'error');
+    } else {
+      setStatus(`Mappa generata: ${total} riquadri uniti per coordinate esatte.`, 'ok');
+    }
+  }
+
+  function resetToolbarAfterRun(){
+    startBtn.style.display = 'block';
+    stopBtn.style.display = 'none';
+  }
+
+  stopBtn.addEventListener('click', () => { aborted = true; });
+  startBtn.addEventListener('click', runAcquisition);
+
+  // ============================================================
+  // PAN / ZOOM
+  // ============================================================
+  let viewScale = 1, viewX = 0, viewY = 0;
+  let panning = false, panStartX, panStartY, viewStartX, viewStartY;
+  let fullWidthPx = 0, fullHeightPx = 0;
+
+  function applyTransform(){
+    stageInner.style.transform = `translate(${viewX}px, ${viewY}px) scale(${viewScale})`;
+    zoomPct.textContent = Math.round(viewScale * 100) + '%';
+  }
+
+  function fitToViewport(w, h){
+    fullWidthPx = w; fullHeightPx = h;
+    const vp = stage.getBoundingClientRect();
+    const scale = Math.min(vp.width / w, vp.height / h, 1);
+    viewScale = scale;
+    viewX = (vp.width - w * scale) / 2;
+    viewY = (vp.height - h * scale) / 2;
+    applyTransform();
+  }
+
+  stage.addEventListener('mousedown', e => {
+    panning = true;
+    stage.classList.add('grabbing');
+    panStartX = e.clientX; panStartY = e.clientY;
+    viewStartX = viewX; viewStartY = viewY;
+  });
+  window.addEventListener('mousemove', e => {
+    if (!panning) return;
+    viewX = viewStartX + (e.clientX - panStartX);
+    viewY = viewStartY + (e.clientY - panStartY);
+    applyTransform();
+  });
+  window.addEventListener('mouseup', () => { panning = false; stage.classList.remove('grabbing'); });
+
+  stage.addEventListener('wheel', e => {
+    e.preventDefault();
+    const vp = stage.getBoundingClientRect();
+    const mx = e.clientX - vp.left, my = e.clientY - vp.top;
+    const before = viewScale;
+    viewScale *= (e.deltaY < 0 ? 1.15 : 0.87);
+    viewScale = Math.max(0.02, Math.min(viewScale, 8));
+    const factor = viewScale / before;
+    viewX = mx - (mx - viewX) * factor;
+    viewY = my - (my - viewY) * factor;
+    applyTransform();
+  }, { passive:false });
+
+  $('zoomInBtn').addEventListener('click', () => { viewScale = Math.min(viewScale*1.3, 8); applyTransform(); });
+  $('zoomOutBtn').addEventListener('click', () => { viewScale = Math.max(viewScale*0.77, 0.02); applyTransform(); });
+  $('zoomResetBtn').addEventListener('click', () => fitToViewport(fullWidthPx, fullHeightPx));
+  $('zoom100Btn').addEventListener('click', () => {
+    viewScale = 1;
+    const vp = stage.getBoundingClientRect();
+    viewX = (vp.width - fullWidthPx) / 2;
+    viewY = (vp.height - fullHeightPx) / 2;
+    applyTransform();
+  });
+
+  // ============================================================
+  // EXPORT — con overlay di progresso (stesso stile della generazione)
+  // ============================================================
+  const downloadOverlay = $('downloadOverlay');
+  const downloadRing = $('downloadRing');
+  const downloadPct = $('downloadPct');
+  const downloadLbl = $('downloadLbl');
+  const downloadSub = $('downloadSub');
+
+  function canvasToBlobAsync(canvas){
+    return new Promise(resolve => canvas.toBlob(blob => resolve(blob), 'image/png'));
+  }
+
+  function triggerBlobDownload(blob, filename){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.download = filename;
+    a.href = url;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  function setDownloadProgress(pct, label){
+    downloadPct.textContent = Math.round(pct) + '%';
+    downloadRing.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - pct/100);
+    downloadLbl.textContent = label;
+    downloadSub.textContent = Math.round(pct) + '% completato';
+  }
+
+  downloadBtn.addEventListener('click', async () => {
+    downloadBtn.disabled = true;
+    downloadOverlay.classList.remove('hidden');
+    downloadRing.style.strokeDasharray = RING_CIRCUMFERENCE;
+    setDownloadProgress(0, 'Preparazione del file...');
+
+    try {
+      if (canvases.length > 0){
+        // mosaico multi-tessera: ogni tessera è un file separato, il progresso avanza per tessera
+        const total = canvases.length;
+        for (let i = 0; i < canvases.length; i++){
+          const c = canvases[i];
+          setDownloadProgress((i / total) * 100, `Codifica tessera ${i+1} di ${total}...`);
+          const blob = await canvasToBlobAsync(c.canvas);
+          triggerBlobDownload(blob, `ortofoto_r${c.gy}_c${c.gx}.png`);
+          setDownloadProgress(((i+1) / total) * 100, `Tessera ${i+1} di ${total} scaricata`);
+          await new Promise(r => setTimeout(r, 120)); // lascia respiro al browser tra un download e l'altro
+        }
+        setDownloadProgress(100, 'Completato');
+        setStatus(`Scaricate ${canvases.length} tessere separate (immagine troppo grande per un unico file).`, 'ok');
+      } else {
+        // singolo file grande: la codifica PNG è un'unica operazione bloccante,
+        // quindi simuliamo un avanzamento fluido mentre il browser codifica in background
+        const canvas = stageInner.querySelector('canvas');
+        setDownloadProgress(8, 'Codifica immagine in PNG...');
+
+        let fakePct = 8;
+        const ticker = setInterval(() => {
+          fakePct = Math.min(fakePct + (90 - fakePct) * 0.12, 90);
+          setDownloadProgress(fakePct, 'Codifica immagine in PNG...');
+        }, 120);
+
+        const blob = await canvasToBlobAsync(canvas);
+        clearInterval(ticker);
+
+        setDownloadProgress(96, 'Scrittura del file...');
+        await new Promise(r => setTimeout(r, 150));
+        triggerBlobDownload(blob, 'ortofoto_composta.png');
+        setDownloadProgress(100, 'Completato');
+        setStatus('Immagine composta scaricata.', 'ok');
+      }
+    } catch(e){
+      setStatus(`Errore durante l'esportazione: ${e.message}`, 'error');
+    }
+
+    await new Promise(r => setTimeout(r, 500));
+    downloadOverlay.classList.add('hidden');
+    downloadBtn.disabled = false;
+  });
+
+  // init
+  computeEstimate();
+})();
+</script>
+</body>
+</html>

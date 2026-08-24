@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Stream Tester</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root {
+            --bg-color: #0f0c20;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary: #7928ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text: #f3f4f6;
+            --text-dim: #9ca3af;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at top right, #1a103c, #0f0c20 60%);
+            color: var(--text);
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 25px; }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            background: linear-gradient(90deg, #ff0080, #7928ca);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p { color: var(--text-dim); margin: 0; }
+
+        .input-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+            font-family: monospace;
+        }
+
+        textarea:focus { border-color: var(--primary); }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 28px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(135deg, #7928ca, #ff0080);
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.9; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .progress-status { font-size: 0.9rem; color: var(--text-dim); }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) { .results-grid { grid-template-columns: 1fr; } }
+
+        .panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            max-height: 550px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-title { font-size: 1.1rem; font-weight: 600; }
+        .badge { background: rgba(255, 255, 255, 0.1); padding: 2px 8px; border-radius: 12px; font-size: 0.85rem; }
+        .title-working { color: var(--success); }
+        .title-failed { color: var(--danger); }
+
+        .link-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex: 1; }
+
+        .link-item {
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            word-break: break-all;
+            border-left: 3px solid transparent;
+            font-family: monospace;
+        }
+
+        .working .link-item { border-left-color: var(--success); }
+        .failed .link-item { border-left-color: var(--danger); }
+
+        #test-video { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>IPTV Stream Checker</h1>
+            <p>Verifica avanzata con bypass restrizioni di rete</p>
+        </header>
+
+        <div class="input-card">
+            <textarea id="stream-input" placeholder="Incolla l'URL del file M3U oppure il testo grezzo..."></textarea>
+            <div class="actions">
+                <button id="test-btn" onclick="startBatchCheck()">Estrapola e Testa Canali</button>
+                <span class="progress-status" id="status-text">Pronto</span>
+            </div>
+        </div>
+
+        <div class="results-grid">
+            <div class="panel working">
+                <div class="panel-header">
+                    <span class="panel-title title-working">✓ Canali Funzionanti</span>
+                    <span class="badge" id="working-count">0</span>
+                </div>
+                <ul class="link-list" id="working-list"></ul>
+            </div>
+
+            <div class="panel failed">
+                <div class="panel-header">
+                    <span class="panel-title title-failed">✕ Canali Non Funzionanti</span>
+                    <span class="badge" id="failed-count">0</span>
+                </div>
+                <ul class="link-list" id="failed-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <video id="test-video" muted></video>
+
+    <script>
+        let workingArray = [];
+        let failedArray = [];
+
+        async function startBatchCheck() {
+            const input = document.getElementById('stream-input').value.trim();
+            const btn = document.getElementById('test-btn');
+            const statusText = document.getElementById('status-text');
+
+            if (!input) return;
+
+            btn.disabled = true;
+            statusText.textContent = "Analisi in corso...";
+
+            workingArray = [];
+            failedArray = [];
+            renderLists();
+
+            let urlsToTest = [];
+
+            if (input.startsWith('http') && !input.includes('\n') && (input.includes('.m3u') || input.includes('.m3u8'))) {
+                try {
+                    const response = await fetch(input);
+                    if (response.ok) {
+                        const content = await response.text();
+                        urlsToTest = extractUrlsFromText(content);
+                    } else {
+                        urlsToTest = [input];
+                    }
+                } catch (e) {
+                    urlsToTest = [input];
+                }
+            } else {
+                urlsToTest = extractUrlsFromText(input);
+            }
+
+            if (urlsToTest.length === 0) {
+                statusText.textContent = "Nessun flusso valido trovato.";
+                btn.disabled = false;
+                return;
+            }
+
+            statusText.textContent = `Trovati ${urlsToTest.length} flussi. Avvio test...`;
+
+            for (let i = 0; i < urlsToTest.length; i++) {
+                const url = urlsToTest[i];
+                statusText.textContent = `Test (${i + 1}/${urlsToTest.length}): ${url.substring(0, 45)}...`;
+                const isWorking = await testStreamAdvanced(url);
+                addResult(url, isWorking);
+            }
+
+            statusText.textContent = `Completato! ${workingArray.length} funzionanti, ${failedArray.length} non funzionanti.`;
+            btn.disabled = false;
+        }
+
+        function extractUrlsFromText(text) {
+            // Estrae solo URL puliti ed esclude immagini/loghi
+            const rawUrls = text.match(/(https?:\/\/[^\s"'<>]+)/g) || [];
+            const cleanUrls = rawUrls.map(u => u.replace(/[",]$/, ''));
+            
+            return [...new Set(cleanUrls.filter(url => {
+                const lower = url.toLowerCase();
+                return !lower.match(/\.(png|jpg|jpeg|gif|svg|ico)$/i) && 
+                       !lower.includes('tvg-logo') && 
+                       !lower.includes('group-title');
+            }))];
+        }
+
+        async function testStreamAdvanced(url) {
+            // FASE 1: Verifico la raggiungibilità del server ignorando i blocchi CORS
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3500);
+                
+                await fetch(url, { 
+                    method: 'HEAD', 
+                    mode: 'no-cors', 
+                    signal: controller.signal 
+                });
+                clearTimeout(timeoutId);
+            } catch (e) {
+                // Se la rete/server non risponde entro il timeout, è offline
+                return false;
+            }
+
+            // FASE 2: Se risponde al fetch, proviamo l'aggancio HLS
+            return new Promise((resolve) => {
+                const video = document.getElementById('test-video');
+                let hls;
+                let resolved = false;
+
+                const finish = (res) => {
+                    if (resolved) return;
+                    resolved = true;
+                    clearTimeout(timeout);
+                    if (hls) hls.destroy();
+                    video.removeAttribute('src');
+                    video.load();
+                    resolve(res);
+                };
+
+                const timeout = setTimeout(() => {
+                    // Se HLS.js viene bloccato da CORS ma il fetch 'no-cors' ha avuto successo, lo consideriamo online
+                    finish(true);
+                }, 3000);
+
+                if (Hls.isSupported()) {
+                    hls = new Hls({ manifestLoadingTimeOut: 2500 });
+                    hls.loadSource(url);
+                    hls.attachMedia(video);
+
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => finish(true));
+                    hls.on(Hls.Events.ERROR, (event, data) => {
+                        if (data.fatal) {
+                            // Se fallisce per errore di rete/manifest, è offline. Se è solo CORS, la Fase 1 l'ha salvato
+                            if (data.type === Hls.ErrorTypes.NETWORK_ERROR && data.response && data.response.code === 0) {
+                                finish(true); // Probabile blocco CORS del browser ma server attivo
+                            } else {
+                                finish(false);
+                            }
+                        }
+                    });
+                } else {
+                    finish(true);
+                }
+            });
+        }
+
+        function addResult(url, isWorking) {
+            if (isWorking) {
+                if (!workingArray.includes(url)) workingArray.push(url);
+                workingArray.sort();
+            } else {
+                if (!failedArray.includes(url)) failedArray.push(url);
+                failedArray.sort();
+            }
+            renderLists();
+        }
+
+        function renderLists() {
+            const workingList = document.getElementById('working-list');
+            workingList.innerHTML = '';
+            workingArray.forEach(link => {
+                const li = document.createElement('li');
+                li.className = 'link-item';
+                li.textContent = link;
+                workingList.appendChild(li);
+            });
+            document.getElementById('working-count').textContent = workingArray.length;
+
+            const failedList = document.getElementById('failed-list');
+            failedList.innerHTML = '';
+            failedArray.forEach(link => {
+                const li = document.createElement('li');
+                li.className = 'link-item';
+                li.textContent = link;
+                failedList.appendChild(li);
+            });
+            document.getElementById('failed-count').textContent = failedArray.length;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Studio Pro</title>
+    <!-- Libreria esterna per generare i QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #1e293b;
+            --border: #334155;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+            width: 100%;
+            max-width: 1000px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 800px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pane {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 6px;
+            background: #0b0f19;
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            background: #0b0f19;
+            color: #e2e8f0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: var(--accent);
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .row-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .color-pickers {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: #0b0f19;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .color-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 1px solid var(--border); border-radius: 6px; }
+
+        /* Pannello Anteprima QR */
+        .preview-pane {
+            background: #0b0f19;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            gap: 20px;
+        }
+
+        #qrcodeContainer {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+            transition: background-color 0.2s;
+        }
+
+        #qrcodeContainer img, #qrcodeContainer svg {
+            display: block;
+        }
+
+        .download-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        button.primary-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button.primary-btn:hover {
+            background: var(--accent-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>QR Code Studio Pro</h1>
+    <p>Crea, personalizza e scarica QR Code istantanei per ogni esigenza</p>
+
+    <div class="app-container">
+        <!-- Pannello Configurazione -->
+        <div class="pane">
+            <label>Tipo di Contenuto</label>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('url', this)">URL / Link</button>
+                <button class="tab-btn" onclick="switchTab('text', this)">Testo Libero</button>
+                <button class="tab-btn" onclick="switchTab('email', this)">Email</button>
+                <button class="tab-btn" onclick="switchTab('phone', this)">Telefono</button>
+            </div>
+
+            <!-- Form Dinamici -->
+            <div id="inputSection" style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- Default URL -->
+                <div id="group-url" class="input-group">
+                    <label>Indirizzo Web (URL)</label>
+                    <input type="text" id="val-url" placeholder="https://esempio.it" value="https://github.com" oninput="generateQR()">
+                </div>
+            </div>
+
+            <div class="row-group">
+                <div>
+                    <label>Livello Correzione</label>
+                    <select id="errorCorrection" onchange="generateQR()">
+                        <option value="L">Basso (L - 7%)</option>
+                        <option value="M" selected>Medio (M - 15%)</option>
+                        <option value="Q">Ottimale (Q - 25%)</option>
+                        <option value="H">Alto (H - 30%)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Personalizzazione Colori</label>
+                    <div class="color-pickers">
+                        <div class="color-field">
+                            <input type="color" id="qrColor" value="#0f172a" onchange="generateQR()">
+                            <span>Modulo</span>
+                        </div>
+                        <div class="color-field">
+                            <input type="color" id="bgColor" value="#ffffff" onchange="generateQR()">
+                            <span>Sfondo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pannello Anteprima & Download -->
+        <div class="preview-pane">
+            <label>Anteprima Live</label>
+            <div id="qrcodeContainer"></div>
+            
+            <div class="download-actions">
+                <button class="primary-btn" onclick="downloadQR('png')">Scarica PNG 💾</button>
+                <button class="primary-btn" style="background: #334155;" onclick="downloadQR('svg')">Scarica SVG 📐</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentType = 'url';
+
+        function switchTab(type, btn) {
+            currentType = type;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const section = document.getElementById('inputSection');
+            if (type === 'url') {
+                section.innerHTML = `
+                    <label>Indirizzo Web (URL)</label>
+                    <input type="text" id="val-url" placeholder="https://esempio.it" value="https://github.com" oninput="generateQR()">`;
+            } else if (type === 'text') {
+                section.innerHTML = `
+                    <label>Testo o Messaggio</label>
+                    <textarea id="val-text" placeholder="Scrivi qui il tuo messaggio..." oninput="generateQR()">Benvenuto nel generatore di QR code!</textarea>`;
+            } else if (type === 'email') {
+                section.innerHTML = `
+                    <label>Indirizzo Email</label>
+                    <input type="text" id="val-email" placeholder="nome@esempio.it" oninput="generateQR()">
+                    <label>Oggetto Predefinito</label>
+                    <input type="text" id="val-subject" placeholder="Oggetto..." oninput="generateQR()">`;
+            } else if (type === 'phone') {
+                section.innerHTML = `
+                    <label>Numero di Telefono</label>
+                    <input type="text" id="val-phone" placeholder="+39 333 1234567" oninput="generateQR()">`;
+            }
+            generateQR();
+        }
+
+        function getQRText() {
+            if (currentType === 'url') {
+                return document.getElementById('val-url')?.value || '';
+            } else if (currentType === 'text') {
+                return document.getElementById('val-text')?.value || '';
+            } else if (currentType === 'email') {
+                const email = document.getElementById('val-email')?.value || '';
+                const subject = document.getElementById('val-subject')?.value || '';
+                return `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+            } else if (currentType === 'phone') {
+                const phone = document.getElementById('val-phone')?.value || '';
+                return `tel:${phone}`;
+            }
+            return '';
+        }
+
+        function generateQR() {
+            const text = getQRText();
+            const container = document.getElementById('qrcodeContainer');
+            container.innerHTML = '';
+
+            if (!text.trim()) {
+                container.innerHTML = '<span style="color: #94a3b8; font-size: 0.8rem;">Inserisci un testo</span>';
+                return;
+            }
+
+            const ecLevel = document.getElementById('errorCorrection').value;
+            const fgColor = document.getElementById('qrColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+
+            // Applica il colore di sfondo direttamente al box contenitore
+            container.style.backgroundColor = bgColor;
+
+            try {
+                const qr = qrcode(0, ecLevel);
+                qr.addData(text);
+                qr.make();
+
+                const svgString = qr.createSvgTag({
+                    scalable: true
+                });
+                
+                container.innerHTML = svgString;
+                
+                const svgElement = container.querySelector('svg');
+                if (svgElement) {
+                    svgElement.style.width = '200px';
+                    svgElement.style.height = '200px';
+                    
+                    const paths = svgElement.querySelectorAll('path');
+                    if (paths.length >= 2) {
+                        paths[0].setAttribute('fill', bgColor); // Sfondo interno SVG
+                        paths[1].setAttribute('fill', fgColor); // Moduli QR
+                    } else if (paths.length === 1) {
+                        paths[0].setAttribute('fill', fgColor);
+                    }
+
+                    svgElement.querySelectorAll('rect').forEach(rect => {
+                        rect.setAttribute('fill', bgColor);
+                    });
+                }
+            } catch (e) {
+                container.innerHTML = '<span style="color: #f87171; font-size: 0.8rem;">Testo troppo lungo per il QR</span>';
+            }
+        }
+
+        function downloadQR(format) {
+            const svgElement = document.querySelector('#qrcodeContainer svg');
+            if (!svgElement) {
+                alert("Genera prima un QR code valido!");
+                return;
+            }
+
+            const bgColor = document.getElementById('bgColor').value;
+
+            if (format === 'svg') {
+                const svgData = new XMLSerializer().serializeToString(svgElement);
+                const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'qrcode.svg';
+                link.click();
+            } else if (format === 'png') {
+                const canvas = document.createElement('canvas');
+                canvas.width = 512;
+                canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                
+                // Disegna prima lo sfondo sul canvas per preservare il colore scelto
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const svgData = new XMLSerializer().serializeToString(svgElement);
+                const img = new Image();
+                const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(svgBlob);
+
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0, 512, 512);
+                    const pngUrl = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = pngUrl;
+                    link.download = 'qrcode.png';
+                    link.click();
+                    URL.revokeObjectURL(url);
+                };
+                img.src = url;
+            }
+        }
+
+        // Avvio iniziale
+        generateQR();
+    </script>
+</body>
+</html>

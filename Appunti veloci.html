@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticky Notes Dashboard</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%);
+            --panel-bg: rgba(255, 255, 255, 0.05);
+            --panel-border: rgba(255, 255, 255, 0.1);
+            --text-color: #f1f1f1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+            padding: 20px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        button.primary {
+            background: #4f46e5;
+            border-color: #6366f1;
+        }
+
+        button.primary:hover {
+            background: #4338ca;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .note {
+            background: #fef08a; /* Giallo classico post-it di default */
+            color: #1f2937;
+            padding: 20px;
+            border-radius: 14px;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .note:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 5px;
+        }
+
+        .color-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.2);
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: #4b5563;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 5px;
+            border-radius: 4px;
+        }
+
+        .delete-btn:hover {
+            background: rgba(0,0,0,0.1);
+            color: #dc2626;
+            transform: none;
+        }
+
+        .note textarea {
+            width: 100%;
+            height: 130px;
+            background: transparent;
+            border: none;
+            resize: none;
+            color: inherit;
+            font-size: 1rem;
+            outline: none;
+            line-height: 1.4;
+        }
+
+        .note-footer {
+            font-size: 0.75rem;
+            color: #4b5563;
+            text-align: right;
+            border-top: 1px solid rgba(0,0,0,0.08);
+            padding-top: 8px;
+        }
+
+        /* Palette colori sfondi post-it */
+        .theme-yellow { background: #fef08a; color: #1f2937; }
+        .theme-pink { background: #fbcfe8; color: #500724; }
+        .theme-blue { background: #bfdbfe; color: #1e3a8a; }
+        .theme-green { background: #bbf7d0; color: #064e3b; }
+        .theme-purple { background: #e9d5ff; color: #3b0764; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sticky Notes</h1>
+        <div class="controls">
+            <button onclick="clearAllNotes()">Elimina Tutti</button>
+            <button class="primary" onclick="addNote()">+ Nuovo Post-it</button>
+        </div>
+    </header>
+
+    <div class="board" id="board"></div>
+
+    <script>
+        // Carica le note salvate o inizializza un array vuoto
+        let notes = JSON.parse(localStorage.getItem('sticky_notes')) || [];
+
+        function saveNotes() {
+            localStorage.setItem('sticky_notes', JSON.stringify(notes));
+        }
+
+        function renderNotes() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+
+            if (notes.length === 0) {
+                board.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: rgba(255,255,255,0.4); padding: 40px;">Nessun post-it presente. Clicca su "+ Nuovo Post-it" per iniziare!</p>';
+                return;
+            }
+
+            notes.forEach((note, index) => {
+                const noteEl = document.createElement('div');
+                noteEl.className = `note ${note.theme || 'theme-yellow'}`;
+                
+                noteEl.innerHTML = `
+                    <div class="note-header">
+                        <div class="color-picker">
+                            <div class="color-dot" style="background: #fef08a;" onclick="changeTheme(${index}, 'theme-yellow')"></div>
+                            <div class="color-dot" style="background: #fbcfe8;" onclick="changeTheme(${index}, 'theme-pink')"></div>
+                            <div class="color-dot" style="background: #bfdbfe;" onclick="changeTheme(${index}, 'theme-blue')"></div>
+                            <div class="color-dot" style="background: #bbf7d0;" onclick="changeTheme(${index}, 'theme-green')"></div>
+                            <div class="color-dot" style="background: #e9d5ff;" onclick="changeTheme(${index}, 'theme-purple')"></div>
+                        </div>
+                        <button class="delete-btn" onclick="deleteNote(${index})" title="Elimina">&times;</button>
+                    </div>
+                    <textarea placeholder="Scrivi qui il tuo appunto..." oninput="updateContent(${index}, this.value)">${note.content}</textarea>
+                    <div class="note-footer">${note.date}</div>
+                `;
+                board.appendChild(noteEl);
+            });
+        }
+
+        function addNote() {
+            const now = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+            notes.unshift({
+                content: '',
+                theme: 'theme-yellow',
+                date: now
+            });
+            saveNotes();
+            renderNotes();
+        }
+
+        function updateContent(index, value) {
+            notes[index].content = value;
+            saveNotes();
+        }
+
+        function changeTheme(index, themeClass) {
+            notes[index].theme = themeClass;
+            saveNotes();
+            renderNotes();
+        }
+
+        function deleteNote(index) {
+            notes.splice(index, 1);
+            saveNotes();
+            renderNotes();
+        }
+
+        function clearAllNotes() {
+            if (confirm("Sei sicuro di voler eliminare tutti i post-it?")) {
+                notes = [];
+                saveNotes();
+                renderNotes();
+            }
+        }
+
+        // Primo rendering all'avvio
+        renderNotes();
+    </script>
+</body>
+</html>

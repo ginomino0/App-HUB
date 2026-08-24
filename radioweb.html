@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Italia Ufficiale - FM Tuner</title>
+    <style>
+        :root {
+            --bg-gradient: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            --glass-bg: rgba(15, 23, 42, 0.75);
+            --glass-border: rgba(0, 242, 254, 0.25);
+            --glass-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #00f2fe;
+            --accent-glow: rgba(0, 242, 254, 0.4);
+            --btn-bg: rgba(255, 255, 255, 0.04);
+            --btn-hover: rgba(0, 242, 254, 0.15);
+        }
+
+        [data-theme="light"] {
+            --bg-gradient: radial-gradient(circle at center, #cbd5e1 0%, #64748b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(0, 112, 243, 0.35);
+            --glass-shadow: 0 30px 60px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            --text-color: #0f172a;
+            --text-muted: #475569;
+            --accent-color: #0070f3;
+            --accent-glow: rgba(0, 112, 243, 0.3);
+            --btn-bg: rgba(0, 0, 0, 0.04);
+            --btn-hover: rgba(0, 112, 243, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: var(--text-color);
+            transition: background 0.5s ease;
+        }
+
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .scene {
+            perspective: 1400px;
+            width: 100%;
+            max-width: 520px;
+            padding: 20px;
+        }
+
+        .holo-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 28px;
+            box-shadow: var(--glass-shadow);
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            transform: translateZ(30px);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--accent-color);
+            background: var(--accent-glow);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .theme-toggle {
+            background: var(--btn-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--btn-hover);
+            transform: scale(1.05);
+        }
+
+        .content h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            transform: translateZ(40px);
+            letter-spacing: -0.5px;
+        }
+
+        .content p {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin-bottom: 16px;
+            transform: translateZ(20px);
+        }
+
+        /* Display Radio */
+        .radio-display {
+            background: #020408;
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            transform: translateZ(30px);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .freq-readout {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            text-shadow: 0 0 15px var(--accent-glow);
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        .station-name {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            height: 22px;
+            font-weight: 700;
+        }
+
+        /* Scala Frequenze / Tuning Bar */
+        .tuning-bar-container {
+            margin-top: 12px;
+            position: relative;
+            height: 24px;
+        }
+
+        .tuning-track {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        .tuning-indicator {
+            position: absolute;
+            top: 2px;
+            width: 4px;
+            height: 20px;
+            background: var(--accent-color);
+            box-shadow: 0 0 8px var(--accent-color);
+            transform: translateX(-50%);
+            transition: left 0.05s linear;
+        }
+
+        /* Sezione Manopola (Knob) */
+        .knob-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 16px;
+            transform: translateZ(30px);
+        }
+
+        .knob-container {
+            position: relative;
+            width: 95px;
+            height: 95px;
+            cursor: grab;
+            margin-bottom: 8px;
+            touch-action: none;
+        }
+
+        .knob-container:active {
+            cursor: grabbing;
+        }
+
+        .knob {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            border: 2px solid var(--glass-border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .knob-marker {
+            width: 4px;
+            height: 14px;
+            background: var(--accent-color);
+            border-radius: 2px;
+            margin-top: 6px;
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .knob-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Controlli Audio Extra */
+        .controls-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            transform: translateZ(25px);
+        }
+
+        .control-box {
+            background: var(--btn-bg);
+            border: 1px solid var(--glass-border);
+            padding: 10px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .control-title {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .action-btn {
+            background: var(--btn-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            width: 100%;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--btn-hover);
+            color: var(--accent-color);
+        }
+
+        .action-btn.active-power {
+            background: var(--accent-glow);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-bg"></canvas>
+
+    <div class="scene">
+        <div class="holo-card" id="holoCard">
+            <div class="header">
+                <span class="badge">Streaming Reale Italia</span>
+                <button class="theme-toggle" id="themeBtn" title="Cambia Tema">🌓</button>
+            </div>
+            <div class="content">
+                <h1>Web Radio Selezionate</h1>
+                <p>Ruota la manopola in tondo per sintonizzarti sulle emittenti.</p>
+                
+                <div class="radio-display">
+                    <div class="freq-readout" id="freqReadout">88.0 MHz</div>
+                    <div class="station-name" id="stationName">Radio Spenta</div>
+                    
+                    <div class="tuning-bar-container">
+                        <div class="tuning-track"></div>
+                        <div class="tuning-indicator" id="tuningIndicator" style="left: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="knob-section">
+                    <div class="knob-container" id="knobContainer">
+                        <div class="knob" id="tuningKnob">
+                            <div class="knob-marker"></div>
+                        </div>
+                    </div>
+                    <span class="knob-label">Tuning Canali (Gira in cerchio)</span>
+                </div>
+
+                <div class="controls-row">
+                    <div class="control-box">
+                        <div class="control-title">Alimentazione</div>
+                        <button class="action-btn" id="powerBtn">POWER: OFF</button>
+                    </div>
+                    <div class="control-box">
+                        <div class="control-title">Audio Mute</div>
+                        <button class="action-btn" id="muteBtn">AUDIO: MUTE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Elemento audio HTML5 per riprodurre i flussi reali -->
+    <audio id="audioStream" crossorigin="anonymous"></audio>
+
+    <script>
+        const themeBtn = document.getElementById('themeBtn');
+        const root = document.documentElement;
+
+        if (localStorage.getItem('radio_it_theme') === 'light') {
+            root.setAttribute('data-theme', 'light');
+        }
+
+        themeBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('radio_it_theme', 'dark');
+            } else {
+                root.setAttribute('data-theme', 'light');
+                localStorage.setItem('radio_it_theme', 'light');
+            }
+        });
+
+        const card = document.getElementById('holoCard');
+        const scene = document.querySelector('.scene');
+
+        scene.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            card.style.transform = `rotateX(${(-y / 16).toFixed(2)}deg) rotateY(${(x / 16).toFixed(2)}deg)`;
+        });
+
+        scene.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            card.style.transition = 'transform 0.5s ease';
+        });
+
+        scene.addEventListener('mouseenter', () => {
+            card.style.transition = 'none';
+        });
+
+        const bgCanvas = document.getElementById('canvas-bg');
+        const bgCtx = bgCanvas.getContext('2d');
+        let bgWidth, bgHeight, particles = [];
+
+        function resizeBg() {
+            bgWidth = bgCanvas.width = window.innerWidth;
+            bgHeight = bgCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeBg);
+        resizeBg();
+
+        for (let i = 0; i < 35; i++) {
+            particles.push({
+                x: Math.random() * bgWidth, y: Math.random() * bgHeight,
+                vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+                size: Math.random() * 2 + 0.5
+            });
+        }
+
+        function animateBg() {
+            bgCtx.clearRect(0, 0, bgWidth, bgHeight);
+            bgCtx.fillStyle = getComputedStyle(root).getPropertyValue('--accent-color').trim() || '#00f2fe';
+            
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > bgWidth) p.vx *= -1;
+                if (p.y < 0 || p.y > bgHeight) p.vy *= -1;
+                bgCtx.beginPath();
+                bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                bgCtx.fill();
+            });
+            requestAnimationFrame(animateBg);
+        }
+        animateBg();
+
+        const freqReadout = document.getElementById('freqReadout');
+        const stationName = document.getElementById('stationName');
+        const tuningIndicator = document.getElementById('tuningIndicator');
+        const tuningKnob = document.getElementById('tuningKnob');
+        const knobContainer = document.getElementById('knobContainer');
+        const powerBtn = document.getElementById('powerBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const audioStream = document.getElementById('audioStream');
+
+        let isPowerOn = false;
+        let isMuted = false;
+        let currentFreq = 88.0;
+        let activeIndex = -1;
+
+        // Lista delle stazioni ordinate per frequenza (da 88.0 a 108.0 MHz)
+        const stations = [
+            { name: "Rai Radio 1", freq: 88.5, url: "https://radiounoest-live.akamaized.net/hls/live/2032586/radiounoest/radiounoest/radio1est_256/chunklist.m3u8" },
+            { name: "Rai Radio 2", freq: 89.2, url: "https://icestreaming.rai.it/2.mp3" },
+            { name: "Rai Radio 3", freq: 89.8, url: "https://radiotre-live.akamaized.net/hls/live/2032594/radiotre/radiotre/playlist.m3u8" },
+            { name: "Radio24", freq: 90.5, url: "https://ilsole24ore-radio.akamaized.net/hls/live/2035301/radio24/playlist.m3u8" },
+            { name: "Radio Deejay", freq: 91.2, url: "https://4c4b867c89244861ac216426883d1ad0.msvdn.net/radiodeejay/radiodeejay/master_ma.m3u8" },
+            { name: "Radio Capital", freq: 92.0, url: "https://4c4b867c89244861ac216426883d1ad0.msvdn.net/radiocapital/radiocapital/master_ma.m3u8" },
+            { name: "M2O", freq: 92.8, url: "https://4c4b867c89244861ac216426883d1ad0.msvdn.net/radiom2o/radiom2o/master_ma.m3u8" },
+            { name: "RTL 102.5", freq: 93.6, url: "http://shoutcast.rtl.it:3010/stream/1/" },
+            { name: "Radio Zeta", freq: 94.3, url: "https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S9346184/clhI2IJWRnn7/playlist_audio.m3u8" },
+            { name: "Radiofreccia", freq: 95.0, url: "https://dd782ed59e2a4e86aabf6fc508674b59.msvdn.net/live/S3160845/D6MENOraq6Qy/playlist_audio.m3u8" },
+            { name: "Radio 105", freq: 95.8, url: "https://icy.unitedradio.it/Radio105.mp3" },
+            { name: "R101", freq: 96.5, url: "https://icecast.unitedradio.it/r101" },
+            { name: "Virgin Radio", freq: 97.2, url: "https://icy.unitedradio.it/Virgin.mp3" },
+            { name: "Radio Monte Carlo", freq: 98.0, url: "https://icy.unitedradio.it/RMC.mp3" },
+            { name: "Radio Italia", freq: 98.8, url: "https://radioitaliasmi.akamaized.net/hls/live/2093120/RISMI/master.m3u8" },
+            { name: "Radio Kiss Kiss", freq: 99.5, url: "https://kisskiss.fluidstream.eu/KissKiss.aac" },
+            { name: "RDS", freq: 100.2, url: "https://stream.rds.radio/audio/rds.stream_aac/playlist.m3u8" },
+            { name: "Rds Relax", freq: 101.0, url: "https://stream.rds.radio/audio/rdsrelax.stream_aac/chunklist.m3u8" },
+            { name: "Radio Subasio", freq: 101.8, url: "https://icy.unitedradio.it/Subasio.mp3" },
+            { name: "Radio Sportiva", freq: 102.5, url: "https://sportiva.inmystream.it/stream/sportiva" },
+            { name: "Radio Bruno", freq: 103.2, url: "https://stream7.xdevel.com/audio4s975355-396/stream/icecast.audio" },
+            { name: "Discoradio", freq: 104.0, url: "https://stream.discoradio.radio/audio/disco.stream_aac/playlist.m3u8" },
+            { name: "Lattemiele", freq: 104.8, url: "https://sr15.inmystream.it/stream/lattemiele" },
+            { name: "Radio Maria", freq: 105.5, url: "https://dreamsiteradiocp5.com/proxy/rmitalia?mp=/stream" },
+            { name: "Lifegate Radio", freq: 106.5, url: "https://stream3.xdevel.com/audio0s975809-424/stream/icecast.audio" },
+            { name: "Radio Popolare", freq: 107.5, url: "https://livex.radiopopolare.it/radiopop2" }
+        ];
+
+        function checkStationTune() {
+            if (!isPowerOn) return;
+
+            let foundStation = null;
+            let closestIndex = -1;
+            let minDiff = 999;
+
+            stations.forEach((st, idx) => {
+                let diff = Math.abs(currentFreq - st.freq);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestIndex = idx;
+                    foundStation = st;
+                }
+            });
+
+            if (minDiff < 0.3 && foundStation) {
+                stationName.innerText = foundStation.name;
+                if (activeIndex !== closestIndex) {
+                    activeIndex = closestIndex;
+                    audioStream.src = foundStation.url;
+                    if (!isMuted) {
+                        audioStream.play().catch(e => console.log("Riproduzione bloccata:", e));
+                    }
+                }
+            } else {
+                stationName.innerText = "Fruscio / Fuori Frequenza";
+                if (activeIndex !== -1) {
+                    activeIndex = -1;
+                    audioStream.pause();
+                    audioStream.src = "";
+                }
+            }
+        }
+
+        // --- MOTORE ROTAZIONE FLUIDA (Trigonometria) ---
+        let isDraggingKnob = false;
+        let center = { x: 0, y: 0 };
+        let lastMouseAngle = 0;
+        
+        // Range di frequenza FM della radio: 88.0 MHz - 108.0 MHz (ampiezza 20 MHz)
+        const MIN_FM = 88.0;
+        const MAX_FM = 108.0;
+        
+        // Mappatura dell'angolo cumulativo (permette rotazioni continue o ampie)
+        const MAX_KNOB_ANGLE = Math.PI * 1.5; // ~270 gradi totali di escursione
+        let cumulativeAngle = 0;
+
+        function fmToAngle(f) {
+            let p = (f - MIN_FM) / (MAX_FM - MIN_FM);
+            return p * MAX_KNOB_ANGLE;
+        }
+
+        function angleToFm(a) {
+            let p = a / MAX_KNOB_ANGLE;
+            return MIN_FM + p * (MAX_FM - MIN_FM);
+        }
+
+        knobContainer.addEventListener('pointerdown', (e) => {
+            if (!isPowerOn) return;
+            const rect = knobContainer.getBoundingClientRect();
+            center.x = rect.left + rect.width / 2;
+            center.y = rect.top + rect.height / 2;
+            
+            lastMouseAngle = Math.atan2(e.clientY - center.y, e.clientX - center.x);
+            isDraggingKnob = true;
+            e.preventDefault();
+        });
+
+        window.addEventListener('pointermove', (e) => {
+            if (!isDraggingKnob || !isPowerOn) return;
+            
+            let currentMouseAngle = Math.atan2(e.clientY - center.y, e.clientX - center.x);
+            let deltaAngle = currentMouseAngle - lastMouseAngle;
+
+            if (deltaAngle > Math.PI) deltaAngle -= Math.PI * 2;
+            if (deltaAngle < -Math.PI) deltaAngle += Math.PI * 2;
+
+            cumulativeAngle += deltaAngle;
+            lastMouseAngle = currentMouseAngle;
+
+            // Limiti della manopola (da 0 a MAX_KNOB_ANGLE)
+            if (cumulativeAngle < 0) cumulativeAngle = 0;
+            if (cumulativeAngle > MAX_KNOB_ANGLE) cumulativeAngle = MAX_KNOB_ANGLE;
+
+            // Calcolo frequenza FM e conversione grafica in gradi CSS (-135° a +135°)
+            currentFreq = angleToFm(cumulativeAngle);
+            currentFreq = Math.round(currentFreq * 10) / 10;
+
+            let visualDegrees = (cumulativeAngle / MAX_KNOB_ANGLE) * 270 - 135;
+            tuningKnob.style.transform = `rotate(${visualDegrees}deg)`;
+
+            freqReadout.innerText = currentFreq.toFixed(1) + " MHz";
+            
+            let percentage = (currentFreq - MIN_FM) / (MAX_FM - MIN_FM);
+            tuningIndicator.style.left = (percentage * 100) + "%";
+
+            checkStationTune();
+        });
+
+        window.addEventListener('pointerup', () => {
+            isDraggingKnob = false;
+        });
+
+        powerBtn.addEventListener('click', () => {
+            isPowerOn = !isPowerOn;
+            if (isPowerOn) {
+                powerBtn.innerText = "POWER: ON";
+                powerBtn.classList.add('active-power');
+                checkStationTune();
+            } else {
+                powerBtn.innerText = "POWER: OFF";
+                powerBtn.classList.remove('active-power');
+                stationName.innerText = "Radio Spenta";
+                audioStream.pause();
+                audioStream.src = "";
+                activeIndex = -1;
+            }
+        });
+
+        muteBtn.addEventListener('click', () => {
+            if (!isPowerOn) return;
+            isMuted = !isMuted;
+            if (isMuted) {
+                muteBtn.innerText = "AUDIO: MUTE";
+                muteBtn.classList.add('active-power');
+                audioStream.muted = true;
+            } else {
+                muteBtn.innerText = "AUDIO: ACTIVE";
+                muteBtn.classList.remove('active-power');
+                audioStream.muted = false;
+                if (activeIndex !== -1) {
+                    audioStream.play().catch(e => console.log(e));
+                }
+            }
+        });
+    </script>
+</body>
+</html>

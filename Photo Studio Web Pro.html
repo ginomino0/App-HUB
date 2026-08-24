@@ -1,0 +1,2899 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photoshop Lite - Studio Pro V12</title>
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --panel: #111827;
+            --panel-light: #1f2937;
+            --border: #374151;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text: #f9fafb;
+            --text-dim: #9ca3af;
+            --danger: #ef4444;
+            --warn: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .header-actions .divider {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+            margin: 0 2px;
+        }
+
+        .header-actions button:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .header-actions button.reset-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--danger);
+            color: #fca5a5;
+        }
+        .header-actions button.reset-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 12px;
+            flex: 1;
+            height: calc(100vh - 55px);
+            min-height: 0;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+                overflow-y: auto;
+            }
+        }
+
+        .sidebar {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .tool-section {
+            background: var(--panel-light);
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .tool-section label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .row-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            align-items: center;
+        }
+
+        input[type="number"], select, input[type="text"] {
+            width: 100%;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 5px 8px;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            height: 4px;
+            cursor: pointer;
+        }
+
+        .range-value {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .range-value .reset-hint {
+            font-size: 0.62rem;
+            color: #4b5563;
+            font-style: italic;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+        }
+
+        button {
+            background: var(--border);
+            color: var(--text);
+            border: none;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.7rem;
+            transition: background 0.15s;
+        }
+
+        button:hover { background: #4b5563; }
+        button.active { background: var(--accent); color: white; }
+        button.primary {
+            background: var(--accent);
+            color: white;
+            grid-column: span 2;
+            padding: 8px;
+            font-size: 0.8rem;
+        }
+        button.primary:hover { background: var(--accent-hover); }
+        button.danger:hover { background: var(--danger); }
+
+        .canvas-container {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .canvas-viewport {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+            position: relative;
+            cursor: default;
+            touch-action: none;
+        }
+
+        .canvas-viewport.pan-mode {
+            cursor: grab;
+        }
+        .canvas-viewport.pan-mode.panning {
+            cursor: grabbing !important;
+        }
+        .canvas-viewport.crosshair {
+            cursor: crosshair;
+        }
+
+        .canvas-stage {
+            position: relative;
+            flex-shrink: 0;
+            margin: auto;
+        }
+
+        #imageCanvas {
+            display: block;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            border-radius: 4px;
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 45px;
+            right: 20px;
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid var(--border);
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            backdrop-filter: blur(4px);
+            z-index: 10;
+        }
+
+        .zoom-controls button {
+            width: 26px;
+            height: 26px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        #zoomSlider {
+            width: 90px;
+        }
+
+        .stats-bar {
+            position: absolute;
+            bottom: 8px;
+            left: 15px;
+            right: 15px;
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            backdrop-filter: blur(5px);
+            z-index: 5;
+        }
+
+        .stats-bar span { color: #38bdf8; font-weight: bold; }
+        .stats-bar span.size-updating { color: var(--warn); }
+        input[type="file"] { display: none; }
+
+        .toast {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: rgba(17, 24, 39, 0.95);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Photoshop Lite - Studio Pro V12</h1>
+        <div class="header-actions">
+            <button id="btnUndo" onclick="undo()" title="Annulla ultima modifica (Ctrl+Z)">↩ Annulla</button>
+            <button id="btnRedo" onclick="redo()" title="Ripeti modifica annullata (Ctrl+Y)">↪ Ripeti</button>
+            <div class="divider"></div>
+            <button class="reset-btn" onclick="resetTransformations()" title="Riporta la foto come appena aperta, annullando tutte le modifiche">⟲ Reset Foto</button>
+            <div class="divider"></div>
+            <button onclick="document.getElementById('fileInput').click()">📁 Apri</button>
+            <input type="file" id="fileInput" accept="image/*" onchange="loadMasterImage(event)">
+        </div>
+    </header>
+
+    <main class="main-layout">
+        <div class="sidebar" id="sidebarControls" style="opacity: 0.4; pointer-events: none;">
+
+            <!-- 1. Ridimensiona con Mantenimento Proporzioni -->
+            <div class="tool-section">
+                <label>1. Ridimensiona Immagine</label>
+                <div class="row-inputs">
+                    <div><span style="font-size:0.6rem">Larghezza</span><input type="number" id="resizeW" oninput="onWidthChange()"></div>
+                    <div><span style="font-size:0.6rem">Altezza</span><input type="number" id="resizeH" oninput="onHeightChange()"></div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                    <input type="checkbox" id="keepAspect" checked style="accent-color: var(--accent);">
+                    <span style="font-size: 0.7rem; color: var(--text-dim);">Mantieni proporzioni (Aspect Ratio)</span>
+                </div>
+                <div class="btn-grid" style="margin-top: 4px;">
+                    <button onclick="setResizePreset(0.5)">50% 📏</button>
+                    <button onclick="setResizePreset(0.25)">25% 📏</button>
+                </div>
+                <button style="margin-top: 4px;" onclick="applyResize()">Applica Ridimensionamento 🟢</button>
+            </div>
+
+            <!-- 2. Selezione Sagomata & Estrazione Livello -->
+            <div class="tool-section">
+                <label>2. Selezione & Estrai Livello</label>
+                <select id="selectMode" onchange="changeSelectionMode()">
+                    <option value="none">Nessuna Selezione (Pan/Sposta attivo)</option>
+                    <option value="rect">Rettangolo (Azzurro Alta Visibilità)</option>
+                    <option value="free">Lazo Libero ✏️</option>
+                    <option value="poly">Poligonale a Punti (Aggancio Automatico) 📐</option>
+                </select>
+                <button class="primary" style="margin-top: 4px;" onclick="extractSelectionAsLayer()">Estrai Sagoma come Nuovo Livello 📑</button>
+                <button onclick="clearSelection()" style="margin-top: 2px;">Annulla Selezione ✖</button>
+            </div>
+
+            <!-- 3. Gestione Livelli & Effetti per Livello -->
+            <div class="tool-section">
+                <label>3. Gestione Livelli & Effetti Selettivi</label>
+                <select id="layerSelect" onchange="switchActiveLayer()"></select>
+                <div class="btn-grid" style="margin-top: 4px;">
+                    <button onclick="toggleLayerVisibility()" id="btnToggleVis">Nascondi 👁️</button>
+                    <button onclick="duplicateActiveLayer()">Duplica 📋</button>
+                    <button onclick="moveLayerUp()">Su ⬆️</button>
+                    <button onclick="moveLayerDown()">Giù ⬇️</button>
+                    <button class="danger" onclick="deleteActiveLayer()">Elimina 🗑️</button>
+                    <button onclick="mergeLayers()">Unisci Tutto 🔗</button>
+                </div>
+                <div>
+                    <div class="range-value"><span>Opacità Livello</span><span id="valOpacity">100%</span></div>
+                    <input type="range" id="rangeOpacity" min="0" max="100" value="100" data-default="100"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <button id="btnTransformLayer" onclick="toggleLayerTransformMode()" style="margin-top:4px;">Sposta/Ruota/Scala Livello 🎯</button>
+                <span style="font-size: 0.65rem; color: #38bdf8;">Livello attivo (non lo Sfondo): trascina per spostare, maniglie d'angolo per scalare, maniglia in alto per ruotare.</span>
+            </div>
+
+            <!-- 4. Luce, Colore & Sfocatura (Applicati al Livello Attivo) -->
+            <div class="tool-section">
+                <label>4. Regolazione Livello Attivo <span class="reset-hint">(doppio click sullo slider = reset)</span></label>
+                <div>
+                    <div class="range-value"><span>Luminosità</span><span id="valBrightness">0</span></div>
+                    <input type="range" id="rangeBrightness" min="-100" max="100" value="0" data-default="0"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <div>
+                    <div class="range-value"><span>Contrasto</span><span id="valContrast">0</span></div>
+                    <input type="range" id="rangeContrast" min="-100" max="100" value="0" data-default="0"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <div>
+                    <div class="range-value"><span>Saturazione</span><span id="valSaturation">100%</span></div>
+                    <input type="range" id="rangeSaturation" min="0" max="200" value="100" data-default="100"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <div>
+                    <div class="range-value"><span>Nitidezza</span><span id="valSharpen">0</span></div>
+                    <input type="range" id="rangeSharpen" min="0" max="100" value="0" data-default="0"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <div>
+                    <div class="range-value"><span>Sfocatura (Blur)</span><span id="valBlur">0px</span></div>
+                    <input type="range" id="rangeBlur" min="0" max="20" value="0" data-default="0"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <div>
+                    <div class="range-value"><span>Esposizione</span><span id="valExposure">0</span></div>
+                    <input type="range" id="rangeExposure" min="-100" max="100" value="0" data-default="0"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <div>
+                    <div class="range-value"><span>Temperatura Colore</span><span id="valTemperature">0</span></div>
+                    <input type="range" id="rangeTemperature" min="-100" max="100" value="0" data-default="0"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <div>
+                    <div class="range-value"><span>Tinta (Hue)</span><span id="valHue">0°</span></div>
+                    <input type="range" id="rangeHue" min="-180" max="180" value="0" data-default="0"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <div>
+                    <div class="range-value"><span>Ombre</span><span id="valShadows">0</span></div>
+                    <input type="range" id="rangeShadows" min="-100" max="100" value="0" data-default="0"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <div>
+                    <div class="range-value"><span>Luci Alte</span><span id="valHighlights">0</span></div>
+                    <input type="range" id="rangeHighlights" min="-100" max="100" value="0" data-default="0"
+                        oninput="updateActiveLayerSettings()" onchange="commitLayerSettings()" ondblclick="resetSlider(this)">
+                </div>
+                <select id="layerFilter" onchange="updateActiveLayerSettings(); commitLayerSettings();" style="margin-top: 4px;">
+                    <option value="none">Filtro Livello: Nessuno</option>
+                    <option value="grayscale">Bianco e Nero ⬛</option>
+                    <option value="sepia">Seppia 🏺</option>
+                    <option value="invert">Inverti Colori 🔀</option>
+                    <option value="vintage">Vintage Caldo 🎞️</option>
+                    <option value="cool">Tono Freddo ❄️</option>
+                    <option value="dramatic">Contrasto Drammatico 🎭</option>
+                    <option value="fade">Sbiadito / Matte 🌫️</option>
+                </select>
+            </div>
+
+            <!-- 5. Taglio Canvas (Crop) -->
+            <div class="tool-section">
+                <label>5. Taglio Canvas (Crop)</label>
+                <div class="btn-grid">
+                    <button id="cropToggleBtn" onclick="toggleCropMode()">Attiva Crop ✂️</button>
+                    <button onclick="applyCrop()">Applica Taglio 🟢</button>
+                </div>
+                <select id="cropPreset" onchange="applyCropPreset()" style="margin-top:4px;">
+                    <option value="">Proporzioni guida...</option>
+                    <option value="1:1">Quadrato 1:1</option>
+                    <option value="4:5">Ritratto 4:5</option>
+                    <option value="16:9">Panoramica 16:9</option>
+                    <option value="9:16">Storia 9:16</option>
+                </select>
+            </div>
+
+            <!-- 6. Ruota & Ribalta Canvas (Coinvolge Tutti i Livelli) -->
+            <div class="tool-section">
+                <label>6. Ruota & Ribalta (Tutti i Livelli)</label>
+                <div class="btn-grid">
+                    <button onclick="rotateImage(90)">Ruota 90° 🔄</button>
+                    <button onclick="rotateImage(-90)">Ruota -90° 🔄</button>
+                    <button onclick="flipImage('h')">Specchia Oriz ↔</button>
+                    <button onclick="flipImage('v')">Specchia Vert ↕</button>
+                </div>
+                <div class="row-inputs" style="margin-top: 6px; grid-template-columns: 1fr auto;">
+                    <input type="number" id="freeRotateDeg" placeholder="Gradi (es. 40 o -120)" step="1">
+                    <button onclick="applyFreeRotate()" style="white-space:nowrap;">Ruota Libero 🎯</button>
+                </div>
+                <button class="reset-btn" style="margin-top: 6px; width: 100%;" onclick="resetRotation()" title="Annulla solo le rotazioni/ribaltamenti fatti finora, mantenendo crop, ridimensionamento e colori già applicati">⟲ Reset Rotazione</button>
+            </div>
+
+            <!-- 7. Cornici & Spessore Globali -->
+            <div class="tool-section">
+                <label>7. Cornici & Spessore</label>
+                <select id="frameStyle" onchange="scheduleRender(); saveState();">
+                    <option value="none">Nessuna Cornice</option>
+                    <option value="white">Cornice Bianca 🖼️</option>
+                    <option value="polaroid">Stile Polaroid 📷</option>
+                    <option value="dark">Bordo Scuro 🎬</option>
+                    <option value="neon">Neon Ciano 🔵</option>
+                    <option value="rounded">Bordi Arrotondati ⬜</option>
+                    <option value="shadowfade">Ombra Sfumata 🌥️</option>
+                    <option value="gold">Cornice Dorata 🟡</option>
+                    <option value="film">Bordo Pellicola 🎞️</option>
+                    <option value="doubleline">Doppia Linea Sottile ▭</option>
+                    <option value="torn">Bordo Strappato 📄</option>
+                </select>
+                <div>
+                    <div class="range-value"><span>Spessore Bordo</span><span id="valBorderThick">25</span></div>
+                    <input type="range" id="rangeBorderThick" min="5" max="80" value="25" data-default="25"
+                        oninput="scheduleRender(); document.getElementById('valBorderThick').textContent=this.value;"
+                        onchange="saveState()" ondblclick="resetSlider(this)">
+                </div>
+            </div>
+
+            <!-- 8. Vignettatura -->
+            <div class="tool-section">
+                <label>8. Vignettatura</label>
+                <div class="row-inputs">
+                    <div>
+                        <span style="font-size:0.6rem">Forma</span>
+                        <select id="vignetteShape" onchange="scheduleRender(); saveState();">
+                            <option value="circle">Tondo ⚪</option>
+                            <option value="rect">Quadrato 🟥</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span style="font-size:0.6rem">Intensità</span>
+                        <input type="range" id="rangeVignette" min="0" max="100" value="0" data-default="0"
+                            oninput="scheduleRender()" onchange="saveState()" ondblclick="resetSlider(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. Filigrana / Testi Multipli con Transform Tool Avanzato -->
+            <div class="tool-section">
+                <label>9. Filigrana / Testi</label>
+                <div class="row-inputs" style="grid-template-columns: 1fr auto;">
+                    <select id="textSelect" onchange="switchActiveText()"></select>
+                    <button onclick="addTextLayer()" title="Aggiungi nuovo testo" style="white-space:nowrap;">+ Testo</button>
+                </div>
+                <button class="danger" style="margin-top:4px;" onclick="deleteActiveText()" id="btnDeleteText">Elimina Testo 🗑️</button>
+
+                <input type="text" id="watermarkText" placeholder="Scrivi testo filigrana..." style="margin-top:6px;" oninput="updateActiveTextSettings()" onchange="saveState()">
+                <div class="row-inputs" style="margin-top: 4px;">
+                    <div><span style="font-size:0.6rem">Dimensione</span><input type="range" id="wmSize" min="12" max="96" value="32" data-default="32"
+                        oninput="updateActiveTextSettings()" onchange="saveState()" ondblclick="resetSlider(this)"></div>
+                    <div><span style="font-size:0.6rem">Trasparenza</span><input type="range" id="wmAlpha" min="10" max="100" value="80" data-default="80"
+                        oninput="updateActiveTextSettings()" onchange="saveState()" ondblclick="resetSlider(this)"></div>
+                </div>
+                <div class="row-inputs" style="margin-top: 4px;">
+                    <div><span style="font-size:0.6rem">Colore</span><input type="color" id="wmColor" value="#ffffff"
+                        oninput="updateActiveTextSettings()" onchange="saveState()" style="height:28px; padding:2px; cursor:pointer;"></div>
+                    <div><span style="font-size:0.6rem">Font</span>
+                        <select id="wmFont" onchange="updateActiveTextSettings(); saveState();">
+                            <option value="sans-serif">Sans Serif</option>
+                            <option value="serif">Serif Classico</option>
+                            <option value="'Courier New', monospace">Monospace</option>
+                            <option value="cursive">Corsivo</option>
+                            <option value="'Impact', sans-serif">Impact / Bold</option>
+                        </select>
+                    </div>
+                </div>
+                <span style="font-size: 0.65rem; color: #38bdf8; margin-top:2px;">Trascina il testo selezionato per spostarlo, usa gli angoli per ridimensionare o la maniglia per ruotare! Usa "+ Testo" per aggiungerne altri, come i livelli.</span>
+            </div>
+
+            <!-- Esportazione -->
+            <div class="tool-section">
+                <label>Esporta Immagine</label>
+                <select id="exportFormat" onchange="scheduleSizeEstimate()">
+                    <option value="image/jpeg">JPEG</option>
+                    <option value="image/webp">WebP</option>
+                    <option value="image/png">PNG</option>
+                </select>
+                <div>
+                    <div class="range-value"><span>Qualità</span><span id="valQuality">90%</span></div>
+                    <input type="range" id="rangeQuality" min="10" max="100" value="90" data-default="90"
+                        oninput="document.getElementById('valQuality').textContent = this.value + '%'; scheduleSizeEstimate();"
+                        ondblclick="resetSlider(this, () => document.getElementById('valQuality').textContent='90%')">
+                </div>
+                <button class="primary" onclick="exportImage()">Salva Immagine Modificata 💾</button>
+            </div>
+
+        </div>
+
+        <div class="canvas-container" id="canvasBox">
+            <div class="canvas-viewport" id="viewport">
+                <div class="placeholder" id="placeholderMsg" style="color: var(--text-dim); text-align:center;">
+                    <p>Trascina un'immagine o clicca su "Apri Immagine"</p>
+                </div>
+                <div class="canvas-stage" id="canvasStage" style="display:none;">
+                    <canvas id="imageCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="toast" id="toast"></div>
+
+            <div class="zoom-controls">
+                <button onclick="adjustZoom(-0.1)" title="Riduci zoom">-</button>
+                <input type="range" id="zoomSlider" min="10" max="500" value="100" oninput="setZoomFromSlider(this.value)">
+                <button onclick="adjustZoom(0.1)" title="Aumenta zoom">+</button>
+                <span style="font-size: 0.7rem; color: var(--text-dim); min-width:38px; text-align:right;" id="zoomLabel">100%</span>
+                <button onclick="fitToScreen()" style="font-size: 0.65rem; width:auto; padding: 0 6px;">Adatta</button>
+                <button onclick="setZoomTo(1)" style="font-size: 0.65rem; width:auto; padding: 0 6px;">100%</button>
+            </div>
+
+            <div class="stats-bar" id="statsBar" style="display: none;">
+                <div>Dimensioni: <span id="infoDim">-</span></div>
+                <div>Zoom: <span id="infoZoom">100%</span></div>
+                <div>Peso stimato (<span id="infoFormat">JPEG</span>): <span id="infoSize">-</span></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ============================================================
+        // STATO GLOBALE
+        // ============================================================
+        let masterImage = null;
+        let originalFileName = "edit";
+        const canvas = document.getElementById('imageCanvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: false });
+        const viewport = document.getElementById('viewport');
+        const canvasStage = document.getElementById('canvasStage');
+
+        let workingCanvas = document.createElement('canvas');
+        let workingCtx = workingCanvas.getContext('2d');
+
+        let layers = [];
+        let activeLayerIndex = 0;
+
+        // Snapshot dell'immagine ORIGINALE (subito dopo l'apertura file), usato dal tasto Reset Foto
+        let originalSnapshot = null;
+
+        // Snapshot preso appena PRIMA della prima rotazione/ribaltamento di una sequenza,
+        // usato dal tasto Reset Rotazione per tornare all'orientamento di partenza
+        // senza toccare crop/resize/colori applicati nel frattempo.
+        let preRotationSnapshot = null;
+
+        // ============================================================
+        // ANTEPRIMA LEGGERA / EXPORT A PIENA RISOLUZIONE
+        // ------------------------------------------------------------
+        // Se la foto caricata supera PREVIEW_MAX_SIDE px sul lato lungo, si lavora
+        // a schermo su una copia ridotta (meno RAM, meno CPU su ogni ridisegno).
+        // Ogni operazione geometrica sul livello di sfondo (ruota, ribalta, crop,
+        // ridimensiona) viene anche registrata in opLog, in forma indipendente
+        // dalla risoluzione (gradi, o frazioni 0-1). Al momento dell'esportazione,
+        // le stesse operazioni vengono "rieseguite" partendo dalla foto originale
+        // intatta (masterImage) per ottenere un risultato nitido a piena risoluzione,
+        // invece di ringrandire i pixel già elaborati a bassa risoluzione.
+        // ============================================================
+        const PREVIEW_MAX_SIDE = 2000;
+        let workScale = 1;
+        let opLog = [];
+        // Diventa false quando lo stato del Livello Sfondo non è più ricostruibile
+        // rieseguendo opLog da masterImage (es. dopo "Unisci Tutto Livelli", che
+        // fonde anche livelli estratti esistenti solo a risoluzione di lavoro).
+        // In quel caso l'export fa un upscale diretto e leggermente più morbido
+        // invece della ricostruzione perfetta.
+        let bgReplayValid = true;
+
+        const MAX_HISTORY = 20;
+        let historyStack = [];
+        let historyStep = -1;
+        let historyDebounce = null;
+
+        // Zoom / Pan
+        let currentZoom = 1;
+        const ZOOM_MIN = 0.10;
+        const ZOOM_MAX = 5.00;
+        let originalAspect = 1;
+
+        let isPanning = false;
+        let panStartX = 0, panStartY = 0;
+        let panScrollStartX = 0, panScrollStartY = 0;
+        let spaceHeld = false;
+
+        // Testi multipli tipo livelli: ognuno con il proprio box (posizione/angolo/scala),
+        // testo, colore, font, dimensione e trasparenza.
+        let textLayers = [];
+        let activeTextIndex = -1;
+        let activeWmHandle = null;
+        let dragStartMouse = { x: 0, y: 0 };
+        let initialWmState = {};
+
+        function makeTextLayer(text, x, y) {
+            return {
+                text: text || '',
+                x: x, y: y, w: 200, h: 50, angle: 0, scale: 1,
+                color: '#ffffff', font: 'sans-serif', size: 32, alpha: 80
+            };
+        }
+
+        function activeTextLayer() {
+            return (activeTextIndex >= 0 && textLayers[activeTextIndex]) ? textLayers[activeTextIndex] : null;
+        }
+
+        // Trasformazione libera del livello attivo (sposta/ruota/scala come oggetto)
+        let layerTransformMode = false;
+        let activeLayerHandle = null;
+        let initialLayerState = {};
+
+        let activeTool = 'none';
+        let cropStart = { x: 0, y: 0 }, cropEnd = { x: 0, y: 0 }, isDraggingCrop = false;
+        let cropRatio = null; // es. {w:1,h:1} quando un preset è selezionato: vincola il trascinamento manuale del crop
+        let selectionPoints = [];
+        let selectionRect = null;
+        let isSelecting = false;
+        let isPolygonClosed = false;
+
+        let renderScheduled = false;
+        let toastTimer = null;
+
+        // Stima peso file: calcolata in modo "live" ma con debounce leggero
+        // per non sovraccaricare la CPU durante trascinamenti continui.
+        let sizeEstimateDebounce = null;
+        let sizeEstimateToken = 0;
+
+        // ============================================================
+        // UTILITY
+        // ============================================================
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
+        }
+
+        function cloneCanvas(src) {
+            const c = document.createElement('canvas');
+            c.width = src.width;
+            c.height = src.height;
+            c.getContext('2d').drawImage(src, 0, 0);
+            return c;
+        }
+
+        function filterStringFor(l) {
+            const exposure = l.exposure || 0;
+            const temperature = l.temperature || 0;
+            const hue = l.hue || 0;
+            const shadows = l.shadows || 0;
+            const highlights = l.highlights || 0;
+
+            // Esposizione: agisce come una seconda luminosità più "fotografica"
+            const totalBrightness = l.brightness + exposure + (highlights * 0.3) + (shadows * 0.2);
+            // Ombre/luci: approssimati via contrasto (alzare le luci e abbassare le ombre = meno contrasto, e viceversa)
+            const totalContrast = l.contrast + (shadows * -0.15) + (highlights * 0.15);
+
+            let f = `brightness(${totalBrightness + 100}%) contrast(${totalContrast + 100}%) saturate(${l.saturation}%) blur(${l.blur}px)`;
+
+            // Temperatura: hue-rotate verso l'arancio (caldo, negativo su hue-rotate) o verso il blu (freddo)
+            f += ` hue-rotate(${(hue - temperature * 0.25)}deg)`;
+            if (temperature !== 0) {
+                f += ` sepia(${Math.min(35, Math.abs(temperature) * 0.35)}%)`;
+            }
+
+            if (l.filter === 'grayscale') f += ' grayscale(100%)';
+            if (l.filter === 'sepia') f += ' sepia(100%)';
+            if (l.filter === 'invert') f += ' invert(100%)';
+            if (l.filter === 'vintage') f += ' sepia(45%) saturate(140%) contrast(105%)';
+            if (l.filter === 'cool') f += ' saturate(115%) hue-rotate(15deg) contrast(102%)';
+            if (l.filter === 'dramatic') f += ' contrast(140%) saturate(110%) brightness(95%)';
+            if (l.filter === 'fade') f += ' contrast(85%) saturate(75%) brightness(108%)';
+            return f;
+        }
+
+        function resetSlider(el, extraCallback) {
+            const def = el.dataset.default;
+            if (def === undefined) return;
+            el.value = def;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            if (typeof extraCallback === 'function') extraCallback();
+            showToast('Valore ripristinato');
+        }
+
+        // ============================================================
+        // CARICAMENTO IMMAGINE
+        // ============================================================
+        function loadMasterImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            originalFileName = file.name.substring(0, file.name.lastIndexOf('.')) || 'foto';
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    masterImage = img;
+
+                    // Se la foto supera la soglia, si lavora a schermo su una copia ridotta:
+                    // meno RAM/CPU ad ogni ridisegno. L'originale intatto resta in masterImage
+                    // e viene usato per ricostruire il risultato a piena risoluzione in export.
+                    const longSide = Math.max(img.width, img.height);
+                    workScale = longSide > PREVIEW_MAX_SIDE ? (PREVIEW_MAX_SIDE / longSide) : 1;
+                    const wcW = Math.max(1, Math.round(img.width * workScale));
+                    const wcH = Math.max(1, Math.round(img.height * workScale));
+
+                    workingCanvas = document.createElement('canvas');
+                    workingCanvas.width = wcW;
+                    workingCanvas.height = wcH;
+                    workingCanvas.getContext('2d').drawImage(img, 0, 0, wcW, wcH);
+
+                    opLog = [];
+                    bgReplayValid = true;
+
+                    layers = [{
+                        name: "Livello Sfondo (Base)",
+                        canvas: workingCanvas,
+                        x: 0, y: 0, angle: 0, scale: 1,
+                        visible: true, opacity: 100,
+                        brightness: 0, contrast: 0, saturation: 100, sharpen: 0, blur: 0, filter: 'none',
+                        exposure: 0, temperature: 0, hue: 0, shadows: 0, highlights: 0
+                    }];
+                    activeLayerIndex = 0;
+                    updateLayersUI();
+                    loadLayerSettingsToUI();
+
+                    originalAspect = img.width / img.height;
+                    document.getElementById('resizeW').value = img.width;
+                    document.getElementById('resizeH').value = img.height;
+
+                    document.getElementById('placeholderMsg').style.display = 'none';
+                    document.getElementById('canvasStage').style.display = 'block';
+                    document.getElementById('statsBar').style.display = 'flex';
+                    document.getElementById('sidebarControls').style.opacity = '1';
+                    document.getElementById('sidebarControls').style.pointerEvents = 'auto';
+
+                    textLayers = [];
+                    activeTextIndex = -1;
+                    preRotationSnapshot = null;
+                    updateTextsUI();
+                    loadTextSettingsToUI();
+
+                    document.getElementById('rangeVignette').value = 0;
+                    document.getElementById('frameStyle').value = 'none';
+                    document.getElementById('watermarkText').value = '';
+                    document.getElementById('rangeBorderThick').value = 25;
+                    document.getElementById('valBorderThick').textContent = '25';
+
+                    historyStack = [];
+                    historyStep = -1;
+
+                    render();
+                    fitToScreen();
+                    saveState(true);
+
+                    // Salva lo snapshot "di apertura" per il tasto Reset Foto
+                    originalSnapshot = JSON.parse(JSON.stringify(historyStack[0], (k, v) => k === 'dataUrl' ? v : v));
+                    originalSnapshot = captureResetSnapshot();
+
+                    updateHistoryButtons();
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function captureResetSnapshot() {
+            return {
+                layersMeta: layers.map(l => ({
+                    name: l.name, x: l.x, y: l.y, angle: l.angle || 0, scale: l.scale !== undefined ? l.scale : 1,
+                    visible: l.visible, opacity: l.opacity,
+                    brightness: l.brightness, contrast: l.contrast,
+                    saturation: l.saturation, sharpen: l.sharpen, blur: l.blur, filter: l.filter,
+                    exposure: l.exposure || 0, temperature: l.temperature || 0, hue: l.hue || 0,
+                    shadows: l.shadows || 0, highlights: l.highlights || 0,
+                    dataUrl: l.canvas.toDataURL('image/png')
+                })),
+                active: activeLayerIndex,
+                textLayers: textLayers.map(t => ({ ...t })),
+                activeTextIndex: activeTextIndex,
+                ui: captureGlobalUiState(),
+                resizeW: document.getElementById('resizeW').value,
+                resizeH: document.getElementById('resizeH').value,
+                aspect: originalAspect,
+                opLog: opLog.map(o => ({ ...o })),
+                bgReplayValid: bgReplayValid
+            };
+        }
+
+        // ============================================================
+        // CRONOLOGIA (undo/redo) - leggera: usa toDataURL solo dei livelli
+        // e comprime la history a MAX_HISTORY step
+        // ============================================================
+        function saveState(immediate) {
+            clearTimeout(historyDebounce);
+            const doSave = () => {
+                historyStep++;
+                historyStack = historyStack.slice(0, historyStep);
+                historyStack.push(captureResetSnapshot());
+                if (historyStack.length > MAX_HISTORY) {
+                    historyStack.shift();
+                    historyStep--;
+                }
+                updateHistoryButtons();
+            };
+            if (immediate) doSave();
+            else historyDebounce = setTimeout(doSave, 250);
+        }
+
+        function captureGlobalUiState() {
+            return {
+                frameStyle: document.getElementById('frameStyle').value,
+                borderThick: document.getElementById('rangeBorderThick').value,
+                vignetteShape: document.getElementById('vignetteShape').value,
+                vignetteVal: document.getElementById('rangeVignette').value
+            };
+        }
+
+        function applyGlobalUiState(ui) {
+            if (!ui) return;
+            document.getElementById('frameStyle').value = ui.frameStyle;
+            document.getElementById('rangeBorderThick').value = ui.borderThick;
+            document.getElementById('valBorderThick').textContent = ui.borderThick;
+            document.getElementById('vignetteShape').value = ui.vignetteShape;
+            document.getElementById('rangeVignette').value = ui.vignetteVal;
+        }
+
+        function restoreFromSnapshot(state, onDone) {
+            let pending = state.layersMeta.length;
+            const restoredLayers = new Array(state.layersMeta.length);
+
+            state.layersMeta.forEach((meta, idx) => {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.width; c.height = img.height;
+                    c.getContext('2d').drawImage(img, 0, 0);
+                    restoredLayers[idx] = {
+                        name: meta.name, canvas: c, x: meta.x, y: meta.y,
+                        angle: meta.angle || 0, scale: meta.scale !== undefined ? meta.scale : 1,
+                        visible: meta.visible, opacity: meta.opacity !== undefined ? meta.opacity : 100,
+                        brightness: meta.brightness, contrast: meta.contrast,
+                        saturation: meta.saturation, sharpen: meta.sharpen || 0, blur: meta.blur, filter: meta.filter,
+                        exposure: meta.exposure || 0, temperature: meta.temperature || 0, hue: meta.hue || 0,
+                        shadows: meta.shadows || 0, highlights: meta.highlights || 0
+                    };
+                    pending--;
+                    if (pending === 0) finish();
+                };
+                img.src = meta.dataUrl;
+            });
+
+            function finish() {
+                layers = restoredLayers;
+                activeLayerIndex = Math.min(state.active, layers.length - 1);
+                textLayers = (state.textLayers || []).map(t => ({ ...t }));
+                activeTextIndex = state.activeTextIndex !== undefined
+                    ? Math.min(state.activeTextIndex, textLayers.length - 1)
+                    : (textLayers.length ? 0 : -1);
+                workingCanvas = layers[0].canvas;
+                originalAspect = state.aspect || (workingCanvas.width / workingCanvas.height);
+                document.getElementById('resizeW').value = state.resizeW || workingCanvas.width;
+                document.getElementById('resizeH').value = state.resizeH || workingCanvas.height;
+                opLog = (state.opLog || []).map(o => ({ ...o }));
+                bgReplayValid = state.bgReplayValid !== undefined ? state.bgReplayValid : true;
+                applyGlobalUiState(state.ui);
+                updateLayersUI();
+                loadLayerSettingsToUI();
+                updateTextsUI();
+                loadTextSettingsToUI();
+                render();
+                fitToScreen();
+                if (typeof onDone === 'function') onDone();
+            }
+        }
+
+        function restoreStateFromHistory() {
+            const state = historyStack[historyStep];
+            if (!state) return;
+            restoreFromSnapshot(state);
+        }
+
+        function undo() {
+            if (historyStep > 0) {
+                historyStep--;
+                const state = historyStack[historyStep];
+                restoreFromSnapshotNoFit(state);
+                updateHistoryButtons();
+            }
+        }
+
+        function redo() {
+            if (historyStep < historyStack.length - 1) {
+                historyStep++;
+                const state = historyStack[historyStep];
+                restoreFromSnapshotNoFit(state);
+                updateHistoryButtons();
+            }
+        }
+
+        // Come restoreFromSnapshot ma senza rifare il fit-to-screen (l'utente
+        // potrebbe essere zoomato in un punto preciso mentre fa undo/redo).
+        function restoreFromSnapshotNoFit(state) {
+            let pending = state.layersMeta.length;
+            const restoredLayers = new Array(state.layersMeta.length);
+
+            state.layersMeta.forEach((meta, idx) => {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.width; c.height = img.height;
+                    c.getContext('2d').drawImage(img, 0, 0);
+                    restoredLayers[idx] = {
+                        name: meta.name, canvas: c, x: meta.x, y: meta.y,
+                        angle: meta.angle || 0, scale: meta.scale !== undefined ? meta.scale : 1,
+                        visible: meta.visible, opacity: meta.opacity !== undefined ? meta.opacity : 100,
+                        brightness: meta.brightness, contrast: meta.contrast,
+                        saturation: meta.saturation, sharpen: meta.sharpen || 0, blur: meta.blur, filter: meta.filter,
+                        exposure: meta.exposure || 0, temperature: meta.temperature || 0, hue: meta.hue || 0,
+                        shadows: meta.shadows || 0, highlights: meta.highlights || 0
+                    };
+                    pending--;
+                    if (pending === 0) finish();
+                };
+                img.src = meta.dataUrl;
+            });
+
+            function finish() {
+                layers = restoredLayers;
+                activeLayerIndex = Math.min(state.active, layers.length - 1);
+                textLayers = (state.textLayers || []).map(t => ({ ...t }));
+                activeTextIndex = state.activeTextIndex !== undefined
+                    ? Math.min(state.activeTextIndex, textLayers.length - 1)
+                    : (textLayers.length ? 0 : -1);
+                workingCanvas = layers[0].canvas;
+                originalAspect = state.aspect || (workingCanvas.width / workingCanvas.height);
+                document.getElementById('resizeW').value = state.resizeW || workingCanvas.width;
+                document.getElementById('resizeH').value = state.resizeH || workingCanvas.height;
+                opLog = (state.opLog || []).map(o => ({ ...o }));
+                bgReplayValid = state.bgReplayValid !== undefined ? state.bgReplayValid : true;
+                applyGlobalUiState(state.ui);
+                updateLayersUI();
+                loadLayerSettingsToUI();
+                updateTextsUI();
+                loadTextSettingsToUI();
+                render();
+            }
+        }
+
+        function updateHistoryButtons() {
+            document.getElementById('btnUndo').disabled = historyStep <= 0;
+            document.getElementById('btnRedo').disabled = historyStep >= historyStack.length - 1;
+        }
+
+        // Reset totale: riporta l'immagine esattamente come appena aperta,
+        // annullando TUTTE le modifiche (livelli, cornici, vignettatura, filigrana...)
+        function resetTransformations() {
+            if (!masterImage || !originalSnapshot) return;
+            restoreFromSnapshot(originalSnapshot, () => {
+                historyStack = [];
+                historyStep = -1;
+                preRotationSnapshot = null;
+                saveState(true);
+                scheduleSizeEstimate();
+                showToast('Foto ripristinata all\'originale');
+            });
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !e.repeat) { spaceHeld = true; updateViewportCursor(); }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+            if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) { e.preventDefault(); redo(); }
+            if (masterImage && (e.key === '+' || e.key === '=')) { adjustZoom(0.1); }
+            if (masterImage && e.key === '-') { adjustZoom(-0.1); }
+            if (masterImage && e.key === '0') { fitToScreen(); }
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') { spaceHeld = false; updateViewportCursor(); }
+        });
+
+        // ============================================================
+        // LIVELLI
+        // ============================================================
+        function updateLayersUI() {
+            const sel = document.getElementById('layerSelect');
+            sel.innerHTML = '';
+            layers.forEach((l, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = (l.visible === false ? '🚫 ' : '') + l.name;
+                if (idx === activeLayerIndex) opt.selected = true;
+                sel.appendChild(opt);
+            });
+            const vis = layers[activeLayerIndex] ? layers[activeLayerIndex].visible !== false : true;
+            document.getElementById('btnToggleVis').textContent = vis ? 'Nascondi 👁️' : 'Mostra 🙈';
+        }
+
+        function switchActiveLayer() {
+            activeLayerIndex = parseInt(document.getElementById('layerSelect').value);
+            loadLayerSettingsToUI();
+            updateLayersUI();
+            scheduleRender();
+        }
+
+        function loadLayerSettingsToUI() {
+            const l = layers[activeLayerIndex];
+            document.getElementById('rangeBrightness').value = l.brightness;
+            document.getElementById('rangeContrast').value = l.contrast;
+            document.getElementById('rangeSaturation').value = l.saturation;
+            document.getElementById('rangeSharpen').value = l.sharpen || 0;
+            document.getElementById('rangeBlur').value = l.blur;
+            document.getElementById('rangeExposure').value = l.exposure || 0;
+            document.getElementById('rangeTemperature').value = l.temperature || 0;
+            document.getElementById('rangeHue').value = l.hue || 0;
+            document.getElementById('rangeShadows').value = l.shadows || 0;
+            document.getElementById('rangeHighlights').value = l.highlights || 0;
+            document.getElementById('layerFilter').value = l.filter;
+            document.getElementById('rangeOpacity').value = l.opacity !== undefined ? l.opacity : 100;
+
+            document.getElementById('valBrightness').textContent = l.brightness;
+            document.getElementById('valContrast').textContent = l.contrast;
+            document.getElementById('valSaturation').textContent = l.saturation + '%';
+            document.getElementById('valSharpen').textContent = l.sharpen || 0;
+            document.getElementById('valBlur').textContent = l.blur + 'px';
+            document.getElementById('valExposure').textContent = l.exposure || 0;
+            document.getElementById('valTemperature').textContent = l.temperature || 0;
+            document.getElementById('valHue').textContent = (l.hue || 0) + '°';
+            document.getElementById('valShadows').textContent = l.shadows || 0;
+            document.getElementById('valHighlights').textContent = l.highlights || 0;
+            document.getElementById('valOpacity').textContent = (l.opacity !== undefined ? l.opacity : 100) + '%';
+
+            updateTransformButtonState();
+        }
+
+        function updateActiveLayerSettings() {
+            const l = layers[activeLayerIndex];
+            l.brightness = parseInt(document.getElementById('rangeBrightness').value);
+            l.contrast = parseInt(document.getElementById('rangeContrast').value);
+            l.saturation = parseInt(document.getElementById('rangeSaturation').value);
+            l.sharpen = parseInt(document.getElementById('rangeSharpen').value);
+            l.blur = parseInt(document.getElementById('rangeBlur').value);
+            l.exposure = parseInt(document.getElementById('rangeExposure').value);
+            l.temperature = parseInt(document.getElementById('rangeTemperature').value);
+            l.hue = parseInt(document.getElementById('rangeHue').value);
+            l.shadows = parseInt(document.getElementById('rangeShadows').value);
+            l.highlights = parseInt(document.getElementById('rangeHighlights').value);
+            l.filter = document.getElementById('layerFilter').value;
+            l.opacity = parseInt(document.getElementById('rangeOpacity').value);
+
+            document.getElementById('valBrightness').textContent = l.brightness;
+            document.getElementById('valContrast').textContent = l.contrast;
+            document.getElementById('valSaturation').textContent = l.saturation + '%';
+            document.getElementById('valSharpen').textContent = l.sharpen;
+            document.getElementById('valBlur').textContent = l.blur + 'px';
+            document.getElementById('valExposure').textContent = l.exposure;
+            document.getElementById('valTemperature').textContent = l.temperature;
+            document.getElementById('valHue').textContent = l.hue + '°';
+            document.getElementById('valShadows').textContent = l.shadows;
+            document.getElementById('valHighlights').textContent = l.highlights;
+            document.getElementById('valOpacity').textContent = l.opacity + '%';
+
+            scheduleRender();
+        }
+
+        function commitLayerSettings() {
+            saveState();
+        }
+
+        // ============================================================
+        // TESTI MULTIPLI (Filigrana) - stessa logica dei Livelli
+        // ============================================================
+        function addTextLayer() {
+            if (!masterImage) return;
+            const w = layers[0].canvas.width;
+            const h = layers[0].canvas.height;
+            const n = textLayers.length + 1;
+            textLayers.push(makeTextLayer(`Testo ${n}`, w / 3, h / 3 + (textLayers.length * 30)));
+            activeTextIndex = textLayers.length - 1;
+            updateTextsUI();
+            loadTextSettingsToUI();
+            document.getElementById('watermarkText').focus();
+            document.getElementById('watermarkText').select();
+            scheduleRender();
+            saveState(true);
+        }
+
+        function deleteActiveText() {
+            const t = activeTextLayer();
+            if (!t) { showToast('Nessun testo da eliminare'); return; }
+            textLayers.splice(activeTextIndex, 1);
+            activeTextIndex = textLayers.length ? Math.min(activeTextIndex, textLayers.length - 1) : -1;
+            updateTextsUI();
+            loadTextSettingsToUI();
+            scheduleRender();
+            saveState(true);
+        }
+
+        function updateTextsUI() {
+            const sel = document.getElementById('textSelect');
+            sel.innerHTML = '';
+            if (textLayers.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = -1;
+                opt.textContent = 'Nessun testo (premi "+ Testo")';
+                sel.appendChild(opt);
+            } else {
+                textLayers.forEach((t, idx) => {
+                    const opt = document.createElement('option');
+                    opt.value = idx;
+                    opt.textContent = t.text ? t.text : `Testo ${idx + 1} (vuoto)`;
+                    if (idx === activeTextIndex) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+            }
+            const controlsDisabled = textLayers.length === 0;
+            document.getElementById('watermarkText').disabled = controlsDisabled;
+            document.getElementById('wmSize').disabled = controlsDisabled;
+            document.getElementById('wmAlpha').disabled = controlsDisabled;
+            document.getElementById('wmColor').disabled = controlsDisabled;
+            document.getElementById('wmFont').disabled = controlsDisabled;
+            document.getElementById('btnDeleteText').disabled = controlsDisabled;
+        }
+
+        function switchActiveText() {
+            activeTextIndex = parseInt(document.getElementById('textSelect').value);
+            loadTextSettingsToUI();
+            scheduleRender();
+        }
+
+        function loadTextSettingsToUI() {
+            const t = activeTextLayer();
+            if (!t) {
+                document.getElementById('watermarkText').value = '';
+                return;
+            }
+            document.getElementById('watermarkText').value = t.text;
+            document.getElementById('wmSize').value = t.size;
+            document.getElementById('wmAlpha').value = t.alpha;
+            document.getElementById('wmColor').value = t.color;
+            document.getElementById('wmFont').value = t.font;
+        }
+
+        function updateActiveTextSettings() {
+            const t = activeTextLayer();
+            if (!t) return;
+            t.text = document.getElementById('watermarkText').value;
+            t.size = parseInt(document.getElementById('wmSize').value);
+            t.alpha = parseInt(document.getElementById('wmAlpha').value);
+            t.color = document.getElementById('wmColor').value;
+            t.font = document.getElementById('wmFont').value;
+            updateTextsUI();
+            scheduleRender();
+        }
+
+        function toggleLayerTransformMode() {
+            if (activeLayerIndex === 0) {
+                showToast('Il Livello Sfondo non è trasformabile: seleziona un altro livello');
+                return;
+            }
+            layerTransformMode = !layerTransformMode;
+            updateTransformButtonState();
+            scheduleRender();
+        }
+
+        function updateTransformButtonState() {
+            const btn = document.getElementById('btnTransformLayer');
+            if (!btn) return;
+            if (activeLayerIndex === 0) {
+                layerTransformMode = false;
+                btn.disabled = true;
+                btn.classList.remove('active');
+                btn.textContent = 'Sposta/Ruota/Scala Livello 🎯';
+            } else {
+                btn.disabled = false;
+                btn.classList.toggle('active', layerTransformMode);
+                btn.textContent = layerTransformMode ? 'Trasformazione Attiva 🎯' : 'Sposta/Ruota/Scala Livello 🎯';
+            }
+        }
+
+        function toggleLayerVisibility() {
+            const l = layers[activeLayerIndex];
+            l.visible = l.visible === false ? true : false;
+            updateLayersUI();
+            scheduleRender();
+            saveState();
+        }
+
+        function duplicateActiveLayer() {
+            const src = layers[activeLayerIndex];
+            const copy = {
+                name: src.name + ' (copia)',
+                canvas: cloneCanvas(src.canvas),
+                x: src.x + 20, y: src.y + 20,
+                angle: src.angle || 0, scale: src.scale !== undefined ? src.scale : 1,
+                visible: true, opacity: src.opacity !== undefined ? src.opacity : 100,
+                brightness: src.brightness, contrast: src.contrast,
+                saturation: src.saturation, sharpen: src.sharpen || 0, blur: src.blur, filter: src.filter,
+                exposure: src.exposure || 0, temperature: src.temperature || 0, hue: src.hue || 0,
+                shadows: src.shadows || 0, highlights: src.highlights || 0
+            };
+            layers.splice(activeLayerIndex + 1, 0, copy);
+            activeLayerIndex++;
+            updateLayersUI();
+            loadLayerSettingsToUI();
+            scheduleRender();
+            saveState(true);
+            showToast('Livello duplicato');
+        }
+
+        function moveLayerUp() {
+            if (activeLayerIndex >= layers.length - 1) return;
+            [layers[activeLayerIndex], layers[activeLayerIndex + 1]] = [layers[activeLayerIndex + 1], layers[activeLayerIndex]];
+            activeLayerIndex++;
+            updateLayersUI();
+            scheduleRender();
+            saveState(true);
+        }
+
+        function moveLayerDown() {
+            if (activeLayerIndex <= 0) return;
+            [layers[activeLayerIndex], layers[activeLayerIndex - 1]] = [layers[activeLayerIndex - 1], layers[activeLayerIndex]];
+            activeLayerIndex--;
+            if (activeLayerIndex === 0) workingCanvas = layers[0].canvas;
+            updateLayersUI();
+            scheduleRender();
+            saveState(true);
+        }
+
+        function deleteActiveLayer() {
+            if (layers.length <= 1) {
+                showToast("Non puoi eliminare l'ultimo livello rimasto!");
+                return;
+            }
+            layers.splice(activeLayerIndex, 1);
+            activeLayerIndex = Math.max(0, activeLayerIndex - 1);
+            workingCanvas = layers[0].canvas;
+            updateLayersUI();
+            loadLayerSettingsToUI();
+            scheduleRender();
+            saveState(true);
+        }
+
+        function mergeLayers() {
+            if (layers.length <= 1) return;
+            const mergedC = document.createElement('canvas');
+            mergedC.width = layers[0].canvas.width;
+            mergedC.height = layers[0].canvas.height;
+            const mCtx = mergedC.getContext('2d');
+            layers.forEach((l, i) => {
+                if (l.visible === false) return;
+                mCtx.save();
+                mCtx.globalAlpha = (l.opacity !== undefined ? l.opacity : 100) / 100;
+                mCtx.filter = filterStringFor(l);
+                if (i === 0) {
+                    mCtx.drawImage(l.canvas, 0, 0);
+                } else {
+                    const angle = l.angle || 0;
+                    const scale = l.scale !== undefined ? l.scale : 1;
+                    const cw = l.canvas.width, ch = l.canvas.height;
+                    const centerX = l.x + cw / 2, centerY = l.y + ch / 2;
+                    mCtx.translate(centerX, centerY);
+                    if (angle) mCtx.rotate(angle);
+                    if (scale !== 1) mCtx.scale(scale, scale);
+                    mCtx.drawImage(l.canvas, -cw / 2, -ch / 2);
+                }
+                mCtx.restore();
+            });
+            layers = [{
+                name: "Livello Unito", canvas: mergedC, x: 0, y: 0, angle: 0, scale: 1, visible: true, opacity: 100,
+                brightness: 0, contrast: 0, saturation: 100, sharpen: 0, blur: 0, filter: 'none',
+                exposure: 0, temperature: 0, hue: 0, shadows: 0, highlights: 0
+            }];
+            activeLayerIndex = 0;
+            workingCanvas = mergedC;
+            // Da qui in poi il livello di sfondo contiene pixel "cotti" anche di livelli
+            // estratti che esistono solo a risoluzione di lavoro: non è più ricostruibile
+            // rieseguendo le operazioni sulla foto originale intatta. L'export userà un
+            // ingrandimento diretto (leggermente più morbido) invece della ricostruzione
+            // perfetta, esattamente come già avviene per i livelli-sagoma estratti.
+            opLog = [];
+            bgReplayValid = false;
+            updateLayersUI();
+            loadLayerSettingsToUI();
+            scheduleRender();
+            saveState(true);
+            showToast('Livelli uniti');
+        }
+
+        // ============================================================
+        // RIDIMENSIONA
+        // ============================================================
+        function onWidthChange() {
+            if (!document.getElementById('keepAspect').checked) return;
+            const w = parseInt(document.getElementById('resizeW').value);
+            if (w) document.getElementById('resizeH').value = Math.round(w / originalAspect);
+        }
+        function onHeightChange() {
+            if (!document.getElementById('keepAspect').checked) return;
+            const h = parseInt(document.getElementById('resizeH').value);
+            if (h) document.getElementById('resizeW').value = Math.round(h * originalAspect);
+        }
+
+        function setResizePreset(factor) {
+            // I campi mostrano sempre le dimensioni "equivalenti a piena risoluzione",
+            // non quelle del canvas di lavoro ridotto: il fattore si applica a quelle.
+            const fullW = layers[0].canvas.width / workScale;
+            const fullH = layers[0].canvas.height / workScale;
+            document.getElementById('resizeW').value = Math.round(fullW * factor);
+            document.getElementById('resizeH').value = Math.round(fullH * factor);
+        }
+
+        function applyResize() {
+            const nw = parseInt(document.getElementById('resizeW').value);
+            const nh = parseInt(document.getElementById('resizeH').value);
+            if (!nw || !nh || nw < 1 || nh < 1) return;
+
+            // nw/nh sono espressi in pixel "equivalenti a piena risoluzione": si calcola
+            // il fattore di scala rispetto a quella dimensione (non al canvas di lavoro
+            // ridotto), così lo stesso fattore può essere applicato pari pari in fase di
+            // esportazione sulla foto originale intatta, ottenendo il risultato preciso
+            // richiesto senza passare da un ingrandimento dei pixel già ridotti.
+            const oldW = layers[0].canvas.width;
+            const oldH = layers[0].canvas.height;
+            const fullOldW = oldW / workScale;
+            const fullOldH = oldH / workScale;
+            const scaleX = nw / fullOldW;
+            const scaleY = nh / fullOldH;
+
+            layers.forEach(l => {
+                const resizedC = document.createElement('canvas');
+                resizedC.width = Math.max(1, Math.round(l.canvas.width * scaleX));
+                resizedC.height = Math.max(1, Math.round(l.canvas.height * scaleY));
+                resizedC.getContext('2d').drawImage(l.canvas, 0, 0, resizedC.width, resizedC.height);
+                l.canvas = resizedC;
+                l.x = Math.round(l.x * scaleX);
+                l.y = Math.round(l.y * scaleY);
+            });
+
+            opLog.push({ type: 'resize', scaleX, scaleY });
+
+            workingCanvas = layers[0].canvas;
+            originalAspect = nw / nh;
+            scheduleRender(true);
+            saveState(true);
+            fitToScreen();
+            showToast('Immagine ridimensionata');
+        }
+
+        // ============================================================
+        // ZOOM & PAN
+        // ============================================================
+        function applyZoomToDOM() {
+            const w = Math.round(canvas.width * currentZoom);
+            const h = Math.round(canvas.height * currentZoom);
+            canvasStage.style.width = w + 'px';
+            canvasStage.style.height = h + 'px';
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            const pct = Math.round(currentZoom * 100);
+            document.getElementById('zoomLabel').textContent = pct + '%';
+            document.getElementById('infoZoom').textContent = pct + '%';
+            document.getElementById('zoomSlider').value = pct;
+        }
+
+        function setZoomTo(zoomFactor, centerX, centerY) {
+            const newZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoomFactor));
+
+            if (centerX === undefined) {
+                const vpRect = viewport.getBoundingClientRect();
+                centerX = vpRect.width / 2;
+                centerY = vpRect.height / 2;
+            }
+
+            const preScrollX = viewport.scrollLeft + centerX;
+            const preScrollY = viewport.scrollTop + centerY;
+            const ratio = newZoom / currentZoom;
+
+            currentZoom = newZoom;
+            applyZoomToDOM();
+
+            viewport.scrollLeft = preScrollX * ratio - centerX;
+            viewport.scrollTop = preScrollY * ratio - centerY;
+        }
+
+        function setZoomFromSlider(value) {
+            setZoomTo(parseInt(value) / 100);
+        }
+
+        function adjustZoom(delta) {
+            setZoomTo(currentZoom + delta);
+        }
+
+        function fitToScreen() {
+            if (!masterImage) return;
+            const vpRect = viewport.getBoundingClientRect();
+            const availW = vpRect.width - 24;
+            const availH = vpRect.height - 24;
+            const scaleFit = Math.min(availW / canvas.width, availH / canvas.height, 1);
+            currentZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, scaleFit || 1));
+            applyZoomToDOM();
+            viewport.scrollLeft = 0;
+            viewport.scrollTop = 0;
+            requestAnimationFrame(() => {
+                viewport.scrollLeft = Math.max(0, (canvasStage.offsetWidth - vpRect.width) / 2);
+                viewport.scrollTop = Math.max(0, (canvasStage.offsetHeight - vpRect.height) / 2);
+            });
+        }
+
+        viewport.addEventListener('wheel', (e) => {
+            if (!masterImage) return;
+            if (!(e.ctrlKey || e.metaKey || spaceHeld || activeTool === 'none')) return;
+            e.preventDefault();
+            const vpRect = viewport.getBoundingClientRect();
+            const cx = e.clientX - vpRect.left;
+            const cy = e.clientY - vpRect.top;
+            const step = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+            setZoomTo(currentZoom * step, cx, cy);
+        }, { passive: false });
+
+        function updateViewportCursor() {
+            if (spaceHeld) {
+                viewport.classList.add('pan-mode');
+            } else {
+                viewport.classList.remove('pan-mode');
+            }
+        }
+
+        // ============================================================
+        // STIMA PESO FILE — ricalcolata dal vivo su ogni modifica visiva,
+        // sul formato ed sulla qualità effettivamente selezionati per l'export.
+        // Debounce breve per non rigenerare il blob ad ogni singolo frame.
+        // ============================================================
+        function scheduleSizeEstimate() {
+            clearTimeout(sizeEstimateDebounce);
+            const infoSizeEl = document.getElementById('infoSize');
+            if (infoSizeEl) infoSizeEl.classList.add('size-updating');
+            sizeEstimateDebounce = setTimeout(computeSizeEstimate, 180);
+        }
+
+        function computeSizeEstimate() {
+            if (!masterImage) return;
+            const myToken = ++sizeEstimateToken;
+            const format = document.getElementById('exportFormat').value;
+            const quality = parseInt(document.getElementById('rangeQuality').value) / 100;
+            const formatLabel = format === 'image/jpeg' ? 'JPEG' : (format === 'image/webp' ? 'WebP' : 'PNG');
+            document.getElementById('infoFormat').textContent = formatLabel;
+
+            let sourceCanvas = canvas;
+            if (format === 'image/jpeg') {
+                const flat = document.createElement('canvas');
+                flat.width = canvas.width; flat.height = canvas.height;
+                const fCtx = flat.getContext('2d');
+                fCtx.fillStyle = '#ffffff';
+                fCtx.fillRect(0, 0, flat.width, flat.height);
+                fCtx.drawImage(canvas, 0, 0);
+                sourceCanvas = flat;
+            }
+
+            sourceCanvas.toBlob(blob => {
+                if (myToken !== sizeEstimateToken) return; // una stima più recente ha già preso il posto
+                const infoSizeEl = document.getElementById('infoSize');
+                if (blob) {
+                    // Il canvas a schermo è l'anteprima ridotta: l'export reale sarà a piena
+                    // risoluzione, quindi il peso del file va corretto in proporzione all'area
+                    // (una stima approssimativa, ma molto più realistica del solo valore grezzo).
+                    const exportRatio = workScale ? (1 / workScale) : 1;
+                    const areaRatio = exportRatio * exportRatio;
+                    const estimatedBytes = blob.size * areaRatio;
+                    infoSizeEl.textContent = '~' + formatBytes(estimatedBytes);
+                } else {
+                    infoSizeEl.textContent = '—';
+                }
+                infoSizeEl.classList.remove('size-updating');
+            }, format, format === 'image/png' ? undefined : quality);
+        }
+
+        // ============================================================
+        // RENDER PIPELINE
+        // ============================================================
+        function scheduleRender(immediate) {
+            if (immediate) { render(); return; }
+            if (renderScheduled) return;
+            renderScheduled = true;
+            requestAnimationFrame(() => {
+                renderScheduled = false;
+                render();
+            });
+        }
+
+        // Applica un unsharp mask semplice via convoluzione leggera (solo se sharpen > 0)
+        function applySharpen(sourceCanvas, amount) {
+            if (!amount) return sourceCanvas;
+            const w = sourceCanvas.width, h = sourceCanvas.height;
+            if (w * h > 4000000) return sourceCanvas; // salvaguardia RAM/CPU su immagini enormi
+            const srcCtx = sourceCanvas.getContext('2d');
+            const imgData = srcCtx.getImageData(0, 0, w, h);
+            const data = imgData.data;
+            const out = new Uint8ClampedArray(data);
+            const strength = amount / 100;
+            const kCenter = 1 + 4 * strength;
+            const kSide = -strength;
+
+            for (let y = 1; y < h - 1; y++) {
+                for (let x = 1; x < w - 1; x++) {
+                    const i = (y * w + x) * 4;
+                    for (let c = 0; c < 3; c++) {
+                        const center = data[i + c];
+                        const up = data[i - w * 4 + c];
+                        const down = data[i + w * 4 + c];
+                        const left = data[i - 4 + c];
+                        const right = data[i + 4 + c];
+                        out[i + c] = center * kCenter + (up + down + left + right) * kSide;
+                    }
+                }
+            }
+            const outData = new ImageData(out, w, h);
+            const resultC = document.createElement('canvas');
+            resultC.width = w; resultC.height = h;
+            resultC.getContext('2d').putImageData(outData, 0, 0);
+            return resultC;
+        }
+
+        function render(customDrawOverlay) {
+            if (!masterImage) return;
+
+            const baseC = layers[0].canvas;
+            const w = baseC.width, h = baseC.height;
+
+            const tempC = document.createElement('canvas');
+            tempC.width = w; tempC.height = h;
+            const tempCtx = tempC.getContext('2d');
+
+            layers.forEach((l, i) => {
+                if (l.visible === false) return;
+                let sourceForLayer = l.canvas;
+                if (l.sharpen) sourceForLayer = applySharpen(l.canvas, l.sharpen);
+
+                tempCtx.save();
+                tempCtx.globalAlpha = (l.opacity !== undefined ? l.opacity : 100) / 100;
+                tempCtx.filter = filterStringFor(l);
+                if (i === 0) {
+                    tempCtx.drawImage(sourceForLayer, 0, 0);
+                } else {
+                    const angle = l.angle || 0;
+                    const scale = l.scale !== undefined ? l.scale : 1;
+                    const cw = sourceForLayer.width, ch = sourceForLayer.height;
+                    const centerX = l.x + cw / 2;
+                    const centerY = l.y + ch / 2;
+                    tempCtx.translate(centerX, centerY);
+                    if (angle) tempCtx.rotate(angle);
+                    if (scale !== 1) tempCtx.scale(scale, scale);
+                    tempCtx.drawImage(sourceForLayer, -cw / 2, -ch / 2);
+                }
+                tempCtx.restore();
+            });
+
+            const frameStyle = document.getElementById('frameStyle').value;
+            const thickVal = parseInt(document.getElementById('rangeBorderThick').value);
+            const borderWidth = frameStyle !== 'none' ? thickVal : 0;
+            const bottomExtra = (frameStyle === 'polaroid') ? Math.round(tempC.height * 0.18) : 0;
+
+            canvas.width = tempC.width + (borderWidth * 2);
+            canvas.height = tempC.height + (borderWidth * 2) + bottomExtra;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // --- Sfondo/base della cornice ---
+            if (frameStyle === 'white' || frameStyle === 'polaroid') {
+                ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (frameStyle === 'dark') {
+                ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (frameStyle === 'neon') {
+                ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (frameStyle === 'rounded') {
+                ctx.fillStyle = '#111827'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (frameStyle === 'shadowfade') {
+                // Lo sfondo dietro la foto è dello stesso colore del pannello per continuità visiva:
+                // l'ombra vera e propria è disegnata DENTRO l'immagine (vedi sotto), non fuori.
+                ctx.fillStyle = '#0b0f19'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (frameStyle === 'gold') {
+                ctx.fillStyle = '#3a2f1a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (frameStyle === 'film') {
+                ctx.fillStyle = '#141414'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (frameStyle === 'doubleline') {
+                ctx.fillStyle = '#f5f5f4'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (frameStyle === 'torn') {
+                ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (borderWidth > 0) {
+                ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            ctx.filter = 'none';
+
+            // --- Disegno della foto dentro l'area cornice: il contenuto riempie SEMPRE
+            // esattamente l'area interna (borderWidth, borderWidth, tempC.width, tempC.height),
+            // così non resta mai un bordo nero residuo tra foto e cornice. ---
+            if (frameStyle === 'rounded') {
+                const radius = Math.min(24, borderWidth);
+                ctx.save();
+                roundedRectPath(ctx, borderWidth, borderWidth, tempC.width, tempC.height, radius);
+                ctx.clip();
+                ctx.drawImage(tempC, borderWidth, borderWidth);
+                ctx.restore();
+            } else if (frameStyle === 'torn') {
+                ctx.save();
+                tornEdgePath(ctx, borderWidth, borderWidth, tempC.width, tempC.height, Math.max(4, borderWidth * 0.15));
+                ctx.clip();
+                ctx.drawImage(tempC, borderWidth, borderWidth);
+                ctx.restore();
+            } else {
+                ctx.drawImage(tempC, borderWidth, borderWidth);
+            }
+
+            // --- Ombra sfumata: applicata COME OVERLAY INTERNO ai bordi della foto stessa
+            // (sfumatura scura che parte dal bordo interno verso il centro), invece che come
+            // ombra proiettata sul canvas esterno. Così la sfumatura appare sempre "dentro" la foto. ---
+            if (frameStyle === 'shadowfade' && borderWidth > 0) {
+                ctx.save();
+                roundedRectPath(ctx, borderWidth, borderWidth, tempC.width, tempC.height, 0);
+                ctx.clip();
+                const fadeDepth = borderWidth * 1.1;
+                const ix = borderWidth, iy = borderWidth, iw = tempC.width, ih = tempC.height;
+                // quattro sfumature lineari, una per lato, che si affievoliscono verso il centro
+                const sides = [
+                    { grad: [ix, iy, ix, iy + fadeDepth], rect: [ix, iy, iw, fadeDepth] },
+                    { grad: [ix, iy + ih, ix, iy + ih - fadeDepth], rect: [ix, iy + ih - fadeDepth, iw, fadeDepth] },
+                    { grad: [ix, iy, ix + fadeDepth, iy], rect: [ix, iy, fadeDepth, ih] },
+                    { grad: [ix + iw, iy, ix + iw - fadeDepth, iy], rect: [ix + iw - fadeDepth, iy, fadeDepth, ih] }
+                ];
+                sides.forEach(s => {
+                    const grad = ctx.createLinearGradient(s.grad[0], s.grad[1], s.grad[2], s.grad[3]);
+                    grad.addColorStop(0, 'rgba(0,0,0,0.55)');
+                    grad.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(s.rect[0], s.rect[1], s.rect[2], s.rect[3]);
+                });
+                ctx.restore();
+            }
+
+            // --- Decorazioni della cornice sopra la foto (stroke/dettagli) ---
+            if (frameStyle === 'neon') {
+                ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = Math.max(4, borderWidth / 3);
+                ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
+            } else if (frameStyle === 'gold') {
+                const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                grad.addColorStop(0, '#d4af37'); grad.addColorStop(0.5, '#f9e79f'); grad.addColorStop(1, '#b8860b');
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = Math.max(3, borderWidth * 0.25);
+                ctx.strokeRect(borderWidth * 0.3, borderWidth * 0.3, canvas.width - borderWidth * 0.6, canvas.height - borderWidth * 0.6);
+            } else if (frameStyle === 'film') {
+                const holeSize = Math.max(4, borderWidth * 0.28);
+                const gap = holeSize * 1.8;
+                ctx.fillStyle = '#f5f5f4';
+                for (let yy = borderWidth * 0.5; yy < canvas.height - borderWidth * 0.5; yy += gap) {
+                    ctx.beginPath(); ctx.roundRect(borderWidth * 0.3 - holeSize / 2, yy, holeSize, holeSize, 2); ctx.fill();
+                    ctx.beginPath(); ctx.roundRect(canvas.width - borderWidth * 0.3 - holeSize / 2, yy, holeSize, holeSize, 2); ctx.fill();
+                }
+            } else if (frameStyle === 'doubleline') {
+                ctx.strokeStyle = '#111827';
+                ctx.lineWidth = Math.max(2, borderWidth * 0.06);
+                const gap = borderWidth * 0.3;
+                ctx.strokeRect(borderWidth * 0.5, borderWidth * 0.5, canvas.width - borderWidth, canvas.height - borderWidth);
+                ctx.strokeRect(borderWidth * 0.5 + gap, borderWidth * 0.5 + gap, canvas.width - borderWidth - gap * 2, canvas.height - borderWidth - gap * 2);
+            }
+
+            const vigIntensity = parseInt(document.getElementById('rangeVignette').value);
+            const vignetteShape = document.getElementById('vignetteShape').value;
+            if (vigIntensity > 0) {
+                const cx = borderWidth + tempC.width / 2, cy = borderWidth + tempC.height / 2;
+                const t = vigIntensity / 100; // 0 -> nessun effetto, 1 -> copertura quasi totale fino al centro
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(borderWidth, borderWidth, tempC.width, tempC.height);
+                ctx.clip();
+
+                if (vignetteShape === 'circle') {
+                    const maxRadius = Math.hypot(tempC.width / 2, tempC.height / 2);
+                    // il raggio interno (dove l'effetto inizia) si restringe verso il centro
+                    // man mano che l'intensità aumenta, arrivando quasi a zero al 100%.
+                    const innerRadius = maxRadius * (1 - t) * 0.85;
+                    const outerRadius = maxRadius * (1 - t * 0.05);
+                    const grad = ctx.createRadialGradient(cx, cy, Math.max(0, innerRadius), cx, cy, outerRadius);
+                    grad.addColorStop(0, 'rgba(0,0,0,0)');
+                    grad.addColorStop(1, `rgba(0,0,0,${Math.min(1, t * 1.15)})`);
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(borderWidth, borderWidth, tempC.width, tempC.height);
+                } else {
+                    // Vignettatura quadrata: vero gradiente radiale-quadrato costruito da 4 gradienti
+                    // lineari sovrapposti (uno per lato) che sfumano fino al centro, non uno stroke.
+                    const halfW = tempC.width / 2, halfH = tempC.height / 2;
+                    const depth = t; // 0..1: quanto in profondità la sfumatura arriva verso il centro
+                    ctx.globalCompositeOperation = 'source-over';
+                    const layers4 = [
+                        { x0: cx - halfW, y0: cy, x1: cx - halfW + halfW * (0.15 + depth * 0.95), y1: cy, dir: 'h' },
+                        { x0: cx + halfW, y0: cy, x1: cx + halfW - halfW * (0.15 + depth * 0.95), y1: cy, dir: 'h' },
+                        { x0: cx, y0: cy - halfH, x1: cx, y1: cy - halfH + halfH * (0.15 + depth * 0.95), dir: 'v' },
+                        { x0: cx, y0: cy + halfH, x1: cx, y1: cy + halfH - halfH * (0.15 + depth * 0.95), dir: 'v' }
+                    ];
+                    layers4.forEach(g => {
+                        const grad = ctx.createLinearGradient(g.x0, g.y0, g.x1, g.y1);
+                        grad.addColorStop(0, `rgba(0,0,0,${Math.min(1, t * 1.15)})`);
+                        grad.addColorStop(1, 'rgba(0,0,0,0)');
+                        ctx.fillStyle = grad;
+                        ctx.fillRect(borderWidth, borderWidth, tempC.width, tempC.height);
+                    });
+                }
+                ctx.restore();
+            }
+
+            textLayers.forEach((t, tIdx) => {
+                const txt = (t.text || '').trim();
+                if (!txt) return;
+                const fSize = t.size;
+                const alpha = t.alpha / 100;
+                const isActive = (tIdx === activeTextIndex);
+
+                // Prima misura il testo (senza trasformazioni) per conoscere w/h reali,
+                // così il centro di rotazione/scala è sempre quello vero del box, non un punto fisso.
+                ctx.font = `bold ${fSize}px ${t.font}`;
+                const metrics = ctx.measureText(txt);
+                t.w = metrics.width;
+                t.h = fSize;
+
+                // t.x / t.y rappresentano il CENTRO del box di testo (non più l'origine
+                // basso-sinistra): tutte le trasformazioni (rotate/scale) avvengono attorno a questo punto.
+                ctx.save();
+                ctx.translate(borderWidth + t.x, borderWidth + t.y);
+                ctx.rotate(t.angle);
+                ctx.scale(t.scale, t.scale);
+
+                ctx.font = `bold ${fSize}px ${t.font}`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = hexToRgba(t.color, alpha);
+                ctx.shadowColor = `rgba(0, 0, 0, ${alpha})`;
+                ctx.shadowBlur = 2;
+                ctx.fillText(txt, 0, 0);
+
+                if (isActive) {
+                    const halfW = t.w / 2 + 6, halfH = t.h / 2 + 6;
+                    ctx.strokeStyle = '#00f2fe';
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash([4, 4]);
+                    ctx.strokeRect(-halfW, -halfH, halfW * 2, halfH * 2);
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#00f2fe';
+                    ctx.setLineDash([]);
+                    const handles = getWmHandleCoords(t);
+                    handles.forEach(hd => {
+                        ctx.fillRect(hd.x - 4, hd.y - 4, 8, 8);
+                        ctx.strokeRect(hd.x - 4, hd.y - 4, 8, 8);
+                    });
+                    ctx.beginPath();
+                    ctx.moveTo(0, -halfH);
+                    ctx.lineTo(0, -halfH - 22);
+                    ctx.stroke();
+                }
+
+                ctx.restore();
+                ctx.textAlign = 'start';
+                ctx.textBaseline = 'alphabetic';
+            });
+
+            if (layerTransformMode && activeLayerIndex > 0 && layers[activeLayerIndex]) {
+                const l = layers[activeLayerIndex];
+                if (l.visible !== false) {
+                    const handles = getLayerHandleCoords(l);
+                    ctx.save();
+                    ctx.strokeStyle = '#ff9f1c';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([6, 4]);
+                    ctx.beginPath();
+                    ctx.moveTo(handles.corners.nw.x, handles.corners.nw.y);
+                    ctx.lineTo(handles.corners.ne.x, handles.corners.ne.y);
+                    ctx.lineTo(handles.corners.se.x, handles.corners.se.y);
+                    ctx.lineTo(handles.corners.sw.x, handles.corners.sw.y);
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    ctx.beginPath();
+                    ctx.moveTo((handles.corners.nw.x + handles.corners.ne.x) / 2, (handles.corners.nw.y + handles.corners.ne.y) / 2);
+                    ctx.lineTo(handles.rotate.x, handles.rotate.y);
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#ff9f1c';
+                    ['nw', 'ne', 'sw', 'se'].forEach(id => {
+                        const hd = handles.corners[id];
+                        ctx.fillRect(hd.x - 5, hd.y - 5, 10, 10);
+                        ctx.strokeRect(hd.x - 5, hd.y - 5, 10, 10);
+                    });
+                    ctx.beginPath();
+                    ctx.arc(handles.rotate.x, handles.rotate.y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+
+            if (typeof customDrawOverlay === 'function') customDrawOverlay();
+
+            applyZoomToDOM();
+
+            document.getElementById('infoDim').textContent = `${canvas.width} × ${canvas.height} px`;
+            scheduleSizeEstimate();
+        }
+
+        function roundedRectPath(c, x, y, w, h, r) {
+            c.beginPath();
+            c.moveTo(x + r, y);
+            c.arcTo(x + w, y, x + w, y + h, r);
+            c.arcTo(x + w, y + h, x, y + h, r);
+            c.arcTo(x, y + h, x, y, r);
+            c.arcTo(x, y, x + w, y, r);
+            c.closePath();
+        }
+
+        // Path a bordo "strappato": genera un contorno irregolare deterministico
+        // (seedato sulle dimensioni, così resta stabile tra un render e l'altro)
+        // che simula il bordo strappato di una foto stampata.
+        function tornEdgePath(c, x, y, w, h, jag) {
+            const step = Math.max(6, jag * 2.2);
+            function seededRand(seed) {
+                const s = Math.sin(seed * 12.9898) * 43758.5453;
+                return s - Math.floor(s);
+            }
+            c.beginPath();
+            let seedCounter = 0;
+            // top
+            c.moveTo(x, y);
+            for (let px = 0; px <= w; px += step) {
+                const yy = y + (seededRand(seedCounter++ + x + y) - 0.5) * jag;
+                c.lineTo(x + Math.min(px, w), yy);
+            }
+            // right
+            for (let py = 0; py <= h; py += step) {
+                const xx = x + w + (seededRand(seedCounter++ + x + y) - 0.5) * jag;
+                c.lineTo(xx, y + Math.min(py, h));
+            }
+            // bottom
+            for (let px = w; px >= 0; px -= step) {
+                const yy = y + h + (seededRand(seedCounter++ + x + y) - 0.5) * jag;
+                c.lineTo(x + Math.max(px, 0), yy);
+            }
+            // left
+            for (let py = h; py >= 0; py -= step) {
+                const xx = x + (seededRand(seedCounter++ + x + y) - 0.5) * jag;
+                c.lineTo(xx, y + Math.max(py, 0));
+            }
+            c.closePath();
+        }
+
+        function getLayerHandleCoords(l) {
+            const frameStyle = document.getElementById('frameStyle').value;
+            const borderWidth = frameStyle !== 'none' ? parseInt(document.getElementById('rangeBorderThick').value) : 0;
+            const angle = l.angle || 0;
+            const scale = l.scale !== undefined ? l.scale : 1;
+            const cw = l.canvas.width, ch = l.canvas.height;
+            const centerX = borderWidth + l.x + cw / 2;
+            const centerY = borderWidth + l.y + ch / 2;
+            const hw = (cw * scale) / 2, hh = (ch * scale) / 2;
+
+            function toWorld(lx, ly) {
+                const cos = Math.cos(angle), sin = Math.sin(angle);
+                return {
+                    x: centerX + (lx * cos - ly * sin),
+                    y: centerY + (lx * sin + ly * cos)
+                };
+            }
+
+            return {
+                center: { x: centerX, y: centerY },
+                corners: {
+                    nw: toWorld(-hw, -hh),
+                    ne: toWorld(hw, -hh),
+                    sw: toWorld(-hw, hh),
+                    se: toWorld(hw, hh)
+                },
+                rotate: toWorld(0, -hh - 28)
+            };
+        }
+
+        function getWmHandleCoords(t) {
+            const halfW = t.w / 2 + 6, halfH = t.h / 2 + 6;
+            return [
+                { id: 'nw', x: -halfW, y: -halfH },
+                { id: 'ne', x: halfW, y: -halfH },
+                { id: 'sw', x: -halfW, y: halfH },
+                { id: 'se', x: halfW, y: halfH },
+                { id: 'rotate', x: 0, y: -halfH - 22 }
+            ];
+        }
+
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function screenToCanvasCoords(clientX, clientY) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        // ============================================================
+        // INTERAZIONE MOUSE
+        // ============================================================
+        canvas.addEventListener('mousedown', (e) => {
+            if (!masterImage) return;
+
+            if (spaceHeld || e.button === 1) {
+                e.preventDefault();
+                startPan(e.clientX, e.clientY);
+                return;
+            }
+
+            const { x: mouseX, y: mouseY } = screenToCanvasCoords(e.clientX, e.clientY);
+
+            if (layerTransformMode && activeLayerIndex > 0 && layers[activeLayerIndex] && layers[activeLayerIndex].visible !== false) {
+                const l = layers[activeLayerIndex];
+                const handles = getLayerHandleCoords(l);
+
+                if (Math.hypot(mouseX - handles.rotate.x, mouseY - handles.rotate.y) < 10) {
+                    activeLayerHandle = 'rotate';
+                    dragStartMouse = { x: mouseX, y: mouseY };
+                    initialLayerState = { x: l.x, y: l.y, angle: l.angle || 0, scale: l.scale !== undefined ? l.scale : 1 };
+                    return;
+                }
+                for (const id of ['nw', 'ne', 'sw', 'se']) {
+                    const hd = handles.corners[id];
+                    if (Math.hypot(mouseX - hd.x, mouseY - hd.y) < 11) {
+                        activeLayerHandle = id;
+                        dragStartMouse = { x: mouseX, y: mouseY };
+                        initialLayerState = { x: l.x, y: l.y, angle: l.angle || 0, scale: l.scale !== undefined ? l.scale : 1 };
+                        return;
+                    }
+                }
+                // Test se il click è dentro il bounding box (ruotato) del livello -> sposta
+                const dx0 = mouseX - handles.center.x, dy0 = mouseY - handles.center.y;
+                const angle = l.angle || 0;
+                const cos = Math.cos(-angle), sin = Math.sin(-angle);
+                const localX = dx0 * cos - dy0 * sin;
+                const localY = dx0 * sin + dy0 * cos;
+                const scale = l.scale !== undefined ? l.scale : 1;
+                const hw = (l.canvas.width * scale) / 2, hh = (l.canvas.height * scale) / 2;
+                if (Math.abs(localX) <= hw && Math.abs(localY) <= hh) {
+                    activeLayerHandle = 'move';
+                    dragStartMouse = { x: mouseX, y: mouseY };
+                    initialLayerState = { x: l.x, y: l.y, angle: l.angle || 0, scale: l.scale !== undefined ? l.scale : 1 };
+                    return;
+                }
+            }
+
+            if (textLayers.length > 0) {
+                const frameStyle = document.getElementById('frameStyle').value;
+                const borderWidth = frameStyle !== 'none' ? parseInt(document.getElementById('rangeBorderThick').value) : 0;
+
+                // 1) Prova prima le maniglie del testo ATTIVO (solo lui le mostra)
+                const activeT = activeTextLayer();
+                if (activeT && (activeT.text || '').trim()) {
+                    const localX = mouseX - (borderWidth + activeT.x);
+                    const localY = mouseY - (borderWidth + activeT.y);
+                    const cos = Math.cos(-activeT.angle), sin = Math.sin(-activeT.angle);
+                    const rotX = (localX * cos - localY * sin) / activeT.scale;
+                    const rotY = (localX * sin + localY * cos) / activeT.scale;
+
+                    const handles = getWmHandleCoords(activeT);
+                    for (const hd of handles) {
+                        if (Math.abs(rotX - hd.x) < 10 && Math.abs(rotY - hd.y) < 10) {
+                            activeWmHandle = hd.id;
+                            dragStartMouse = { x: mouseX, y: mouseY };
+                            initialWmState = { ...activeT };
+                            return;
+                        }
+                    }
+
+                    const halfW = activeT.w / 2 + 6, halfH = activeT.h / 2 + 6;
+                    if (rotX >= -halfW && rotX <= halfW && rotY >= -halfH && rotY <= halfH) {
+                        activeWmHandle = 'move';
+                        dragStartMouse = { x: mouseX, y: mouseY };
+                        initialWmState = { ...activeT };
+                        return;
+                    }
+                }
+
+                // 2) Altrimenti, testa il corpo di ogni testo (dall'ultimo aggiunto, il più "in cima"):
+                // un click su un testo non attivo lo seleziona e lo prende subito per spostarlo.
+                for (let i = textLayers.length - 1; i >= 0; i--) {
+                    const t = textLayers[i];
+                    if (!(t.text || '').trim()) continue;
+                    const localX = mouseX - (borderWidth + t.x);
+                    const localY = mouseY - (borderWidth + t.y);
+                    const cos = Math.cos(-t.angle), sin = Math.sin(-t.angle);
+                    const rotX = (localX * cos - localY * sin) / t.scale;
+                    const rotY = (localX * sin + localY * cos) / t.scale;
+                    const halfW = t.w / 2 + 6, halfH = t.h / 2 + 6;
+                    if (rotX >= -halfW && rotX <= halfW && rotY >= -halfH && rotY <= halfH) {
+                        activeTextIndex = i;
+                        updateTextsUI();
+                        loadTextSettingsToUI();
+                        activeWmHandle = 'move';
+                        dragStartMouse = { x: mouseX, y: mouseY };
+                        initialWmState = { ...t };
+                        return;
+                    }
+                }
+            }
+
+            if (activeTool === 'crop') {
+                cropStart = { x: mouseX, y: mouseY };
+                cropEnd = { x: mouseX, y: mouseY };
+                isDraggingCrop = true;
+            } else if (activeTool === 'select-rect') {
+                selectionRect = { x: mouseX, y: mouseY, w: 0, h: 0 };
+                isSelecting = true;
+            } else if (activeTool === 'select-free') {
+                selectionPoints = [{ x: mouseX, y: mouseY }];
+                isSelecting = true;
+            } else if (activeTool === 'select-poly') {
+                if (selectionPoints.length >= 3) {
+                    const first = selectionPoints[0];
+                    const dist = Math.hypot(mouseX - first.x, mouseY - first.y);
+                    if (dist < 15) {
+                        isPolygonClosed = true;
+                        render(drawOverlay);
+                        return;
+                    }
+                }
+                if (!isPolygonClosed) {
+                    selectionPoints.push({ x: mouseX, y: mouseY });
+                    render(drawOverlay);
+                }
+            } else if (activeTool === 'none') {
+                startPan(e.clientX, e.clientY);
+            }
+        });
+
+        function startPan(clientX, clientY) {
+            isPanning = true;
+            panStartX = clientX;
+            panStartY = clientY;
+            panScrollStartX = viewport.scrollLeft;
+            panScrollStartY = viewport.scrollTop;
+            viewport.classList.add('pan-mode', 'panning');
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            if (isPanning) {
+                viewport.scrollLeft = panScrollStartX - (e.clientX - panStartX);
+                viewport.scrollTop = panScrollStartY - (e.clientY - panStartY);
+                return;
+            }
+
+            if (!masterImage) return;
+            const { x: mouseX, y: mouseY } = screenToCanvasCoords(e.clientX, e.clientY);
+
+            if (activeLayerHandle) {
+                const l = layers[activeLayerIndex];
+                const dx = mouseX - dragStartMouse.x;
+                const dy = mouseY - dragStartMouse.y;
+
+                if (activeLayerHandle === 'move') {
+                    l.x = initialLayerState.x + dx;
+                    l.y = initialLayerState.y + dy;
+                } else if (activeLayerHandle === 'rotate') {
+                    const frameStyle = document.getElementById('frameStyle').value;
+                    const borderWidth = frameStyle !== 'none' ? parseInt(document.getElementById('rangeBorderThick').value) : 0;
+                    const scale = initialLayerState.scale;
+                    const cx = borderWidth + initialLayerState.x + (l.canvas.width * scale) / 2;
+                    const cy = borderWidth + initialLayerState.y + (l.canvas.height * scale) / 2;
+                    l.angle = Math.atan2(mouseY - cy, mouseX - cx) + Math.PI / 2;
+                } else if (['nw', 'ne', 'sw', 'se'].includes(activeLayerHandle)) {
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const growing = (activeLayerHandle === 'se') ? (dx > 0 || dy > 0)
+                        : (activeLayerHandle === 'nw') ? (dx < 0 || dy < 0)
+                        : (activeLayerHandle === 'ne') ? (dx > 0 || dy < 0)
+                        : (dx < 0 || dy > 0);
+                    const factor = growing ? 1 + (dist / 200) : Math.max(0.15, 1 - (dist / 200));
+                    const newScale = Math.max(0.1, initialLayerState.scale * factor);
+                    // Ridimensiona mantenendo fisso il centro del livello
+                    const oldCw = l.canvas.width * initialLayerState.scale;
+                    const oldCh = l.canvas.height * initialLayerState.scale;
+                    const centerX = initialLayerState.x + oldCw / 2;
+                    const centerY = initialLayerState.y + oldCh / 2;
+                    const newCw = l.canvas.width * newScale;
+                    const newCh = l.canvas.height * newScale;
+                    l.scale = newScale;
+                    l.x = centerX - newCw / 2;
+                    l.y = centerY - newCh / 2;
+                }
+                scheduleRender(true);
+                return;
+            }
+
+            if (activeWmHandle) {
+                const t = activeTextLayer();
+                if (!t) { activeWmHandle = null; return; }
+                const dx = mouseX - dragStartMouse.x;
+                const dy = mouseY - dragStartMouse.y;
+
+                if (activeWmHandle === 'move') {
+                    t.x = initialWmState.x + dx;
+                    t.y = initialWmState.y + dy;
+                } else if (activeWmHandle === 'rotate') {
+                    const frameStyle = document.getElementById('frameStyle').value;
+                    const borderWidth = frameStyle !== 'none' ? parseInt(document.getElementById('rangeBorderThick').value) : 0;
+                    const cx = borderWidth + initialWmState.x;
+                    const cy = borderWidth + initialWmState.y;
+                    t.angle = Math.atan2(mouseY - cy, mouseX - cx) + Math.PI / 2;
+                } else if (['nw', 'ne', 'sw', 'se'].includes(activeWmHandle)) {
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const factor = (dx > 0 || dy < 0) ? 1 + (dist / 200) : Math.max(0.2, 1 - (dist / 200));
+                    t.scale = Math.max(0.3, initialWmState.scale * factor);
+                }
+                render(drawOverlay);
+                return;
+            }
+
+            if (activeTool === 'crop' && isDraggingCrop) {
+                if (cropRatio) {
+                    // Vincola il rettangolo trascinato manualmente al rapporto scelto:
+                    // segno di dx/dy segue il mouse, ma l'altro lato è ricalcolato in proporzione.
+                    const dx = mouseX - cropStart.x;
+                    const dy = mouseY - cropStart.y;
+                    const signX = dx < 0 ? -1 : 1;
+                    const signY = dy < 0 ? -1 : 1;
+                    const targetRatio = cropRatio.w / cropRatio.h;
+                    // Usa il lato più "deciso" dal movimento del mouse come riferimento
+                    let w = Math.abs(dx), h = Math.abs(dy);
+                    if (w / (h || 1) > targetRatio) {
+                        w = h * targetRatio;
+                    } else {
+                        h = w / targetRatio;
+                    }
+                    cropEnd = { x: cropStart.x + signX * w, y: cropStart.y + signY * h };
+                } else {
+                    cropEnd = { x: mouseX, y: mouseY };
+                }
+                render(drawOverlay);
+            } else if (activeTool === 'select-rect' && isSelecting) {
+                selectionRect.w = mouseX - selectionRect.x;
+                selectionRect.h = mouseY - selectionRect.y;
+                render(drawOverlay);
+            } else if (activeTool === 'select-free' && isSelecting) {
+                selectionPoints.push({ x: mouseX, y: mouseY });
+                render(drawOverlay);
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isPanning) {
+                isPanning = false;
+                viewport.classList.remove('panning');
+                if (!spaceHeld) viewport.classList.remove('pan-mode');
+            }
+            if (activeWmHandle) {
+                saveState(true);
+                activeWmHandle = null;
+            }
+            if (activeLayerHandle) {
+                saveState(true);
+                activeLayerHandle = null;
+            }
+            if (activeTool === 'crop') isDraggingCrop = false;
+            if (activeTool === 'select-rect' || activeTool === 'select-free') isSelecting = false;
+        });
+
+        function drawOverlay() {
+            if (activeTool === 'crop' && (cropStart.x !== cropEnd.x)) {
+                const x = Math.min(cropStart.x, cropEnd.x);
+                const y = Math.min(cropStart.y, cropEnd.y);
+                const w = Math.abs(cropEnd.x - cropStart.x);
+                const h = Math.abs(cropEnd.y - cropStart.y);
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(x, y, w, h);
+                ctx.drawImage(workingCanvas, x, y, w, h, x, y, w, h);
+
+                ctx.strokeStyle = '#00f2fe';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([6, 3]);
+                ctx.strokeRect(x, y, w, h);
+                ctx.setLineDash([]);
+            } else if (selectionRect) {
+                ctx.strokeStyle = '#00f2fe';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([6, 3]);
+                ctx.strokeRect(selectionRect.x, selectionRect.y, selectionRect.w, selectionRect.h);
+                ctx.setLineDash([]);
+            } else if (selectionPoints.length > 0) {
+                ctx.strokeStyle = '#00f2fe';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(selectionPoints[0].x, selectionPoints[0].y);
+                for (const p of selectionPoints) ctx.lineTo(p.x, p.y);
+                if (isPolygonClosed) ctx.closePath();
+                ctx.stroke();
+
+                if (activeTool === 'select-poly' && !isPolygonClosed && selectionPoints.length >= 3) {
+                    ctx.fillStyle = '#ff0055';
+                    ctx.beginPath();
+                    ctx.arc(selectionPoints[0].x, selectionPoints[0].y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        function toggleCropMode() {
+            activeTool = (activeTool === 'crop') ? 'none' : 'crop';
+            const btn = document.getElementById('cropToggleBtn');
+            viewport.classList.toggle('crosshair', activeTool === 'crop');
+            if (activeTool === 'crop') {
+                btn.classList.add('active');
+                btn.textContent = 'Taglio Attivo ✂️';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = 'Attiva Crop ✂️';
+                cropRatio = null;
+                document.getElementById('cropPreset').value = '';
+                scheduleRender();
+            }
+        }
+
+        function applyCropPreset() {
+            const val = document.getElementById('cropPreset').value;
+            if (!masterImage) return;
+
+            if (!val) {
+                // "Proporzioni guida..." -> nessun vincolo, crop libero come prima
+                cropRatio = null;
+                return;
+            }
+
+            const [rw, rh] = val.split(':').map(Number);
+            cropRatio = { w: rw, h: rh };
+
+            // Non piazza più un rettangolo già pronto: attiva solo lo strumento crop
+            // vincolato al rapporto scelto. L'utente disegna manualmente sulla foto,
+            // come con il crop libero, ma larghezza/altezza restano proporzionali.
+            activeTool = 'crop';
+            viewport.classList.add('crosshair');
+            document.getElementById('cropToggleBtn').classList.add('active');
+            document.getElementById('cropToggleBtn').textContent = 'Taglio Attivo ✂️';
+
+            cropStart = { x: 0, y: 0 };
+            cropEnd = { x: 0, y: 0 };
+            render(drawOverlay);
+            showToast(`Rapporto ${val} impostato: disegna il ritaglio trascinando sulla foto`);
+        }
+
+        function changeSelectionMode() {
+            const mode = document.getElementById('selectMode').value;
+            selectionPoints = [];
+            selectionRect = null;
+            isPolygonClosed = false;
+            viewport.classList.toggle('crosshair', mode !== 'none');
+            if (mode === 'rect') activeTool = 'select-rect';
+            else if (mode === 'free') activeTool = 'select-free';
+            else if (mode === 'poly') activeTool = 'select-poly';
+            else { activeTool = 'none'; clearSelection(); }
+        }
+
+        function clearSelection() {
+            selectionRect = null;
+            selectionPoints = [];
+            isPolygonClosed = false;
+            document.getElementById('selectMode').value = 'none';
+            activeTool = 'none';
+            viewport.classList.remove('crosshair');
+            scheduleRender();
+        }
+
+        // ============================================================
+        // ESTRAZIONE SELEZIONE COME LIVELLO
+        // ============================================================
+        function extractSelectionAsLayer() {
+            if (!selectionRect && selectionPoints.length < 3) {
+                showToast("Effettua prima una selezione rettangolare, a lazo o poligonale chiusa!");
+                return;
+            }
+
+            const frameStyle = document.getElementById('frameStyle').value;
+            const borderWidth = frameStyle !== 'none' ? parseInt(document.getElementById('rangeBorderThick').value) : 0;
+
+            const extractedC = document.createElement('canvas');
+            let x, y, w, h;
+
+            if (selectionRect) {
+                x = selectionRect.x - borderWidth;
+                y = selectionRect.y - borderWidth;
+                w = Math.abs(selectionRect.w);
+                h = Math.abs(selectionRect.h);
+                if (selectionRect.w < 0) x = selectionRect.x - borderWidth + selectionRect.w;
+                if (selectionRect.h < 0) y = selectionRect.y - borderWidth + selectionRect.h;
+
+                if (w < 4 || h < 4) { showToast('Selezione troppo piccola'); return; }
+
+                extractedC.width = w; extractedC.height = h;
+                extractedC.getContext('2d').drawImage(workingCanvas, x, y, w, h, 0, 0, w, h);
+            } else {
+                const adjustedPoints = selectionPoints.map(p => ({ x: p.x - borderWidth, y: p.y - borderWidth }));
+
+                x = Math.min(...adjustedPoints.map(p => p.x));
+                y = Math.min(...adjustedPoints.map(p => p.y));
+                w = Math.max(...adjustedPoints.map(p => p.x)) - x;
+                h = Math.max(...adjustedPoints.map(p => p.y)) - y;
+
+                if (w < 10 || h < 10) { showToast('Selezione troppo piccola'); return; }
+                extractedC.width = w; extractedC.height = h;
+                const eCtx = extractedC.getContext('2d');
+
+                eCtx.beginPath();
+                eCtx.moveTo(adjustedPoints[0].x - x, adjustedPoints[0].y - y);
+                for (let i = 1; i < adjustedPoints.length; i++) {
+                    eCtx.lineTo(adjustedPoints[i].x - x, adjustedPoints[i].y - y);
+                }
+                eCtx.closePath();
+                eCtx.clip();
+
+                eCtx.drawImage(workingCanvas, -x, -y);
+            }
+
+            layers.push({
+                name: `Livello Sagoma ${layers.length}`,
+                canvas: extractedC,
+                x: x, y: y, angle: 0, scale: 1, visible: true, opacity: 100,
+                brightness: 0, contrast: 0, saturation: 100, sharpen: 0, blur: 0, filter: 'none',
+                exposure: 0, temperature: 0, hue: 0, shadows: 0, highlights: 0
+            });
+
+            activeLayerIndex = layers.length - 1;
+            updateLayersUI();
+            loadLayerSettingsToUI();
+            clearSelection();
+            saveState(true);
+            scheduleRender();
+            showToast('Livello estratto');
+        }
+
+        // ============================================================
+        // CROP
+        // ============================================================
+        function applyCrop() {
+            if (activeTool !== 'crop') { showToast('Attiva prima lo strumento Crop'); return; }
+            const frameStyle = document.getElementById('frameStyle').value;
+            const borderWidth = frameStyle !== 'none' ? parseInt(document.getElementById('rangeBorderThick').value) : 0;
+
+            const x = Math.min(cropStart.x, cropEnd.x) - borderWidth;
+            const y = Math.min(cropStart.y, cropEnd.y) - borderWidth;
+            const w = Math.abs(cropEnd.x - cropStart.x);
+            const h = Math.abs(cropEnd.y - cropStart.y);
+
+            if (w < 15 || h < 15) { showToast('Area di taglio troppo piccola'); return; }
+
+            // Registra il crop come frazioni 0-1 del livello di sfondo PRIMA del taglio,
+            // così può essere rieseguito identico su qualsiasi risoluzione (anche quella
+            // originale intatta) al momento dell'esportazione finale.
+            const bgW = layers[0].canvas.width, bgH = layers[0].canvas.height;
+            opLog.push({
+                type: 'crop',
+                xFrac: x / bgW, yFrac: y / bgH,
+                wFrac: w / bgW, hFrac: h / bgH
+            });
+
+            layers.forEach(l => {
+                const croppedC = document.createElement('canvas');
+                croppedC.width = w; croppedC.height = h;
+                const cCtx = croppedC.getContext('2d');
+                cCtx.drawImage(l.canvas, x - l.x, y - l.y, w, h, 0, 0, w, h);
+                l.canvas = croppedC;
+                l.x = 0; l.y = 0;
+            });
+
+            workingCanvas = layers[0].canvas;
+            originalAspect = w / h;
+            document.getElementById('resizeW').value = Math.round(w / workScale);
+            document.getElementById('resizeH').value = Math.round(h / workScale);
+
+            activeTool = 'none';
+            viewport.classList.remove('crosshair');
+            document.getElementById('cropToggleBtn').classList.remove('active');
+            document.getElementById('cropToggleBtn').textContent = 'Attiva Crop ✂️';
+            document.getElementById('cropPreset').value = '';
+            cropRatio = null;
+            scheduleRender(true);
+            saveState(true);
+            fitToScreen();
+            showToast('Taglio applicato');
+        }
+
+        // ============================================================
+        // ROTAZIONE & FLIP
+        // ============================================================
+        // Cattura lo stato attuale come punto di ripristino per "Reset Rotazione",
+        // ma solo se non ce n'è già uno in attesa: così più rotazioni consecutive
+        // tornano tutte allo stesso punto di partenza (prima della prima rotazione).
+        function markPreRotationState() {
+            if (!preRotationSnapshot) {
+                preRotationSnapshot = captureResetSnapshot();
+            }
+        }
+
+        function resetRotation() {
+            if (!masterImage || !preRotationSnapshot) {
+                showToast('Nessuna rotazione da annullare');
+                return;
+            }
+            const snap = preRotationSnapshot;
+            restoreFromSnapshot(snap, () => {
+                preRotationSnapshot = null;
+                saveState(true);
+                showToast('Rotazione ripristinata');
+            });
+        }
+
+        function rotateImage(deg) {
+            markPreRotationState();
+            const oldW = workingCanvas.width;
+            const oldH = workingCanvas.height;
+            const isQuarterTurn = (((deg % 360) + 360) % 360) !== 180;
+            const newW = isQuarterTurn ? oldH : oldW;
+            const newH = isQuarterTurn ? oldW : oldH;
+            const rad = (deg * Math.PI) / 180;
+
+            layers.forEach((l, idx) => {
+                const c = l.canvas;
+                const rotatedC = document.createElement('canvas');
+
+                if (idx === 0) {
+                    rotatedC.width = newW; rotatedC.height = newH;
+                    const rCtx = rotatedC.getContext('2d');
+                    rCtx.save();
+                    rCtx.translate(newW / 2, newH / 2);
+                    rCtx.rotate(rad);
+                    rCtx.drawImage(c, -oldW / 2, -oldH / 2);
+                    rCtx.restore();
+                    l.canvas = rotatedC;
+                    l.x = 0; l.y = 0;
+                } else {
+                    const centerOffsetX = (l.x + c.width / 2) - oldW / 2;
+                    const centerOffsetY = (l.y + c.height / 2) - oldH / 2;
+
+                    const cosA = Math.cos(rad), sinA = Math.sin(rad);
+                    const newCenterOffsetX = centerOffsetX * cosA - centerOffsetY * sinA;
+                    const newCenterOffsetY = centerOffsetX * sinA + centerOffsetY * cosA;
+
+                    const contentW = isQuarterTurn ? c.height : c.width;
+                    const contentH = isQuarterTurn ? c.width : c.height;
+                    rotatedC.width = contentW; rotatedC.height = contentH;
+                    const subCtx = rotatedC.getContext('2d');
+                    subCtx.save();
+                    subCtx.translate(contentW / 2, contentH / 2);
+                    subCtx.rotate(rad);
+                    subCtx.drawImage(c, -c.width / 2, -c.height / 2);
+                    subCtx.restore();
+
+                    l.canvas = rotatedC;
+                    l.x = Math.round(newW / 2 + newCenterOffsetX - contentW / 2);
+                    l.y = Math.round(newH / 2 + newCenterOffsetY - contentH / 2);
+                }
+            });
+
+            workingCanvas = layers[0].canvas;
+            originalAspect = workingCanvas.width / workingCanvas.height;
+            opLog.push({ type: 'rotate', deg });
+            document.getElementById('resizeW').value = Math.round(workingCanvas.width / workScale);
+            document.getElementById('resizeH').value = Math.round(workingCanvas.height / workScale);
+            scheduleRender(true);
+            saveState(true);
+            fitToScreen();
+        }
+
+        // Rotazione libera ad angolo arbitrario (non limitata a multipli di 90°).
+        // Espande il canvas base per contenere l'intera immagine ruotata senza tagliarla,
+        // e riposiziona coerentemente gli altri livelli attorno al nuovo centro.
+        function applyFreeRotate() {
+            const input = document.getElementById('freeRotateDeg');
+            const deg = parseFloat(input.value);
+            if (isNaN(deg) || deg === 0) {
+                showToast('Inserisci un valore in gradi (es. 40 o -120)');
+                return;
+            }
+
+            markPreRotationState();
+            const oldW = workingCanvas.width;
+            const oldH = workingCanvas.height;
+            const rad = (deg * Math.PI) / 180;
+            const cosA = Math.abs(Math.cos(rad)), sinA = Math.abs(Math.sin(rad));
+
+            const newW = Math.ceil(oldW * cosA + oldH * sinA);
+            const newH = Math.ceil(oldW * sinA + oldH * cosA);
+            const realRad = (deg * Math.PI) / 180;
+
+            layers.forEach((l, idx) => {
+                const c = l.canvas;
+                const rotatedC = document.createElement('canvas');
+
+                if (idx === 0) {
+                    rotatedC.width = newW; rotatedC.height = newH;
+                    const rCtx = rotatedC.getContext('2d');
+                    rCtx.save();
+                    rCtx.translate(newW / 2, newH / 2);
+                    rCtx.rotate(realRad);
+                    rCtx.drawImage(c, -oldW / 2, -oldH / 2);
+                    rCtx.restore();
+                    l.canvas = rotatedC;
+                    l.x = 0; l.y = 0;
+                } else {
+                    // I livelli extra mantengono canvas e dimensioni proprie: si sposta solo
+                    // la loro posizione/angolo per restare coerenti col nuovo centro immagine,
+                    // dato che sono già oggetti liberi trasformabili (angle/scale).
+                    const centerOffsetX = (l.x + c.width / 2) - oldW / 2;
+                    const centerOffsetY = (l.y + c.height / 2) - oldH / 2;
+                    const cos = Math.cos(realRad), sin = Math.sin(realRad);
+                    const newCenterOffsetX = centerOffsetX * cos - centerOffsetY * sin;
+                    const newCenterOffsetY = centerOffsetX * sin + centerOffsetY * cos;
+
+                    l.x = Math.round(newW / 2 + newCenterOffsetX - c.width / 2);
+                    l.y = Math.round(newH / 2 + newCenterOffsetY - c.height / 2);
+                    l.angle = (l.angle || 0) + realRad;
+                }
+            });
+
+            workingCanvas = layers[0].canvas;
+            originalAspect = workingCanvas.width / workingCanvas.height;
+            opLog.push({ type: 'freeRotate', deg });
+            document.getElementById('resizeW').value = Math.round(workingCanvas.width / workScale);
+            document.getElementById('resizeH').value = Math.round(workingCanvas.height / workScale);
+            input.value = '';
+            scheduleRender(true);
+            saveState(true);
+            fitToScreen();
+            showToast(`Ruotato di ${deg}°`);
+        }
+
+        function flipImage(dir) {
+            markPreRotationState();
+            const w = workingCanvas.width;
+            const h = workingCanvas.height;
+
+            layers.forEach((l, idx) => {
+                const c = l.canvas;
+                const flippedC = document.createElement('canvas');
+                flippedC.width = c.width; flippedC.height = c.height;
+                const fCtx = flippedC.getContext('2d');
+
+                fCtx.save();
+                if (dir === 'h') {
+                    fCtx.translate(c.width, 0);
+                    fCtx.scale(-1, 1);
+                } else {
+                    fCtx.translate(0, c.height);
+                    fCtx.scale(1, -1);
+                }
+                fCtx.drawImage(c, 0, 0);
+                fCtx.restore();
+
+                l.canvas = flippedC;
+
+                if (idx !== 0) {
+                    if (dir === 'h') l.x = w - (l.x + c.width);
+                    else l.y = h - (l.y + c.height);
+                }
+            });
+
+            workingCanvas = layers[0].canvas;
+            opLog.push({ type: 'flip', dir });
+            scheduleRender(true);
+            saveState(true);
+        }
+
+        // ============================================================
+        // RICOSTRUZIONE A PIENA RISOLUZIONE (per l'esportazione)
+        // ------------------------------------------------------------
+        // Ognuna di queste funzioni riproduce ESATTAMENTE la stessa logica delle
+        // funzioni di modifica principali (rotateImage, applyFreeRotate, flipImage,
+        // applyCrop, applyResize) ma su un singolo canvas, cosicché la sequenza
+        // registrata in opLog possa essere "rieseguita" partendo dalla foto
+        // originale intatta invece che da una copia già rimpicciolita.
+        // ============================================================
+        function replayRotate90(c, deg) {
+            const oldW = c.width, oldH = c.height;
+            const isQuarterTurn = (((deg % 360) + 360) % 360) !== 180;
+            const newW = isQuarterTurn ? oldH : oldW;
+            const newH = isQuarterTurn ? oldW : oldH;
+            const rad = (deg * Math.PI) / 180;
+            const rc = document.createElement('canvas');
+            rc.width = newW; rc.height = newH;
+            const rCtx = rc.getContext('2d');
+            rCtx.save();
+            rCtx.translate(newW / 2, newH / 2);
+            rCtx.rotate(rad);
+            rCtx.drawImage(c, -oldW / 2, -oldH / 2);
+            rCtx.restore();
+            return rc;
+        }
+
+        function replayFreeRotate(c, deg) {
+            const oldW = c.width, oldH = c.height;
+            const rad = (deg * Math.PI) / 180;
+            const cosA = Math.abs(Math.cos(rad)), sinA = Math.abs(Math.sin(rad));
+            const newW = Math.ceil(oldW * cosA + oldH * sinA);
+            const newH = Math.ceil(oldW * sinA + oldH * cosA);
+            const rc = document.createElement('canvas');
+            rc.width = newW; rc.height = newH;
+            const rCtx = rc.getContext('2d');
+            rCtx.save();
+            rCtx.translate(newW / 2, newH / 2);
+            rCtx.rotate(rad);
+            rCtx.drawImage(c, -oldW / 2, -oldH / 2);
+            rCtx.restore();
+            return rc;
+        }
+
+        function replayFlip(c, dir) {
+            const fc = document.createElement('canvas');
+            fc.width = c.width; fc.height = c.height;
+            const fCtx = fc.getContext('2d');
+            fCtx.save();
+            if (dir === 'h') { fCtx.translate(c.width, 0); fCtx.scale(-1, 1); }
+            else { fCtx.translate(0, c.height); fCtx.scale(1, -1); }
+            fCtx.drawImage(c, 0, 0);
+            fCtx.restore();
+            return fc;
+        }
+
+        function replayCrop(c, xFrac, yFrac, wFrac, hFrac) {
+            const bw = c.width, bh = c.height;
+            const x = Math.round(xFrac * bw), y = Math.round(yFrac * bh);
+            const w = Math.max(1, Math.round(wFrac * bw)), h = Math.max(1, Math.round(hFrac * bh));
+            const cc = document.createElement('canvas');
+            cc.width = w; cc.height = h;
+            cc.getContext('2d').drawImage(c, x, y, w, h, 0, 0, w, h);
+            return cc;
+        }
+
+        function replayResize(c, scaleX, scaleY) {
+            const rw = Math.max(1, Math.round(c.width * scaleX));
+            const rh = Math.max(1, Math.round(c.height * scaleY));
+            const rc = document.createElement('canvas');
+            rc.width = rw; rc.height = rh;
+            rc.getContext('2d').drawImage(c, 0, 0, rw, rh);
+            return rc;
+        }
+
+        function replayBackgroundOp(c, op) {
+            if (op.type === 'rotate') return replayRotate90(c, op.deg);
+            if (op.type === 'freeRotate') return replayFreeRotate(c, op.deg);
+            if (op.type === 'flip') return replayFlip(c, op.dir);
+            if (op.type === 'crop') return replayCrop(c, op.xFrac, op.yFrac, op.wFrac, op.hFrac);
+            if (op.type === 'resize') return replayResize(c, op.scaleX, op.scaleY);
+            return c;
+        }
+
+        // Ricostruisce il livello di sfondo a piena risoluzione ripartendo dalla foto
+        // originale intatta (masterImage) e rieseguendo ogni operazione geometrica
+        // registrata in opLog. Se lo stato non è più ricostruibile così (es. dopo
+        // "Unisci Tutto Livelli"), ritorna null: il chiamante userà un ingrandimento
+        // diretto del canvas di lavoro attuale come alternativa più semplice.
+        function buildFullResBackgroundCanvas() {
+            if (!bgReplayValid || !masterImage) return null;
+            let c = document.createElement('canvas');
+            c.width = masterImage.width;
+            c.height = masterImage.height;
+            c.getContext('2d').drawImage(masterImage, 0, 0);
+            opLog.forEach(op => { c = replayBackgroundOp(c, op); });
+            return c;
+        }
+
+        // ============================================================
+        // ESPORTAZIONE
+        // ------------------------------------------------------------
+        // L'anteprima a schermo lavora su una copia ridotta (vedi PREVIEW_MAX_SIDE),
+        // ma l'export ricostruisce il risultato alla risoluzione originale: il
+        // livello di sfondo viene rigenerato rieseguendo le operazioni geometriche
+        // sulla foto intatta, mentre livelli extra e testi vengono riproporzionati
+        // matematicamente (posizione e dimensione, non i pixel già disegnati).
+        // Il canvas visibile viene brevemente riutilizzato per il ridisegno ad alta
+        // risoluzione e poi riportato subito all'anteprima normale, così l'interfaccia
+        // non "salta" a schermo durante l'operazione.
+        // ============================================================
+        function exportImage() {
+            if (!masterImage) return;
+            const format = document.getElementById('exportFormat').value;
+            const quality = parseInt(document.getElementById('rangeQuality').value) / 100;
+            const ext = format.split('/')[1] === 'jpeg' ? 'jpg' : format.split('/')[1];
+
+            showToast('Preparazione immagine ad alta risoluzione...');
+
+            // Un breve rinvio lascia comparire il messaggio prima del lavoro pesante e
+            // sincrono di ricostruzione, così l'interfaccia non sembra bloccata senza motivo.
+            setTimeout(() => {
+                const exportSnapshot = buildExportSnapshot(format);
+                exportSnapshot.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `${originalFileName}_pro_v13.${ext}`;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    showToast('Immagine esportata alla risoluzione originale');
+                }, format, format === 'image/png' ? undefined : quality);
+            }, 30);
+        }
+
+        // Costruisce (in modo sincrono) il canvas finale a piena risoluzione, scambiando
+        // temporaneamente lo stato globale (livelli, testi, spessore cornice) con le
+        // versioni ricostruite/riproporzionate, riusando l'intera pipeline di render()
+        // già esistente, e ripristinando subito dopo lo stato di lavoro a schermo.
+        function buildExportSnapshot(format) {
+            const savedLayers = layers;
+            const savedTextLayers = textLayers;
+            const savedActiveTextIndex = activeTextIndex;
+            const savedLayerTransformMode = layerTransformMode;
+            const savedBorderThickValue = document.getElementById('rangeBorderThick').value;
+
+            let fullBg = buildFullResBackgroundCanvas();
+            let ratio;
+            if (fullBg) {
+                ratio = fullBg.width / layers[0].canvas.width;
+            } else {
+                // "Unisci Tutto Livelli" ha reso il livello di sfondo non ricostruibile
+                // dall'originale: si fa un ingrandimento diretto (leggermente più morbido)
+                // del canvas di lavoro attuale, invece della ricostruzione pixel-perfect.
+                ratio = workScale ? (1 / workScale) : 1;
+                fullBg = document.createElement('canvas');
+                fullBg.width = Math.max(1, Math.round(layers[0].canvas.width * ratio));
+                fullBg.height = Math.max(1, Math.round(layers[0].canvas.height * ratio));
+                fullBg.getContext('2d').drawImage(layers[0].canvas, 0, 0, fullBg.width, fullBg.height);
+            }
+
+            const fullLayers = [{ ...savedLayers[0], canvas: fullBg, x: 0, y: 0 }];
+            for (let i = 1; i < savedLayers.length; i++) {
+                const l = savedLayers[i];
+                const upC = document.createElement('canvas');
+                upC.width = Math.max(1, Math.round(l.canvas.width * ratio));
+                upC.height = Math.max(1, Math.round(l.canvas.height * ratio));
+                upC.getContext('2d').drawImage(l.canvas, 0, 0, upC.width, upC.height);
+                fullLayers.push({ ...l, canvas: upC, x: Math.round(l.x * ratio), y: Math.round(l.y * ratio) });
+            }
+
+            const fullTextLayers = savedTextLayers.map(t => ({
+                ...t,
+                x: t.x * ratio,
+                y: t.y * ratio,
+                size: t.size * ratio
+            }));
+
+            layers = fullLayers;
+            textLayers = fullTextLayers;
+            activeTextIndex = -1;       // nessuna maniglia di testo nell'export
+            layerTransformMode = false; // nessuna maniglia di livello nell'export
+            const frameStyle = document.getElementById('frameStyle').value;
+            if (frameStyle !== 'none') {
+                document.getElementById('rangeBorderThick').value = Math.round(savedBorderThickValue * ratio);
+            }
+
+            render(); // ridisegna il canvas visibile alla risoluzione piena, per un istante
+
+            let exportSourceCanvas;
+            if (format === 'image/jpeg') {
+                const flat = document.createElement('canvas');
+                flat.width = canvas.width; flat.height = canvas.height;
+                const fCtx = flat.getContext('2d');
+                fCtx.fillStyle = '#ffffff';
+                fCtx.fillRect(0, 0, flat.width, flat.height);
+                fCtx.drawImage(canvas, 0, 0);
+                exportSourceCanvas = flat;
+            } else {
+                exportSourceCanvas = document.createElement('canvas');
+                exportSourceCanvas.width = canvas.width;
+                exportSourceCanvas.height = canvas.height;
+                exportSourceCanvas.getContext('2d').drawImage(canvas, 0, 0);
+            }
+
+            // Ripristina subito lo stato di lavoro e ridisegna l'anteprima normale:
+            // tutto questo avviene prima che il browser abbia occasione di ridipingere
+            // lo schermo, quindi l'utente non vede alcun salto visivo.
+            layers = savedLayers;
+            textLayers = savedTextLayers;
+            activeTextIndex = savedActiveTextIndex;
+            layerTransformMode = savedLayerTransformMode;
+            document.getElementById('rangeBorderThick').value = savedBorderThickValue;
+            render();
+
+            return exportSourceCanvas;
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        let resizeDebounce = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeDebounce);
+            resizeDebounce = setTimeout(() => {
+                if (masterImage) applyZoomToDOM();
+            }, 150);
+        });
+
+        updateHistoryButtons();
+        updateTextsUI();
+    </script>
+</body>
+</html>

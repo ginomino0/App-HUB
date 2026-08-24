@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rinomina File in Blocco</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="file"] {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+        .input-row input[type="text"] {
+            flex: 2;
+        }
+        .input-row input[type="number"] {
+            flex: 1;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #555;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Rinomina File in Sequenza</h1>
+
+    <div class="container">
+        <label for="fileInput">1. Seleziona le immagini da rinominare:</label>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+
+        <label>2. Imposta il nome e il numero di partenza:</label>
+        <div class="input-row">
+            <input type="text" id="baseName" placeholder="Es. Igor" value="Igor">
+            <input type="number" id="startNum" placeholder="1" value="1" min="1">
+        </div>
+
+        <button id="processBtn">3. Rinomina e Scarica</button>
+        
+        <div id="status">In attesa di selezione...</div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const baseNameInput = document.getElementById('baseName');
+        const startNumInput = document.getElementById('startNum');
+        const processBtn = document.getElementById('processBtn');
+        const statusDiv = document.getElementById('status');
+
+        let selectedFiles = [];
+
+        fileInput.addEventListener('change', (e) => {
+            selectedFiles = Array.from(e.target.files);
+            statusDiv.textContent = `${selectedFiles.length} immagine/i selezionata/e.`;
+        });
+
+        processBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) {
+                statusDiv.textContent = "Errore: seleziona prima almeno un'immagine!";
+                return;
+            }
+
+            const baseName = baseNameInput.value.trim();
+            let startNum = parseInt(startNumInput.value);
+
+            if (!baseName) {
+                alert("Inserisci un nome base!");
+                return;
+            }
+            if (isNaN(startNum)) {
+                startNum = 1;
+            }
+
+            processBtn.disabled = true;
+            statusDiv.textContent = "Rinomino e scarico i file...";
+
+            try {
+                let currentNum = startNum;
+
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
+                    
+                    // Estrai l'estensione (es. .jpg, .png)
+                    const extension = file.name.substring(file.name.lastIndexOf('.'));
+
+                    // Crea il nuovo nome: "Igor 1.jpg", "Igor 2.jpg", ecc.
+                    const newFileName = `${baseName} ${currentNum}${extension}`;
+
+                    // Creo un link fittizio per forzare il download del file originale con il nuovo nome
+                    const url = URL.createObjectURL(file);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = newFileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    // Aggiorna lo stato
+                    statusDiv.textContent = `Scaricato: ${newFileName}`;
+                    
+                    // Incrementa il numero
+                    currentNum++;
+
+                    // Piccola pausa per evitare che il browser blocchi i download troppo ravvicinati
+                    await new Promise(r => setTimeout(r, 500)); 
+                }
+
+                statusDiv.textContent = `Operazione completata! Scaricati ${selectedFiles.length} file.`;
+                processBtn.disabled = false;
+
+            } catch (error) {
+                console.error(error);
+                statusDiv.textContent = "Errore durante l'operazione: " + error.message;
+                processBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
