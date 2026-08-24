@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App Hub</title>
+<style>
+  :root{
+    --bg: #0b0f19;
+    --panel: #111827;
+    --panel-hover: #1a2333;
+    --border: #263042;
+    --text: #f3f4f6;
+    --text-dim: #8b96a8;
+    --accent: #6366f1;
+    --accent-glow: rgba(99,102,241,0.18);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background: radial-gradient(circle at top, #121826 0%, #080a10 65%);
+    color: var(--text);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    padding: 50px 20px 70px;
+  }
+  .wrap{ max-width: 1000px; margin: 0 auto; }
+
+  header{ text-align:center; margin-bottom: 40px; }
+  header h1{
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #818cf8, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  header p{ color: var(--text-dim); font-size: 0.95rem; }
+
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 18px;
+  }
+
+  .app-card{
+    display: block;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    position: relative;
+  }
+  .app-card:hover{
+    background: var(--panel-hover);
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px var(--accent-glow);
+  }
+
+  .app-name{
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .app-desc{
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .app-footer{
+    margin-top: 14px;
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  footer{
+    text-align:center;
+    margin-top: 50px;
+    font-size: 0.78rem;
+    color: #3d4759;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>App Hub</h1>
+    <p>Raccolta di strumenti — clicca per aprire</p>
+  </header>
+
+  <div class="grid">
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/dxd3624rd23lg0xxbepcz/qr-generator.html?rlkey=w46av904cjq4fhuajlzzus85f&st=ih51qpvg&dl=1" target="_blank">
+      <div class="app-name">QR Code Studio Pro</div>
+      <div class="app-desc">Genera codici QR personalizzabili a partire da testo, link o altri dati, pronti da scaricare.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/hzv6mtidwodcgdnwul65b/radioweb.html?rlkey=bh1k977ihusomcjpkp201jzk2&st=vunemy4i&dl=1" target="_blank">
+      <div class="app-name">Radio Italia Ufficiale — FM Tuner</div>
+      <div class="app-desc">Sintonizzatore per ascoltare in streaming le principali radio italiane con un'interfaccia in stile tuner FM.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/43u46hubr3d3l02x96h6z/ortofoto-composer.html?rlkey=jte2vomiv9s9vtmt4w2onmltj&st=h9yn3pt0&dl=1" target="_blank">
+      <div class="app-name">Ortofoto Composer</div>
+      <div class="app-desc">Compone mappe ad alta risoluzione unendo ritagli geografici esatti da Geoportale Lombardia, ESRI e OpenStreetMap.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/c3x7ld6mfa3o4rwdc9pd0/Photo-Studio-Web-Pro.html?rlkey=c9mhppcwdgviy9sk59ybix9il&st=fvpldv8l&dl=1" target="_blank">
+      <div class="app-name">Photoshop Lite — Studio Pro</div>
+      <div class="app-desc">Editor fotografico nel browser con strumenti di ritocco, filtri e regolazioni avanzate, senza installazioni.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/ud3851k1u6yzyc2uhvupz/PixelArt-Ico.html?rlkey=g0arufo00e0wgr385q1z1xy9t&st=n6vsfoe8&dl=1" target="_blank">
+      <div class="app-name">Pixel Art Studio Pro</div>
+      <div class="app-desc">Editor per creare disegni in pixel art e icone, con griglia, palette colori e esportazione dell'immagine.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/e6jja2o7vd96o5rqup2wo/Programma-ImageResizer-Pro.html?rlkey=jjmpkueqfrgrpuf9ag7pkozuf&st=c3xw8lo4&dl=1" target="_blank">
+      <div class="app-name">ImageResizer Pro</div>
+      <div class="app-desc">Ridimensiona e converte in blocco più immagini contemporaneamente, con esportazione in archivio ZIP.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/ite31c95c163lg2m1hlz1/Text-transformer.html?rlkey=lbv7jxryxylo0zxt8ij8ayfua&st=x638jdcl&dl=1" target="_blank">
+      <div class="app-name">Text Transformer</div>
+      <div class="app-desc">Trasforma un testo in stili diversi in tempo reale: al contrario, alternato, spaziato, grassetto e altri.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/2qbnapviyuoaxyxr5mrhi/Appunti-veloci.html?rlkey=it810jev626l4g8j3a0d0le0t&st=3ob3sgt8&dl=1" target="_blank">
+      <div class="app-name">Sticky Notes Dashboard</div>
+      <div class="app-desc">Bacheca di post-it digitali colorati per appunti veloci, con salvataggio automatico nel browser.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/0k0caiaeza7amvsr92utn/Motori-per-icone.html?rlkey=7cf6gew1lk2mhkgyyqhux8qhs&st=di61jm6d&dl=1" target="_blank">
+      <div class="app-name">Icon Hub</div>
+      <div class="app-desc">Portale con collegamenti rapidi ai migliori archivi web di icone, filtrabili per categoria e ricerca.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/lov9pxqawc45n9recr6bs/Programma-foto-rinomina-nome-sequenziale.html?rlkey=dkx230u6xpvm4hkxy7rfnpn80&st=1mn2o6mr&dl=1" target="_blank">
+      <div class="app-name">Rinomina File in Blocco</div>
+      <div class="app-desc">Rinomina in sequenza più immagini con un nome base e numero di partenza a scelta, scaricandole già rinominate.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" href="https://dl.dropboxusercontent.com/scl/fi/k1hxp9inqy2y9jvya2zb5/Programma-Test-Tv-M3u.html?rlkey=rrzojw20o8psl85rzanxccc56&st=mbfj56cw&dl=1" target="_blank">
+      <div class="app-name">IPTV Stream Checker</div>
+      <div class="app-desc">Estrae e verifica in blocco i canali da una lista M3U, separando quelli funzionanti da quelli offline.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+  </div>
+
+  <footer>Collezione personale di strumenti — aggiornata periodicamente</footer>
+
+</div>
+</body>
+</html>
