@@ -91,7 +91,7 @@
 
         <label>2. Imposta il nome e il numero di partenza:</label>
         <div class="input-row">
-            <input type="text" id="baseName" placeholder="Es. Igor" value="Igor">
+            <input type="text" id="baseName" placeholder="es. nome del file scelto" value="">
             <input type="number" id="startNum" placeholder="1" value="1" min="1">
         </div>
 
@@ -143,10 +143,10 @@
                     // Estrai l'estensione (es. .jpg, .png)
                     const extension = file.name.substring(file.name.lastIndexOf('.'));
 
-                    // Crea il nuovo nome: "Igor 1.jpg", "Igor 2.jpg", ecc.
+                    // Crea il nuovo nome
                     const newFileName = `${baseName} ${currentNum}${extension}`;
 
-                    // Creo un link fittizio per forzare il download del file originale con il nuovo nome
+                    // Link fittizio per il download
                     const url = URL.createObjectURL(file);
                     const a = document.createElement('a');
                     a.href = url;
@@ -162,7 +162,7 @@
                     // Incrementa il numero
                     currentNum++;
 
-                    // Piccola pausa per evitare che il browser blocchi i download troppo ravvicinati
+                    // Pausa tra i download
                     await new Promise(r => setTimeout(r, 500)); 
                 }
 
