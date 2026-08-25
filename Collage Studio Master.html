@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collage Studio Master - Layout Multipli</title>
+    <style>
+        :root {
+            --bg-color: #121215;
+            --panel-bg: #1e1e24;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text: #f3f4f6;
+            --border: #3f3f46;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+        .sidebar {
+            width: 360px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        h2 { font-size: 1.1rem; color: #fff; text-align: center; }
+
+        .section {
+            background: rgba(255,255,255,0.03);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label { font-size: 0.8rem; color: #a1a1aa; display: flex; justify-content: space-between; align-items: center; }
+
+        input[type="file"] { display: none; }
+        .btn {
+            background-color: var(--accent); color: white; padding: 8px 12px;
+            border: none; border-radius: 6px; cursor: pointer; font-weight: 600;
+            text-align: center; width: 100%; display: block; font-size: 0.9rem;
+        }
+        .btn:hover { background-color: var(--accent-hover); }
+
+        .layout-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .layout-btn {
+            aspect-ratio: 1;
+            background: #27272a;
+            border: 2px solid #3f3f46;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .layout-btn:hover, .layout-btn.active { border-color: var(--accent); background: #3f3f46; }
+
+        .l-icon { position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px; display: flex; gap: 2px; }
+        .l-icon .col { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .l-icon .cell { background: #fff; flex: 1; border-radius: 1px; }
+
+        select, input[type="range"] {
+            width: 100%;
+            background-color: #27272a;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px;
+            accent-color: var(--accent);
+        }
+
+        .flex-row { display: flex; gap: 10px; align-items: center; }
+        input[type="color"] { border: none; width: 35px; height: 25px; border-radius: 4px; cursor: pointer; background: none; }
+
+        .workspace { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; position: relative; }
+        
+        .outer-frame-wrapper {
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        .collage-container {
+            width: 580px;
+            height: 580px;
+            background-color: #ffffff;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+        }
+
+        .flex-col { display: flex; flex-direction: column; height: 100%; }
+        .flex-row-box { display: flex; flex-direction: row; width: 100%; height: 100%; }
+
+        .photo-slot {
+            position: relative;
+            overflow: hidden;
+            cursor: move;
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        .photo-slot.drag-over {
+            outline: 3px dashed var(--accent);
+            outline-offset: -3px;
+        }
+
+        .photo-slot img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            max-width: none;
+            max-height: none;
+            pointer-events: none;
+        }
+
+        /* Maniglie negli Angoli */
+        .handle-btn {
+            position: absolute;
+            top: 6px;
+            background: rgba(0, 0, 0, 0.65);
+            color: #fff;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 15;
+            opacity: 0.3;
+            transition: opacity 0.2s, background 0.2s;
+            backdrop-filter: blur(2px);
+        }
+        .photo-slot:hover .handle-btn { opacity: 1; }
+        .handle-btn:hover { background: var(--accent); }
+
+        .swap-handle { left: 6px; cursor: grab; }
+        .rotate-handle { right: 6px; cursor: pointer; }
+
+        /* Pattern Spaziatura */
+        .pattern-dots { background-image: radial-gradient(#aaa 15%, transparent 16%); background-size: 8px 8px; }
+        .pattern-stripes { background: repeating-linear-gradient(45deg, #ccc, #ccc 5px, #fff 5px, #fff 10px); }
+
+        /* Stili Cornici Foto */
+        .frame-photo-simple { border: 3px solid var(--frame-photo-color, #000); }
+        .frame-photo-double { border: 5px double var(--frame-photo-color, #000); }
+        .frame-photo-rounded { border-radius: 10px; }
+        .frame-photo-shadow { box-shadow: inset 0 0 12px rgba(0,0,0,0.5); }
+
+        /* MANIGLIE DI RIDIMENSIONAMENTO */
+        .slot-resizer {
+            position: absolute;
+            background: rgba(99, 102, 241, 0.6);
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+        .photo-slot:hover .slot-resizer, .slot-resizer.active { opacity: 1; }
+        .slot-resizer:hover, .slot-resizer.active { background: var(--accent); }
+
+        .slot-resizer.resizer-r { top: 0; right: 0; width: 6px; height: 100%; cursor: col-resize; }
+        .slot-resizer.resizer-b { bottom: 0; left: 0; width: 100%; height: 6px; cursor: row-resize; }
+
+        .btn-download { background-color: #10b981; margin-top: auto; }
+        .btn-download:hover { background-color: #059669; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <h2>Collage Studio Master</h2>
+
+        <div class="section">
+            <button class="btn" onclick="document.getElementById('imageLoader').click()">Carica Foto</button>
+            <input type="file" id="imageLoader" multiple accept="image/*">
+            <span id="fileCount" style="font-size: 0.75rem; color: #a1a1aa; text-align: center;">0 foto caricate</span>
+        </div>
+
+        <div class="section">
+            <label>Modelli Layout (<span id="layoutCount">0</span> disponibili)</label>
+            <div id="layoutSelectors" class="layout-selector"></div>
+        </div>
+
+        <!-- Cornice Riquadro Totale -->
+        <div class="section">
+            <label><strong>Cornice Riquadro Esterno</strong></label>
+            <select id="outerFrameStyle">
+                <option value="none">Nessuna Cornice Esterna</option>
+                <option value="simple">Bordo Solido</option>
+                <option value="double">Doppio Bordo</option>
+                <option value="passepartout">Stile Passepartout (Largo)</option>
+                <option value="shadow">Ombra Esterna</option>
+            </select>
+
+            <label style="margin-top: 5px;">Spessore Cornice <span id="outerBorderVal">0px</span></label>
+            <input type="range" id="outerBorderSize" min="0" max="40" value="0">
+
+            <label style="margin-top: 5px;">Arrotondamento Angoli <span id="outerRadiusVal">0px</span></label>
+            <input type="range" id="outerRadius" min="0" max="40" value="0">
+
+            <div class="flex-row" style="margin-top: 5px;">
+                <label>Colore Cornice Esterna</label>
+                <input type="color" id="outerBorderColor" value="#000000">
+            </div>
+        </div>
+
+        <!-- Spaziature Interne -->
+        <div class="section">
+            <label>Spaziatura Tra Foto <span id="gapVal">4px</span></label>
+            <input type="range" id="gapSlider" min="0" max="30" value="4">
+
+            <label style="margin-top: 5px;">Tipo Spaziatura / Sfondo</label>
+            <select id="bgType">
+                <option value="color">Colore Solido</option>
+                <option value="dots">Pattern a Pallini</option>
+                <option value="stripes">Pattern a Righe</option>
+            </select>
+
+            <div class="flex-row" style="margin-top: 5px;">
+                <label>Colore Spazio</label>
+                <input type="color" id="bgColor" value="#ffffff">
+            </div>
+        </div>
+
+        <!-- Cornici Foto -->
+        <div class="section">
+            <label>Cornice Singole Foto</label>
+            <select id="photoFrameStyle">
+                <option value="none">Nessuna</option>
+                <option value="frame-photo-simple">Bordo Semplice</option>
+                <option value="frame-photo-double">Doppio Bordo</option>
+                <option value="frame-photo-rounded">Angoli Arrotondati</option>
+                <option value="frame-photo-shadow">Ombra Interna</option>
+            </select>
+
+            <div class="flex-row" style="margin-top: 5px;">
+                <label>Colore Bordo Foto</label>
+                <input type="color" id="photoBorderColor" value="#000000">
+            </div>
+        </div>
+
+        <div class="section">
+            <label>Filtro Immagini</label>
+            <select id="filterStyle">
+                <option value="none">Originale</option>
+                <option value="grayscale(100%)">Bianco e Nero</option>
+                <option value="sepia(80%)">Sepia / Vintage</option>
+                <option value="contrast(140%)">Alto Contrasto</option>
+                <option value="saturate(180%)">Colori Saturi</option>
+            </select>
+        </div>
+
+        <button class="btn btn-download" onclick="exportCollage()">Scarica PNG High-Res</button>
+    </aside>
+
+    <main class="workspace">
+        <div id="outerWrapper" class="outer-frame-wrapper">
+            <div id="collage" class="collage-container">
+                <span style="color: #6b7280; margin: auto;">Carica le foto per iniziare</span>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script>
+        const collageEl = document.getElementById('collage');
+        const outerWrapper = document.getElementById('outerWrapper');
+        const layoutSelectorsEl = document.getElementById('layoutSelectors');
+        let loadedImages = [];
+        let currentLayoutIndex = 0;
+
+        let imageStates = [];
+        let generatedLayouts = [];
+        let currentTree = null;
+
+        document.getElementById('imageLoader').addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            
+            loadedImages = [];
+            imageStates = [];
+            let loadedCount = 0;
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        loadedImages.push(event.target.result);
+                        imageStates.push({ x: 0, y: 0, scale: 1.0, rotate: 0, width: img.naturalWidth, height: img.naturalHeight });
+                        loadedCount++;
+                        if (loadedCount === files.length) {
+                            document.getElementById('fileCount').textContent = `${loadedImages.length} foto caricate`;
+                            currentLayoutIndex = 0;
+                            generateAllLayouts(loadedImages.length);
+                            updateLayoutOptions();
+                            initLayoutTree();
+                            renderCollage();
+                        }
+                    };
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Genera automaticamente tutte le permutazioni possibili di colonne/righe per N foto
+        function generateAllLayouts(n) {
+            generatedLayouts = [];
+            if (n <= 0) return;
+
+            // Algoritmo di partizione del numero N in somma di interi
+            function getPartitions(target, maxVal) {
+                if (target === 0) return [[]];
+                let res = [];
+                for (let i = 1; i <= Math.min(target, maxVal); i++) {
+                    let subPartitions = getPartitions(target - i, i);
+                    for (let sub of subPartitions) {
+                        res.push([i, ...sub]);
+                    }
+                }
+                return res;
+            }
+
+            // Permutazioni uniche per variare l'ordine delle colonne
+            function getPermutations(arr) {
+                if (arr.length <= 1) return [arr];
+                let result = [];
+                for (let i = 0; i < arr.length; i++) {
+                    let current = arr[i];
+                    let remaining = arr.slice(0, i).concat(arr.slice(i + 1));
+                    let remainingPerms = getPermutations(remaining);
+                    for (let perm of remainingPerms) {
+                        result.push([current, ...perm]);
+                    }
+                }
+                return result;
+            }
+
+            let partitions = getPartitions(n, n);
+            let seen = new Set();
+
+            partitions.forEach(part => {
+                let perms = getPermutations(part);
+                perms.forEach(p => {
+                    let key = p.join('-');
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        // Converti ogni numero di riga in un array di flex (es. 3 -> [1, 1, 1])
+                        let cols = p.map(rowCount => Array(rowCount).fill(1));
+                        generatedLayouts.push({ cols });
+                    }
+                });
+            });
+        }
+
+        function updateLayoutOptions() {
+            layoutSelectorsEl.innerHTML = '';
+            document.getElementById('layoutCount').textContent = generatedLayouts.length;
+
+            generatedLayouts.forEach((preset, index) => {
+                const btn = document.createElement('button');
+                btn.className = `layout-btn ${index === currentLayoutIndex ? 'active' : ''}`;
+                btn.onclick = () => {
+                    currentLayoutIndex = index;
+                    initLayoutTree();
+                    renderCollage();
+                    updateLayoutOptions();
+                };
+
+                const icon = document.createElement('div');
+                icon.className = 'l-icon';
+                preset.cols.forEach(col => {
+                    const cDiv = document.createElement('div');
+                    cDiv.className = 'col';
+                    col.forEach(() => {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cDiv.appendChild(cell);
+                    });
+                    icon.appendChild(cDiv);
+                });
+
+                btn.appendChild(icon);
+                layoutSelectorsEl.appendChild(btn);
+            });
+        }
+
+        function initLayoutTree() {
+            if (generatedLayouts.length === 0) return;
+            let preset = generatedLayouts[currentLayoutIndex] || generatedLayouts[0];
+            
+            let imgIdx = 0;
+            currentTree = {
+                flex: 1,
+                cols: preset.cols.map(col => ({
+                    flex: 1,
+                    rows: col.map(flexVal => ({
+                        flex: flexVal,
+                        imgIndex: imgIdx++
+                    }))
+                }))
+            };
+        }
+
+        function updateTransform(imgEl, state, slotWidth, slotHeight) {
+            const isRotatedVertical = (state.rotate / 90) % 2 !== 0;
+            const currentWidth = isRotatedVertical ? state.height : state.width;
+            const currentHeight = isRotatedVertical ? state.width : state.height;
+
+            const scaleX = slotWidth / currentWidth;
+            const scaleY = slotHeight / currentHeight;
+            const baseScale = Math.max(scaleX, scaleY);
+            
+            const finalScale = baseScale * state.scale;
+            imgEl.style.width = `${state.width}px`;
+            imgEl.style.height = `${state.height}px`;
+            imgEl.style.transform = `translate(calc(-50% + ${state.x}px), calc(-50% + ${state.y}px)) rotate(${state.rotate}deg) scale(${finalScale})`;
+        }
+
+        function renderCollage() {
+            collageEl.innerHTML = '';
+            if (loadedImages.length === 0 || !currentTree) return;
+
+            const gap = parseInt(document.getElementById('gapSlider').value);
+            const filterStyle = document.getElementById('filterStyle').value;
+            const photoFrameStyle = document.getElementById('photoFrameStyle').value;
+            const photoBorderColor = document.getElementById('photoBorderColor').value;
+
+            const flexRowWrapper = document.createElement('div');
+            flexRowWrapper.className = 'flex-row-box';
+            flexRowWrapper.style.gap = `${gap}px`;
+
+            const numCols = currentTree.cols.length;
+
+            currentTree.cols.forEach((colData, colIdx) => {
+                const colEl = document.createElement('div');
+                colEl.className = 'flex-col';
+                colEl.style.flex = colData.flex;
+                colEl.style.gap = `${gap}px`;
+
+                const numRows = colData.rows.length;
+
+                colData.rows.forEach((rowData, rowIdx) => {
+                    const imgIndex = rowData.imgIndex;
+                    const state = imageStates[imgIndex] || { x: 0, y: 0, scale: 1.0, rotate: 0, width: 800, height: 600 };
+
+                    const slot = document.createElement('div');
+                    slot.className = `photo-slot ${photoFrameStyle}`;
+                    slot.style.flex = rowData.flex;
+                    slot.style.setProperty('--frame-photo-color', photoBorderColor);
+                    slot.dataset.col = colIdx;
+                    slot.dataset.row = rowIdx;
+
+                    const img = document.createElement('img');
+                    img.src = loadedImages[imgIndex];
+                    img.style.filter = filterStyle;
+                    
+                    slot.appendChild(img);
+
+                    requestAnimationFrame(() => {
+                        const rect = slot.getBoundingClientRect();
+                        updateTransform(img, state, rect.width, rect.height);
+                    });
+
+                    // Pulsante Inverti (Angolo Alto-Sinistra)
+                    const swapHandle = document.createElement('div');
+                    swapHandle.className = 'handle-btn swap-handle';
+                    swapHandle.innerHTML = '⇄ Inverti';
+                    swapHandle.setAttribute('draggable', true);
+                    addDragEvents(swapHandle, slot, imgIndex);
+                    slot.appendChild(swapHandle);
+
+                    // Pulsante Ruota (Angolo Alto-Destra)
+                    const rotateHandle = document.createElement('div');
+                    rotateHandle.className = 'handle-btn rotate-handle';
+                    rotateHandle.innerHTML = '⟳ Ruota';
+                    rotateHandle.onclick = (e) => {
+                        e.stopPropagation();
+                        imageStates[imgIndex].rotate = (imageStates[imgIndex].rotate + 90) % 360;
+                        const rect = slot.getBoundingClientRect();
+                        updateTransform(img, imageStates[imgIndex], rect.width, rect.height);
+                    };
+                    slot.appendChild(rotateHandle);
+
+                    addPanAndZoomEvents(slot, imgIndex, img);
+
+                    // Maniglia Destra
+                    if (colIdx < numCols - 1) {
+                        const resizerR = document.createElement('div');
+                        resizerR.className = 'slot-resizer resizer-r';
+                        makeColResizable(resizerR, colIdx);
+                        slot.appendChild(resizerR);
+                    }
+
+                    // Maniglia Inferiore
+                    if (rowIdx < numRows - 1) {
+                        const resizerB = document.createElement('div');
+                        resizerB.className = 'slot-resizer resizer-b';
+                        makeRowResizable(resizerB, colIdx, rowIdx);
+                        slot.appendChild(resizerB);
+                    }
+
+                    colEl.appendChild(slot);
+                });
+
+                flexRowWrapper.appendChild(colEl);
+            });
+
+            collageEl.appendChild(flexRowWrapper);
+            updateOuterFrame();
+        }
+
+        function addPanAndZoomEvents(slot, imgIndex, imgEl) {
+            slot.addEventListener('mousedown', (e) => {
+                if (e.target.classList.contains('handle-btn') || e.target.classList.contains('slot-resizer')) return;
+
+                e.preventDefault();
+                let startX = e.clientX;
+                let startY = e.clientY;
+
+                let initialX = imageStates[imgIndex].x;
+                let initialY = imageStates[imgIndex].y;
+
+                const onMouseMove = (moveEvent) => {
+                    let deltaX = moveEvent.clientX - startX;
+                    let deltaY = moveEvent.clientY - startY;
+
+                    imageStates[imgIndex].x = initialX + deltaX;
+                    imageStates[imgIndex].y = initialY + deltaY;
+
+                    const rect = slot.getBoundingClientRect();
+                    updateTransform(imgEl, imageStates[imgIndex], rect.width, rect.height);
+                };
+
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            slot.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const zoomFactor = 0.08;
+                let state = imageStates[imgIndex];
+
+                if (e.deltaY < 0) {
+                    state.scale = Math.min(state.scale + zoomFactor, 10.0);
+                } else {
+                    state.scale = Math.max(state.scale - zoomFactor, 0.05);
+                }
+
+                const rect = slot.getBoundingClientRect();
+                updateTransform(imgEl, state, rect.width, rect.height);
+            });
+        }
+
+        function makeColResizable(resizer, colIdx) {
+            resizer.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                resizer.classList.add('active');
+
+                const startX = e.clientX;
+                const leftCol = currentTree.cols[colIdx];
+                const rightCol = currentTree.cols[colIdx + 1];
+                const startLeftFlex = leftCol.flex;
+                const startRightFlex = rightCol.flex;
+
+                const onMouseMove = (moveEvent) => {
+                    const deltaX = moveEvent.clientX - startX;
+                    const sensitivity = 0.005;
+                    let newLeftFlex = startLeftFlex + deltaX * sensitivity;
+                    let newRightFlex = startRightFlex - deltaX * sensitivity;
+
+                    if (newLeftFlex > 0.1 && newRightFlex > 0.1) {
+                        leftCol.flex = newLeftFlex;
+                        rightCol.flex = newRightFlex;
+                        renderCollage();
+                    }
+                };
+
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        }
+
+        function makeRowResizable(resizer, colIdx, rowIdx) {
+            resizer.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                resizer.classList.add('active');
+
+                const startY = e.clientY;
+                const topRow = currentTree.cols[colIdx].rows[rowIdx];
+                const bottomRow = currentTree.cols[colIdx].rows[rowIdx + 1];
+                const startTopFlex = topRow.flex;
+                const startBottomFlex = bottomRow.flex;
+
+                const onMouseMove = (moveEvent) => {
+                    const deltaY = moveEvent.clientY - startY;
+                    const sensitivity = 0.005;
+                    let newTopFlex = startTopFlex + deltaY * sensitivity;
+                    let newBottomFlex = startBottomFlex - deltaY * sensitivity;
+
+                    if (newTopFlex > 0.1 && newBottomFlex > 0.1) {
+                        topRow.flex = newTopFlex;
+                        bottomRow.flex = newBottomFlex;
+                        renderCollage();
+                    }
+                };
+
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        }
+
+        let draggedImgIndex = null;
+        function addDragEvents(handle, slot, imgIndex) {
+            handle.addEventListener('dragstart', (e) => {
+                draggedImgIndex = imgIndex;
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                slot.classList.add('drag-over');
+            });
+
+            slot.addEventListener('dragleave', () => {
+                slot.classList.remove('drag-over');
+            });
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                slot.classList.remove('drag-over');
+                const targetCol = slot.dataset.col;
+                const targetRow = slot.dataset.row;
+                const targetImgIndex = currentTree.cols[targetCol].rows[targetRow].imgIndex;
+
+                if (draggedImgIndex !== null && draggedImgIndex !== targetImgIndex) {
+                    const tempImg = loadedImages[draggedImgIndex];
+                    loadedImages[draggedImgIndex] = loadedImages[targetImgIndex];
+                    loadedImages[targetImgIndex] = tempImg;
+
+                    const tempState = imageStates[draggedImgIndex];
+                    imageStates[draggedImgIndex] = imageStates[targetImgIndex];
+                    imageStates[targetImgIndex] = tempState;
+
+                    renderCollage();
+                }
+            });
+        }
+
+        function updateOuterFrame() {
+            const style = document.getElementById('outerFrameStyle').value;
+            const size = document.getElementById('outerBorderSize').value;
+            const radius = document.getElementById('outerRadius').value;
+            const color = document.getElementById('outerBorderColor').value;
+
+            document.getElementById('outerBorderVal').textContent = `${size}px`;
+            document.getElementById('outerRadiusVal').textContent = `${radius}px`;
+
+            outerWrapper.style.border = 'none';
+            outerWrapper.style.boxShadow = 'none';
+            outerWrapper.style.padding = '0px';
+            outerWrapper.style.borderRadius = `${radius}px`;
+            collageEl.style.borderRadius = `${radius}px`;
+
+            if (style === 'simple') {
+                outerWrapper.style.border = `${size}px solid ${color}`;
+            } else if (style === 'double') {
+                outerWrapper.style.border = `${size}px double ${color}`;
+            } else if (style === 'passepartout') {
+                outerWrapper.style.padding = `${size}px`;
+                outerWrapper.style.backgroundColor = color;
+            } else if (style === 'shadow') {
+                outerWrapper.style.boxShadow = `0 0 ${parseInt(size)+10}px ${color}`;
+            }
+        }
+
+        document.getElementById('gapSlider').addEventListener('input', (e) => {
+            document.getElementById('gapVal').textContent = `${e.target.value}px`;
+            renderCollage();
+        });
+
+        document.getElementById('bgColor').addEventListener('input', (e) => {
+            collageEl.style.backgroundColor = e.target.value;
+        });
+
+        document.getElementById('bgType').addEventListener('change', (e) => {
+            collageEl.classList.remove('pattern-dots', 'pattern-stripes');
+            if (e.target.value === 'dots') collageEl.classList.add('pattern-dots');
+            if (e.target.value === 'stripes') collageEl.classList.add('pattern-stripes');
+        });
+
+        document.getElementById('outerFrameStyle').addEventListener('change', updateOuterFrame);
+        document.getElementById('outerBorderSize').addEventListener('input', updateOuterFrame);
+        document.getElementById('outerRadius').addEventListener('input', updateOuterFrame);
+        document.getElementById('outerBorderColor').addEventListener('input', updateOuterFrame);
+
+        document.getElementById('photoFrameStyle').addEventListener('change', renderCollage);
+        document.getElementById('photoBorderColor').addEventListener('input', renderCollage);
+        document.getElementById('filterStyle').addEventListener('change', renderCollage);
+
+        function exportCollage() {
+            if (loadedImages.length === 0) return;
+
+            document.querySelectorAll('.slot-resizer').forEach(h => h.style.display = 'none');
+            document.querySelectorAll('.handle-btn').forEach(h => h.style.display = 'none');
+
+            html2canvas(outerWrapper, {
+                scale: 2,
+                useCORS: true
+            }).then(canvas => {
+                document.querySelectorAll('.slot-resizer').forEach(h => h.style.display = 'block');
+                document.querySelectorAll('.handle-btn').forEach(h => h.style.display = 'block');
+
+                const link = document.createElement('a');
+                link.download = `collage-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
