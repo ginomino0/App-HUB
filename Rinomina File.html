@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rinomina File in Blocco</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* === VARIABILI TEMA (ImageResizer Pro) === */
+        :root {
+            --bg: #0c0e14;
+            --bg-secondary: #12151e;
+            --card: #181c28;
+            --card-hover: #1e2333;
+            --border: #282d3e;
+            --border-hover: #3a4158;
+            --text: #e4e6ed;
+            --text-secondary: #7d829a;
+            --accent: #f59e0b;
+            --accent-hover: #fbbf24;
+            --accent-dim: rgba(245,158,11,0.12);
+            --accent-glow: rgba(245,158,11,0.08);
+            --success: #10b981;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
+        }
+
+        /* === RESET & BASE === */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding: 40px 20px;
+        }
+        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+        input, select, button, textarea { font-family: inherit; }
+
+        /* === SFONDO DECORATIVO === */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle, var(--border) 0.8px, transparent 0.8px);
+            background-size: 32px 32px;
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            top: -250px; right: -250px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* === LAYOUT & CONTAINER === */
+        .app-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .header-title .logo-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--accent), #ef4444);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 16px rgba(245,158,11,0.25);
+        }
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-align: center;
+        }
+
+        .container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+            display: block;
+        }
+
+        /* INPUT FILE STYLING */
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 30px 16px;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        input[type="file"]:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--text);
+        }
+
+        /* INPUT TEXT & NUMBER STYLING */
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            background: var(--bg-secondary);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: var(--accent);
+        }
+        .input-row input[type="text"] { flex: 2; }
+        .input-row input[type="number"] { flex: 1; }
+
+        /* BUTTON STYLING */
+        button {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent), #ea580c);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(245,158,11,0.3);
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(245,158,11,0.4);
+        }
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* STATUS / LOG STYLING */
+        #status {
+            padding: 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            color: var(--accent);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        <div class="header-title">
+            <div class="logo-icon"><i class="fas fa-file-pen"></i></div>
+            <h1>Rinomina File in Sequenza</h1>
+        </div>
+
+        <div class="container">
+            <label for="fileInput">1. Seleziona le immagini da rinominare:</label>
+            <input type="file" id="fileInput" accept="image/*" multiple>
+
+            <label>2. Imposta il nome e il numero di partenza:</label>
+            <div class="input-row">
+                <input type="text" id="baseName" placeholder="es. nome del file scelto" value="">
+                <input type="number" id="startNum" placeholder="1" value="1" min="1">
+            </div>
+
+            <button id="processBtn"><i class="fas fa-download"></i> 3. Rinomina e Scarica</button>
+            
+            <div id="status">In attesa di selezione...</div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const baseNameInput = document.getElementById('baseName');
+        const startNumInput = document.getElementById('startNum');
+        const processBtn = document.getElementById('processBtn');
+        const statusDiv = document.getElementById('status');
+
+        let selectedFiles = [];
+
+        fileInput.addEventListener('change', (e) => {
+            selectedFiles = Array.from(e.target.files);
+            statusDiv.textContent = `${selectedFiles.length} immagine/i selezionata/e.`;
+        });
+
+        processBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) {
+                statusDiv.textContent = "Errore: seleziona prima almeno un'immagine!";
+                return;
+            }
+
+            const baseName = baseNameInput.value.trim();
+            let startNum = parseInt(startNumInput.value);
+
+            if (!baseName) {
+                alert("Inserisci un nome base!");
+                return;
+            }
+            if (isNaN(startNum)) {
+                startNum = 1;
+            }
+
+            processBtn.disabled = true;
+            statusDiv.textContent = "Rinomino e scarico i file...";
+
+            try {
+                let currentNum = startNum;
+
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
+                    
+                    // Estrai l'estensione (es. .jpg, .png)
+                    const extension = file.name.substring(file.name.lastIndexOf('.'));
+
+                    // Crea il nuovo nome
+                    const newFileName = `${baseName} ${currentNum}${extension}`;
+
+                    // Link fittizio per il download
+                    const url = URL.createObjectURL(file);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = newFileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    // Aggiorna lo stato
+                    statusDiv.textContent = `Scaricato: ${newFileName}`;
+                    
+                    // Incrementa il numero
+                    currentNum++;
+
+                    // Pausa tra i download
+                    await new Promise(r => setTimeout(r, 500)); 
+                }
+
+                statusDiv.textContent = `Operazione completata! Scaricati ${selectedFiles.length} file.`;
+                processBtn.disabled = false;
+
+            } catch (error) {
+                console.error(error);
+                statusDiv.textContent = "Errore durante l'operazione: " + error.message;
+                processBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
