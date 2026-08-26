@@ -3,80 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convertitore di Testo Stravagante</title>
+    <title>Text Transformer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* === VARIABILI TEMA (ImageResizer Pro) === */
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 1e%, #1e1b4b 100%);
-            --panel-bg: rgba(255, 255, 255, 0.05);
-            --panel-border: rgba(255, 255, 255, 0.1);
-            --text-color: #f8fafc;
-            --accent: #8b5cf6;
-            --accent-hover: #7c3aed;
+            --bg: #0c0e14;
+            --bg-secondary: #12151e;
+            --card: #181c28;
+            --card-hover: #1e2333;
+            --border: #282d3e;
+            --border-hover: #3a4158;
+            --text: #e4e6ed;
+            --text-secondary: #7d829a;
+            --accent: #f59e0b;
+            --accent-hover: #fbbf24;
+            --accent-dim: rgba(245,158,11,0.12);
+            --accent-glow: rgba(245,158,11,0.08);
+            --success: #10b981;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+        /* === RESET & BASE === */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background: var(--bg-gradient);
-            color: var(--text-color);
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 40px 20px;
         }
+        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+        input, select, button, textarea { font-family: inherit; }
 
-        .container {
-            width: 100%;
-            max-width: 800px;
-            background: var(--panel-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--panel-border);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        /* === SFONDO DECORATIVO === */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle, var(--border) 0.8px, transparent 0.8px);
+            background-size: 32px 32px;
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            top: -250px; right: -250px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
         }
 
+        /* === CONTAINER === */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 800px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+        .header-title .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--accent), #ef4444);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 16px rgba(245,158,11,0.25);
+        }
         h1 {
             font-size: 1.8rem;
-            margin-bottom: 8px;
+            font-weight: 700;
             text-align: center;
-            background: linear-gradient(to right, #c084fc, #60a5fa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
             text-align: center;
-            color: #94a3b8;
+            color: var(--text-secondary);
             font-size: 0.95rem;
-            margin-bottom: 25px;
+            margin-bottom: 28px;
         }
 
         .input-group {
             margin-bottom: 25px;
         }
 
-        label {
-            display: block;
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 8px;
+        }
+
+        label {
             font-size: 0.9rem;
-            color: #cbd5e1;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .clear-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .clear-btn:hover {
+            color: var(--error);
         }
 
         textarea {
             width: 100%;
             height: 120px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--panel-border);
-            border-radius: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
             padding: 15px;
-            color: #fff;
+            color: var(--text);
             font-size: 1rem;
             resize: vertical;
             outline: none;
@@ -87,20 +163,24 @@
             border-color: var(--accent);
         }
 
+        /* GRID OUTPUTS */
         .outputs-grid {
             display: grid;
             gap: 16px;
         }
 
         .output-card {
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid var(--panel-border);
-            border-radius: 12px;
-            padding: 15px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            position: relative;
+            transition: border-color 0.2s;
+        }
+        .output-card:hover {
+            border-color: var(--border-hover);
         }
 
         .output-header {
@@ -108,47 +188,56 @@
             justify-content: space-between;
             align-items: center;
             font-size: 0.85rem;
-            color: #94a3b8;
+            color: var(--accent);
             font-weight: 600;
         }
 
         .output-text {
             font-size: 1.05rem;
             word-break: break-all;
-            color: #e2e8f0;
+            color: var(--text);
             min-height: 24px;
         }
 
+        /* COPY BUTTON STYLING */
         button.copy-btn {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), #ea580c);
             color: white;
             border: none;
             padding: 6px 14px;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
             transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(245,158,11,0.25);
         }
 
         button.copy-btn:hover {
-            background: var(--accent-hover);
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245,158,11,0.35);
         }
 
         button.copy-btn.copied {
-            background: #10b981;
+            background: var(--success);
+            box-shadow: none;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Text Transformer</h1>
+        <div class="header-title">
+            <div class="logo-icon"><i class="fas fa-font"></i></div>
+            <h1>Text Transformer</h1>
+        </div>
         <p class="subtitle">Digita qualcosa qui sotto e guardalo trasformarsi all'istante!</p>
 
         <div class="input-group">
-            <label for="sourceText">Il tuo testo:</label>
+            <div class="label-row">
+                <label for="sourceText">Il tuo testo:</label>
+                <button class="clear-btn" onclick="clearText()"><i class="fas fa-trash-can"></i> Cancella</button>
+            </div>
             <textarea id="sourceText" placeholder="Scrivi o incolla qui il testo..." oninput="transformText()">Ciao, questo è un test per il convertitore stravagante!</textarea>
         </div>
 
@@ -159,6 +248,7 @@
 
     <script>
         const transforms = [
+            // --- Modelli Iniziali ---
             { id: 'reverse', name: 'Al Contrario', fn: str => str.split('').reverse().join('') },
             { id: 'mocking', name: 'Stile Meme (aLtErNaTo)', fn: str => {
                 let upper = false;
@@ -172,8 +262,6 @@
             { id: 'upper', name: 'MAIUSCOLO FISSO', fn: str => str.toUpperCase() },
             { id: 'dots', name: 'Con Punti tra le Lettere', fn: str => str.split('').filter(c => c.trim() !== '').join('•') },
             { id: 'bold', name: 'Caratteri Grassetto (Matematici)', fn: str => {
-                // Converte l'alfabeto standard in caratteri grassetti sans-serif Unicode
-                const offsets = { a: 120276, A: 120250, 0: 120800 };
                 return str.split('').map(char => {
                     let code = char.codePointAt(0);
                     if (code >= 97 && code <= 122) return String.fromCodePoint(code - 97 + 120276);
@@ -181,6 +269,117 @@
                     if (code >= 48 && code <= 57) return String.fromCodePoint(code - 48 + 120800);
                     return char;
                 }).join('');
+            }},
+            { id: 'lower', name: 'tutto minuscolo', fn: str => str.toLowerCase() },
+            { id: 'title', name: 'Iniziali Maiuscole (Title Case)', fn: str => {
+                return str.toLowerCase().replace(/(?:^|\s|-)\S/g, char => char.toUpperCase());
+            }},
+            { id: 'leet', name: '1337 5p34k (Leet Speak)', fn: str => {
+                const leetMap = { 'a':'4', 'A':'4', 'e':'3', 'E':'3', 'i':'1', 'I':'1', 'o':'0', 'O':'0', 's':'5', 'S':'5', 't':'7', 'T':'7' };
+                return str.split('').map(c => leetMap[c] || c).join('');
+            }},
+            { id: 'upsideDown', name: 'Sottosopra (uʍop ǝpısd∩)', fn: str => {
+                const flipMap = {
+                    'a':'ɐ','b':'q','c':'ɔ','d':'p','e':'ǝ','f':'ɟ','g':'ƃ','h':'ɥ','i':'ı','j':'ɾ','k':'ʞ','l':'l',
+                    'm':'ɯ','n':'u','o':'o','p':'d','q':'b','r':'ɹ','s':'s','t':'ʇ','u':'n','v':'ʌ','w':'ʍ','x':'x',
+                    'y':'ʎ','z':'z','A':'∀','B':'ᗺ','C':'Ɔ','D':'ᗡ','E':'Ǝ','F':'Ⅎ','G':'⅁','H':'H','I':'I',
+                    'J':'ſ','K':'ʞ','L':'˥','M':'W','N':'N','O':'O','P':'Ԁ','Q':'Ò','R':'ᴚ','S':'S','T':'┴',
+                    'U':'∩','V':'Λ','W':'M','X':'X','Y':'⅄','Z':'Z','1':'⇂','2':'ᄅ','3':'Ɛ','4':'ㄣ','5':'ϛ',
+                    '6':'9','7':'ㄥ','8':'8','9':'6','0':'0','.':'˙',',':'\'','\'':',','"':',,','?':'¿','!':'¡'
+                };
+                return str.split('').reverse().map(c => flipMap[c] || c).join('');
+            }},
+            { id: 'strikethrough', name: 'Barrato (S̷t̷r̷i̷k̷e̷)', fn: str => str.split('').map(c => c + '\u0336').join('') },
+            { id: 'underline', name: 'Sottolineato Speciale (U̲n̲d̲e̲r̲l̲i̲n̲e̲)', fn: str => str.split('').map(c => c + '\u0332').join('') },
+            { id: 'mono', name: 'Monospace / Typewriter (𝙼𝚘𝚗𝚘𝚜𝚙𝚊𝚌𝚎)', fn: str => {
+                return str.split('').map(char => {
+                    let code = char.codePointAt(0);
+                    if (code >= 97 && code <= 122) return String.fromCodePoint(code - 97 + 0x1D68C);
+                    if (code >= 65 && code <= 90) return String.fromCodePoint(code - 65 + 0x1D670);
+                    if (code >= 48 && code <= 57) return String.fromCodePoint(code - 48 + 0x1D7F6);
+                    return char;
+                }).join('');
+            }},
+            { id: 'script', name: 'Corsivo Elegante (𝒮𝒸𝓇𝒾𝓅𝓉)', fn: str => {
+                const scriptMap = {
+                    'a':'𝒶','b':'𝒷','c':'𝒸','d':'𝒹','e':'𝑒','f':'𝒻','g':'𝑔','h':'𝒽','i':'𝒾','j':'𝒿','k':'𝓀','l':'𝓁','m':'𝓂',
+                    'n':'𝓃','o':'𝑜','p':'𝓅','q':'𝓆','r':'𝓇','s':'𝓈','t':'𝓉','u':'𝓊','v':'𝓋','w':'𝓌','x':'𝓍','y':'𝓎','z':'𝓏',
+                    'A':'𝒜','B':'ℬ','C':'𝒞','D':'𝒟','E':'ℰ','F':'ℱ','G':'𝒢','H':'ℋ','I':'ℐ','J':'𝒥','K':'𝒦','L':'ℒ',
+                    'M':'ℳ','N':'𝒩','O':'𝒪','P':'𝒫','Q':'𝒬','R':'ℛ','S':'𝒮','T':'𝒯','U':'𝒰','V':'𝒱','W':'𝒲','X':'𝒳','Y':'𝒴','Z':'𝵓'
+                };
+                return str.split('').map(c => scriptMap[c] || c).join('');
+            }},
+            { id: 'bubbles', name: 'Cerchietti Neri (ⓈⓅⒶⓏⒾⓄ)', fn: str => {
+                return str.split('').map(char => {
+                    let code = char.codePointAt(0);
+                    if (code >= 97 && code <= 122) return String.fromCodePoint(code - 97 + 0x24D0);
+                    if (code >= 65 && code <= 90) return String.fromCodePoint(code - 65 + 0x24B6);
+                    if (code >= 49 && code <= 57) return String.fromCodePoint(code - 49 + 0x2460);
+                    if (code === 48) return '⓪';
+                    return char;
+                }).join('');
+            }},
+            { id: 'slashes', name: 'Con Slash (t/e/s/t)', fn: str => str.split('').filter(c => c.trim() !== '').join('/') },
+
+            // --- 12 NUOVI MODELLI AGGIUNTI ---
+            { id: 'squared', name: 'Quadretti Bianchi (🄲🄾🄳🄴)', fn: str => {
+                return str.split('').map(char => {
+                    let code = char.codePointAt(0);
+                    if (code >= 97 && code <= 122) return String.fromCodePoint(code - 97 + 0x1F130);
+                    if (code >= 65 && code <= 90) return String.fromCodePoint(code - 65 + 0x1F130);
+                    return char;
+                }).join('');
+            }},
+            { id: 'squaredBlack', name: 'Quadretti Neri (🅰🅳🅼🅸🅽)', fn: str => {
+                return str.split('').map(char => {
+                    let code = char.codePointAt(0);
+                    if (code >= 97 && code <= 122) return String.fromCodePoint(code - 97 + 0x1F170);
+                    if (code >= 65 && code <= 90) return String.fromCodePoint(code - 65 + 0x1F170);
+                    return char;
+                }).join('');
+            }},
+            { id: 'gothic', name: 'Gotico / Blackletter (𝔊𝔬𝔱𝔥𝔦𝔠)', fn: str => {
+                const gothicMap = {
+                    'a':'𝔞','b':'𝔟','c':'𝔠','d':'𝔡','e':'𝔢','f':'𝔣','g':'𝔤','h':'nest','i':'𝔦','j':'𝔧','k':'𝔨','l':'𝔩','m':'𝔪',
+                    'n':'構成','o':'𝔬','p':'𝔭','q':'𝔮','r':'𝔯','s':'𝔰','t':'𝔱','u':'𝔲','v':'𝔳','w':'𝔴','x':'𝔵','y':'𝔶','z':'𝔷',
+                    'A':'𝔄','B':'𝔅','C':'ℭ','D':'𝔇','E':'𝔈','F':'𝔉','G':'𝔁','H':'ℌ','I':'ℑ','J':'𝔍','K':'𝔏','L':'𝔍',
+                    'M':' legality','N':'𝔞','O':'𝔟','P':'𝔠','Q':'𝔡','R':'ℜ','S':'𝔈','T':'𝔉','U':'𝔤','V':'𝔥','W':'𝔦','X':'𝔰','Y':'𝔱','Z':'ℨ'
+                };
+                return str.split('').map(c => gothicMap[c] || c).join('');
+            }},
+            { id: 'crowns', name: 'Decorato con Corone (👑...👑)', fn: str => `👑 ${str} 👑` },
+            { id: 'sparkles', name: 'Stelle & Magia (✨...✨)', fn: str => `✨ ${str} ✨` },
+            { id: 'brackets', name: 'Tra Parentesi Quadre ( [ ... ] )', fn: str => `[ ${str} ]` },
+            { id: 'binary', name: 'Codice Binario (01000011...)', fn: str => {
+                return str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+            }},
+            { id: 'hex', name: 'Esadecimale / Hex (43 69 61...)', fn: str => {
+                return str.split('').map(char => char.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0')).join(' ');
+            }},
+            { id: 'base64', name: 'Codifica Base64', fn: str => {
+                try {
+                    return btoa(unescape(encodeURIComponent(str)));
+                } catch(e) {
+                    return 'Impossibile codificare';
+                }
+            }},
+            { id: 'slug', name: 'URL / File Slug (testo-pulito)', fn: str => {
+                return str.toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-z0-9]/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '');
+            }},
+            { id: 'snake', name: 'snake_case (con_underscore)', fn: str => {
+                return str.toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-z0-9]/g, '_')
+                    .replace(/_+/g, '_')
+                    .replace(/^|_$/g, '');
+            }},
+            { id: 'camel', name: 'camelCase (inizialeBassa)', fn: str => {
+                const words = str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, ' ').trim().split(/\s+/);
+                return words.map((w, i) => i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)).join('');
             }}
         ];
 
@@ -197,18 +396,20 @@
                 card.innerHTML = `
                     <div class="output-header">
                         <span>${item.name}</span>
-                        <button class="copy-btn" id="btn-${index}" onclick="copyText('${escapeHtml(result)}', ${index})">Copia</button>
+                        <button class="copy-btn" id="btn-${index}" onclick="copyText(${index})">Copia</button>
                     </div>
-                    <div class="output-text">${escapeHtml(result)}</div>
+                    <div class="output-text" id="out-${index}">${escapeHtml(result)}</div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        function copyText(text, index) {
-            // Decodifica entità HTML di base se presenti nel testo copiato
-            const decodedText = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-            navigator.clipboard.writeText(decodedText).then(() => {
+        function copyText(index) {
+            const targetEl = document.getElementById(`out-${index}`);
+            if (!targetEl) return;
+            
+            const textToCopy = targetEl.innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
                 const btn = document.getElementById(`btn-${index}`);
                 btn.textContent = 'Copiato! ✓';
                 btn.classList.add('copied');
@@ -217,6 +418,12 @@
                     btn.classList.remove('copied');
                 }, 1500);
             });
+        }
+
+        function clearText() {
+            document.getElementById('sourceText').value = '';
+            transformText();
+            document.getElementById('sourceText').focus();
         }
 
         function escapeHtml(str) {
