@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT & Media Downloader Command Generator</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-secondary: #94a3b8;
+            --code-bg: #090d16;
+            --danger-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        h2, h3 {
+            margin-top: 0;
+            color: var(--accent-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        .code-box {
+            background-color: var(--code-bg);
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 12px;
+            position: relative;
+            font-family: monospace;
+            word-break: break-all;
+            margin-top: 10px;
+            color: #38bdf8;
+        }
+
+        .btn-copy {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background-color: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-copy:hover {
+            opacity: 0.9;
+        }
+
+        .instructions-section {
+            border-top: 1px solid #334155;
+            padding-top: 20px;
+            margin-top: 10px;
+        }
+
+        .error-note {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--danger-color);
+            padding: 10px 15px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 15px;
+        }
+
+        code {
+            background-color: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #38bdf8;
+            font-family: monospace;
+        }
+
+        #customPathGroup {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- GENERATORE COMANDI -->
+    <div class="card">
+        <h2>🚀 Generatore Comando Download</h2>
+        
+        <div class="form-group">
+            <label for="videoUrl">Link Video / Audio:</label>
+            <input type="text" id="videoUrl" placeholder="Incolla l'URL qui (es. https://youtu.be/...)" oninput="generaComando()">
+        </div>
+
+        <div class="form-group">
+            <label for="formatSelect">Formato Output:</label>
+            <select id="formatSelect" onchange="generaComando()">
+                <option value="video720">Video MP4 (Max 720p)</option>
+                <option value="videoBest">Video MP4 (Massima Qualità)</option>
+                <option value="audioMp3">Solo Audio (MP3 192kbps)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="destSelect">Cartella di Salvataggio:</label>
+            <select id="destSelect" onchange="gestisciDestinazione()">
+                <option value="desktop">Desktop (Desktop del PC)</option>
+                <option value="downloads">Download (Cartella Download)</option>
+                <option value="custom">Percorso Personalizzato (es. D:\Musica)</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="customPathGroup">
+            <label for="customPath">Percorso cartella personalizzato:</label>
+            <input type="text" id="customPath" placeholder="Es. D:\VideoScaricate o C:\Musica" oninput="generaComando()">
+        </div>
+
+        <label>Comando da incollare nel Prompt dei Comandi (CMD):</label>
+        <div class="code-box">
+            <span id="outputCommand">Inserisci un URL per generare il comando...</span>
+            <button class="btn-copy" onclick="copiaComando()">Copia</button>
+        </div>
+    </div>
+
+    <!-- ISTRUZIONI E RISOLUZIONE ERRORI -->
+    <div class="card instructions-section">
+        <h3>🛠️ Prima Installazione & Risoluzione Errori</h3>
+        
+        <div class="error-note">
+            <strong>Prima volta o errore "The page needs to be reloaded"?</strong><br>
+            Se è la prima volta che usi lo strumento o se YouTube blocca il download, segui i passaggi sotto per configurare il PC in 1 minuto.
+        </div>
+
+        <ol>
+            <li>
+                <strong>1. Prima Installazione (Installazione di yt-dlp e FFmpeg):</strong><br>
+                Apri il Prompt dei comandi di Windows (CMD) e incolla questo comando per installare gli strumenti necessari:
+                <div class="code-box">
+                    <span>winget install --id yt-dlp.yt-dlp && winget install Gyan.FFmpeg</span>
+                </div>
+            </li>
+
+            <li>
+                <strong>2. Aggiornamento manuale (Se yt-dlp è già installato via Python/pip):</strong><br>
+                Se hai già il programma ma YouTube ti restituisce errori durante il download, aggiorna il componente digitando nel CMD:
+                <div class="code-box">
+                    <span>python -m pip install --upgrade yt-dlp</span>
+                </div>
+            </li>
+
+            <li>
+                <strong>3. Esegui il download:</strong><br>
+                Genera il comando in alto da questa pagina, clicca <strong>Copia</strong>, incollalo nel Prompt dei comandi (CMD) e premi Invio.
+            </li>
+        </ol>
+    </div>
+
+</div>
+
+<script>
+    function gestisciDestinazione() {
+        const dest = document.getElementById('destSelect').value;
+        const customGroup = document.getElementById('customPathGroup');
+        
+        if (dest === 'custom') {
+            customGroup.style.display = 'block';
+        } else {
+            customGroup.style.display = 'none';
+        }
+        generaComando();
+    }
+
+    function generaComando() {
+        const url = document.getElementById('videoUrl').value.trim();
+        const format = document.getElementById('formatSelect').value;
+        const dest = document.getElementById('destSelect').value;
+        const customPath = document.getElementById('customPath').value.trim();
+        const output = document.getElementById('outputCommand');
+
+        if (!url) {
+            output.innerText = "Inserisci un URL per generare il comando...";
+            return;
+        }
+
+        let cmd = `python -m yt_dlp --extractor-args "youtube:player-client=android" `;
+
+        // Impostazione percorso di destinazione
+        if (dest === 'desktop') {
+            cmd += `-P "%USERPROFILE%\\Desktop" `;
+        } else if (dest === 'downloads') {
+            cmd += `-P "%USERPROFILE%\\Downloads" `;
+        } else if (dest === 'custom') {
+            if (customPath !== '') {
+                cmd += `-P "${customPath}" `;
+            } else {
+                cmd += `-P "INSERISCI_PERCORSO_CARTELLA" `;
+            }
+        }
+
+        // Impostazione formato
+        if (format === 'video720') {
+            cmd += `-f "bestvideo[height<=720]+bestaudio/best" "${url}"`;
+        } else if (format === 'videoBest') {
+            cmd += `-f "bestvideo+bestaudio/best" "${url}"`;
+        } else if (format === 'audioMp3') {
+            cmd += `-x --audio-format mp3 --audio-quality 192K "${url}"`;
+        }
+
+        output.innerText = cmd;
+    }
+
+    function copiaComando() {
+        const textToCopy = document.getElementById('outputCommand').innerText;
+        if (textToCopy && !textToCopy.startsWith("Inserisci")) {
+            navigator.clipboard.writeText(textToCopy);
+            alert("Comando copiato negli appunti!");
+        }
+    }
+</script>
+
+</body>
+</html>
