@@ -129,31 +129,31 @@
   <!-- VISTA CATEGORIE -->
   <div class="grid" id="categories-grid">
 
-    <div class="cat-card" onclick="openCategory('audio', 'Audio & Suono')">
+    <div class="cat-card" onclick="openCategory('audio', 'Audio & Streaming')">
       <svg class="card-icon" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-      <div class="app-name">Audio & Suono</div>
-      <div class="app-desc">Strumenti per normalizzazione LUFS, riproduttori streaming e lettori radio.</div>
+      <div class="app-name">Audio & Streaming</div>
+      <div class="app-desc">Analisi LUFS, normalizzazione audio, sintonizzatore radio FM e checker flussi IPTV.</div>
       <div class="app-footer">Esplora →</div>
     </div>
 
-    <div class="cat-card" onclick="openCategory('grafica', 'Grafica & Immagini')">
+    <div class="cat-card" onclick="openCategory('grafica', 'Grafica & Design')">
       <svg class="card-icon" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-      <div class="app-name">Grafica & Immagini</div>
-      <div class="app-desc">Editor fotografici, ritocco, pixel art, collage, ridimensionamento ed elementi grafici.</div>
+      <div class="app-name">Grafica & Design</div>
+      <div class="app-desc">Editor foto pro, Pixel Art, creazione di collage e raccolta icone.</div>
       <div class="app-footer">Esplora →</div>
     </div>
 
-    <div class="cat-card" onclick="openCategory('utility', 'Utility & File')">
+    <div class="cat-card" onclick="openCategory('immagini-file', 'Gestione Immagini & File')">
       <svg class="card-icon" viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.6C.4 7 1 10 3 12c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.4-.4.4-1.1 0-1.3z"/></svg>
-      <div class="app-name">Utility & File</div>
-      <div class="app-desc">Strumenti di rinomina in blocco, mappe ortofoto, codici QR e gestori di testo.</div>
+      <div class="app-name">Gestione Immagini & File</div>
+      <div class="app-desc">Ridimensionamento foto in blocco e rinominatore automatico sequenziale.</div>
       <div class="app-footer">Esplora →</div>
     </div>
 
-    <div class="cat-card" onclick="openCategory('produttivita', 'Produttività & Web')">
-      <svg class="card-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-      <div class="app-name">Produttività & Web</div>
-      <div class="app-desc">Bacheca appunti sticky notes, hub di icone e verificatore flussi IPTV.</div>
+    <div class="cat-card" onclick="openCategory('utility-testo', 'Utility & Produttività')">
+      <svg class="card-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c0 1.1.9 2 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      <div class="app-name">Utility & Produttività</div>
+      <div class="app-desc">Generatore QR Code, Ortofoto Composer, Sticky Notes e formattazione testo.</div>
       <div class="app-footer">Esplora →</div>
     </div>
 
@@ -162,7 +162,7 @@
   <!-- VISTA APPLICAZIONI -->
   <div class="grid" id="apps-grid" style="display: none;">
 
-    <!-- Categoria Audio -->
+    <!-- 1. Categoria Audio & Streaming -->
     <a class="app-card" data-cat="audio" href="Audio-LUFS-Normalizer.html" target="_blank">
       <div class="app-name">Audio LUFS Normalizer</div>
       <div class="app-desc">Analizza e normalizza file audio secondo lo standard ITU-R BS.1770, esportando file WAV a 24-bit PCM.</div>
@@ -175,7 +175,13 @@
       <div class="app-footer">Apri →</div>
     </a>
 
-    <!-- Categoria Grafica -->
+    <a class="app-card" data-cat="audio" href="IPTV%20Stream%20Checker.html" target="_blank">
+      <div class="app-name">IPTV Stream Checker</div>
+      <div class="app-desc">Estrae e verifica in blocco i canali da una lista M3U, separando quelli funzionanti da quelli offline.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <!-- 2. Categoria Grafica & Design -->
     <a class="app-card" data-cat="grafica" href="Photo%20Studio%20Web%20Pro.html" target="_blank">
       <div class="app-name">Photoshop Lite — Studio Pro</div>
       <div class="app-desc">Editor fotografico nel browser con strumenti di ritocco, filtri e regolazioni avanzate, senza installazioni.</div>
@@ -188,59 +194,53 @@
       <div class="app-footer">Apri →</div>
     </a>
 
-    <a class="app-card" data-cat="grafica" href="ImageResizer%20Pro.html" target="_blank">
-      <div class="app-name">ImageResizer Pro</div>
-      <div class="app-desc">Ridimensiona e converte in blocco più immagini contemporaneamente, con esportazione in archivio ZIP.</div>
-      <div class="app-footer">Apri →</div>
-    </a>
-
     <a class="app-card" data-cat="grafica" href="Collage-Studio-Master.html" target="_blank">
       <div class="app-name">Collage Studio Master</div>
       <div class="app-desc">Compone e personalizza collage fotografici con layout dinamici, cornici e griglie.</div>
       <div class="app-footer">Apri →</div>
     </a>
 
-    <!-- Categoria Utility -->
-    <a class="app-card" data-cat="utility" href="qr-generator.html" target="_blank">
-      <div class="app-name">QR Code Studio Pro</div>
-      <div class="app-desc">Genera codici QR personalizzabili a partire da testo, link o altri dati, pronti da scaricare.</div>
-      <div class="app-footer">Apri →</div>
-    </a>
-
-    <a class="app-card" data-cat="utility" href="ortofoto-composer.html" target="_blank">
-      <div class="app-name">Ortofoto Composer</div>
-      <div class="app-desc">Compone mappe ad alta risoluzione unendo ritagli geografici esatti da Geoportale Lombardia, ESRI e OpenStreetMap.</div>
-      <div class="app-footer">Apri →</div>
-    </a>
-
-    <a class="app-card" data-cat="utility" href="Text%20transformer.html" target="_blank">
-      <div class="app-name">Text Transformer</div>
-      <div class="app-desc">Trasforma un testo in stili diversi in tempo reale: al contrario, alternato, spaziato, grassetto e altri.</div>
-      <div class="app-footer">Apri →</div>
-    </a>
-
-    <a class="app-card" data-cat="utility" href="Rinomina%20file%20in%20blocco.html" target="_blank">
-      <div class="app-name">Rinomina File in Blocco</div>
-      <div class="app-desc">Rinomina in sequenza più immagini con un nome base e numero di partenza a scelta, scaricandole già rinominate.</div>
-      <div class="app-footer">Apri →</div>
-    </a>
-
-    <!-- Categoria Produttività -->
-    <a class="app-card" data-cat="produttivita" href="Sticky%20Notes.html" target="_blank">
-      <div class="app-name">Sticky Notes Dashboard</div>
-      <div class="app-desc">Bacheca di post-it digitali colorati per appunti veloci, con salvataggio automatico nel browser.</div>
-      <div class="app-footer">Apri →</div>
-    </a>
-
-    <a class="app-card" data-cat="produttivita" href="Icon%20Hub.html" target="_blank">
+    <a class="app-card" data-cat="grafica" href="Icon%20Hub.html" target="_blank">
       <div class="app-name">Icon Hub</div>
       <div class="app-desc">Portale con collegamenti rapidi ai migliori archivi web di icone, filtrabili per categoria e ricerca.</div>
       <div class="app-footer">Apri →</div>
     </a>
 
-    <a class="app-card" data-cat="produttivita" href="IPTV%20Stream%20Checker.html" target="_blank">
-      <div class="app-name">IPTV Stream Checker</div>
-      <div class="app-desc">Estrae e verifica in blocco i canali da una lista M3U, separando quelli funzionanti da quelli offline.</div>
+    <!-- 3. Categoria Gestione Immagini & File -->
+    <a class="app-card" data-cat="immagini-file" href="ImageResizer%20Pro.html" target="_blank">
+      <div class="app-name">ImageResizer Pro</div>
+      <div class="app-desc">Ridimensiona e converte in blocco più immagini contemporaneamente, con esportazione in archivio ZIP.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" data-cat="immagini-file" href="Rinomina%20file%20in%20blocco.html" target="_blank">
+      <div class="app-name">Rinomina File in Blocco</div>
+      <div class="app-desc">Rinomina in sequenza più immagini con un nome base e numero di partenza a scelta, scaricandole già rinominate.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <!-- 4. Categoria Utility & Produttività -->
+    <a class="app-card" data-cat="utility-testo" href="qr-generator.html" target="_blank">
+      <div class="app-name">QR Code Studio Pro</div>
+      <div class="app-desc">Genera codici QR personalizzabili a partire da testo, link o altri dati, pronti da scaricare.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" data-cat="utility-testo" href="ortofoto-composer.html" target="_blank">
+      <div class="app-name">Ortofoto Composer</div>
+      <div class="app-desc">Compone mappe ad alta risoluzione unendo ritagli geografici esatti da Geoportale Lombardia, ESRI e OpenStreetMap.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" data-cat="utility-testo" href="Sticky%20Notes.html" target="_blank">
+      <div class="app-name">Sticky Notes Dashboard</div>
+      <div class="app-desc">Bacheca di post-it digitali colorati per appunti veloci, con salvataggio automatico nel browser.</div>
+      <div class="app-footer">Apri →</div>
+    </a>
+
+    <a class="app-card" data-cat="utility-testo" href="Text%20transformer.html" target="_blank">
+      <div class="app-name">Text Transformer</div>
+      <div class="app-desc">Trasforma un testo in stili diversi in tempo reale: al contrario, alternato, spaziato, grassetto e altri.</div>
       <div class="app-footer">Apri →</div>
     </a>
 
@@ -257,7 +257,7 @@
     document.getElementById('btn-back').style.display = 'block';
     
     document.getElementById('title').textContent = catTitle;
-    document.getElementById('subtitle').textContent = 'Seleziona un'applicazione';
+    document.getElementById('subtitle').textContent = 'Seleziona un\'applicazione';
 
     const apps = document.querySelectorAll('#apps-grid .app-card');
     apps.forEach(app => {
@@ -279,4 +279,4 @@
   }
 </script>
 </body>
-</html>s
+</html>
