@@ -1,257 +1,165 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Hub - Le Mie Utility Web</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-color: #38bdf8;
-            --text-color: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #334155;
-            --hover-bg: #2563eb;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        header h1 {
-            color: var(--accent-color);
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-        }
-
-        header p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin: 0;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent-color);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .card-icon {
-            font-size: 1.8rem;
-        }
-
-        .card-title {
-            margin: 0;
-            font-size: 1.25rem;
-            color: #fff;
-        }
-
-        .card-desc {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.4;
-            margin-bottom: 20px;
-            flex-grow: 1;
-        }
-
-        .btn {
-            display: inline-block;
-            text-align: center;
-            background-color: var(--accent-color);
-            color: #0f172a;
-            text-decoration: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: background-color 0.2s ease;
-        }
-
-        .btn:hover {
-            background-color: #0284c7;
-            color: #fff;
-        }
-
-        footer {
-            margin-top: 50px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Hub - Le Mie Utility Web</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-color: #f8fafc;
+      --accent-color: #38bdf8;
+      --hover-bg: #334155;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      padding: 20px 0 40px;
+    }
+    h1 {
+      color: var(--accent-color);
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: 1.4rem;
+      color: #94a3b8;
+      border-bottom: 2px solid #334155;
+      padding-bottom: 8px;
+      margin: 30px auto 20px;
+      max-width: 1000px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      text-decoration: none;
+      color: var(--text-color);
+      transition: transform 0.2s, background-color 0.2s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      background-color: var(--hover-bg);
+    }
+    .card h3 {
+      margin: 0 0 10px 0;
+      color: var(--accent-color);
+    }
+    .card p {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      margin: 0;
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>🚀 App Hub</h1>
-        <p>Raccolta di strumenti e utility web pronte all'uso</p>
-    </header>
+  <header>
+    <h1>App Hub</h1>
+    <p>Raccolta di Utility Web e Giochi HTML5</p>
+  </header>
 
-    <main class="grid">
+  <!-- GIOCHI -->
+  <div class="section-title">🎮 Giochi</div>
+  <div class="grid">
+    <a href="Tetris.html" class="card">
+      <h3>Tetris</h3>
+      <p>Il classico gioco dei blocchi in versione HTML5.</p>
+    </a>
+    <a href="Tris-Evolution.html" class="card">
+      <h3>Tris Evolution</h3>
+      <p>Sfida a Tris con grafica avanzata e modalità evoluta.</p>
+    </a>
+  </div>
 
-        <!-- IPTV Stream Checker -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">📺</span>
-                <h2 class="card-title">IPTV Stream Checker</h2>
-            </div>
-            <p class="card-desc">Verifica il funzionamento e lo stato dei flussi TV e liste M3U.</p>
-            <a href="IPTV Stream Checker.html" class="btn">Apri App</a>
-        </div>
+  <!-- IMMAGINI & ICONE -->
+  <div class="section-title">🎨 Immagini e Icone</div>
+  <div class="grid">
+    <a href="Collage-Studio-Master.html" class="card">
+      <h3>Collage Studio Master</h3>
+      <p>Crea e componi collage di immagini personalizzati.</p>
+    </a>
+    <a href="Icon-Hub.html" class="card">
+      <h3>Icon Hub</h3>
+      <p>Motore per la ricerca e gestione di icone.</p>
+    </a>
+    <a href="ImageResizer-Pro.html" class="card">
+      <h3>ImageResizer Pro</h3>
+      <p>Ridimensiona ed elabora immagini velocemente.</p>
+    </a>
+    <a href="Photo-Studio-Web-Pro.html" class="card">
+      <h3>Photo Studio Web Pro</h3>
+      <p>Editor web completo per il fotoritocco.</p>
+    </a>
+    <a href="PixelArt-Ico.html" class="card">
+      <h3>PixelArt Ico</h3>
+      <p>Generatore ed editor di icone Pixel Art.</p>
+    </a>
+    <a href="Rinomina-File.html" class="card">
+      <h3>Rinomina File</h3>
+      <p>Utility per la rinominazione sequenziale in blocco.</p>
+    </a>
+  </div>
 
-        <!-- Icon Hub -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">🎨</span>
-                <h2 class="card-title">Icon Hub</h2>
-            </div>
-            <p class="card-desc">Ricerca e gestione motori di ricerca per icone e risorse grafiche.</p>
-            <a href="Icon Hub.html" class="btn">Apri App</a>
-        </div>
+  <!-- MUSICA & AUDIO -->
+  <div class="section-title">🎵 Musica e Audio</div>
+  <div class="grid">
+    <a href="Audio-LUFS-Normalizer.html" class="card">
+      <h3>Audio LUFS Normalizer</h3>
+      <p>Analizza e normalizza il volume dei tuoi brani audio.</p>
+    </a>
+    <a href="radioweb.html" class="card">
+      <h3>Radio Web</h3>
+      <p>Player per l'ascolto delle stazioni radio in streaming.</p>
+    </a>
+    <a href="yt-downloader.html" class="card">
+      <h3>YT Downloader</h3>
+      <p>Strumento per il download e la gestione dei media.</p>
+    </a>
+  </div>
 
-        <!-- ImageResizer Pro -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">🖼️</span>
-                <h2 class="card-title">ImageResizer Pro</h2>
-            </div>
-            <p class="card-desc">Ridimensiona e ottimizza immagini rapidamente online.</p>
-            <a href="ImageResizer Pro.html" class="btn">Apri App</a>
-        </div>
-
-        <!-- Photo Studio Web Pro -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">📸</span>
-                <h2 class="card-title">Photo Studio Web Pro</h2>
-            </div>
-            <p class="card-desc">Strumenti di fotoritocco e manipolazione immagini via web.</p>
-            <a href="Photo Studio Web Pro.html" class="btn">Apri App</a>
-        </div>
-
-        <!-- PixelArt Ico -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">👾</span>
-                <h2 class="card-title">PixelArt Ico</h2>
-            </div>
-            <p class="card-desc">Crea ed edita icone in stile Pixel Art direttamente nel browser.</p>
-            <a href="PixelArt Ico.html" class="btn">Apri App</a>
-        </div>
-
-        <!-- Rinomina file in blocco -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">🏷️</span>
-                <h2 class="card-title">Rinomina File</h2>
-            </div>
-            <p class="card-desc">Utility per la rinominazione batch di file in blocco.</p>
-            <a href="Rinomina file in blocco.html" class="btn">Apri App</a>
-        </div>
-
-        <!-- Sticky Notes -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">📝</span>
-                <h2 class="card-title">Sticky Notes</h2>
-            </div>
-            <p class="card-desc">Appunti veloci e note riposizionabili a schermo.</p>
-            <a href="Sticky Notes.html" class="btn">Apri App</a>
-        </div>
-
-        <!-- Text Transformer -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">🔤</span>
-                <h2 class="card-title">Text Transformer</h2>
-            </div>
-            <p class="card-desc">Manipola, formatta e converti blocchi di testo al volo.</p>
-            <a href="Text transformer.html" class="btn">Apri App</a>
-        </div>
-
-        <!-- Ortofoto Composer -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">🗺️</span>
-                <h2 class="card-title">Ortofoto Composer</h2>
-            </div>
-            <p class="card-desc">Composizione e gestione di mappe e ortofoto.</p>
-            <a href="ortofoto-composer.html" class="btn">Apri App</a>
-        </div>
-
-        <!-- QR Generator -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">📱</span>
-                <h2 class="card-title">QR Generator</h2>
-            </div>
-            <p class="card-desc">Generatore istantaneo di codici QR per link e testi.</p>
-            <a href="qr-generator.html" class="btn">Apri App</a>
-        </div>
-
-        <!-- Radio Web -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">📻</span>
-                <h2 class="card-title">Radio Web</h2>
-            </div>
-            <p class="card-desc">Player per lo streaming di emittenti radiofoniche online.</p>
-            <a href="radioweb.html" class="btn">Apri App</a>
-        </div>
-
-        <!-- YT & Media Downloader Generator -->
-        <div class="card">
-            <div class="card-header">
-                <span class="card-icon">📥</span>
-                <h2 class="card-title">YT Downloader</h2>
-            </div>
-            <p class="card-desc">Generatore di comandi yt-dlp per scaricare video e audio in alta qualità.</p>
-            <a href="yt-downloader.html" class="btn">Apri App</a>
-        </div>
-
-    </main>
-
-    <footer>
-        <p>&copy; 2026 App Hub • Powered by GitHub Pages</p>
-    </footer>
+  <!-- UTILITY -->
+  <div class="section-title">🛠️ Utility Varie</div>
+  <div class="grid">
+    <a href="IPTV-Stream-Checker.html" class="card">
+      <h3>IPTV Stream Checker</h3>
+      <p>Testa e verifica la validità delle liste e flussi M3U.</p>
+    </a>
+    <a href="ortofoto-composer.html" class="card">
+      <h3>Ortofoto Composer</h3>
+      <p>Composizione e unione di mappe e ortofoto.</p>
+    </a>
+    <a href="qr-generator.html" class="card">
+      <h3>QR Generator</h3>
+      <p>Crea codici QR personalizzati al volo.</p>
+    </a>
+    <a href="Sticky-Notes.html" class="card">
+      <h3>Sticky Notes</h3>
+      <p>Appunti e note veloci da salvare nel browser.</p>
+    </a>
+    <a href="Text-transformer.html" class="card">
+      <h3>Text Transformer</h3>
+      <p>Convertitore e manipolatore di testo e caratteri.</p>
+    </a>
+  </div>
 
 </body>
 </html>
