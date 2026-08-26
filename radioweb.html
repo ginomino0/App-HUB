@@ -58,6 +58,70 @@
             z-index: -1;
         }
 
+        /* Overlay di consenso per Android / Browser Mobile */
+        .audio-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .audio-modal-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .modal-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 28px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 360px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .modal-box h2 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .modal-box p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .modal-start-btn {
+            background: var(--accent-color);
+            color: #020617;
+            font-weight: 700;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: 0 0 15px var(--accent-glow);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-start-btn:active {
+            transform: scale(0.96);
+        }
+
         .scene {
             perspective: 1400px;
             width: 100%;
@@ -164,32 +228,44 @@
             font-weight: 700;
         }
 
-        /* Scala Frequenze / Tuning Bar */
+        /* Scala Frequenze / Tuning Bar Scorrevole */
         .tuning-bar-container {
-            margin-top: 12px;
+            margin-top: 14px;
             position: relative;
-            height: 24px;
+            display: flex;
+            align-items: center;
         }
 
-        .tuning-track {
-            position: absolute;
-            top: 10px;
-            left: 0;
+        .tuning-slider {
+            -webkit-appearance: none;
+            appearance: none;
             width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            cursor: pointer;
         }
 
-        .tuning-indicator {
-            position: absolute;
-            top: 2px;
-            width: 4px;
-            height: 20px;
+        .tuning-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 22px;
+            border-radius: 3px;
             background: var(--accent-color);
-            box-shadow: 0 0 8px var(--accent-color);
-            transform: translateX(-50%);
-            transition: left 0.05s linear;
+            box-shadow: 0 0 10px var(--accent-color);
+            cursor: pointer;
+        }
+
+        .tuning-slider::-moz-range-thumb {
+            width: 14px;
+            height: 22px;
+            border-radius: 3px;
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+            cursor: pointer;
+            border: none;
         }
 
         /* Sezione Manopola (Knob) */
@@ -249,6 +325,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             transform: translateZ(25px);
+            margin-bottom: 16px;
         }
 
         .control-box {
@@ -291,9 +368,29 @@
             color: var(--accent-color);
             box-shadow: 0 0 10px var(--accent-glow);
         }
+
+        /* Nota a piè di pagina */
+        .info-note {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.4;
+            border-top: 1px dashed var(--glass-border);
+            padding-top: 10px;
+            transform: translateZ(20px);
+        }
     </style>
 </head>
 <body>
+
+    <!-- Modal per richiesta consenso Audio su Android / Mobile -->
+    <div class="audio-modal-overlay" id="audioModal">
+        <div class="modal-box">
+            <h2>📻 Web Radio FM</h2>
+            <p>I browser smartphone richiedono il consenso per riprodurre l'audio in streaming. Tocca il pulsante sotto per iniziare.</p>
+            <button class="modal-start-btn" id="startAudioBtn">Attiva Audio e Avvia</button>
+        </div>
+    </div>
 
     <canvas id="canvas-bg"></canvas>
 
@@ -305,15 +402,14 @@
             </div>
             <div class="content">
                 <h1>Web Radio Selezionate</h1>
-                <p>Ruota la manopola in tondo per sintonizzarti sulle emittenti.</p>
+                <p>Sintonizzati per ascoltare le stazioni radio.</p>
                 
                 <div class="radio-display">
                     <div class="freq-readout" id="freqReadout">88.0 MHz</div>
                     <div class="station-name" id="stationName">Radio Spenta</div>
                     
                     <div class="tuning-bar-container">
-                        <div class="tuning-track"></div>
-                        <div class="tuning-indicator" id="tuningIndicator" style="left: 0%;"></div>
+                        <input type="range" class="tuning-slider" id="tuningSlider" min="88.0" max="108.0" step="0.1" value="88.0">
                     </div>
                 </div>
 
@@ -323,7 +419,7 @@
                             <div class="knob-marker"></div>
                         </div>
                     </div>
-                    <span class="knob-label">Tuning Canali (Gira in cerchio)</span>
+                    <span class="knob-label">Tuning Canali (PC)</span>
                 </div>
 
                 <div class="controls-row">
@@ -336,11 +432,14 @@
                         <button class="action-btn" id="muteBtn">AUDIO: MUTE</button>
                     </div>
                 </div>
+
+                <div class="info-note">
+                    💡 <strong>Nota:</strong> Da PC ruotare la manopola con il mouse. Da Smartphone scorrere la barra sotto il display per trovare le stazioni.
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Elemento audio HTML5 per riprodurre i flussi reali -->
     <audio id="audioStream" crossorigin="anonymous"></audio>
 
     <script>
@@ -417,19 +516,22 @@
 
         const freqReadout = document.getElementById('freqReadout');
         const stationName = document.getElementById('stationName');
-        const tuningIndicator = document.getElementById('tuningIndicator');
+        const tuningSlider = document.getElementById('tuningSlider');
         const tuningKnob = document.getElementById('tuningKnob');
         const knobContainer = document.getElementById('knobContainer');
         const powerBtn = document.getElementById('powerBtn');
         const muteBtn = document.getElementById('muteBtn');
         const audioStream = document.getElementById('audioStream');
+        const audioModal = document.getElementById('audioModal');
+        const startAudioBtn = document.getElementById('startAudioBtn');
 
         let isPowerOn = false;
         let isMuted = false;
         let currentFreq = 88.0;
         let activeIndex = -1;
 
-        // Lista delle stazioni ordinate per frequenza (da 88.0 a 108.0 MHz)
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
         const stations = [
             { name: "Rai Radio 1", freq: 88.5, url: "https://radiounoest-live.akamaized.net/hls/live/2032586/radiounoest/radiounoest/radio1est_256/chunklist.m3u8" },
             { name: "Rai Radio 2", freq: 89.2, url: "https://icestreaming.rai.it/2.mp3" },
@@ -458,6 +560,19 @@
             { name: "Lifegate Radio", freq: 106.5, url: "https://stream3.xdevel.com/audio0s975809-424/stream/icecast.audio" },
             { name: "Radio Popolare", freq: 107.5, url: "https://livex.radiopopolare.it/radiopop2" }
         ];
+
+        // Sblocco Audio da Modal
+        startAudioBtn.addEventListener('click', () => {
+            // "Inizializza" il lettore audio con un tap dell'utente per soddisfare i permessi del browser
+            audioStream.play().then(() => {
+                audioStream.pause();
+            }).catch(() => {});
+
+            audioModal.classList.add('hidden');
+            
+            // Inizia direttamente con la radio accesa
+            togglePower(true);
+        });
 
         function checkStationTune() {
             if (!isPowerOn) return;
@@ -494,23 +609,28 @@
             }
         }
 
-        // --- MOTORE ROTAZIONE FLUIDA (Trigonometria) ---
+        function setFrequency(freq) {
+            currentFreq = Math.round(parseFloat(freq) * 10) / 10;
+            freqReadout.innerText = currentFreq.toFixed(1) + " MHz";
+            tuningSlider.value = currentFreq;
+
+            let pct = (currentFreq - MIN_FM) / (MAX_FM - MIN_FM);
+            cumulativeAngle = pct * MAX_KNOB_ANGLE;
+            let visualDegrees = pct * 270 - 135;
+            tuningKnob.style.transform = `rotate(${visualDegrees}deg)`;
+
+            checkStationTune();
+        }
+
+        // --- MOTORE ROTAZIONE FLUIDA DA PC (Trigonometria) ---
         let isDraggingKnob = false;
         let center = { x: 0, y: 0 };
         let lastMouseAngle = 0;
         
-        // Range di frequenza FM della radio: 88.0 MHz - 108.0 MHz (ampiezza 20 MHz)
         const MIN_FM = 88.0;
         const MAX_FM = 108.0;
-        
-        // Mappatura dell'angolo cumulativo (permette rotazioni continue o ampie)
-        const MAX_KNOB_ANGLE = Math.PI * 1.5; // ~270 gradi totali di escursione
+        const MAX_KNOB_ANGLE = Math.PI * 1.5;
         let cumulativeAngle = 0;
-
-        function fmToAngle(f) {
-            let p = (f - MIN_FM) / (MAX_FM - MIN_FM);
-            return p * MAX_KNOB_ANGLE;
-        }
 
         function angleToFm(a) {
             let p = a / MAX_KNOB_ANGLE;
@@ -518,7 +638,7 @@
         }
 
         knobContainer.addEventListener('pointerdown', (e) => {
-            if (!isPowerOn) return;
+            if (!isPowerOn || isTouchDevice) return;
             const rect = knobContainer.getBoundingClientRect();
             center.x = rect.left + rect.width / 2;
             center.y = rect.top + rect.height / 2;
@@ -529,7 +649,7 @@
         });
 
         window.addEventListener('pointermove', (e) => {
-            if (!isDraggingKnob || !isPowerOn) return;
+            if (!isDraggingKnob || !isPowerOn || isTouchDevice) return;
             
             let currentMouseAngle = Math.atan2(e.clientY - center.y, e.clientX - center.x);
             let deltaAngle = currentMouseAngle - lastMouseAngle;
@@ -540,31 +660,24 @@
             cumulativeAngle += deltaAngle;
             lastMouseAngle = currentMouseAngle;
 
-            // Limiti della manopola (da 0 a MAX_KNOB_ANGLE)
             if (cumulativeAngle < 0) cumulativeAngle = 0;
             if (cumulativeAngle > MAX_KNOB_ANGLE) cumulativeAngle = MAX_KNOB_ANGLE;
 
-            // Calcolo frequenza FM e conversione grafica in gradi CSS (-135° a +135°)
-            currentFreq = angleToFm(cumulativeAngle);
-            currentFreq = Math.round(currentFreq * 10) / 10;
-
-            let visualDegrees = (cumulativeAngle / MAX_KNOB_ANGLE) * 270 - 135;
-            tuningKnob.style.transform = `rotate(${visualDegrees}deg)`;
-
-            freqReadout.innerText = currentFreq.toFixed(1) + " MHz";
-            
-            let percentage = (currentFreq - MIN_FM) / (MAX_FM - MIN_FM);
-            tuningIndicator.style.left = (percentage * 100) + "%";
-
-            checkStationTune();
+            let newFreq = angleToFm(cumulativeAngle);
+            setFrequency(newFreq);
         });
 
         window.addEventListener('pointerup', () => {
             isDraggingKnob = false;
         });
 
-        powerBtn.addEventListener('click', () => {
-            isPowerOn = !isPowerOn;
+        tuningSlider.addEventListener('input', (e) => {
+            if (!isPowerOn) return;
+            setFrequency(e.target.value);
+        });
+
+        function togglePower(state) {
+            isPowerOn = typeof state === 'boolean' ? state : !isPowerOn;
             if (isPowerOn) {
                 powerBtn.innerText = "POWER: ON";
                 powerBtn.classList.add('active-power');
@@ -577,7 +690,9 @@
                 audioStream.src = "";
                 activeIndex = -1;
             }
-        });
+        }
+
+        powerBtn.addEventListener('click', () => togglePower());
 
         muteBtn.addEventListener('click', () => {
             if (!isPowerOn) return;
