@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio LUFS Normalizer & True Peak Processor</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Drop Zone */
+        .drop-zone {
+            border: 2px dashed #475569;
+            border-radius: 8px;
+            padding: 36px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(15, 23, 42, 0.4);
+            margin-bottom: 24px;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .drop-zone svg {
+            width: 48px;
+            height: 48px;
+            fill: var(--text-muted);
+            margin-bottom: 12px;
+            transition: fill 0.2s ease;
+        }
+
+        .drop-zone:hover svg {
+            fill: var(--primary);
+        }
+
+        .drop-zone p {
+            font-size: 1rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .drop-zone span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 4px;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* File Info Banner */
+        .file-info {
+            display: none;
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-info .name {
+            font-weight: 600;
+            color: var(--primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 70%;
+        }
+
+        .file-info .meta {
+            color: var(--text-muted);
+        }
+
+        /* Target Presets & Config */
+        .config-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .config-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input[type="number"] {
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            color: var(--text-main);
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        select:focus, input[type="number"]:focus {
+            border-color: var(--primary);
+        }
+
+        /* Meters Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .metric-card .title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .metric-card .value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .metric-card .sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Progress & Status */
+        .status-container {
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: #0f172a;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.1s linear;
+        }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+        }
+
+        .btn-success {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Audio LUFS Normalizer</h1>
+        <p>Analisi locale LUFS ITU-R BS.1770 & Peak, Normalizzazione e Export in WAV a 24-bit PCM</p>
+    </header>
+
+    <div class="drop-zone" id="drop-zone">
+        <svg viewBox="0 0 24 24">
+            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+        </svg>
+        <p>Trascina qui il tuo file audio (WAV / MP3)</p>
+        <span>oppure clicca per sfogliare dal computer</span>
+        <input type="file" id="file-input" accept="audio/wav, audio/mp3, audio/mpeg, audio/x-wav">
+    </div>
+
+    <div class="file-info" id="file-info">
+        <span class="name" id="info-name">-</span>
+        <span class="meta" id="info-meta">-</span>
+    </div>
+
+    <div class="config-section">
+        <div class="form-group">
+            <label for="preset-select">Preset Piattaforma Target</label>
+            <select id="preset-select">
+                <option value="-14,-1.0">Spotify / YouTube / Amazon (-14 LUFS, -1.0 dBTP)</option>
+                <option value="-16,-1.0">Apple Music / AES (-16 LUFS, -1.0 dBTP)</option>
+                <option value="-14,-2.0">Tidal / EBU R128 (-14 LUFS, -2.0 dBTP)</option>
+                <option value="-9,-0.3">Club / DJ Master (-9 LUFS, -0.3 dBTP)</option>
+                <option value="custom">Personalizzato...</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="target-lufs">Target LUFS Integrato</label>
+            <input type="number" id="target-lufs" value="-14.0" step="0.5" max="0" min="-40">
+        </div>
+    </div>
+
+    <div class="results-grid">
+        <div class="metric-card">
+            <div class="title">LUFS Attuale</div>
+            <div class="value" id="val-cur-lufs">--</div>
+            <div class="sub">Integrated</div>
+        </div>
+        <div class="metric-card">
+            <div class="title">Peak Attuale</div>
+            <div class="value" id="val-cur-peak">--</div>
+            <div class="sub">dB Sample Peak</div>
+        </div>
+        <div class="metric-card">
+            <div class="title">Gain Applicato</div>
+            <div class="value" id="val-gain">--</div>
+            <div class="sub">dB Offset</div>
+        </div>
+        <div class="metric-card">
+            <div class="title">Peak Finale</div>
+            <div class="value" id="val-new-peak">--</div>
+            <div class="sub">Post-Normalizzazione</div>
+        </div>
+    </div>
+
+    <div class="status-container" id="status-container">
+        <div class="status-text">
+            <span id="status-msg">Elaborazione in corso...</span>
+            <span id="status-pct">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button id="btn-analyze" class="btn-primary" disabled>
+            ⚡ Analizza Audio
+        </button>
+        <button id="btn-export" class="btn-success" disabled>
+            💾 Normalizza & Scarica WAV (24-bit)
+        </button>
+    </div>
+
+    <footer>
+        Processamento audio 100% Client-Side. Nessun file viene inviato a server esterni.
+    </footer>
+</div>
+
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileInfo = document.getElementById('file-info');
+    const infoName = document.getElementById('info-name');
+    const infoMeta = document.getElementById('info-meta');
+    const presetSelect = document.getElementById('preset-select');
+    const targetLufsInput = document.getElementById('target-lufs');
+    
+    const valCurLufs = document.getElementById('val-cur-lufs');
+    const valCurPeak = document.getElementById('val-cur-peak');
+    const valGain = document.getElementById('val-gain');
+    const valNewPeak = document.getElementById('val-new-peak');
+    
+    const statusContainer = document.getElementById('status-container');
+    const statusMsg = document.getElementById('status-msg');
+    const statusPct = document.getElementById('status-pct');
+    const progressBar = document.getElementById('progress-bar');
+    
+    const btnAnalyze = document.getElementById('btn-analyze');
+    const btnExport = document.getElementById('btn-export');
+
+    let loadedFile = null;
+    let decodedAudioBuffer = null;
+    let measuredLufs = null;
+    let measuredPeakDb = null;
+
+    presetSelect.addEventListener('change', () => {
+        if (presetSelect.value !== 'custom') {
+            const [lufs] = presetSelect.value.split(',');
+            targetLufsInput.value = lufs;
+            updateGainCalculation();
+        }
+    });
+
+    targetLufsInput.addEventListener('input', () => {
+        presetSelect.value = 'custom';
+        updateGainCalculation();
+    });
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) handleFileSelect(files[0]);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
+    });
+
+    function handleFileSelect(file) {
+        if (!file.type.includes('audio') && !file.name.match(/\.(wav|mp3)$/i)) {
+            alert('Seleziona un file audio valido (.wav o .mp3)');
+            return;
+        }
+
+        loadedFile = file;
+        infoName.textContent = file.name;
+        infoMeta.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+        fileInfo.style.display = 'flex';
+
+        decodedAudioBuffer = null;
+        measuredLufs = null;
+        measuredPeakDb = null;
+        valCurLufs.textContent = '--';
+        valCurPeak.textContent = '--';
+        valGain.textContent = '--';
+        valNewPeak.textContent = '--';
+        btnExport.disabled = true;
+
+        btnAnalyze.disabled = false;
+        analyzeAudio();
+    }
+
+    async function analyzeAudio() {
+        if (!loadedFile) return;
+
+        btnAnalyze.disabled = true;
+        showStatus('Caricamento e decodifica audio...', 10);
+
+        try {
+            const arrayBuffer = await loadedFile.arrayBuffer();
+            showStatus('Decodifica formato in memoria...', 30);
+            
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            decodedAudioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+            audioCtx.close();
+
+            showStatus('Calcolo LUFS (ITU-R BS.1770) & Peak...', 60);
+
+            setTimeout(() => {
+                const results = calculateLufsAndPeak(decodedAudioBuffer);
+                measuredLufs = results.lufs;
+                measuredPeakDb = results.peakDb;
+
+                valCurLufs.textContent = measuredLufs.toFixed(1) + ' LUFS';
+                valCurPeak.textContent = measuredPeakDb.toFixed(1) + ' dB';
+
+                updateGainCalculation();
+                
+                showStatus('Analisi completata!', 100);
+                setTimeout(() => { statusContainer.style.display = 'none'; }, 1000);
+                
+                btnAnalyze.disabled = false;
+                btnExport.disabled = false;
+            }, 50);
+
+        } catch (err) {
+            console.error(err);
+            alert('Errore durante la decodifica dell\'audio: ' + err.message);
+            statusContainer.style.display = 'none';
+            btnAnalyze.disabled = false;
+        }
+    }
+
+    function updateGainCalculation() {
+        if (measuredLufs === null) return;
+
+        const targetLufs = parseFloat(targetLufsInput.value);
+        const gainDb = targetLufs - measuredLufs;
+        const newPeakDb = measuredPeakDb + gainDb;
+
+        valGain.textContent = (gainDb >= 0 ? '+' : '') + gainDb.toFixed(1) + ' dB';
+        valNewPeak.textContent = newPeakDb.toFixed(1) + ' dB';
+
+        if (newPeakDb > 0) {
+            valNewPeak.style.color = 'var(--danger)';
+        } else {
+            valNewPeak.style.color = 'var(--accent)';
+        }
+    }
+
+    function calculateLufsAndPeak(buffer) {
+        const numChannels = buffer.numberOfChannels;
+        const sampleRate = buffer.sampleRate;
+        const length = buffer.length;
+
+        let maxSample = 0;
+
+        const fChannelData = [];
+        for (let c = 0; c < numChannels; c++) {
+            const rawData = buffer.getChannelData(c);
+            
+            for (let i = 0; i < length; i++) {
+                const abs = Math.abs(rawData[i]);
+                if (abs > maxSample) maxSample = abs;
+            }
+
+            fChannelData.push(applyKWeighting(rawData, sampleRate));
+        }
+
+        const blockSize = Math.floor(sampleRate * 0.4);
+        const stepSize = Math.floor(sampleRate * 0.1);
+        const blocksCount = Math.floor((length - blockSize) / stepSize);
+
+        if (blocksCount <= 0) {
+            const peakDb = maxSample > 0 ? 20 * Math.log10(maxSample) : -100;
+            return { lufs: -70, peakDb };
+        }
+
+        const channelWeights = [1.0, 1.0, 1.0, 1.41, 1.41];
+        const blockEnergies = [];
+
+        for (let b = 0; b < blocksCount; b++) {
+            const start = b * stepSize;
+            let totalBlockEnergy = 0;
+
+            for (let c = 0; c < numChannels; c++) {
+                const weight = c < channelWeights.length ? channelWeights[c] : 1.0;
+                const data = fChannelData[c];
+                let sumSquare = 0;
+
+                for (let i = start; i < start + blockSize; i++) {
+                    sumSquare += data[i] * data[i];
+                }
+                const channelEnergy = sumSquare / blockSize;
+                totalBlockEnergy += weight * channelEnergy;
+            }
+
+            blockEnergies.push(totalBlockEnergy);
+        }
+
+        const absGatedEnergies = blockEnergies.filter(e => e > 0 && (10 * Math.log10(e) - 0.691) > -70);
+        
+        if (absGatedEnergies.length === 0) {
+            const peakDb = maxSample > 0 ? 20 * Math.log10(maxSample) : -100;
+            return { lufs: -70, peakDb };
+        }
+
+        const avgAbsEnergy = absGatedEnergies.reduce((a, b) => a + b, 0) / absGatedEnergies.length;
+        const relativeThresholdLufs = (10 * Math.log10(avgAbsEnergy) - 0.691) - 10;
+
+        const relGatedEnergies = absGatedEnergies.filter(e => (10 * Math.log10(e) - 0.691) > relativeThresholdLufs);
+
+        let finalIntegratedLufs = -70;
+        if (relGatedEnergies.length > 0) {
+            const finalAvgEnergy = relGatedEnergies.reduce((a, b) => a + b, 0) / relGatedEnergies.length;
+            finalIntegratedLufs = 10 * Math.log10(finalAvgEnergy) - 0.691;
+        }
+
+        const peakDb = maxSample > 0 ? 20 * Math.log10(maxSample) : -100;
+
+        return { lufs: finalIntegratedLufs, peakDb };
+    }
+
+    function applyKWeighting(samples, sampleRate) {
+        const hs_b = [1.53512485958697, -2.69169618940638, 1.19839281085285];
+        const hs_a = [1.0, -1.69065929318241, 0.73248077421585];
+
+        const hp_b = [1.0, -2.0, 1.0];
+        const hp_a = [1.0, -1.99004745483398, 0.99007225036621];
+
+        let stage1 = processBiquad(samples, hs_b, hs_a);
+        let stage2 = processBiquad(stage1, hp_b, hp_a);
+
+        return stage2;
+    }
+
+    function processBiquad(samples, b, a) {
+        const len = samples.length;
+        const out = new Float32Array(len);
+        let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+
+        for (let i = 0; i < len; i++) {
+            const x0 = samples[i];
+            const y0 = (b[0] * x0 + b[1] * x1 + b[2] * x2 - a[1] * y1 - a[2] * y2) / a[0];
+
+            out[i] = y0;
+
+            x2 = x1;
+            x1 = x0;
+            y2 = y1;
+            y1 = y0;
+        }
+        return out;
+    }
+
+    btnExport.addEventListener('click', async () => {
+        if (!decodedAudioBuffer || measuredLufs === null) return;
+
+        btnExport.disabled = true;
+        showStatus('Applicazione Guadagno & Limiter...', 20);
+
+        setTimeout(() => {
+            const targetLufs = parseFloat(targetLufsInput.value);
+            const gainDb = targetLufs - measuredLufs;
+            const linearGain = Math.pow(10, gainDb / 20);
+
+            const numChannels = decodedAudioBuffer.numberOfChannels;
+            const length = decodedAudioBuffer.length;
+            const sampleRate = decodedAudioBuffer.sampleRate;
+
+            const audioCtx = new OfflineAudioContext(numChannels, length, sampleRate);
+            const processedBuffer = audioCtx.createBuffer(numChannels, length, sampleRate);
+
+            showStatus('Normalizzazione campioni...', 50);
+
+            const ceiling = 0.98;
+
+            for (let c = 0; c < numChannels; c++) {
+                const inputData = decodedAudioBuffer.getChannelData(c);
+                const outputData = processedBuffer.getChannelData(c);
+
+                for (let i = 0; i < length; i++) {
+                    let sample = inputData[i] * linearGain;
+
+                    if (sample > ceiling) {
+                        sample = ceiling + (1 - ceiling) * Math.tanh((sample - ceiling) / (1 - ceiling));
+                    } else if (sample < -ceiling) {
+                        sample = -ceiling + (1 - ceiling) * Math.tanh((sample + ceiling) / (1 - ceiling));
+                    }
+
+                    outputData[i] = sample;
+                }
+            }
+
+            showStatus('Encoding WAV 24-bit PCM...', 80);
+
+            setTimeout(() => {
+                const wavBlob = bufferTo24BitWav(processedBuffer);
+                
+                const url = URL.createObjectURL(wavBlob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                
+                const baseName = loadedFile.name.replace(/\.[^/.]+$/, "");
+                a.download = `${baseName}_normalized_${targetLufs}LUFS.wav`;
+                
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+
+                showStatus('Export Completato!', 100);
+                setTimeout(() => { statusContainer.style.display = 'none'; }, 1000);
+                btnExport.disabled = false;
+            }, 50);
+
+        }, 50);
+    });
+
+    function bufferTo24BitWav(buffer) {
+        const numChannels = buffer.numberOfChannels;
+        const sampleRate = buffer.sampleRate;
+        const length = buffer.length;
+        const bytesPerSample = 3;
+        const blockAlign = numChannels * bytesPerSample;
+        const byteRate = sampleRate * blockAlign;
+        const dataSize = length * blockAlign;
+
+        const bufferSize = 44 + dataSize;
+        const arrayBuffer = new ArrayBuffer(bufferSize);
+        const view = new DataView(arrayBuffer);
+
+        writeString(view, 0, 'RIFF');
+        view.setUint32(4, 36 + dataSize, true);
+        writeString(view, 8, 'WAVE');
+
+        writeString(view, 12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, numChannels, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, byteRate, true);
+        view.setUint16(32, blockAlign, true);
+        view.setUint16(34, 24, true);
+
+        writeString(view, 36, 'data');
+        view.setUint32(40, dataSize, true);
+
+        let offset = 44;
+        const channelData = [];
+        for (let c = 0; c < numChannels; c++) {
+            channelData.push(buffer.getChannelData(c));
+        }
+
+        for (let i = 0; i < length; i++) {
+            for (let c = 0; c < numChannels; c++) {
+                let sample = channelData[c][i];
+                sample = Math.max(-1, Math.min(1, sample));
+                
+                const intSample = sample < 0 ? sample * 0x800000 : sample * 0x7FFFFF;
+
+                view.setUint8(offset, intSample & 0xFF);
+                view.setUint8(offset + 1, (intSample >> 8) & 0xFF);
+                view.setUint8(offset + 2, (intSample >> 16) & 0xFF);
+
+                offset += 3;
+            }
+        }
+
+        return new Blob([arrayBuffer], { type: 'audio/wav' });
+    }
+
+    function writeString(view, offset, string) {
+        for (let i = 0; i < string.length; i++) {
+            view.setUint8(offset + i, string.charCodeAt(i));
+        }
+    }
+
+    function showStatus(msg, pct) {
+        statusContainer.style.display = 'block';
+        statusMsg.textContent = msg;
+        statusPct.textContent = pct + '%';
+        progressBar.style.width = pct + '%';
+    }
+</script>
+</body>
+</html>
