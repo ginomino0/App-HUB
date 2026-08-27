@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Overlay & Paywall Cleaner Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0c0e14;
+            --bg-secondary: #12151e;
+            --card: #181c28;
+            --border: #282d3e;
+            --border-hover: #3a4158;
+            --text: #e4e6ed;
+            --text-secondary: #7d829a;
+            --accent: #f59e0b;
+            --accent-hover: #fbbf24;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 40px 32px;
+            box-shadow: var(--shadow);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .header-title .logo-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--accent), #ea580c);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 16px rgba(245,158,11,0.25);
+        }
+
+        h1 { font-size: 1.8rem; font-weight: 700; text-align: center; }
+        .subtitle { text-align: center; color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 30px; }
+
+        .bookmarklet-box {
+            background: var(--bg-secondary);
+            border: 2px dashed var(--accent);
+            border-radius: var(--radius-sm);
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .bookmarklet-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--accent), #ea580c);
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding: 14px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            cursor: move;
+            box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 16px 0;
+        }
+
+        .bookmarklet-btn:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 6px 20px rgba(245,158,11,0.4);
+        }
+
+        .instructions {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-title">
+            <div class="logo-icon"><i class="fas fa-broom"></i></div>
+            <h1>Web Overlay & Paywall Cleaner</h1>
+        </div>
+        <p class="subtitle">Rimuovi cookie banner, sovrimpressioni, video floating, banner promozionali e sblocca lo scroll.</p>
+
+        <div class="bookmarklet-box">
+            <h3><i class="fas fa-bookmark" style="color: var(--accent);"></i> Smart Clean Pagina</h3>
+            <p class="instructions" style="margin-top:8px;">Trascina questo pulsante direttamente sulla tua <b>Barra dei Preferiti</b> del browser:</p>
+            
+            <a class="bookmarklet-btn" href="javascript:(function(){const selectors=['[class*=\'cookie\']','[id*=\'cookie\']','[class*=\'paywall\']','[id*=\'paywall\']','[class*=\'overlay\']','[id*=\'overlay\']','[class*=\'gdpr\']','[id*=\'gdpr\']','[class*=\'modal\']','[class*=\'popup\']','[class*=\'adv\']','[id*=\'adv\']','[class*=\'banner\']','[id*=\'banner\']','[class*=\'widget\']','[id*=\'widget\']','[class*=\'amazon\']','[id*=\'amazon\']','[class*=\'backdrop\']','[class*=\'dialog\']','[id*=\'dialog\']','iframe[src*=\'video\']','iframe[src*=\'ads\']','iframe[src*=\'amazon\']','.tp-modal','.tp-backdrop','#onetrust-banner-sdk'];selectors.forEach(s=>document.querySelectorAll(s).forEach(e=>e.remove()));document.querySelectorAll('div, section, aside, iframe, [role=\'dialog\'], [role=\'region\']').forEach(el=>{const st=window.getComputedStyle(el);if(st.position==='fixed'||st.position==='sticky'){const z=parseInt(st.zIndex,10);if(isNaN(z)||z>0){el.remove();}}});document.body.style.overflow='auto';document.body.style.position='static';document.documentElement.style.overflow='auto';document.querySelectorAll('*').forEach(e=>{const st=window.getComputedStyle(e);if(st.filter.includes('blur')||st.backdropFilter.includes('blur')){e.style.filter='none';e.style.backdropFilter='none';}});})();">
+                <i class="fas fa-magic"></i> Smart Clean Pagina
+            </a>
+
+            <p class="instructions">Premi il preferito salvato durante la navigazione su qualsiasi sito per eliminare i blocchi visivi e sbloccare lo scorrimento della pagina.</p>
+        </div>
+    </div>
+
+</body>
+</html>
