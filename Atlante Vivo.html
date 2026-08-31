@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlante — Enciclopedia geografica interattiva</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --ink:#101c1a;
+  --paper:#eef2ee;
+  --moss:#3c6255;
+  --moss-dark:#294238;
+  --clay:#b5651d;
+  --line:#c9d2c7;
+  --panel:#fbfbf9;
+  --font-display:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  --font-body:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;}
+html,body{
+  margin:0;height:100%;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--font-body);
+  overflow:hidden;
+}
+#map{position:fixed;inset:0;background:#eef2ee;}
+.leaflet-container{background:#dfe6e0;font-family:var(--font-body);}
+.leaflet-control-zoom a{color:var(--ink) !important;}
+.leaflet-popup-content-wrapper{border-radius:4px;}
+
+/* --- Header --- */
+header{
+  position:fixed;top:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 30px 16px 78px;
+  z-index:20;
+  pointer-events:none;
+}
+header *{pointer-events:auto;}
+.brand{
+  font-family:var(--font-display);
+  font-size:20px;
+  letter-spacing:0.3px;
+  color:var(--ink);
+  background:rgba(238,242,238,0.88);
+  display:inline-flex;
+  align-items:center;
+  height:38px;
+  box-sizing:border-box;
+  padding:0 14px;
+  border-radius:4px;
+  backdrop-filter:blur(4px);
+}
+.brand em{color:var(--moss);font-style:italic;}
+.brand-sub{
+  font-size:11.5px;
+  color:#5c6b62;
+  margin-top:4px;
+  margin-left:14px;
+  letter-spacing:0.2px;
+}
+#keyBtn{
+  background:rgba(16,28,26,0.85);
+  border:1px solid #4a5c53;
+  color:#e4ece7;
+  font-family:var(--font-body);
+  font-size:13px;
+  height:38px;
+  box-sizing:border-box;
+  padding:0 16px;
+  display:inline-flex;
+  align-items:center;
+  border-radius:3px;
+  cursor:pointer;
+  transition:border-color .2s, color .2s, background .2s;
+}
+#keyBtn:hover{border-color:#8fb59f;color:#fff;background:rgba(16,28,26,0.95);}
+#keyBtn.set{border-color:#3c6255;color:#a9d4b8;}
+#historyBtn{
+  background:rgba(16,28,26,0.85);
+  border:1px solid #4a5c53;
+  color:#e4ece7;
+  font-family:var(--font-body);
+  font-size:13px;
+  height:38px;
+  box-sizing:border-box;
+  padding:0 16px;
+  display:inline-flex;
+  align-items:center;
+  border-radius:3px;
+  cursor:pointer;
+  transition:border-color .2s, color .2s, background .2s;
+}
+#historyBtn:hover{border-color:#8fb59f;color:#fff;background:rgba(16,28,26,0.95);}
+#instrBtn{
+  width:38px;height:38px;flex-shrink:0;
+  box-sizing:border-box;
+  background:#b5342a;
+  border:1px solid #8f2a22;
+  color:#fff;
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:16px;
+  border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+#instrBtn:hover{background:#cc3c30;transform:scale(1.05);}
+
+/* --- Instructions modal --- */
+.instr-body{max-height:65vh;overflow-y:auto;padding-right:6px;font-size:13.5px;line-height:1.55;}
+.instr-body h3{
+  font-family:var(--font-display);color:var(--moss-dark);
+  font-size:15.5px;margin:20px 0 6px;
+}
+.instr-body h3:first-child{margin-top:0;}
+.instr-body h4{font-size:13px;color:var(--ink);margin:12px 0 4px;}
+.instr-body p{margin:4px 0 8px;color:#3a453f;}
+.instr-body ul{margin:4px 0 10px;padding-left:20px;}
+.instr-body li{margin-bottom:4px;color:#3a453f;}
+.instr-body strong{color:var(--ink);}
+.instr-body a{color:var(--moss-dark);text-decoration:underline;}
+.instr-body a:hover{color:var(--moss);}
+
+/* --- History modal --- */
+.hist-list{max-height:50vh;overflow-y:auto;margin-bottom:14px;padding-right:4px;}
+.hist-item{
+  display:grid;
+  grid-template-columns: auto 1fr auto;
+  align-items:center;
+  gap:12px;
+  padding:8px 6px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+}
+.hist-item:last-child{border-bottom:none;}
+.hist-item input[type="checkbox"]{
+  margin:0;
+  cursor:pointer;
+  accent-color:var(--moss);
+}
+.hist-item-main{
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.hist-item-name{
+  font-weight:600;
+  color:var(--ink);
+  white-space:nowrap;
+}
+.hist-item-labels{
+  font-size:11px;
+  color:var(--moss-dark);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.hist-item-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.hist-item-meta{
+  font-size:11px;
+  color:#7a8880;
+  white-space:nowrap;
+}
+.hist-item-del{
+  background:none;
+  border:none;
+  color:#b5651d;
+  cursor:pointer;
+  font-size:12px;
+  padding:2px 6px;
+}
+.hist-item-del:hover{text-decoration:underline;}
+.hist-empty{font-size:13px;color:#7a8880;padding:12px 0;}
+
+/* --- Compare mode --- */
+.compare-toggle{
+  display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5c6b62;
+  margin-bottom:10px;cursor:pointer;
+}
+.compare-toggle input{accent-color:var(--moss);cursor:pointer;}
+.compare-slot{
+  font-size:11.5px;color:var(--moss-dark);background:#eef2ee;
+  border-radius:3px;padding:5px 9px;margin-bottom:10px;
+}
+
+/* --- Panel action row --- */
+.panel-actions{
+  display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap;
+}
+.panel-action-btn{
+  background:#fff;border:1px solid var(--line);color:#5c6b62;
+  font-family:var(--font-body);font-size:12px;padding:7px 13px;
+  border-radius:3px;cursor:pointer;transition:border-color .2s,color .2s;
+}
+.panel-action-btn:hover{border-color:#8fb59f;color:var(--ink);}
+.export-wrap{position:relative;display:inline-block;}
+.export-menu{
+  position:absolute;top:calc(100% + 4px);left:0;z-index:10;
+  background:#fff;border:1px solid var(--line);border-radius:4px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.18);
+  min-width:140px;display:none;overflow:hidden;
+}
+.export-menu.show{display:block;}
+.export-menu button{
+  display:block;width:100%;text-align:left;background:none;border:none;
+  padding:9px 13px;font-family:var(--font-body);font-size:12.5px;color:#3a453f;
+  cursor:pointer;
+}
+.export-menu button:hover{background:#eef2ee;}
+.hist-select-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;gap:8px;flex-wrap:wrap;
+}
+.hist-select-row .btn{font-size:12px;padding:7px 12px;}
+.hist-item-check{margin-right:4px;accent-color:var(--moss);cursor:pointer;flex:none;}
+
+/* --- Key modal --- */
+.overlay{
+  position:fixed;inset:0;background:rgba(8,14,12,0.72);
+  display:none;align-items:center;justify-content:center;z-index:100;
+  backdrop-filter:blur(2px);
+}
+.overlay.show{display:flex;}
+.keycard{
+  background:var(--panel);color:var(--ink);
+  width:min(440px,90vw);
+  padding:32px 30px;border-radius:4px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.keycard.keycard-wide{width:min(640px,92vw);}
+.keycard h2{
+  font-family:var(--font-display);
+  font-size:20px;margin:0 0 6px;
+}
+.keycard p{
+  font-size:14px;line-height:1.55;color:#4a5850;margin:0 0 18px;
+}
+.keycard a{color:var(--moss);}
+.keycard input{
+  width:100%;padding:11px 12px;
+  border:1px solid var(--line);border-radius:3px;
+  font-family:var(--font-mono);font-size:13px;
+  margin-bottom:14px;background:#fff;color:var(--ink);
+}
+.keycard-row{display:flex;gap:10px;justify-content:flex-end;}
+.btn{
+  font-family:var(--font-body);font-size:13.5px;
+  padding:9px 18px;border-radius:3px;border:none;cursor:pointer;
+  transition:opacity .15s;
+}
+.btn:hover{opacity:0.85;}
+.btn-primary{background:var(--moss);color:#fff;}
+.btn-ghost{background:transparent;color:#7a8880;border:1px solid var(--line);}
+
+/* --- Country card (popup) --- */
+#countryCard{
+  position:fixed;
+  left:26px;bottom:40px;transform:translateY(30px);
+  width:min(290px,84vw);
+  background:var(--panel);color:var(--ink);
+  border-radius:4px;
+  padding:18px 20px;
+  box-shadow:0 16px 44px rgba(0,0,0,0.4);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease, transform .3s cubic-bezier(.4,0,.2,1);
+  z-index:30;
+}
+#countryCard.show{opacity:1;pointer-events:auto;transform:translateY(0);}
+#cardReopenTab{
+  position:fixed;bottom:0;left:26px;
+  background:var(--ink);color:#f2f2ec;
+  border:none;border-radius:6px 6px 0 0;
+  padding:10px 22px;font-family:var(--font-body);font-size:12.5px;
+  cursor:pointer;z-index:28;
+  box-shadow:0 -4px 16px rgba(0,0,0,0.25);
+  opacity:0;pointer-events:none;
+  transition:opacity .25s ease, background .2s;
+}
+#cardReopenTab.show{opacity:1;pointer-events:auto;}
+#cardReopenTab:hover{background:var(--moss-dark);}
+.cc-close{
+  position:absolute;top:14px;right:14px;
+  background:none;border:none;font-size:20px;color:#9aa89f;
+  cursor:pointer;line-height:1;padding:2px 6px;
+}
+.cc-close:hover{color:var(--ink);}
+.cc-eyebrow{
+  font-size:11.5px;color:var(--clay);letter-spacing:0.3px;margin-bottom:4px;
+}
+.cc-title{
+  font-family:var(--font-display);font-size:21px;line-height:1.15;
+  margin:0 0 4px;
+}
+.cc-meta{
+  font-size:12.5px;color:#5c6b62;line-height:1.5;margin-bottom:13px;
+}
+.cc-meta span{color:var(--moss-dark);}
+.cc-chips{
+  display:flex;flex-direction:column;gap:4px;margin-bottom:12px;
+}
+.cc-chip{
+  position:relative;
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-body);font-size:12.5px;
+  padding:4px 6px;border-radius:3px;
+  border:1px solid transparent;background:transparent;color:#3a453f;
+  cursor:pointer;transition:background .15s;
+}
+.cc-chip input{
+  position:static;opacity:1;width:14px;height:14px;margin:0;
+  accent-color:var(--moss);cursor:pointer;flex:none;
+}
+.cc-chip:hover{background:#eef2ee;}
+.cc-chip:has(input:checked){
+  color:var(--moss-dark);font-weight:600;
+}
+#customQuestion{
+  width:100%;resize:vertical;min-height:48px;
+  padding:9px 11px;margin-bottom:12px;
+  border:1px solid var(--line);border-radius:4px;
+  font-family:var(--font-body);font-size:13px;color:var(--ink);
+  background:#fff;outline:none;
+}
+#customQuestion:focus{border-color:#8fb59f;}
+#customQuestion::placeholder{color:#93a099;}
+.cc-note{
+  font-size:11.5px;
+  color:#6c7a72;
+  line-height:1.4;
+  margin-bottom:10px;
+}
+#genBtn{
+  flex:1;background:var(--ink);color:#f2f2ec;
+  padding:10px 14px;border:none;border-radius:3px;
+  font-family:var(--font-body);font-size:13.5px;letter-spacing:0.2px;
+  cursor:pointer;transition:background .2s;
+}
+#genBtn:hover{background:var(--moss-dark);}
+#genBtn:disabled{background:#aab4ac;cursor:default;}
+.gen-row{display:flex;gap:8px;align-items:center;}
+#genHelpBtn{
+  flex-shrink:0;width:36px;height:36px;
+  background:#fff;border:1px solid var(--line);border-radius:50%;
+  color:#5c6b62;font-family:var(--font-body);font-size:13px;
+  cursor:pointer;transition:border-color .2s, color .2s;
+}
+#genHelpBtn:hover{border-color:#8fb59f;color:var(--ink);}
+
+/* --- Sliding panel --- */
+#panel{
+  position:fixed;top:0;right:0;bottom:0;
+  width:min(460px,100vw);
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(181,101,29,0.05), transparent 45%),
+    radial-gradient(ellipse at 85% 90%, rgba(60,98,85,0.06), transparent 50%),
+    var(--panel);
+  color:var(--ink);
+  transform:translateX(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  z-index:50;
+  display:flex;flex-direction:column;
+  box-shadow:-10px 0 40px rgba(0,0,0,0.35);
+  overflow:hidden;
+}
+#panel .panel-head, #panel .panel-body{position:relative;z-index:1;}
+#panel.open{transform:translateX(0);}
+#panel::before{
+  content:'';
+  position:absolute;inset:0;pointer-events:none;
+  opacity:0.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.66 0 0 0 0 0.6 0 0 0 0 0.48 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+#reopenTab{
+  position:fixed;top:50%;right:0;transform:translateY(-50%);
+  background:var(--ink);color:#f2f2ec;
+  border:none;border-radius:6px 0 0 6px;
+  padding:16px 8px;font-family:var(--font-body);font-size:12.5px;
+  writing-mode:vertical-rl;text-orientation:mixed;
+  cursor:pointer;z-index:45;
+  box-shadow:-4px 0 16px rgba(0,0,0,0.25);
+  opacity:0;pointer-events:none;
+  transition:opacity .25s ease, background .2s;
+}
+#reopenTab.show{opacity:1;pointer-events:auto;}
+#reopenTab:hover{background:var(--moss-dark);}
+.panel-head{
+  padding:26px 30px 18px;
+  border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.panel-head-text .cc-eyebrow{margin-bottom:4px;}
+.panel-head h2{
+  font-family:var(--font-display);font-size:24px;margin:0;
+}
+.panel-close{
+  background:none;border:none;font-size:22px;color:#8a958e;
+  cursor:pointer;line-height:1;padding:2px 6px;
+}
+.panel-close:hover{color:var(--ink);}
+.panel-body{
+  flex:1;overflow-y:auto;
+  padding:24px 30px 60px;
+  font-size:15.5px;line-height:1.72;
+}
+.panel-body h3{
+  font-family:var(--font-display);
+  font-size:16px;
+  color:var(--moss-dark);
+  margin:26px 0 8px;
+  padding-top:2px;
+  border-top:1px solid var(--line);
+  padding-top:16px;
+}
+.panel-body h3:first-child{border-top:none;padding-top:0;margin-top:0;}
+.panel-body p{margin:0 0 12px;}
+.panel-body ul{margin:0 0 14px;padding-left:20px;}
+.panel-body li{margin-bottom:8px;line-height:1.6;}
+.panel-body li em{color:var(--moss-dark);font-style:italic;}
+.cursor-blink{
+  display:inline-block;width:7px;height:16px;background:var(--moss);
+  margin-left:2px;vertical-align:middle;
+  animation:blink 0.9s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0;}}
+.panel-loading{
+  color:#8a958e;font-size:14px;font-style:italic;
+}
+.panel-error{
+  background:#fbeae4;border:1px solid #e0b39c;color:#8a3d1a;
+  padding:12px 14px;border-radius:3px;font-size:13.5px;
+}
+
+/* --- galleria immagini --- */
+#panelGallery{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  margin-bottom:20px;
+}
+#panelGallery:empty{margin-bottom:0;}
+.gallery-thumb{
+  width:100%;aspect-ratio:4/3;object-fit:cover;
+  border-radius:3px;cursor:pointer;
+  border:1px solid var(--line);
+  transition:opacity .15s;
+}
+.gallery-thumb:hover{opacity:0.85;}
+
+#imgModal{z-index:110;}
+#imgModal img{
+  max-width:65vw;max-height:65vh;
+  border-radius:4px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.img-modal-close{
+  position:fixed;top:24px;right:30px;
+  background:rgba(16,28,26,0.7);color:#fff;
+  border:none;border-radius:50%;
+  width:38px;height:38px;font-size:20px;
+  cursor:pointer;line-height:1;
+}
+.img-modal-close:hover{background:rgba(16,28,26,0.95);}
+
+/* --- footer hint --- */
+#hint{
+  position:fixed;bottom:20px;left:30px;
+  font-size:12px;color:#7e8f86;z-index:20;
+  letter-spacing:0.2px;
+}
+
+/* --- search --- */
+#searchBar{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  width:min(380px,80vw);z-index:25;
+}
+.search-row{display:flex;gap:8px;align-items:center;}
+#searchInput{
+  flex:1;height:38px;box-sizing:border-box;padding:0 14px;
+  background:rgba(16,28,26,0.78);
+  border:1px solid #3f524a;border-radius:4px;
+  color:#f2f2ec;font-family:var(--font-body);font-size:13.5px;
+  backdrop-filter:blur(6px);
+  outline:none;
+}
+#helpBtn{
+  flex-shrink:0;width:38px;height:38px;box-sizing:border-box;
+  background:rgba(16,28,26,0.78);
+  border:1px solid #3f524a;border-radius:50%;
+  color:#e4ece7;font-family:var(--font-body);font-size:14px;
+  cursor:pointer;backdrop-filter:blur(6px);
+  transition:border-color .2s, background .2s;
+}
+#helpBtn:hover{border-color:#8fb59f;background:rgba(16,28,26,0.95);}
+#searchInput::placeholder{color:#8fa199;}
+#searchInput:focus{border-color:#8fb59f;}
+#searchResults{
+  margin-top:6px;
+  background:var(--panel);color:var(--ink);
+  border-radius:4px;overflow:hidden;
+  box-shadow:0 12px 30px rgba(0,0,0,0.35);
+  display:none;
+}
+#searchResults.show{display:block;}
+.sr-item{
+  padding:10px 16px;font-size:13.5px;cursor:pointer;
+  border-bottom:1px solid var(--line);
+}
+.sr-item:last-child{border-bottom:none;}
+.sr-item:hover{background:#e7ede8;}
+.sr-item .sr-name{color:var(--ink);}
+.sr-item .sr-detail{color:#7c8a82;font-size:12px;margin-top:1px;}
+
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:#c5cec5;border-radius:4px;}
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<header>
+  <div>
+    <div class="brand">Atlante <em>Vivo</em></div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button id="historyBtn">Cronologia</button>
+    <button id="keyBtn">Chiave Gemini</button>
+    <button id="instrBtn" title="Istruzioni">i</button>
+  </div>
+</header>
+
+<div id="hint">Trascina per spostarti · scorri per lo zoom fin dentro le vie · clicca ovunque</div>
+
+<div id="searchBar">
+  <div class="search-row">
+    <input type="text" id="searchInput" placeholder="Cerca una città, frazione, chiesa, monumento, montagna…" autocomplete="off">
+    <button id="helpBtn" aria-label="Aiuto ricerca">?</button>
+  </div>
+  <div id="searchResults"></div>
+</div>
+
+<div class="overlay" id="instrOverlay">
+  <div class="keycard keycard-wide">
+    <h2>Guida all'uso di Atlante Vivo</h2>
+    <div class="instr-body">
+
+      <h3>1. Configurare la chiave API Gemini</h3>
+      <p>Per generare le schede con l'intelligenza artificiale serve una chiave API Gemini personale, gratuita.</p>
+      <h4>Creare la chiave su Google AI Studio</h4>
+      <ul>
+        <li>Apri <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener"><strong>Google AI Studio</strong></a> ed esegui l'accesso con un account Google (o creane uno gratuito).</li>
+        <li>Individua il pulsante <strong>"Get API key"</strong> e clicca su <strong>"Create API key"</strong>.</li>
+        <li>Se richiesto, scegli un progetto esistente oppure <strong>"Create API key in new project"</strong>.</li>
+        <li>Copia la stringa alfanumerica generata (es. <em>AIzaSy…</em>) e conservala riservata.</li>
+      </ul>
+      <h4>Importarla in Atlante Vivo</h4>
+      <ul>
+        <li>Clicca sul pulsante <strong>"Chiave Gemini"</strong> in alto a destra.</li>
+        <li>Incolla il codice copiato nel campo di testo e premi <strong>Salva</strong>.</li>
+        <li>La chiave resta salvata solo nel tuo browser (localStorage) e viene usata subito per le richieste successive.</li>
+      </ul>
+
+      <h3>2. Mappa e ricerca</h3>
+      <ul>
+        <li><strong>Zoom:</strong> rotella del mouse oppure i pulsanti + / − in alto a sinistra.</li>
+        <li><strong>Spostamento:</strong> trascina la mappa tenendo premuto il tasto sinistro.</li>
+        <li><strong>Selezione di un luogo:</strong> clicca in un punto qualsiasi della mappa per posizionare un segnaposto e leggere subito nome, regione, stato e coordinate del punto scelto — senza bisogno della chiave AI.</li>
+        <li><strong>Barra di ricerca</strong> (in alto): scrivi il nome di città, frazione, monumento, fiume o montagna e seleziona il risultato corretto dall'elenco. Il pulsante rotondo <strong>"?"</strong> accanto dà consigli su come cercare luoghi piccoli o poco noti.</li>
+      </ul>
+
+      <h3>3. Generare una scheda con l'AI</h3>
+      <ul>
+        <li>Dopo aver selezionato un luogo, spunta una o più <strong>domande preimpostate</strong> a sinistra (facoltative, selezionabili liberamente) oppure scrivi una <strong>domanda personalizzata</strong> nel campo libero.</li>
+        <li>Premi <strong>"Genera scheda con AI"</strong>: il testo viene scritto in tempo reale man mano che arriva dall'intelligenza artificiale.</li>
+        <li>Se la domanda personalizzata contiene errori di battitura, il titolo della sezione la riporta già corretta.</li>
+      </ul>
+
+      <h3>4. Confronto tra due luoghi</h3>
+      <ul>
+        <li>Attiva <strong>"Modalità confronto"</strong> nella scheda del luogo.</li>
+        <li>Seleziona un primo luogo (mappa o ricerca), poi un secondo: viene generato automaticamente un confronto tra i due (dati, somiglianze, differenze, sintesi finale).</li>
+      </ul>
+
+      <h3>5. Il pannello della scheda generata</h3>
+      <ul>
+        <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato.</li>
+        <li><strong>Copia/Condividi:</strong> condivide il testo con le app del dispositivo, oppure lo copia negli appunti se la condivisione non è disponibile.</li>
+        <li><strong>Linguetta "Scheda AI":</strong> compare quando chiudi il pannello pur avendo una scheda aperta; permette di consultare la mappa e riaprire la scheda con un clic, senza perderla.</li>
+      </ul>
+
+      <h3>6. Cronologia e gestione delle schede salvate</h3>
+      <p>Ogni scheda generata (comprese quelle di confronto) viene salvata automaticamente nel browser. Si apre dal pulsante <strong>"Cronologia"</strong> in alto a destra.</p>
+      <ul>
+        <li><strong>Consultazione rapida:</strong> clicca sul nome di un luogo per riaprire subito la scheda salvata.</li>
+        <li><strong>Seleziona tutto:</strong> spunta in un clic tutte le voci in elenco.</li>
+        <li><strong>Scarica selezionati (PDF):</strong> genera un unico PDF a più pagine con tutte le schede spuntate.</li>
+        <li><strong>Elimina selezionati:</strong> rimuove solo le schede con il quadratino spuntato.</li>
+        <li><strong>Elimina (riga singola):</strong> rimuove immediatamente quella singola voce.</li>
+        <li><strong>Svuota tutto:</strong> cancella l'intero archivio, previa conferma.</li>
+        <li><strong>Chiudi:</strong> torna alla mappa senza modificare nulla.</li>
+      </ul>
+
+    </div>
+    <div class="keycard-row">
+      <button class="btn btn-primary" id="instrClose">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="helpOverlay">
+  <div class="keycard">
+    <h2>Cosa cercare</h2>
+    <p>
+      Se clicchi sulla mappa una frazione, un piccolo borgo, una montagna o un edificio e non viene riconosciuto,
+      usa la <strong>ricerca qui sopra</strong>: funziona anche per luoghi molto piccoli o il nome di una vetta.
+      Scrivi il nome più preciso possibile (come viene menzionato nella mappa) e seleziona il risultato corretto dall'elenco.
+    </p>
+    <div class="keycard-row">
+      <button class="btn btn-primary" id="helpClose">Ho capito</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="genHelpOverlay">
+  <div class="keycard">
+    <h2>Domanda libera: cosa chiedere</h2>
+    <p>
+      La casella accetta domande legate al luogo selezionato: servizi e attività locali (parrucchieri, farmacie,
+      benzinai, bar, ristoranti, banche, supermercati, hotel, scuole, ospedali e molti altri), geografia, storia,
+      curiosità, trasporti, eventi. Le risposte su negozi e servizi specifici arrivano dalla conoscenza generale
+      dell'AI: nomi e indirizzi precisi potrebbero non essere aggiornati o disponibili.
+    </p>
+    <p>
+      Esempi: <em>"ci sono parrucchieri?"</em> · <em>"quali benzinai ci sono in zona?"</em> ·
+      <em>"quali monumenti posso visitare a piedi?"</em> · <em>"che clima c'è in inverno?"</em>
+    </p>
+    <p>
+      Domande senza alcun legame con il luogo (calcoli, codice, argomenti generici) non ricevono risposta:
+      viene chiesto di riformulare in modo pertinente al posto scelto.
+    </p>
+    <div class="keycard-row">
+      <button class="btn btn-primary" id="genHelpClose">Ho capito</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="historyOverlay">
+  <div class="keycard keycard-wide">
+    <h2>Cronologia schede</h2>
+    <p>Le schede generate restano salvate nel tuo browser. Tocca un luogo per riaprirlo, seleziona più voci per scaricarle insieme in un unico PDF, oppure eliminale.</p>
+    <div class="hist-select-row">
+      <button class="btn btn-ghost" id="histSelectAll">Seleziona tutto</button>
+      <button class="btn btn-primary" id="histDownloadSelected">Scarica selezionati (PDF)</button>
+    </div>
+    <div class="hist-list" id="histList"></div>
+    <div class="keycard-row">
+      <button class="btn btn-ghost" id="histDeleteSelected" style="color:#b5651d; border-color:#e0b39c;">Elimina selezionati</button>
+      <button class="btn btn-ghost" id="histClearAll">Svuota tutto</button>
+      <button class="btn btn-primary" id="histClose">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<div id="countryCard">
+  <button class="cc-close" id="ccClose" aria-label="Chiudi">&times;</button>
+
+  <div class="cc-eyebrow">LUOGO SELEZIONATO</div>
+  <h2 class="cc-title" id="ccName">—</h2>
+  <div class="cc-meta" id="ccMeta">—</div>
+  <label class="compare-toggle">
+    <input type="checkbox" id="compareToggle">
+    Modalità confronto (scegli 2 luoghi)
+  </label>
+  <div class="compare-slot" id="compareSlot" style="display:none;"></div>
+  <div class="cc-chips" id="ccQuestions">
+    <label class="cc-chip"><input type="checkbox" value="generale">Panoramica</label>
+    <label class="cc-chip"><input type="checkbox" value="dati">Dati e statistiche</label>
+    <label class="cc-chip"><input type="checkbox" value="storia">Storia</label>
+    <label class="cc-chip"><input type="checkbox" value="cultura">Cultura</label>
+    <label class="cc-chip"><input type="checkbox" value="dialetto">Dialetto e detti</label>
+    <label class="cc-chip"><input type="checkbox" value="gastronomia">Gastronomia</label>
+    <label class="cc-chip"><input type="checkbox" value="feste">Feste</label>
+    <label class="cc-chip"><input type="checkbox" value="economia">Economia</label>
+  </div>
+  <textarea id="customQuestion" placeholder="Oppure scrivi qui una domanda libera su questo luogo…" rows="2"></textarea>
+  <div class="cc-note">Nota: le informazioni fornite dall'AI possono contenere imprecisioni, verifica sempre i dati importanti.</div>
+  <div class="gen-row">
+    <button id="genBtn">Genera scheda con AI</button>
+    <button id="genHelpBtn" aria-label="Esempi di domande">?</button>
+  </div>
+</div>
+
+<button id="reopenTab">Scheda AI</button>
+<button id="cardReopenTab">Scheda luogo</button>
+
+<div id="panel">
+  <div class="panel-head">
+    <div class="panel-head-text">
+      <div class="cc-eyebrow" id="pnEyebrow">SCHEDA</div>
+      <h2 id="pnTitle">—</h2>
+    </div>
+    <button class="panel-close" id="panelClose">&times;</button>
+  </div>
+  <div class="panel-body" id="panelBody">
+    <div class="panel-actions" id="panelActions" style="display:none;">
+      <div class="export-wrap">
+        <button class="panel-action-btn" id="exportBtn">Esporta ▾</button>
+        <div class="export-menu" id="exportMenu">
+          <button id="exportTxtBtn">Esporta come .txt</button>
+          <button id="exportPdfBtn">Esporta come .pdf</button>
+        </div>
+      </div>
+      <button class="panel-action-btn" id="shareBtn">Copia/Condividi</button>
+    </div>
+    <div id="panelGallery"></div>
+    <div id="panelText"></div>
+  </div>
+</div>
+
+<div class="overlay" id="imgModal">
+  <button class="img-modal-close" id="imgModalClose" aria-label="Chiudi">&times;</button>
+  <img id="imgModalPic" src="" alt="">
+</div>
+
+<div class="overlay" id="keyOverlay">
+  <div class="keycard">
+    <h2>La tua chiave Gemini</h2>
+    <p>
+      Serve una chiave gratuita per generare le schede. Puoi crearne una su
+      <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>.
+      Resta salvata solo nel tuo browser (localStorage): non passa da nessun altro server.
+    </p>
+    <input type="password" id="keyInput" placeholder="AIza..." autocomplete="off">
+    <div class="keycard-row">
+      <button class="btn btn-ghost" id="keyCancel">Annulla</button>
+      <button class="btn btn-primary" id="keySave">Salva</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- Stato chiave API ---------------- */
+const keyBtn = document.getElementById('keyBtn');
+const keyOverlay = document.getElementById('keyOverlay');
+const keyInput = document.getElementById('keyInput');
+
+function getKey(){ return localStorage.getItem('gemini_key') || ''; }
+function refreshKeyBtn(){
+  keyBtn.textContent = getKey() ? 'Chiave Gemini · impostata' : 'Chiave Gemini';
+  keyBtn.classList.toggle('set', !!getKey());
+}
+refreshKeyBtn();
+
+keyBtn.onclick = () => { keyInput.value = getKey(); keyOverlay.classList.add('show'); };
+document.getElementById('keyCancel').onclick = () => keyOverlay.classList.remove('show');
+document.getElementById('helpBtn').onclick = () => document.getElementById('helpOverlay').classList.add('show');
+document.getElementById('helpClose').onclick = () => document.getElementById('helpOverlay').classList.remove('show');
+document.getElementById('instrBtn').onclick = () => document.getElementById('instrOverlay').classList.add('show');
+document.getElementById('instrClose').onclick = () => document.getElementById('instrOverlay').classList.remove('show');
+document.getElementById('genHelpBtn').onclick = () => document.getElementById('genHelpOverlay').classList.add('show');
+document.getElementById('genHelpClose').onclick = () => document.getElementById('genHelpOverlay').classList.remove('show');
+document.getElementById('keySave').onclick = () => {
+  localStorage.setItem('gemini_key', keyInput.value.trim());
+  refreshKeyBtn();
+  keyOverlay.classList.remove('show');
+};
+
+/* ---------------- Mappa 2D zoomabile ---------------- */
+const map = L.map('map', {
+  worldCopyJump: true,
+  zoomControl: true
+}).setView([41.9, 12.5], 5);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 19
+}).addTo(map);
+
+let activeMarker = null;
+let isProgrammaticMove = false;
+
+map.on('click', (e) => {
+  const { lat, lng } = e.latlng;
+  if(activeMarker) map.removeLayer(activeMarker);
+  activeMarker = L.marker([lat, lng]).addTo(map);
+  handlePointClick(lat, lng);
+});
+
+// se l'utente trascina o zooma manualmente la mappa (non un volo programmato), la scheda si abbassa da sola
+map.on('dragstart zoomstart', () => {
+  if(!isProgrammaticMove) collapseCard();
+});
+map.on('moveend', () => { isProgrammaticMove = false; });
+
+function flyTo(lat, lng, zoom){
+  isProgrammaticMove = true;
+  map.setView([lat, lng], zoom, { animate: true });
+  if(activeMarker) map.removeLayer(activeMarker);
+  activeMarker = L.marker([lat, lng]).addTo(map);
+}
+
+/* ---------------- Scheda paese (popup) ---------------- */
+const card = document.getElementById('countryCard');
+const ccName = document.getElementById('ccName');
+const ccMeta = document.getElementById('ccMeta');
+const genBtn = document.getElementById('genBtn');
+let currentCountry = null;
+
+function applyPlaceData(data, name){
+  const addr = data.address || {};
+  // livello più specifico disponibile: frazione/borgo, poi comune/città
+  const place = name || addr.hamlet || addr.village || addr.city || addr.town || addr.municipality
+    || addr.county || addr.state_district
+    || (data.display_name ? data.display_name.split(',')[0] : null);
+  const region = addr.state || addr.region || addr.county || addr.state_district || '—';
+  const country = addr.country || '—';
+
+  if(!place && !country){
+    ccName.textContent = 'Nessun luogo qui';
+    ccMeta.textContent = 'Prova a cliccare più vicino a una città o a un paese, oppure usa la ricerca qui sopra.';
+    genBtn.disabled = true;
+    return;
+  }
+
+  const displayName = place || country;
+  currentCountry = {
+    name: displayName,
+    region, capital: null, country,
+    context: data.display_name || null,
+    bbox: data.boundingbox || null
+  };
+  ccName.textContent = displayName;
+  // --- dati "offline" subito disponibili, senza bisogno di chiave AI ---
+  const lat = data.lat ? (+data.lat).toFixed(4) : null;
+  const lon = data.lon ? (+data.lon).toFixed(4) : null;
+  const coordsPart = (lat && lon) ? ` · Coordinate: <span>${lat}, ${lon}</span>` : '';
+
+  ccMeta.innerHTML = `Regione: <span>${region}</span> · Stato: <span>${country}</span>${coordsPart}`;
+  genBtn.disabled = false;
+  // reset selezione: nessuna domanda attiva, domanda libera svuotata
+  document.querySelectorAll('.cc-chip input').forEach(cb => { cb.checked = false; });
+  document.getElementById('customQuestion').value = '';
+  genBtn.textContent = 'Genera scheda con AI';
+
+  // se in modalità confronto, aggiorna gli slot invece del comportamento normale
+  if(compareToggle && compareToggle.checked){
+    addToCompare(currentCountry);
+  }
+}
+
+async function handlePointClick(lat, lng){
+  ccName.textContent = 'Sto localizzando…';
+  ccMeta.textContent = '—';
+  expandCard();
+  currentCountry = null;
+
+  try{
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=12&addressdetails=1&accept-language=it`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+    applyPlaceData(data);
+  }catch(e){
+    ccName.textContent = 'Errore di localizzazione';
+    ccMeta.textContent = 'Riprova tra qualche secondo.';
+    genBtn.disabled = true;
+  }
+}
+
+/* ---------------- Ricerca città / comuni / paesi ---------------- */
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+let searchTimer;
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  const q = searchInput.value.trim();
+  if(q.length < 3){ searchResults.classList.remove('show'); searchResults.innerHTML=''; return; }
+  searchTimer = setTimeout(() => runSearch(q), 400);
+});
+
+async function runSearch(q){
+  try{
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(q)}&addressdetails=1&namedetails=1&accept-language=it&limit=6`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    const results = await res.json();
+    if(!results.length){
+      searchResults.innerHTML = '<div class="sr-item"><div class="sr-detail">Nessun risultato</div></div>';
+      searchResults.classList.add('show');
+      return;
+    }
+    searchResults.innerHTML = results.map((r,i) => `
+      <div class="sr-item" data-i="${i}">
+        <div class="sr-name">${escapeHtml(r.display_name.split(',')[0])}</div>
+        <div class="sr-detail">${escapeHtml(r.display_name)}</div>
+      </div>
+    `).join('');
+    searchResults.classList.add('show');
+
+    searchResults.querySelectorAll('.sr-item').forEach(el => {
+      el.onclick = () => {
+        const r = results[+el.dataset.i];
+        if(!r) return;
+        searchResults.classList.remove('show');
+        const exactName = r.namedetails?.name || r.display_name.split(',')[0];
+        searchInput.value = exactName;
+        flyTo(+r.lat, +r.lon, 15);
+        expandCard();
+        applyPlaceData(r, exactName);
+      };
+    });
+  }catch(e){
+    searchResults.innerHTML = '<div class="sr-item"><div class="sr-detail">Ricerca non riuscita</div></div>';
+    searchResults.classList.add('show');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('#searchBar')) searchResults.classList.remove('show');
+});
+
+/* ---------------- Scheda paese (popup) ---------------- */
+
+/* ---------------- Pannello + Gemini ---------------- */
+const panel = document.getElementById('panel');
+const panelBody = document.getElementById('panelBody');
+const panelText = document.getElementById('panelText');
+const panelTitle = document.getElementById('pnTitle');
+const panelEyebrow = document.getElementById('pnEyebrow');
+const panelActions = document.getElementById('panelActions');
+
+document.getElementById('panelClose').onclick = () => {
+  panel.classList.remove('open');
+  if(panelHasContent) reopenTab.classList.add('show');
+};
+const reopenTab = document.getElementById('reopenTab');
+let panelHasContent = false;
+reopenTab.onclick = () => {
+  panel.classList.add('open');
+  reopenTab.classList.remove('show');
+};
+
+document.getElementById('ccClose').onclick = () => collapseCard();
+const cardReopenTab = document.getElementById('cardReopenTab');
+cardReopenTab.onclick = () => expandCard();
+function collapseCard(){
+  if(!card.classList.contains('show')) return;
+  card.classList.remove('show');
+  cardReopenTab.classList.add('show');
+}
+function expandCard(){
+  card.classList.add('show');
+  cardReopenTab.classList.remove('show');
+}
+
+const cache = {}; // cache in memoria per la sessione corrente
+
+/* --- selezione multipla delle domande + domanda libera --- */
+const typeLabels = {
+  generale: 'Panoramica generale',
+  dati: 'Dati e statistiche',
+  storia: 'Storia',
+  cultura: 'Cultura e curiosità',
+  dialetto: 'Dialetto e detti',
+  gastronomia: 'Gastronomia',
+  feste: 'Feste e tradizioni',
+  economia: 'Economia locale'
+};
+const customQuestionEl = document.getElementById('customQuestion');
+
+function getSelectedTypes(){
+  return Array.from(document.querySelectorAll('.cc-chip input:checked')).map(cb => cb.value);
+}
+
+function sectionBlock(type){
+  switch(type){
+    case 'dati': return `## Dati e statistiche
+Fornisci numeri precisi e concreti, non vaghi: popolazione (cifra esatta o la più recente disponibile, con anno di riferimento), superficie in km², densità abitativa (ab/km²), altitudine in metri sul livello del mare, coordinate geografiche (latitudine/longitudine), prefisso telefonico e codice postale se pertinenti, fuso orario, lingua ufficiale/locale. Presenta i numeri dentro paragrafi scorrevoli (non un elenco), specificando sempre l'unità di misura. Se una cifra esatta non è verificabile, indica la stima più affidabile e dillo esplicitamente.`;
+
+    case 'storia': return `## Storia e origini
+Racconta le origini del luogo, i periodi storici principali che lo hanno segnato, eventi chiave, e come è arrivato alla forma attuale. 3-4 paragrafi.`;
+
+    case 'dialetto': return `## Dialetto, proverbi e detti popolari
+Descrivi in 1-2 paragrafi il dialetto o la parlata locale se esiste (famiglia linguistica, tratti distintivi). Se non ci sono informazioni affidabili su un dialetto specifico di questo luogo esatto, dillo chiaramente e parla invece della parlata regionale più ampia a cui appartiene.
+
+Poi, su righe separate che iniziano ciascuna con "- ", elenca da 4 a 8 proverbi o modi di dire tipici scritti nella lingua o dialetto originale, seguiti da un trattino e dalla traduzione/significato in italiano tra parentesi. Esempio di formato riga: "- [espressione originale] — ([traduzione in italiano])". Se non conosci detti autentici specifici del luogo, ometti l'elenco e spiegalo invece nel testo.`;
+
+    case 'gastronomia': return `## Gastronomia e piatti tipici
+Racconta la cucina tradizionale del luogo: ingredienti caratteristici, piatti tipici, eventuali prodotti a denominazione o specialità locali, e occasioni in cui si preparano. 2-3 paragrafi.`;
+
+    case 'feste': return `## Feste e tradizioni
+Descrivi le feste patronali, le celebrazioni religiose o civili, sagre e riti tradizionali del luogo, con eventuali date indicative. 2-3 paragrafi.`;
+
+    case 'economia': return `## Economia locale
+Descrivi le principali attività economiche del luogo: agricoltura, industria, turismo, artigianato o altri settori rilevanti, e come sono cambiate nel tempo se noto. 2-3 paragrafi.`;
+
+    case 'cultura': return `## Cultura e curiosità
+Racconta tradizioni, monumenti iconici, personaggi legati al luogo e aspetti poco noti o curiosi. 2-3 paragrafi.`;
+
+    case 'generale': default: return `## Panoramica generale
+Descrivi geografia, territorio, clima ed essenza del luogo: cosa lo caratterizza, come si presenta a chi lo visita, il contesto in cui si trova. 3-4 paragrafi. Non includere storia, cultura o altri argomenti: solo la descrizione generale del posto.`;
+  }
+}
+
+function buildPrompt(luogo, luogoInfo, types, customQ){
+  const base = `Il luogo in questione è: "${luogo}" ${luogoInfo}. Scrivi in italiano, tono divulgativo ma curato.
+Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (niente markdown per grassetto o elenchi puntati salvo dove indicato, solo paragrafi scorrevoli). Non aggiungere sezioni oltre a quelle richieste qui sotto. Se un'informazione specifica non è certa o non applicabile, dillo onestamente invece di inventarla.`;
+
+  const sections = types.map(sectionBlock);
+
+  if(customQ && customQ.trim()){
+    sections.push(`## [Qui scrivi come titolo la domanda originale dell'utente riportata sotto, corretta da eventuali errori di battitura/ortografia ma senza cambiarne il significato, senza virgolette e senza premesse tipo "Risposta a...": scrivi SOLO la domanda corretta come titolo, con la lettera maiuscola iniziale e punto interrogativo se è una domanda]
+Rispondi alla seguente domanda posta dall'utente: "${customQ.trim()}", riferita al luogo "${luogo}".
+Considera PERTINENTI (e quindi da trattare normalmente) tutte le domande su: geografia, storia, cultura, servizi, negozi, attività commerciali, bar, ristoranti, benzinai, farmacie e qualunque altro esercizio o servizio locale, trasporti, eventi, curiosità, o qualunque altro aspetto di questo specifico luogo o dei suoi dintorni. Per domande su negozi, bar, benzinai o servizi specifici, rispondi con la tua conoscenza generale, ma se non hai informazioni verificate su esercizi specifici dillo onestamente invece di inventare nomi, indirizzi o numeri precisi: in quel caso resta su indicazioni generali (es. "in centro trovi diversi bar" invece di nomi inventati).
+Considera NON pertinenti solo le domande che non hanno alcuna relazione con un luogo specifico, come calcoli matematici, richieste di scrivere codice, argomenti generici di cultura/scienza slegati dal luogo, o richieste completamente estranee. Se e SOLO se la domanda rientra in questa categoria non pertinente, scrivi esclusivamente la frase "La domanda deve essere inerente al posto o alla città scelta." e nient'altro in questa sezione (ma mantieni comunque il titolo della sezione come indicato sopra).`);
+  }
+
+  return `${base}
+
+Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in quest'ordine):
+
+${sections.join('\n\n')}`;
+}
+
+
+const panelGallery = document.getElementById('panelGallery');
+
+genBtn.onclick = async () => {
+  if(!currentCountry) return;
+  const key = getKey();
+  if(!key){
+    keyOverlay.classList.add('show');
+    return;
+  }
+
+  const types = getSelectedTypes();
+  const customQ = customQuestionEl.value.trim();
+  if(!types.length && !customQ){
+    ccMeta.innerHTML = `Regione: <span>${currentCountry.region}</span> · Stato: <span>${currentCountry.country}</span> — <span style="color:var(--clay)">seleziona almeno una domanda</span>`;
+    return;
+  }
+
+  const labelsChosen = types.map(t => typeLabels[t]);
+  if(customQ) labelsChosen.push('Domanda personalizzata');
+  const cacheKey = currentCountry.name + '|' + types.slice().sort().join(',') + '|' + customQ;
+  panelEyebrow.textContent = (labelsChosen.join(' · ') || 'SCHEDA').toUpperCase();
+  panelTitle.textContent = currentCountry.name;
+  panel.classList.add('open');
+  reopenTab.classList.remove('show');
+  panelHasContent = true;
+  collapseCard();
+
+  if(cache[cacheKey]){
+    panelText.innerHTML = cache[cacheKey].text;
+    panelGallery.innerHTML = cache[cacheKey].gallery;
+    panelActions.style.display = 'flex';
+    return;
+  }
+
+  panelText.innerHTML = '<div class="panel-loading">Sto componendo la scheda…</div>';
+  panelGallery.innerHTML = '';
+  panelActions.style.display = 'none';
+  genBtn.disabled = true;
+
+  // contesto disambiguato: se il nome è generico (via, frazione), aggiunge i primi livelli dell'indirizzo completo
+  const contextName = currentCountry.context
+    ? currentCountry.context.split(',').slice(0, 3).map(s => s.trim()).join(', ')
+    : currentCountry.name;
+
+  fetchGallery(contextName, types[0] || 'generale');
+
+  const luogoInfo = currentCountry.capital
+    ? `(regione: ${currentCountry.region}, capitale: ${currentCountry.capital})`
+    : `(posizione precisa: ${contextName}; regione/stato: ${currentCountry.region}${currentCountry.country ? ', paese: ' + currentCountry.country : ''})`;
+  const prompt = buildPrompt(currentCountry.name, luogoInfo, types, customQ);
+
+  try{
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`,
+      {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] })
+      }
+    );
+
+    if(!resp.ok || !resp.body){
+      const errText = await resp.text().catch(()=> '');
+      throw new Error(`Richiesta non riuscita (${resp.status}). ${errText.slice(0,200)}`);
+    }
+
+    panelText.innerHTML = '';
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+    let full = '';
+
+    while(true){
+      const { value, done } = await reader.read();
+      if(done) break;
+      buf += decoder.decode(value, { stream:true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data:')) continue;
+        const jsonStr = line.slice(5).trim();
+        if(!jsonStr || jsonStr === '[DONE]') continue;
+        try{
+          const obj = JSON.parse(jsonStr);
+          const chunk = obj?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if(chunk){
+            full += chunk;
+            renderStreamed(full, true);
+          }
+        }catch(e){ /* riga incompleta, ignora */ }
+      }
+    }
+    renderStreamed(full, false);
+    cache[cacheKey] = { text: panelText.innerHTML, gallery: panelGallery.innerHTML };
+    panelActions.style.display = 'flex';
+    saveToHistory(currentCountry.name, labelsChosen, full);
+  }catch(err){
+    panelText.innerHTML = `<div class="panel-error">Non sono riuscito a generare la scheda.<br>${err.message}</div>`;
+  }finally{
+    genBtn.disabled = false;
+  }
+};
+
+/* --- galleria immagini via Wikimedia Commons (gratuito, CORS abilitato) --- */
+const gallerySearchTerms = {
+  generale: '',
+  dati: '',
+  storia: 'storia monumenti',
+  cultura: 'monumenti cultura',
+  dialetto: '',
+  gastronomia: 'piatti tipici cucina',
+  feste: 'festa tradizionale',
+  economia: ''
+};
+
+async function fetchGallery(name, type){
+  const extra = gallerySearchTerms[type] || '';
+  const query = extra ? `${name} ${extra}` : name;
+  try{
+    const res = await fetch(
+      `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url|mime&iiurlwidth=500&format=json&origin=*`
+    );
+    const data = await res.json();
+    const pages = data?.query?.pages;
+    if(!pages) return;
+    const items = Object.values(pages)
+      .map(p => p.imageinfo && p.imageinfo[0])
+      .filter(info => info && info.mime && info.mime.startsWith('image/') && !info.mime.includes('svg'))
+      .slice(0, 4);
+    if(!items.length) return;
+    panelGallery.innerHTML = items.map(info =>
+      `<img class="gallery-thumb" src="${info.thumburl || info.url}" data-full="${info.url}" alt="${escapeHtml(name)}">`
+    ).join('');
+    panelGallery.querySelectorAll('.gallery-thumb').forEach(img => {
+      img.onclick = () => openImageModal(img.dataset.full);
+    });
+  }catch(e){ /* nessuna immagine disponibile, si prosegue senza */ }
+}
+
+const imgModal = document.getElementById('imgModal');
+const imgModalPic = document.getElementById('imgModalPic');
+document.getElementById('imgModalClose').onclick = () => imgModal.classList.remove('show');
+imgModal.addEventListener('click', (e) => { if(e.target === imgModal) imgModal.classList.remove('show'); });
+function openImageModal(url){
+  imgModalPic.src = url;
+  imgModal.classList.add('show');
+}
+
+function renderStreamed(text, streaming){
+  const blocks = text.split(/\n##\s*/).map((b,i) => i===0 ? b.replace(/^##\s*/,'') : b);
+  let html = '';
+  blocks.forEach((block, i) => {
+    const [titleLine, ...rest] = block.split('\n');
+    const bodyText = rest.join('\n').trim();
+    if(titleLine && titleLine.trim()){
+      html += `<h3>${escapeHtml(titleLine.trim())}</h3>`;
+    }
+    if(bodyText){
+      // separa paragrafi normali da righe-elenco che iniziano con "- "
+      const chunks = bodyText.split(/\n\s*\n/);
+      let listBuffer = [];
+      const flushList = () => {
+        if(listBuffer.length){
+          html += '<ul>' + listBuffer.map(li => `<li>${escapeHtml(li)}</li>`).join('') + '</ul>';
+          listBuffer = [];
+        }
+      };
+      chunks.forEach(chunk => {
+        const lines = chunk.split('\n').map(l => l.trim()).filter(Boolean);
+        lines.forEach(line => {
+          if(line.startsWith('- ')){
+            listBuffer.push(line.slice(2).trim());
+          }else{
+            flushList();
+            if(line) html += `<p>${escapeHtml(line)}</p>`;
+          }
+        });
+      });
+      flushList();
+    }
+  });
+  if(streaming) html += '<span class="cursor-blink"></span>';
+  panelText.innerHTML = html;
+  panelBody.scrollTop = panelBody.scrollHeight;
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ==================== 1. CRONOLOGIA (localStorage) ==================== */
+const HIST_KEY = 'atlante_history_v1';
+let lastGeneratedRaw = ''; // testo grezzo dell'ultima scheda generata, per export/condivisione
+
+function loadHistory(){
+  try{ return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+function persistHistory(list){
+  try{ localStorage.setItem(HIST_KEY, JSON.stringify(list)); }
+  catch(e){ /* storage pieno o non disponibile: si prosegue senza salvare */ }
+}
+function saveToHistory(name, labelsChosen, rawText){
+  lastGeneratedRaw = rawText;
+  const list = loadHistory();
+  const entry = {
+    name, labels: labelsChosen, text: rawText,
+    date: new Date().toISOString()
+  };
+  // rimuove eventuale voce duplicata identica (stesso nome+etichette) tenendo la più recente
+  const filtered = list.filter(e => !(e.name === name && (e.labels||[]).join(',') === labelsChosen.join(',')));
+  filtered.unshift(entry);
+  persistHistory(filtered.slice(0, 60)); // limite ragionevole di voci salvate
+}
+
+const historyOverlay = document.getElementById('historyOverlay');
+const histList = document.getElementById('histList');
+document.getElementById('historyBtn').onclick = () => { renderHistory(); historyOverlay.classList.add('show'); };
+document.getElementById('histClose').onclick = () => historyOverlay.classList.remove('show');
+document.getElementById('histClearAll').onclick = () => {
+  if(confirm('Svuotare tutta la cronologia salvata su questo browser?')){
+    persistHistory([]);
+    renderHistory();
+  }
+};
+
+document.getElementById('histDeleteSelected').onclick = () => {
+  const list = loadHistory();
+  const checkedIndices = Array.from(histList.querySelectorAll('.hist-item-check:checked'))
+    .map(cb => +cb.dataset.check);
+  
+  if(!checkedIndices.length){
+    alert('Seleziona almeno una scheda da eliminare.');
+    return;
+  }
+  
+  if(confirm(`Eliminare le ${checkedIndices.length} schede selezionate?`)){
+    const updatedList = list.filter((_, idx) => !checkedIndices.includes(idx));
+    persistHistory(updatedList);
+    renderHistory();
+  }
+};
+
+function renderHistory(){
+  const list = loadHistory();
+  if(!list.length){
+    histList.innerHTML = '<div class="hist-empty">Nessuna scheda salvata finora. Genera una scheda per vederla comparire qui.</div>';
+    return;
+  }
+  histList.innerHTML = list.map((e,i) => {
+    const d = new Date(e.date);
+    const dateStr = d.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' });
+    return `<div class="hist-item">
+      <input type="checkbox" class="hist-item-check" data-check="${i}">
+      <div class="hist-item-main" data-i="${i}">
+        <span class="hist-item-name">${escapeHtml(e.name)}</span>
+        <span class="hist-item-labels">(${escapeHtml((e.labels||[]).join(' · '))})</span>
+      </div>
+      <div class="hist-item-right">
+        <span class="hist-item-meta">${dateStr}</span>
+        <button class="hist-item-del" data-del="${i}">Elimina</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  histList.querySelectorAll('.hist-item-main').forEach(el => {
+    el.onclick = () => {
+      const e = list[+el.dataset.i];
+      if(!e) return;
+      panelEyebrow.textContent = (e.labels.join(' · ') || 'SCHEDA').toUpperCase();
+      panelTitle.textContent = e.name;
+      renderStreamed(e.text, false);
+      panelGallery.innerHTML = '';
+      panelActions.style.display = 'flex';
+      lastGeneratedRaw = e.text;
+      panel.classList.add('open');
+      reopenTab.classList.remove('show');
+      panelHasContent = true;
+      historyOverlay.classList.remove('show');
+    };
+  });
+  histList.querySelectorAll('.hist-item-del').forEach(btn => {
+    btn.onclick = (ev) => {
+      ev.stopPropagation();
+      const idx = +btn.dataset.del;
+      const l = loadHistory();
+      l.splice(idx, 1);
+      persistHistory(l);
+      renderHistory();
+    };
+  });
+}
+
+let histSelectAllState = false;
+document.getElementById('histSelectAll').onclick = () => {
+  histSelectAllState = !histSelectAllState;
+  histList.querySelectorAll('.hist-item-check').forEach(cb => { cb.checked = histSelectAllState; });
+};
+
+/* ==================== PDF: helper condiviso (jsPDF) ==================== */
+function addEntryToPdf(doc, title, bodyText, isFirstPage){
+  if(!isFirstPage) doc.addPage();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 15;
+  const maxWidth = pageWidth - margin*2;
+  let y = margin;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  const titleLines = doc.splitTextToSize(title, maxWidth);
+  doc.text(titleLines, margin, y);
+  y += titleLines.length * 7 + 4;
+
+  doc.setDrawColor(180,180,180);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 8;
+
+  // il testo grezzo usa "## Titolo" per le sezioni: le rendiamo come sotto-titoli
+  const blocks = bodyText.split(/\n##\s*/).map((b,i) => i===0 ? b.replace(/^##\s*/,'') : b);
+  blocks.forEach(block => {
+    const [titleLine, ...rest] = block.split('\n');
+    const paragraph = rest.join('\n').trim();
+
+    if(titleLine && titleLine.trim()){
+      if(y > pageHeight - margin - 20){ doc.addPage(); y = margin; }
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12.5);
+      const tLines = doc.splitTextToSize(titleLine.trim(), maxWidth);
+      doc.text(tLines, margin, y);
+      y += tLines.length * 6 + 3;
+    }
+    if(paragraph){
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10.5);
+      const pLines = doc.splitTextToSize(paragraph, maxWidth);
+      pLines.forEach(line => {
+        if(y > pageHeight - margin){ doc.addPage(); y = margin; }
+        doc.text(line, margin, y);
+        y += 5;
+      });
+      y += 4;
+    }
+  });
+}
+
+document.getElementById('histDownloadSelected').onclick = () => {
+  const list = loadHistory();
+  const checked = Array.from(histList.querySelectorAll('.hist-item-check:checked')).map(cb => +cb.dataset.check);
+  if(!checked.length){ alert('Seleziona almeno una scheda dalla cronologia.'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  checked.forEach((idx, i) => {
+    const e = list[idx];
+    if(!e) return;
+    addEntryToPdf(doc, e.name, e.text, i === 0);
+  });
+  doc.save(checked.length > 1 ? 'atlante_schede.pdf' : `${(list[checked[0]].name||'scheda').replace(/[^\w\-]+/g,'_')}.pdf`);
+};
+
+/* ==================== 2. ESPORTAZIONE SCHEDA (.txt / .pdf) ==================== */
+const exportBtn = document.getElementById('exportBtn');
+const exportMenu = document.getElementById('exportMenu');
+exportBtn.onclick = (ev) => {
+  ev.stopPropagation();
+  exportMenu.classList.toggle('show');
+};
+document.addEventListener('click', (ev) => {
+  if(!ev.target.closest('.export-wrap')) exportMenu.classList.remove('show');
+});
+
+document.getElementById('exportTxtBtn').onclick = () => {
+  exportMenu.classList.remove('show');
+  if(!lastGeneratedRaw){ alert('Nessuna scheda da esportare.'); return; }
+  const title = panelTitle.textContent || 'scheda';
+  const blob = new Blob([`${title}\n${'='.repeat(title.length)}\n\n${lastGeneratedRaw}`], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${title.replace(/[^\w\-]+/g,'_')}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById('exportPdfBtn').onclick = () => {
+  exportMenu.classList.remove('show');
+  if(!lastGeneratedRaw){ alert('Nessuna scheda da esportare.'); return; }
+  const title = panelTitle.textContent || 'scheda';
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  addEntryToPdf(doc, title, lastGeneratedRaw, true);
+  doc.save(`${title.replace(/[^\w\-]+/g,'_')}.pdf`);
+};
+
+
+/* ==================== 5. CONDIVISIONE SCHEDA ==================== */
+document.getElementById('shareBtn').onclick = async () => {
+  if(!lastGeneratedRaw){ alert('Nessuna scheda da condividere.'); return; }
+  const title = panelTitle.textContent || 'Scheda';
+  const shareText = `${title}\n\n${lastGeneratedRaw}`;
+  if(navigator.share){
+    try{
+      await navigator.share({ title, text: shareText });
+      return;
+    }catch(e){ /* condivisione annullata dall'utente: si prosegue con la copia */ }
+  }
+  try{
+    await navigator.clipboard.writeText(shareText);
+    const btn = document.getElementById('shareBtn');
+    const old = btn.textContent;
+    btn.textContent = 'Copiato negli appunti ✓';
+    setTimeout(() => { btn.textContent = old; }, 1800);
+  }catch(e){
+    alert('Impossibile copiare automaticamente: seleziona e copia il testo manualmente.');
+  }
+};
+
+/* ==================== 3. CONFRONTO TRA LUOGHI ==================== */
+const compareToggle = document.getElementById('compareToggle');
+const compareSlot = document.getElementById('compareSlot');
+let compareSlots = []; // fino a 2 oggetti currentCountry
+
+compareToggle.addEventListener('change', () => {
+  compareSlots = [];
+  compareSlot.style.display = compareToggle.checked ? 'block' : 'none';
+  updateCompareSlotUI();
+});
+
+function addToCompare(country){
+  if(!country) return;
+  // evita duplicati identici consecutivi
+  if(compareSlots.length && compareSlots[compareSlots.length-1].name === country.name) return;
+  compareSlots.push(country);
+  if(compareSlots.length > 2) compareSlots.shift();
+  updateCompareSlotUI();
+  if(compareSlots.length === 2) runCompare();
+}
+
+function updateCompareSlotUI(){
+  if(!compareSlots.length){
+    compareSlot.innerHTML = 'Seleziona il primo luogo da confrontare…';
+    return;
+  }
+  if(compareSlots.length === 1){
+    compareSlot.innerHTML = `<strong>${escapeHtml(compareSlots[0].name)}</strong> selezionato — ora scegli il secondo luogo (clic sulla mappa o ricerca).`;
+    return;
+  }
+  compareSlot.innerHTML = `Confronto: <strong>${escapeHtml(compareSlots[0].name)}</strong> vs <strong>${escapeHtml(compareSlots[1].name)}</strong>`;
+}
+
+async function runCompare(){
+  const key = getKey();
+  if(!key){ keyOverlay.classList.add('show'); return; }
+
+  const [a, b] = compareSlots;
+  panelEyebrow.textContent = 'CONFRONTO';
+  panelTitle.textContent = `${a.name} vs ${b.name}`;
+  panel.classList.add('open');
+  reopenTab.classList.remove('show');
+  panelHasContent = true;
+  panelActions.style.display = 'none';
+  panelGallery.innerHTML = '';
+  collapseCard();
+
+  const compareCacheKey = 'CMP|' + [a.name, b.name].sort().join('|');
+  if(cache[compareCacheKey]){
+    panelText.innerHTML = cache[compareCacheKey].text;
+    panelActions.style.display = 'flex';
+    lastGeneratedRaw = cache[compareCacheKey].raw;
+    return;
+  }
+
+  panelText.innerHTML = '<div class="panel-loading">Sto confrontando i due luoghi…</div>';
+
+  const prompt = `Confronta questi due luoghi: "${a.name}" (regione: ${a.region}, stato: ${a.country}) e "${b.name}" (regione: ${b.region}, stato: ${b.country}).
+Scrivi in italiano, tono divulgativo. Usa "##" prima di ogni titolo di sezione e testo semplice sotto (no markdown per grassetto/elenchi salvo dove indicato).
+Struttura la risposta ESATTAMENTE con queste sezioni, in quest'ordine:
+
+## Dati a confronto
+Confronta in un paragrafo scorrevole i dati concreti disponibili: popolazione, superficie, altitudine, densità, se noti; se una cifra non è certa dillo onestamente.
+
+## Somiglianze
+2-3 paragrafi su ciò che i due luoghi hanno in contatto: geografia, storia, cultura o altro.
+
+## Differenze principali
+2-3 paragrafi sulle differenze più rilevanti tra i due luoghi.
+
+## In sintesi
+Un breve paragrafo conclusivo che aiuti chi legge a capire quale luogo si adatta a cosa (es. turismo, vita quotidiana, interesse storico).`;
+
+  try{
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`,
+      { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] }) }
+    );
+    if(!resp.ok || !resp.body){
+      const errText = await resp.text().catch(()=> '');
+      throw new Error(`Richiesta non riuscita (${resp.status}). ${errText.slice(0,200)}`);
+    }
+    panelText.innerHTML = '';
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '', full = '';
+    while(true){
+      const { value, done } = await reader.read();
+      if(done) break;
+      buf += decoder.decode(value, { stream:true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data:')) continue;
+        const jsonStr = line.slice(5).trim();
+        if(!jsonStr || jsonStr === '[DONE]') continue;
+        try{
+          const obj = JSON.parse(jsonStr);
+          const chunk = obj?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if(chunk){ full += chunk; renderStreamed(full, true); }
+        }catch(e){}
+      }
+    }
+    renderStreamed(full, false);
+    cache[compareCacheKey] = { text: panelText.innerHTML, raw: full };
+    lastGeneratedRaw = full;
+    panelActions.style.display = 'flex';
+    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto'], full);
+    // pronto per un nuovo confronto
+    compareSlots = [];
+    updateCompareSlotUI();
+  }catch(err){
+    panelText.innerHTML = `<div class="panel-error">Non sono riuscito a generare il confronto.<br>${err.message}</div>`;
+  }
+}
+</script>
+</body>
+</html>
