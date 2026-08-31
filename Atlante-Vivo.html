@@ -36,7 +36,7 @@ html,body{
 /* --- Header --- */
 header{
   position:fixed;top:0;left:0;right:0;
-  display:flex;align-items:baseline;justify-content:space-between;
+  display:flex;align-items:center;justify-content:space-between;
   padding:16px 30px 16px 78px;
   z-index:20;
   pointer-events:none;
@@ -48,8 +48,11 @@ header *{pointer-events:auto;}
   letter-spacing:0.3px;
   color:var(--ink);
   background:rgba(238,242,238,0.88);
-  display:inline-block;
-  padding:6px 14px;
+  display:inline-flex;
+  align-items:center;
+  height:38px;
+  box-sizing:border-box;
+  padding:0 14px;
   border-radius:4px;
   backdrop-filter:blur(4px);
 }
@@ -67,7 +70,11 @@ header *{pointer-events:auto;}
   color:#e4ece7;
   font-family:var(--font-body);
   font-size:13px;
-  padding:8px 16px;
+  height:38px;
+  box-sizing:border-box;
+  padding:0 16px;
+  display:inline-flex;
+  align-items:center;
   border-radius:3px;
   cursor:pointer;
   transition:border-color .2s, color .2s, background .2s;
@@ -80,12 +87,46 @@ header *{pointer-events:auto;}
   color:#e4ece7;
   font-family:var(--font-body);
   font-size:13px;
-  padding:8px 16px;
+  height:38px;
+  box-sizing:border-box;
+  padding:0 16px;
+  display:inline-flex;
+  align-items:center;
   border-radius:3px;
   cursor:pointer;
   transition:border-color .2s, color .2s, background .2s;
 }
 #historyBtn:hover{border-color:#8fb59f;color:#fff;background:rgba(16,28,26,0.95);}
+#instrBtn{
+  width:38px;height:38px;flex-shrink:0;
+  box-sizing:border-box;
+  background:#b5342a;
+  border:1px solid #8f2a22;
+  color:#fff;
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:16px;
+  border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+#instrBtn:hover{background:#cc3c30;transform:scale(1.05);}
+
+/* --- Instructions modal --- */
+.instr-body{max-height:65vh;overflow-y:auto;padding-right:6px;font-size:13.5px;line-height:1.55;}
+.instr-body h3{
+  font-family:var(--font-display);color:var(--moss-dark);
+  font-size:15.5px;margin:20px 0 6px;
+}
+.instr-body h3:first-child{margin-top:0;}
+.instr-body h4{font-size:13px;color:var(--ink);margin:12px 0 4px;}
+.instr-body p{margin:4px 0 8px;color:#3a453f;}
+.instr-body ul{margin:4px 0 10px;padding-left:20px;}
+.instr-body li{margin-bottom:4px;color:#3a453f;}
+.instr-body strong{color:var(--ink);}
+.instr-body a{color:var(--moss-dark);text-decoration:underline;}
+.instr-body a:hover{color:var(--moss);}
 
 /* --- History modal --- */
 .hist-list{max-height:50vh;overflow-y:auto;margin-bottom:14px;padding-right:4px;}
@@ -440,12 +481,12 @@ header *{pointer-events:auto;}
 
 /* --- search --- */
 #searchBar{
-  position:fixed;top:14px;left:50%;transform:translateX(-50%);
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
   width:min(380px,80vw);z-index:25;
 }
 .search-row{display:flex;gap:8px;align-items:center;}
 #searchInput{
-  flex:1;padding:9px 14px;
+  flex:1;height:38px;box-sizing:border-box;padding:0 14px;
   background:rgba(16,28,26,0.78);
   border:1px solid #3f524a;border-radius:4px;
   color:#f2f2ec;font-family:var(--font-body);font-size:13.5px;
@@ -453,7 +494,7 @@ header *{pointer-events:auto;}
   outline:none;
 }
 #helpBtn{
-  flex-shrink:0;width:34px;height:34px;
+  flex-shrink:0;width:38px;height:38px;box-sizing:border-box;
   background:rgba(16,28,26,0.78);
   border:1px solid #3f524a;border-radius:50%;
   color:#e4ece7;font-family:var(--font-body);font-size:14px;
@@ -492,9 +533,10 @@ header *{pointer-events:auto;}
   <div>
     <div class="brand">Atlante <em>Vivo</em></div>
   </div>
-  <div style="display:flex;gap:8px;">
+  <div style="display:flex;gap:8px;align-items:center;">
     <button id="historyBtn">Cronologia</button>
     <button id="keyBtn">Chiave Gemini</button>
+    <button id="instrBtn" title="Istruzioni">i</button>
   </div>
 </header>
 
@@ -506,6 +548,74 @@ header *{pointer-events:auto;}
     <button id="helpBtn" aria-label="Aiuto ricerca">?</button>
   </div>
   <div id="searchResults"></div>
+</div>
+
+<div class="overlay" id="instrOverlay">
+  <div class="keycard keycard-wide">
+    <h2>Guida all'uso di Atlante Vivo</h2>
+    <div class="instr-body">
+
+      <h3>1. Configurare la chiave API Gemini</h3>
+      <p>Per generare le schede con l'intelligenza artificiale serve una chiave API Gemini personale, gratuita.</p>
+      <h4>Creare la chiave su Google AI Studio</h4>
+      <ul>
+        <li>Apri <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener"><strong>Google AI Studio</strong></a> ed esegui l'accesso con un account Google (o creane uno gratuito).</li>
+        <li>Individua il pulsante <strong>"Get API key"</strong> e clicca su <strong>"Create API key"</strong>.</li>
+        <li>Se richiesto, scegli un progetto esistente oppure <strong>"Create API key in new project"</strong>.</li>
+        <li>Copia la stringa alfanumerica generata (es. <em>AIzaSy…</em>) e conservala riservata.</li>
+      </ul>
+      <h4>Importarla in Atlante Vivo</h4>
+      <ul>
+        <li>Clicca sul pulsante <strong>"Chiave Gemini"</strong> in alto a destra.</li>
+        <li>Incolla il codice copiato nel campo di testo e premi <strong>Salva</strong>.</li>
+        <li>La chiave resta salvata solo nel tuo browser (localStorage) e viene usata subito per le richieste successive.</li>
+      </ul>
+
+      <h3>2. Mappa e ricerca</h3>
+      <ul>
+        <li><strong>Zoom:</strong> rotella del mouse oppure i pulsanti + / − in alto a sinistra.</li>
+        <li><strong>Spostamento:</strong> trascina la mappa tenendo premuto il tasto sinistro.</li>
+        <li><strong>Selezione di un luogo:</strong> clicca in un punto qualsiasi della mappa per posizionare un segnaposto e leggere subito nome, regione, stato e coordinate del punto scelto — senza bisogno della chiave AI.</li>
+        <li><strong>Barra di ricerca</strong> (in alto): scrivi il nome di città, frazione, monumento, fiume o montagna e seleziona il risultato corretto dall'elenco. Il pulsante rotondo <strong>"?"</strong> accanto dà consigli su come cercare luoghi piccoli o poco noti.</li>
+      </ul>
+
+      <h3>3. Generare una scheda con l'AI</h3>
+      <ul>
+        <li>Dopo aver selezionato un luogo, spunta una o più <strong>domande preimpostate</strong> a sinistra (facoltative, selezionabili liberamente) oppure scrivi una <strong>domanda personalizzata</strong> nel campo libero.</li>
+        <li>Premi <strong>"Genera scheda con AI"</strong>: il testo viene scritto in tempo reale man mano che arriva dall'intelligenza artificiale.</li>
+        <li>Se la domanda personalizzata contiene errori di battitura, il titolo della sezione la riporta già corretta.</li>
+      </ul>
+
+      <h3>4. Confronto tra due luoghi</h3>
+      <ul>
+        <li>Attiva <strong>"Modalità confronto"</strong> nella scheda del luogo.</li>
+        <li>Seleziona un primo luogo (mappa o ricerca), poi un secondo: viene generato automaticamente un confronto tra i due (dati, somiglianze, differenze, sintesi finale).</li>
+      </ul>
+
+      <h3>5. Il pannello della scheda generata</h3>
+      <ul>
+        <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato.</li>
+        <li><strong>Copia/Condividi:</strong> condivide il testo con le app del dispositivo, oppure lo copia negli appunti se la condivisione non è disponibile.</li>
+        <li><strong>Linguetta "Scheda AI":</strong> compare quando chiudi il pannello pur avendo una scheda aperta; permette di consultare la mappa e riaprire la scheda con un clic, senza perderla.</li>
+      </ul>
+
+      <h3>6. Cronologia e gestione delle schede salvate</h3>
+      <p>Ogni scheda generata (comprese quelle di confronto) viene salvata automaticamente nel browser. Si apre dal pulsante <strong>"Cronologia"</strong> in alto a destra.</p>
+      <ul>
+        <li><strong>Consultazione rapida:</strong> clicca sul nome di un luogo per riaprire subito la scheda salvata.</li>
+        <li><strong>Seleziona tutto:</strong> spunta in un clic tutte le voci in elenco.</li>
+        <li><strong>Scarica selezionati (PDF):</strong> genera un unico PDF a più pagine con tutte le schede spuntate.</li>
+        <li><strong>Elimina selezionati:</strong> rimuove solo le schede con il quadratino spuntato.</li>
+        <li><strong>Elimina (riga singola):</strong> rimuove immediatamente quella singola voce.</li>
+        <li><strong>Svuota tutto:</strong> cancella l'intero archivio, previa conferma.</li>
+        <li><strong>Chiudi:</strong> torna alla mappa senza modificare nulla.</li>
+      </ul>
+
+    </div>
+    <div class="keycard-row">
+      <button class="btn btn-primary" id="instrClose">Chiudi</button>
+    </div>
+  </div>
 </div>
 
 <div class="overlay" id="helpOverlay">
@@ -656,6 +766,8 @@ keyBtn.onclick = () => { keyInput.value = getKey(); keyOverlay.classList.add('sh
 document.getElementById('keyCancel').onclick = () => keyOverlay.classList.remove('show');
 document.getElementById('helpBtn').onclick = () => document.getElementById('helpOverlay').classList.add('show');
 document.getElementById('helpClose').onclick = () => document.getElementById('helpOverlay').classList.remove('show');
+document.getElementById('instrBtn').onclick = () => document.getElementById('instrOverlay').classList.add('show');
+document.getElementById('instrClose').onclick = () => document.getElementById('instrOverlay').classList.remove('show');
 document.getElementById('genHelpBtn').onclick = () => document.getElementById('genHelpOverlay').classList.add('show');
 document.getElementById('genHelpClose').onclick = () => document.getElementById('genHelpOverlay').classList.remove('show');
 document.getElementById('keySave').onclick = () => {
@@ -707,8 +819,8 @@ let currentCountry = null;
 
 function applyPlaceData(data, name){
   const addr = data.address || {};
-  // per il click sulla mappa vogliamo il livello "comune"; le frazioni si cercano manualmente in barra
-  const place = name || addr.city || addr.town || addr.municipality || addr.village
+  // livello più specifico disponibile: frazione/borgo, poi comune/città
+  const place = name || addr.hamlet || addr.village || addr.city || addr.town || addr.municipality
     || addr.county || addr.state_district
     || (data.display_name ? data.display_name.split(',')[0] : null);
   const region = addr.state || addr.region || addr.county || addr.state_district || '—';
@@ -733,9 +845,8 @@ function applyPlaceData(data, name){
   const lat = data.lat ? (+data.lat).toFixed(4) : null;
   const lon = data.lon ? (+data.lon).toFixed(4) : null;
   const coordsPart = (lat && lon) ? ` · Coordinate: <span>${lat}, ${lon}</span>` : '';
-  const kindPart = addr.city ? 'Città' : addr.town ? 'Comune/paese' : addr.village ? 'Villaggio' : addr.municipality ? 'Municipio' : null;
-  const kindLabel = kindPart ? `Tipo: <span>${kindPart}</span> · ` : '';
-  ccMeta.innerHTML = `${kindLabel}Regione: <span>${region}</span> · Stato: <span>${country}</span>${coordsPart}`;
+
+  ccMeta.innerHTML = `Regione: <span>${region}</span> · Stato: <span>${country}</span>${coordsPart}`;
   genBtn.disabled = false;
   // reset selezione: nessuna domanda attiva, domanda libera svuotata
   document.querySelectorAll('.cc-chip input').forEach(cb => { cb.checked = false; });
@@ -755,7 +866,7 @@ async function handlePointClick(lat, lng){
   currentCountry = null;
 
   try{
-    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1&accept-language=it`, {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=12&addressdetails=1&accept-language=it`, {
       headers: { 'Accept': 'application/json' }
     });
     const data = await res.json();
