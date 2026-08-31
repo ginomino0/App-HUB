@@ -480,6 +480,7 @@ header *{pointer-events:auto;}
   padding:12px 14px;border-radius:3px;font-size:13.5px;
 }
 
+
 /* --- galleria immagini --- */
 #panelGallery{
   display:grid;grid-template-columns:1fr 1fr;gap:8px;
@@ -575,7 +576,7 @@ header *{pointer-events:auto;}
   -webkit-user-drag:none;
 }
 
-/* Nome immagine */
+/* Nome immagine (in alto, nitido, senza blur) */
 #imgModal .image-name {
   position:absolute;
   top:14px;
@@ -782,6 +783,14 @@ header *{pointer-events:auto;}
       </ul>
 
       <h3>2. Mappa e ricerca</h3>
+      <p>
+        Sono disponibili due mappe, selezionabili dal riquadro in alto a sinistra:
+        <strong>"🗺 Strade"</strong>, la carta stradale classica con città, strade e confini,
+        e <strong>"🛰 Satellite"</strong>, le immagini satellitari reali dove zoomando si vedono
+        case, strade e territori nel dettaglio, con i nomi dei luoghi sovrapposti.
+        Il cambio di mappa è puramente visivo: posizione, zoom e tutte le funzioni
+        (clic, ricerca, schede) restano identici.
+      </p>
       <ul>
         <li><strong>Zoom:</strong> rotella del mouse oppure i pulsanti + / − in alto a sinistra.</li>
         <li><strong>Spostamento:</strong> trascina la mappa tenendo premuto il tasto sinistro.</li>
@@ -808,7 +817,6 @@ header *{pointer-events:auto;}
       <h3>6. Il pannello della scheda generata</h3>
       <ul>
         <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato.</li>
-        <li><strong>Copia/Condividi:</strong> condivide il testo con le app del dispositivo, oppure lo copia negli appunti se la condivisione non è disponibile.</li>
         <li><strong>Linguetta "Scheda AI":</strong> compare quando chiudi il pannello pur avendo una scheda aperta; permette di consultare la mappa e riaprire la scheda con un clic, senza perderla.</li>
       </ul>
 
@@ -951,7 +959,6 @@ header *{pointer-events:auto;}
           <button id="exportPdfBtn">Esporta come .pdf</button>
         </div>
       </div>
-      <button class="panel-action-btn" id="shareBtn">Copia/Condividi</button>
     </div>
     <div id="panelGallery"></div>
     <div id="panelText"></div>
@@ -1027,9 +1034,33 @@ const map = L.map('map', {
   zoomControl: true
 }).setView([41.9, 12.5], 5);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+// Sfondo 1: strade (OpenStreetMap) — quello originale
+const baseStreets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 19
+}).addTo(map);
+
+// Sfondo 2: satellite (Esri World Imagery — case e strade reali, gratuita)
+const baseSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Immagini &copy; <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics',
+  maxZoom: 19
+});
+
+// Nomi dei luoghi: uniti al satellite in un gruppo, automatici e non disattivabili
+const labelsOverlay = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Etichette &copy; Esri',
+  maxZoom: 19
+});
+
+const satelliteGroup = L.layerGroup([baseSatellite, labelsOverlay]);
+
+// Selettore mappe (solo le due scelte di sfondo, nessuna spunta extra)
+L.control.layers({
+  '🗺 Strade': baseStreets,
+  '🛰 Satellite': satelliteGroup
+}, null, {
+  position: 'topleft',
+  collapsed: false
 }).addTo(map);
 
 let activeMarker = null;
@@ -1287,7 +1318,7 @@ Considera NON pertinenti solo le domande che non hanno alcuna relazione con un l
 
 Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in quest'ordine):
 
-${sections.join('\n\n')}`;
+ ${sections.join('\n\n')}`;
 }
 
 
@@ -1512,7 +1543,7 @@ function updateZoomDisplay() {
 
 function zoomAt(zoomDelta, clientX, clientY) {
   const oldScale = _zoomLevel;
-  const newScale = Math.min(Math.max(oldScale + zoomDelta, 0.9), 7);
+  const newScale = Math.min(Math.max(oldScale + zoomDelta, 1), 10);
   if (newScale === oldScale) return;
 
   // Tornando al 100% si riparte centrati
@@ -1919,28 +1950,6 @@ document.getElementById('exportPdfBtn').onclick = () => {
   doc.save(`${title.replace(/[^\w\-]+/g,'_')}.pdf`);
 };
 
-
-/* ==================== 5. CONDIVISIONE SCHEDA ==================== */
-document.getElementById('shareBtn').onclick = async () => {
-  if(!lastGeneratedRaw){ alert('Nessuna scheda da condividere.'); return; }
-  const title = panelTitle.textContent || 'Scheda';
-  const shareText = `${title}\n\n${lastGeneratedRaw}`;
-  if(navigator.share){
-    try{
-      await navigator.share({ title, text: shareText });
-      return;
-    }catch(e){ /* condivisione annullata dall'utente: si prosegue con la copia */ }
-  }
-  try{
-    await navigator.clipboard.writeText(shareText);
-    const btn = document.getElementById('shareBtn');
-    const old = btn.textContent;
-    btn.textContent = 'Copiato negli appunti ✓';
-    setTimeout(() => { btn.textContent = old; }, 1800);
-  }catch(e){
-    alert('Impossibile copiare automaticamente: seleziona e copia il testo manualmente.');
-  }
-};
 
 /* ==================== 3. CONFRONTO TRA LUOGHI ==================== */
 const compareToggle = document.getElementById('compareToggle');
