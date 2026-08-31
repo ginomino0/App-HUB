@@ -132,7 +132,7 @@ header *{pointer-events:auto;}
 .hist-list{max-height:50vh;overflow-y:auto;margin-bottom:14px;padding-right:4px;}
 .hist-item{
   display:grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns:auto 1fr auto;
   align-items:center;
   gap:12px;
   padding:8px 6px;
@@ -185,15 +185,52 @@ header *{pointer-events:auto;}
 .hist-item-del:hover{text-decoration:underline;}
 .hist-empty{font-size:13px;color:#7a8880;padding:12px 0;}
 
-/* --- Compare mode --- */
+/* --- Gruppi opzioni e domande rapide --- */
+.option-group, .quick-group{
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:10px 12px 8px;
+  margin-bottom:12px;
+  background:rgba(255,255,255,0.5);
+}
+.option-group .group-label, .quick-group .group-label{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:0.6px;
+  color:#7a8880;
+  margin:-2px 0 6px;
+  font-weight:600;
+}
+.option-group .compare-toggle, 
+.option-group .photo-toggle{
+  margin-bottom:4px;
+}
+.option-group .compare-toggle:last-child,
+.option-group .photo-toggle:last-child{
+  margin-bottom:0;
+}
+.quick-group .cc-chips{
+  margin-bottom:0;
+}
+.quick-group .cc-chips .cc-chip{
+  padding:2px 4px;
+}
+
+/* --- Compare mode (inside group) --- */
 .compare-toggle{
   display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5c6b62;
-  margin-bottom:10px;cursor:pointer;
+  cursor:pointer;
 }
 .compare-toggle input{accent-color:var(--moss);cursor:pointer;}
 .compare-slot{
   font-size:11.5px;color:var(--moss-dark);background:#eef2ee;
   border-radius:3px;padding:5px 9px;margin-bottom:10px;
+}
+.photo-mode-msg{
+  color:var(--moss-dark);
+  font-size:12px;
+  margin-bottom:8px;
+  display:none;
 }
 
 /* --- Panel action row --- */
@@ -457,20 +494,193 @@ header *{pointer-events:auto;}
 }
 .gallery-thumb:hover{opacity:0.85;}
 
-#imgModal{z-index:110;}
-#imgModal img{
-  max-width:65vw;max-height:65vh;
-  border-radius:4px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+/* --- Modalità fotografica: griglia più grande --- */
+.photo-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill, minmax(130px,1fr)) !important;
+  gap:6px !important;
 }
-.img-modal-close{
-  position:fixed;top:24px;right:30px;
-  background:rgba(16,28,26,0.7);color:#fff;
-  border:none;border-radius:50%;
-  width:38px;height:38px;font-size:20px;
-  cursor:pointer;line-height:1;
+.photo-thumb{
+  width:100%;aspect-ratio:1/1;object-fit:cover;
+  border-radius:4px;cursor:pointer;
+  border:1px solid var(--line);
+  transition:transform .1s;
 }
-.img-modal-close:hover{background:rgba(16,28,26,0.95);}
+.photo-thumb:hover{transform:scale(1.02);}
+
+/* --- Lightbox con finestra trasparente e zoom puntuale --- */
+#imgModal {
+  z-index:110;
+  background:transparent;  /* finestra trasparente: si vede la mappa sotto */
+  display:none;
+  align-items:center;
+  justify-content:center;
+  position:fixed;
+  inset:0;
+}
+#imgModal.show { display:flex; }
+
+#imgModal .img-modal-close {
+  position:fixed;
+  top:20px;
+  right:24px;
+  background:rgba(16,28,26,0.7);
+  color:#fff;
+  border:none;
+  border-radius:50%;
+  width:42px;
+  height:42px;
+  font-size:22px;
+  cursor:pointer;
+  line-height:1;
+  z-index:112;
+  transition:background .2s;
+}
+#imgModal .img-modal-close:hover { background:rgba(16,28,26,0.95); }
+
+#imgModal .lightbox-window {
+  width:88vw;
+  height:80vh;
+  max-width:1100px;
+  max-height:850px;
+  background:#1a1f1d;
+  border-radius:12px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.7);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+#imgModal .image-wrap {
+  flex:1;
+  overflow:hidden;
+  position:relative;
+  background:#0f1311;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:grab;
+  touch-action:none;
+}
+#imgModal .image-wrap:active { cursor:grabbing; }
+#imgModal .image-wrap img {
+  display:block;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  transform-origin:center;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+/* Nome immagine */
+#imgModal .image-name {
+  position:absolute;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(16,28,26,0.88);
+  color:#ffffff;
+  font-size:13px;
+  font-family:var(--font-mono);
+  padding:6px 18px;
+  border-radius:30px;
+  pointer-events:none;
+  white-space:nowrap;
+  max-width:80%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  letter-spacing:0.3px;
+  border:1px solid rgba(255,255,255,0.18);
+  z-index:6;
+}
+
+/* Pulsanti nav */
+.nav-btn {
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  background:rgba(0,0,0,0.45);
+  border:1px solid rgba(255,255,255,0.1);
+  color:#fff;
+  font-size:28px;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  cursor:pointer;
+  backdrop-filter:blur(4px);
+  transition:background .2s;
+  z-index:112;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  user-select:none;
+}
+.nav-btn:hover { background:rgba(0,0,0,0.7); }
+.nav-btn.prev { left:12px; }
+.nav-btn.next { right:12px; }
+.nav-btn:disabled {
+  opacity:0.2;
+  pointer-events:none;
+}
+
+/* Contatore */
+#imgModal #imgCounter {
+  position:absolute;
+  top:16px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.45);
+  color:#e0e8e4;
+  padding:5px 16px;
+  border-radius:30px;
+  font-size:12px;
+  backdrop-filter:blur(4px);
+  z-index:112;
+  font-family:var(--font-mono);
+  letter-spacing:0.5px;
+}
+
+/* Controlli zoom */
+#imgModal .zoom-controls {
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:center;
+  padding:10px 16px;
+  background:rgba(0,0,0,0.35);
+  backdrop-filter:blur(4px);
+  flex-shrink:0;
+  border-radius:0 0 12px 12px;
+}
+#imgModal .zoom-controls button {
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  color:#fff;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  font-size:16px;
+  cursor:pointer;
+  transition:background .2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#imgModal .zoom-controls button:hover { background:rgba(255,255,255,0.2); }
+#imgModal .zoom-controls .zoom-indicator {
+  color:#d0dad4;
+  font-size:12px;
+  min-width:44px;
+  text-align:center;
+  font-family:var(--font-mono);
+}
+#imgModal .zoom-controls #zoomReset {
+  font-size:14px;
+  border-color:rgba(255,255,255,0.1);
+}
 
 /* --- footer hint --- */
 #hint{
@@ -592,14 +802,17 @@ header *{pointer-events:auto;}
         <li>Seleziona un primo luogo (mappa o ricerca), poi un secondo: viene generato automaticamente un confronto tra i due (dati, somiglianze, differenze, sintesi finale).</li>
       </ul>
 
-      <h3>5. Il pannello della scheda generata</h3>
+      <h3>5. Modalità fotografica</h3>
+      <p>Attiva la modalità per visualizzare subito una galleria di foto (fino a 50 immagini) del luogo scelto, attingendo da Wikimedia Commons. Le immagini sono filtrate per vicinanza geografica (entro 10 km) e pertinenza del titolo. In questa modalità, la generazione di schede AI e il confronto vengono disabilitati.</p>
+
+      <h3>6. Il pannello della scheda generata</h3>
       <ul>
         <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato.</li>
         <li><strong>Copia/Condividi:</strong> condivide il testo con le app del dispositivo, oppure lo copia negli appunti se la condivisione non è disponibile.</li>
         <li><strong>Linguetta "Scheda AI":</strong> compare quando chiudi il pannello pur avendo una scheda aperta; permette di consultare la mappa e riaprire la scheda con un clic, senza perderla.</li>
       </ul>
 
-      <h3>6. Cronologia e gestione delle schede salvate</h3>
+      <h3>7. Cronologia e gestione delle schede salvate</h3>
       <p>Ogni scheda generata (comprese quelle di confronto) viene salvata automaticamente nel browser. Si apre dal pulsante <strong>"Cronologia"</strong> in alto a destra.</p>
       <ul>
         <li><strong>Consultazione rapida:</strong> clicca sul nome di un luogo per riaprire subito la scheda salvata.</li>
@@ -678,21 +891,38 @@ header *{pointer-events:auto;}
   <div class="cc-eyebrow">LUOGO SELEZIONATO</div>
   <h2 class="cc-title" id="ccName">—</h2>
   <div class="cc-meta" id="ccMeta">—</div>
-  <label class="compare-toggle">
-    <input type="checkbox" id="compareToggle">
-    Modalità confronto (scegli 2 luoghi)
-  </label>
-  <div class="compare-slot" id="compareSlot" style="display:none;"></div>
-  <div class="cc-chips" id="ccQuestions">
-    <label class="cc-chip"><input type="checkbox" value="generale">Panoramica</label>
-    <label class="cc-chip"><input type="checkbox" value="dati">Dati e statistiche</label>
-    <label class="cc-chip"><input type="checkbox" value="storia">Storia</label>
-    <label class="cc-chip"><input type="checkbox" value="cultura">Cultura</label>
-    <label class="cc-chip"><input type="checkbox" value="dialetto">Dialetto e detti</label>
-    <label class="cc-chip"><input type="checkbox" value="gastronomia">Gastronomia</label>
-    <label class="cc-chip"><input type="checkbox" value="feste">Feste</label>
-    <label class="cc-chip"><input type="checkbox" value="economia">Economia</label>
+
+  <!-- Riquadro Opzioni aggiuntive -->
+  <div class="option-group">
+    <div class="group-label">Opzioni aggiuntive</div>
+    <label class="compare-toggle">
+      <input type="checkbox" id="compareToggle">
+      Modalità confronto (scegli 2 luoghi)
+    </label>
+    <label class="compare-toggle photo-toggle">
+      <input type="checkbox" id="photoToggle">
+      Modalità fotografica
+    </label>
+    <div id="photoModeMsg" class="photo-mode-msg">🖼 Modalità fotografica attiva: clicca su un luogo per vedere le foto.</div>
   </div>
+
+  <div class="compare-slot" id="compareSlot" style="display:none;"></div>
+
+  <!-- Riquadro Domande rapide -->
+  <div class="quick-group">
+    <div class="group-label">Domande rapide</div>
+    <div class="cc-chips" id="ccQuestions">
+      <label class="cc-chip"><input type="checkbox" value="generale">Panoramica</label>
+      <label class="cc-chip"><input type="checkbox" value="dati">Dati e statistiche</label>
+      <label class="cc-chip"><input type="checkbox" value="storia">Storia</label>
+      <label class="cc-chip"><input type="checkbox" value="cultura">Cultura</label>
+      <label class="cc-chip"><input type="checkbox" value="dialetto">Dialetto e detti</label>
+      <label class="cc-chip"><input type="checkbox" value="gastronomia">Gastronomia</label>
+      <label class="cc-chip"><input type="checkbox" value="feste">Feste</label>
+      <label class="cc-chip"><input type="checkbox" value="economia">Economia</label>
+    </div>
+  </div>
+
   <textarea id="customQuestion" placeholder="Oppure scrivi qui una domanda libera su questo luogo…" rows="2"></textarea>
   <div class="cc-note">Nota: le informazioni fornite dall'AI possono contenere imprecisioni, verifica sempre i dati importanti.</div>
   <div class="gen-row">
@@ -728,9 +958,24 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
+<!-- Lightbox potenziata (finestra trasparente) -->
 <div class="overlay" id="imgModal">
   <button class="img-modal-close" id="imgModalClose" aria-label="Chiudi">&times;</button>
-  <img id="imgModalPic" src="" alt="">
+  <div id="imgCounter" style="display:none;">1 / 1</div>
+  <button class="nav-btn prev" id="imgPrev" style="display:none;">‹</button>
+  <button class="nav-btn next" id="imgNext" style="display:none;">›</button>
+  <div class="lightbox-window">
+    <div class="image-wrap" id="imageWrap">
+      <img id="imgModalPic" src="" alt="">
+    </div>
+    <div class="image-name" id="imageName" style="display:none;"></div>
+    <div class="zoom-controls">
+      <button id="zoomOut">−</button>
+      <span class="zoom-indicator" id="zoomIndicator">100%</span>
+      <button id="zoomIn">+</button>
+      <button id="zoomReset">⟲</button>
+    </div>
+  </div>
 </div>
 
 <div class="overlay" id="keyOverlay">
@@ -797,7 +1042,6 @@ map.on('click', (e) => {
   handlePointClick(lat, lng);
 });
 
-// se l'utente trascina o zooma manualmente la mappa (non un volo programmato), la scheda si abbassa da sola
 map.on('dragstart zoomstart', () => {
   if(!isProgrammaticMove) collapseCard();
 });
@@ -819,7 +1063,6 @@ let currentCountry = null;
 
 function applyPlaceData(data, name){
   const addr = data.address || {};
-  // livello più specifico disponibile: frazione/borgo, poi comune/città
   const place = name || addr.hamlet || addr.village || addr.city || addr.town || addr.municipality
     || addr.county || addr.state_district
     || (data.display_name ? data.display_name.split(',')[0] : null);
@@ -838,22 +1081,26 @@ function applyPlaceData(data, name){
     name: displayName,
     region, capital: null, country,
     context: data.display_name || null,
-    bbox: data.boundingbox || null
+    bbox: data.boundingbox || null,
+    lat: data.lat ? +data.lat : null,
+    lon: data.lon ? +data.lon : null
   };
   ccName.textContent = displayName;
-  // --- dati "offline" subito disponibili, senza bisogno di chiave AI ---
-  const lat = data.lat ? (+data.lat).toFixed(4) : null;
-  const lon = data.lon ? (+data.lon).toFixed(4) : null;
-  const coordsPart = (lat && lon) ? ` · Coordinate: <span>${lat}, ${lon}</span>` : '';
+  const lat = currentCountry.lat;
+  const lon = currentCountry.lon;
+  const coordsPart = (lat && lon) ? ` · Coordinate: <span>${lat.toFixed(4)}, ${lon.toFixed(4)}</span>` : '';
 
   ccMeta.innerHTML = `Regione: <span>${region}</span> · Stato: <span>${country}</span>${coordsPart}`;
   genBtn.disabled = false;
-  // reset selezione: nessuna domanda attiva, domanda libera svuotata
   document.querySelectorAll('.cc-chip input').forEach(cb => { cb.checked = false; });
   document.getElementById('customQuestion').value = '';
   genBtn.textContent = 'Genera scheda con AI';
 
-  // se in modalità confronto, aggiorna gli slot invece del comportamento normale
+  if (photoToggle && photoToggle.checked) {
+    openPhotoGallery(currentCountry);
+    return;
+  }
+
   if(compareToggle && compareToggle.checked){
     addToCompare(currentCountry);
   }
@@ -862,7 +1109,11 @@ function applyPlaceData(data, name){
 async function handlePointClick(lat, lng){
   ccName.textContent = 'Sto localizzando…';
   ccMeta.textContent = '—';
-  expandCard();
+  if (!photoToggle || !photoToggle.checked) {
+    expandCard();
+  } else {
+    collapseCard();
+  }
   currentCountry = null;
 
   try{
@@ -917,8 +1168,13 @@ async function runSearch(q){
         const exactName = r.namedetails?.name || r.display_name.split(',')[0];
         searchInput.value = exactName;
         flyTo(+r.lat, +r.lon, 15);
-        expandCard();
-        applyPlaceData(r, exactName);
+        if (photoToggle && photoToggle.checked) {
+          collapseCard();
+          applyPlaceData(r, exactName);
+        } else {
+          expandCard();
+          applyPlaceData(r, exactName);
+        }
       };
     });
   }catch(e){
@@ -965,7 +1221,7 @@ function expandCard(){
   cardReopenTab.classList.remove('show');
 }
 
-const cache = {}; // cache in memoria per la sessione corrente
+const cache = {};
 
 /* --- selezione multipla delle domande + domanda libera --- */
 const typeLabels = {
@@ -1052,6 +1308,9 @@ genBtn.onclick = async () => {
     return;
   }
 
+  panelText.style.display = 'block';
+  panelGallery.className = '';
+
   const labelsChosen = types.map(t => typeLabels[t]);
   if(customQ) labelsChosen.push('Domanda personalizzata');
   const cacheKey = currentCountry.name + '|' + types.slice().sort().join(',') + '|' + customQ;
@@ -1074,7 +1333,6 @@ genBtn.onclick = async () => {
   panelActions.style.display = 'none';
   genBtn.disabled = true;
 
-  // contesto disambiguato: se il nome è generico (via, frazione), aggiunge i primi livelli dell'indirizzo completo
   const contextName = currentCountry.context
     ? currentCountry.context.split(',').slice(0, 3).map(s => s.trim()).join(', ')
     : currentCountry.name;
@@ -1168,20 +1426,251 @@ async function fetchGallery(name, type){
     panelGallery.innerHTML = items.map(info =>
       `<img class="gallery-thumb" src="${info.thumburl || info.url}" data-full="${info.url}" alt="${escapeHtml(name)}">`
     ).join('');
-    panelGallery.querySelectorAll('.gallery-thumb').forEach(img => {
-      img.onclick = () => openImageModal(img.dataset.full);
+    const urls = items.map(info => info.url);
+    panelGallery.querySelectorAll('.gallery-thumb').forEach((img, idx) => {
+      img.onclick = () => openLightbox(idx, urls);
     });
   }catch(e){ /* nessuna immagine disponibile, si prosegue senza */ }
 }
 
+/* ==================== LIGHTBOX CON ZOOM PUNTUALE E PAN ==================== */
+let _galleryUrls = [];
+let _currentIndex = 0;
+let _zoomLevel = 1;
+let _translateX = 0;
+let _translateY = 0;
+let _isDragging = false;
+let _dragStartX = 0, _dragStartY = 0;
+let _dragStartTranslateX = 0, _dragStartTranslateY = 0;
+
 const imgModal = document.getElementById('imgModal');
 const imgModalPic = document.getElementById('imgModalPic');
-document.getElementById('imgModalClose').onclick = () => imgModal.classList.remove('show');
-imgModal.addEventListener('click', (e) => { if(e.target === imgModal) imgModal.classList.remove('show'); });
-function openImageModal(url){
-  imgModalPic.src = url;
+const imageWrap = document.getElementById('imageWrap');
+const imgCounter = document.getElementById('imgCounter');
+const imgPrev = document.getElementById('imgPrev');
+const imgNext = document.getElementById('imgNext');
+const imageName = document.getElementById('imageName');
+const zoomInBtn = document.getElementById('zoomIn');
+const zoomOutBtn = document.getElementById('zoomOut');
+const zoomResetBtn = document.getElementById('zoomReset');
+const zoomIndicator = document.getElementById('zoomIndicator');
+
+function openLightbox(index, urls) {
+  if (!urls || urls.length === 0) return;
+  _galleryUrls = urls;
+  _currentIndex = Math.min(index, urls.length - 1);
+  resetZoomAndPan();
+  showImage(_currentIndex);
   imgModal.classList.add('show');
+  imgCounter.style.display = 'block';
+  imgPrev.style.display = 'flex';
+  imgNext.style.display = 'flex';
+  imageName.style.display = 'block';
+  updateNavButtons();
+  document.body.style.overflow = 'hidden';
 }
+
+function showImage(index) {
+  if (index < 0 || index >= _galleryUrls.length) return;
+  _currentIndex = index;
+  // Reset zoom e pan per ogni nuova immagine (già fatto in openLightbox, ma se chiamato da nav)
+  resetZoomAndPan();
+  imgModalPic.src = _galleryUrls[index];
+  // Estrae il nome del file e lo pulisce
+  const urlParts = _galleryUrls[index].split('/');
+  let fileName = urlParts[urlParts.length - 1];
+  try { fileName = decodeURIComponent(fileName); } catch(e) {}
+  fileName = fileName.split(/[?#]/)[0];          // taglia parametri (?utm_source=...) e ancore (#...)
+  fileName = fileName.replace(/\.[^.]*$/, '');   // poi taglia l'estensione (.jpg, .png, ...)
+  fileName = fileName.replace(/_/g, ' ');        // underscore -> spazi, più leggibile
+  imageName.textContent = fileName;
+  imgCounter.textContent = `${index + 1} / ${_galleryUrls.length}`;
+  updateNavButtons();
+}
+
+function resetZoomAndPan() {
+  _zoomLevel = 1;
+  _translateX = 0;
+  _translateY = 0;
+  updateTransform();
+  updateZoomDisplay();
+}
+
+function updateNavButtons() {
+  imgPrev.disabled = _currentIndex === 0;
+  imgNext.disabled = _currentIndex === _galleryUrls.length - 1;
+}
+
+function updateTransform() {
+  imgModalPic.style.transform = `translate(${_translateX}px, ${_translateY}px) scale(${_zoomLevel})`;
+}
+
+function updateZoomDisplay() {
+  const percent = Math.round(_zoomLevel * 100);
+  zoomIndicator.textContent = percent + '%';
+}
+
+function zoomAt(zoomDelta, clientX, clientY) {
+  const oldScale = _zoomLevel;
+  const newScale = Math.min(Math.max(oldScale + zoomDelta, 0.9), 7);
+  if (newScale === oldScale) return;
+
+  // Tornando al 100% si riparte centrati
+  if (newScale === 1) {
+    resetZoomAndPan();
+    return;
+  }
+
+  // Centro del riquadro = centro naturale dell'immagine (transform-origin:center)
+  const rect = imageWrap.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+
+  // Posizione del mouse rispetto al centro
+  const px = clientX - cx;
+  const py = clientY - cy;
+  const ratio = newScale / oldScale;
+
+  // Il punto sotto il mouse resta fermo durante lo zoom
+  _translateX = px - ratio * (px - _translateX);
+  _translateY = py - ratio * (py - _translateY);
+  _zoomLevel = newScale;
+
+  clampPan();
+  updateTransform();
+  updateZoomDisplay();
+}
+
+function clampPan() {
+  const rect = imageWrap.getBoundingClientRect();
+  const Lx = Math.max(0, (imgModalPic.offsetWidth  * _zoomLevel - rect.width ) / 2);
+  const Ly = Math.max(0, (imgModalPic.offsetHeight * _zoomLevel - rect.height) / 2);
+  _translateX = Math.min(Lx, Math.max(-Lx, _translateX));
+  _translateY = Math.min(Ly, Math.max(-Ly, _translateY));
+}
+
+function zoomIn() {
+  // Usa il centro della finestra come punto di ancoraggio
+  const rect = imageWrap.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  zoomAt(0.2, cx, cy);
+}
+function zoomOut() {
+  const rect = imageWrap.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  zoomAt(-0.2, cx, cy);
+}
+function zoomReset() {
+  resetZoomAndPan();
+}
+
+function closeLightbox() {
+  imgModal.classList.remove('show');
+  imgCounter.style.display = 'none';
+  imgPrev.style.display = 'none';
+  imgNext.style.display = 'none';
+  imageName.style.display = 'none';
+  document.body.style.overflow = '';
+  resetZoomAndPan();
+}
+
+// Pulsanti
+document.getElementById('imgModalClose').onclick = closeLightbox;
+imgModal.addEventListener('click', (e) => {
+  if (e.target === imgModal) closeLightbox();
+});
+
+imgPrev.onclick = () => {
+  if (_currentIndex > 0) showImage(_currentIndex - 1);
+};
+imgNext.onclick = () => {
+  if (_currentIndex < _galleryUrls.length - 1) showImage(_currentIndex + 1);
+};
+
+// Tasti freccia
+document.addEventListener('keydown', (e) => {
+  if (!imgModal.classList.contains('show')) return;
+  if (e.key === 'ArrowLeft') { e.preventDefault(); imgPrev.click(); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); imgNext.click(); }
+  else if (e.key === 'Escape') closeLightbox();
+  else if (e.key === '+' || e.key === '=') { e.preventDefault(); zoomIn(); }
+  else if (e.key === '-') { e.preventDefault(); zoomOut(); }
+  else if (e.key === '0') { e.preventDefault(); zoomReset(); }
+});
+
+// Zoom con rotellina (puntuale)
+imageWrap.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = e.deltaY < 0 ? 0.2 : -0.2;
+  zoomAt(delta, e.clientX, e.clientY);
+}, { passive: false });
+
+// Pulsanti zoom
+zoomInBtn.onclick = zoomIn;
+zoomOutBtn.onclick = zoomOut;
+zoomResetBtn.onclick = zoomReset;
+
+// ===== DRAG (PAN) =====
+imageWrap.addEventListener('mousedown', (e) => {
+  if (_zoomLevel <= 1) return;
+  _isDragging = true;
+  _dragStartX = e.clientX;
+  _dragStartY = e.clientY;
+  _dragStartTranslateX = _translateX;
+  _dragStartTranslateY = _translateY;
+  imageWrap.style.cursor = 'grabbing';
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!_isDragging) return;
+  const dx = e.clientX - _dragStartX;
+  const dy = e.clientY - _dragStartY;
+  _translateX = _dragStartTranslateX + dx;
+  _translateY = _dragStartTranslateY + dy;
+  clampPan();
+  updateTransform();
+});
+
+document.addEventListener('mouseup', () => {
+  if (_isDragging) {
+    _isDragging = false;
+    imageWrap.style.cursor = 'grab';
+  }
+});
+
+// Touch support
+imageWrap.addEventListener('touchstart', (e) => {
+  if (_zoomLevel <= 1) return;
+  const touch = e.touches[0];
+  if (!touch) return;
+  _isDragging = true;
+  _dragStartX = touch.clientX;
+  _dragStartY = touch.clientY;
+  _dragStartTranslateX = _translateX;
+  _dragStartTranslateY = _translateY;
+  e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchmove', (e) => {
+  if (!_isDragging) return;
+  const touch = e.touches[0];
+  if (!touch) return;
+  const dx = touch.clientX - _dragStartX;
+  const dy = touch.clientY - _dragStartY;
+  _translateX = _dragStartTranslateX + dx;
+  _translateY = _dragStartTranslateY + dy;
+  clampPan();
+  updateTransform();
+}, { passive: false });
+
+document.addEventListener('touchend', () => {
+  _isDragging = false;
+});
+
+/* ---------------- Fine lightbox potenziata ---------------- */
 
 function renderStreamed(text, streaming){
   const blocks = text.split(/\n##\s*/).map((b,i) => i===0 ? b.replace(/^##\s*/,'') : b);
@@ -1193,7 +1682,6 @@ function renderStreamed(text, streaming){
       html += `<h3>${escapeHtml(titleLine.trim())}</h3>`;
     }
     if(bodyText){
-      // separa paragrafi normali da righe-elenco che iniziano con "- "
       const chunks = bodyText.split(/\n\s*\n/);
       let listBuffer = [];
       const flushList = () => {
@@ -1227,7 +1715,7 @@ function escapeHtml(s){
 
 /* ==================== 1. CRONOLOGIA (localStorage) ==================== */
 const HIST_KEY = 'atlante_history_v1';
-let lastGeneratedRaw = ''; // testo grezzo dell'ultima scheda generata, per export/condivisione
+let lastGeneratedRaw = '';
 
 function loadHistory(){
   try{ return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); }
@@ -1244,10 +1732,9 @@ function saveToHistory(name, labelsChosen, rawText){
     name, labels: labelsChosen, text: rawText,
     date: new Date().toISOString()
   };
-  // rimuove eventuale voce duplicata identica (stesso nome+etichette) tenendo la più recente
   const filtered = list.filter(e => !(e.name === name && (e.labels||[]).join(',') === labelsChosen.join(',')));
   filtered.unshift(entry);
-  persistHistory(filtered.slice(0, 60)); // limite ragionevole di voci salvate
+  persistHistory(filtered.slice(0, 60));
 }
 
 const historyOverlay = document.getElementById('historyOverlay');
@@ -1306,6 +1793,8 @@ function renderHistory(){
       if(!e) return;
       panelEyebrow.textContent = (e.labels.join(' · ') || 'SCHEDA').toUpperCase();
       panelTitle.textContent = e.name;
+      panelText.style.display = 'block';
+      panelGallery.className = '';
       renderStreamed(e.text, false);
       panelGallery.innerHTML = '';
       panelActions.style.display = 'flex';
@@ -1353,7 +1842,6 @@ function addEntryToPdf(doc, title, bodyText, isFirstPage){
   doc.line(margin, y, pageWidth - margin, y);
   y += 8;
 
-  // il testo grezzo usa "## Titolo" per le sezioni: le rendiamo come sotto-titoli
   const blocks = bodyText.split(/\n##\s*/).map((b,i) => i===0 ? b.replace(/^##\s*/,'') : b);
   blocks.forEach(block => {
     const [titleLine, ...rest] = block.split('\n');
@@ -1457,9 +1945,13 @@ document.getElementById('shareBtn').onclick = async () => {
 /* ==================== 3. CONFRONTO TRA LUOGHI ==================== */
 const compareToggle = document.getElementById('compareToggle');
 const compareSlot = document.getElementById('compareSlot');
-let compareSlots = []; // fino a 2 oggetti currentCountry
+let compareSlots = [];
 
 compareToggle.addEventListener('change', () => {
+  if (compareToggle.checked && photoToggle && photoToggle.checked) {
+    photoToggle.checked = false;
+    photoToggle.dispatchEvent(new Event('change'));
+  }
   compareSlots = [];
   compareSlot.style.display = compareToggle.checked ? 'block' : 'none';
   updateCompareSlotUI();
@@ -1467,7 +1959,6 @@ compareToggle.addEventListener('change', () => {
 
 function addToCompare(country){
   if(!country) return;
-  // evita duplicati identici consecutivi
   if(compareSlots.length && compareSlots[compareSlots.length-1].name === country.name) return;
   compareSlots.push(country);
   if(compareSlots.length > 2) compareSlots.shift();
@@ -1562,13 +2053,154 @@ Un breve paragrafo conclusivo che aiuti chi legge a capire quale luogo si adatta
     lastGeneratedRaw = full;
     panelActions.style.display = 'flex';
     saveToHistory(`${a.name} vs ${b.name}`, ['Confronto'], full);
-    // pronto per un nuovo confronto
     compareSlots = [];
     updateCompareSlotUI();
   }catch(err){
     panelText.innerHTML = `<div class="panel-error">Non sono riuscito a generare il confronto.<br>${err.message}</div>`;
   }
 }
+
+/* ==================== 4. MODALITÀ FOTOGRAFICA ==================== */
+const photoToggle = document.getElementById('photoToggle');
+const photoModeMsg = document.getElementById('photoModeMsg');
+let isPhotoMode = false;
+
+photoToggle.addEventListener('change', function() {
+  if (this.checked) {
+    if (compareToggle && compareToggle.checked) {
+      compareToggle.checked = false;
+      compareToggle.dispatchEvent(new Event('change'));
+    }
+    document.getElementById('ccQuestions').style.display = 'none';
+    document.getElementById('customQuestion').style.display = 'none';
+    document.getElementById('genBtn').style.display = 'none';
+    document.getElementById('genHelpBtn').style.display = 'none';
+    document.querySelector('.cc-note').style.display = 'none';
+    photoModeMsg.style.display = 'block';
+    isPhotoMode = true;
+    if (currentCountry) {
+      openPhotoGallery(currentCountry);
+    }
+  } else {
+    document.getElementById('ccQuestions').style.display = '';
+    document.getElementById('customQuestion').style.display = '';
+    document.getElementById('genBtn').style.display = '';
+    document.getElementById('genHelpBtn').style.display = '';
+    document.querySelector('.cc-note').style.display = '';
+    photoModeMsg.style.display = 'none';
+    isPhotoMode = false;
+    if (panel.classList.contains('open') && panelGallery.classList.contains('photo-grid')) {
+      panel.classList.remove('open');
+    }
+  }
+});
+
+compareToggle.addEventListener('change', function() {
+  if (this.checked && photoToggle && photoToggle.checked) {
+    photoToggle.checked = false;
+    photoToggle.dispatchEvent(new Event('change'));
+  }
+});
+
+/* --- Funzione per aprire la galleria fotografica --- */
+function openPhotoGallery(place) {
+  if (!place || !place.name) return;
+  isPhotoMode = true;
+  panelEyebrow.textContent = 'GALLERIA FOTOGRAFICA';
+  panelTitle.textContent = place.name;
+  panel.classList.add('open');
+  reopenTab.classList.remove('show');
+  panelHasContent = true;
+  collapseCard();
+
+  panelText.style.display = 'none';
+  panelActions.style.display = 'none';
+  panelGallery.className = 'photo-grid';
+  panelGallery.style.display = 'grid';
+  panelGallery.innerHTML = '<div class="panel-loading">Caricamento foto…</div>';
+
+  const lat = place.lat;
+  const lon = place.lon;
+  const country = place.country || '';
+  fetchPhotoGallery(place.name, lat, lon, country)
+    .then(images => {
+      if (!images || images.length === 0) {
+        panelGallery.innerHTML = '<div class="panel-error">Nessuna foto trovata per questo luogo.</div>';
+        return;
+      }
+      panelGallery.innerHTML = images.map(img => `
+        <img class="photo-thumb" src="${img.thumb}" data-full="${img.full}" alt="${escapeHtml(img.title)}">
+      `).join('');
+      const urls = images.map(img => img.full);
+      panelGallery.querySelectorAll('.photo-thumb').forEach((el, idx) => {
+        el.onclick = () => openLightbox(idx, urls);
+      });
+    })
+    .catch(err => {
+      panelGallery.innerHTML = `<div class="panel-error">Errore nel caricamento delle foto: ${escapeHtml(err.message)}</div>`;
+    });
+}
+
+/* --- Recupero foto da Wikimedia Commons con filtro geografico --- */
+async function fetchPhotoGallery(name, lat, lon, country) {
+  const query = country ? `${name} ${country}` : name;
+  const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=50&prop=imageinfo|coordinates&iiprop=url|mime&iiurlwidth=500&format=json&origin=*`;
+  const response = await fetch(url);
+  const data = await response.json();
+  const pages = data?.query?.pages;
+  if (!pages) return [];
+
+  const images = [];
+  const nameLower = name.toLowerCase();
+
+  for (const pageId in pages) {
+    const page = pages[pageId];
+    const info = page.imageinfo?.[0];
+    if (!info) continue;
+    const mime = info.mime;
+    if (!mime || !mime.startsWith('image/') || mime.includes('svg')) continue;
+
+    let valid = true;
+    if (page.coordinates && page.coordinates.length) {
+      const coord = page.coordinates[0];
+      const dist = haversineDistance(lat, lon, coord.lat, coord.lon);
+      if (dist > 10) valid = false;
+    } else {
+      const titleLower = page.title.toLowerCase();
+      const words = nameLower.split(/\s+/).filter(w => w.length > 2);
+      if (words.length) {
+        const allPresent = words.every(w => titleLower.includes(w));
+        if (!allPresent) valid = false;
+      } else {
+        if (!titleLower.includes(nameLower)) valid = false;
+      }
+    }
+
+    if (valid) {
+      images.push({
+        thumb: info.thumburl || info.url,
+        full: info.url,
+        title: page.title
+      });
+      if (images.length >= 50) break;
+    }
+  }
+  return images;
+}
+
+/* --- Distanza in km (Haversine) --- */
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return Infinity;
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
 </script>
 </body>
 </html>
