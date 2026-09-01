@@ -33,7 +33,7 @@ html,body{
 .leaflet-control-zoom a{color:var(--ink) !important;}
 .leaflet-popup-content-wrapper{border-radius:4px;}
 
-/* --- Indicatore di caricamento con puntini in loop --- */
+/* --- Loading indicator --- */
 .loading-line{
   display:inline-flex;align-items:baseline;
   color:#8a958e;font-size:14px;font-style:italic;
@@ -52,7 +52,7 @@ html,body{
 }
 #busyToast .loading-line{color:#e4ece7;font-style:normal;font-size:13px;}
 
-/* --- Tooltip per toggle --- */
+/* --- Tooltips for toggles --- */
 .toggle-with-tip{
   position:relative;
   cursor:pointer;
@@ -248,7 +248,7 @@ header *{pointer-events:auto;}
 .hist-item .fav-btn:hover{transform:scale(1.2);}
 .hist-item.fav{background:#f4f8f4;border-left:3px solid #f5b342;}
 
-/* --- Filtro cronologia --- */
+/* --- History filter --- */
 .hist-filter-row{
   display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;
 }
@@ -261,7 +261,7 @@ header *{pointer-events:auto;}
 .hist-filter-row input:focus{border-color:#8fb59f;}
 .hist-filter-row .btn{font-size:12px;padding:7px 14px;}
 
-/* --- Cronologia: toolbar e footer --- */
+/* --- History toolbar and footer --- */
 .hist-toolbar {
   display:flex;
   align-items:center;
@@ -303,7 +303,7 @@ header *{pointer-events:auto;}
   padding:6px 14px;
 }
 
-/* --- Sezioni comprimibili della scheda luogo --- */
+/* --- Collapsible sections --- */
 .collapsible{
   border:1px solid var(--line);
   border-radius:4px;
@@ -349,7 +349,7 @@ header *{pointer-events:auto;}
   display:none;
 }
 
-/* --- Panel action row --- */
+/* --- Panel actions --- */
 .panel-actions{
   display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap;
 }
@@ -432,7 +432,7 @@ header *{pointer-events:auto;}
 }
 .btn-star:hover{border-color:#f5b342;color:#e09d2a;}
 
-/* --- Country card (popup) --- */
+/* --- Country card --- */
 #countryCard{
   position:fixed;
   left:26px;bottom:40px;transform:translateY(30px);
@@ -487,7 +487,7 @@ header *{pointer-events:auto;}
 .cc-meta .coords-copy{cursor:pointer;text-decoration:underline dotted;}
 .cc-meta .coords-copy:hover{color:var(--clay);}
 
-/* --- Info utili (sezione comprimibile) --- */
+/* --- Useful info section --- */
 #usefulSection .useful-grid{
   display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:12.5px;
 }
@@ -547,7 +547,7 @@ header *{pointer-events:auto;}
 }
 #genHelpBtn:hover{border-color:#8fb59f;color:var(--ink);}
 
-/* --- Meteo nella scheda luogo --- */
+/* --- Weather --- */
 .wx-loading{font-size:12px;color:#7a8880;font-style:italic;padding:2px 0;}
 .wx-current{display:flex;align-items:center;gap:10px;margin-top:2px;}
 .wx-ico{font-size:26px;line-height:1;}
@@ -560,7 +560,7 @@ header *{pointer-events:auto;}
 .wx-day-ico{font-size:18px;margin:2px 0;}
 .wx-day-temp{font-size:11px;color:#3a453f;font-weight:600;}
 
-/* --- Segnaposto personali --- */
+/* --- Custom pins --- */
 .pin-btn{
   width:100%;margin-top:8px;
   background:#fff;border:1px solid var(--line);color:#5c6b62;
@@ -678,7 +678,7 @@ header *{pointer-events:auto;}
   padding:12px 14px;border-radius:3px;font-size:13.5px;
 }
 
-/* --- galleria immagini con didascalie --- */
+/* --- Gallery with captions --- */
 #panelGallery{
   display:grid;grid-template-columns:1fr 1fr;gap:8px;
   margin-bottom:20px;
@@ -701,7 +701,7 @@ header *{pointer-events:auto;}
   background:#fafafa;border-top:1px solid var(--line);
 }
 
-/* --- Modalità fotografica: griglia più grande --- */
+/* --- Photo mode grid --- */
 .photo-grid{
   display:grid !important;
   grid-template-columns:repeat(auto-fill, minmax(130px,1fr)) !important;
@@ -715,7 +715,7 @@ header *{pointer-events:auto;}
 }
 .photo-thumb:hover{transform:scale(1.02);}
 
-/* --- Approfondimento al volo (Deep Dive) --- */
+/* --- Deep Dive popup --- */
 #ddPopup{
   position:fixed; display:none; z-index:200;
   width:min(380px,92vw);
@@ -775,7 +775,7 @@ header *{pointer-events:auto;}
 .dd-btn:hover{ border-color:#8fb59f; color:var(--ink); }
 .dd-btn:disabled{ opacity:.5; cursor:default; }
 
-/* --- Lightbox con finestra trasparente e zoom puntuale --- */
+/* --- Lightbox --- */
 #imgModal {
   z-index:110;
   background:transparent;
@@ -842,7 +842,7 @@ header *{pointer-events:auto;}
   -webkit-user-drag:none;
 }
 
-/* Nome immagine (in alto, nitido, senza blur) */
+/* Image name (top, clean, no blur) */
 #imgModal .image-name {
   position:absolute;
   top:14px;
@@ -864,7 +864,7 @@ header *{pointer-events:auto;}
   z-index:6;
 }
 
-/* Pulsanti nav */
+/* Navigation buttons */
 .nav-btn {
   position:fixed;
   top:50%;
@@ -893,7 +893,7 @@ header *{pointer-events:auto;}
   pointer-events:none;
 }
 
-/* Contatore */
+/* Counter */
 #imgModal #imgCounter {
   position:absolute;
   top:16px;
@@ -910,7 +910,7 @@ header *{pointer-events:auto;}
   letter-spacing:0.5px;
 }
 
-/* Controlli zoom */
+/* Zoom controls */
 #imgModal .zoom-controls {
   display:flex;
   gap:8px;
@@ -949,14 +949,14 @@ header *{pointer-events:auto;}
   border-color:rgba(255,255,255,0.1);
 }
 
-/* --- footer hint --- */
+/* --- Footer hint --- */
 #hint{
   position:fixed;bottom:20px;left:30px;
   font-size:12px;color:#7e8f86;z-index:20;
   letter-spacing:0.2px;
 }
 
-/* --- search --- */
+/* --- Search --- */
 #searchBar{
   position:fixed;top:16px;left:50%;transform:translateX(-50%);
   width:min(380px,80vw);z-index:25;
@@ -1019,7 +1019,7 @@ header *{pointer-events:auto;}
 
 <div id="hint">Trascina per spostarti · scorri per lo zoom fin dentro le vie · clicca ovunque</div>
 
-<!-- Pillola di caricamento flottante (per PDF e operazioni lunghe) -->
+<!-- Floating loading pill -->
 <div id="busyToast"></div>
 
 <div id="searchBar">
@@ -1173,19 +1173,19 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
-<!-- CRONOLOGIA: NUOVA VERSIONE RIORGANIZZATA -->
+<!-- HISTORY: Reorganized version -->
 <div class="overlay" id="historyOverlay">
   <div class="keycard keycard-wide">
     <h2>Cronologia schede</h2>
     <p>Le schede generate restano salvate nel tuo browser. Tocca un luogo per riaprirlo, seleziona più voci per scaricarle insieme in un unico PDF, oppure eliminale.</p>
     
-    <!-- Filtro di ricerca -->
+    <!-- Filter -->
     <div class="hist-filter-row">
       <input type="text" id="histFilter" placeholder="🔍 Filtra per nome…" autocomplete="off">
       <button class="btn btn-ghost btn-sm" id="histFilterClear">✕ Cancella</button>
     </div>
     
-    <!-- Riga 1: selezione + download PDF -->
+    <!-- Row 1: selection + PDF download -->
     <div class="hist-toolbar">
       <button class="btn btn-ghost btn-sm" id="histSelectAll">☑ Seleziona tutto</button>
       <button class="btn btn-ghost btn-sm" id="histDeselectAll">☐ Deseleziona tutto</button>
@@ -1193,7 +1193,7 @@ header *{pointer-events:auto;}
       <button class="btn btn-primary btn-sm" id="histDownloadSelected">📄 Scarica selezionati (PDF)</button>
     </div>
     
-    <!-- Riga 2: backup import/export -->
+    <!-- Row 2: backup import/export -->
     <div class="hist-toolbar">
       <button class="btn btn-ghost btn-sm" id="histExportBtn">💾 Esporta backup</button>
       <button class="btn btn-ghost btn-sm" id="histImportBtn">📂 Importa backup</button>
@@ -1202,10 +1202,10 @@ header *{pointer-events:auto;}
     </div>
     <input type="file" id="histImportFile" accept=".json,application/json" style="display:none;">
     
-    <!-- Lista schede -->
+    <!-- Cards list -->
     <div class="hist-list" id="histList"></div>
     
-    <!-- Riga inferiore: azioni di eliminazione + chiusura -->
+    <!-- Bottom row: delete actions + close -->
     <div class="hist-footer">
       <div class="hist-footer-left">
         <button class="btn btn-ghost btn-sm" id="histDeleteSelected" style="color:#b5651d; border-color:#e0b39c;">🗑 Elimina selezionati</button>
@@ -1225,7 +1225,7 @@ header *{pointer-events:auto;}
   <h2 class="cc-title" id="ccName">—</h2>
   <div class="cc-meta" id="ccMeta">—</div>
 
-  <!-- Info utili (sezione comprimibile) -->
+  <!-- Useful info (collapsible) -->
   <div id="usefulSection" class="collapsible closed">
     <button type="button" class="collapse-head">
       <span class="collapse-title">Info utili</span>
@@ -1237,7 +1237,7 @@ header *{pointer-events:auto;}
     </div>
   </div>
 
-  <!-- Meteo (sezione comprimibile) -->
+  <!-- Weather (collapsible) -->
   <div id="weatherSection" class="collapsible closed">
     <button type="button" class="collapse-head">
       <span class="collapse-title">Meteo</span>
@@ -1249,7 +1249,7 @@ header *{pointer-events:auto;}
     </div>
   </div>
 
-  <!-- Comandi aggiuntivi (sezione comprimibile) -->
+  <!-- Additional commands (collapsible) -->
   <div id="optionsSection" class="collapsible closed">
     <button type="button" class="collapse-head">
       <span class="collapse-title">Comandi aggiuntivi</span>
@@ -1279,7 +1279,7 @@ header *{pointer-events:auto;}
 
   <div class="compare-slot" id="compareSlot" style="display:none;"></div>
 
-  <!-- Domande rapide (sezione comprimibile) -->
+  <!-- Quick questions (collapsible) -->
   <div id="questionsSection" class="collapsible closed">
     <button type="button" class="collapse-head">
       <span class="collapse-title">Domande rapide</span>
@@ -1336,7 +1336,7 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
-<!-- Finestra: aggiungere le foto al PDF? -->
+<!-- Window: add photos to PDF? -->
 <div class="overlay" id="pdfPhotoOverlay">
   <div class="keycard">
     <h2>Generazione PDF</h2>
@@ -1349,7 +1349,7 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
-<!-- Finestra: nuovo segnaposto -->
+<!-- Window: new pin -->
 <div class="overlay" id="pinOverlay">
   <div class="keycard">
     <h2>Nuovo segnaposto</h2>
@@ -1363,7 +1363,7 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
-<!-- Mini popup: Approfondimento al volo -->
+<!-- Mini popup: Deep Dive -->
 <div id="ddPopup">
   <div class="dd-popup-title" id="ddTarget">Approfondisci</div>
   <input type="text" id="ddInput" placeholder="La tua domanda…" autocomplete="off">
@@ -1374,7 +1374,7 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
-<!-- Lightbox potenziata (finestra trasparente) -->
+<!-- Lightbox -->
 <div class="overlay" id="imgModal">
   <button class="img-modal-close" id="imgModalClose" aria-label="Chiudi">&times;</button>
   <div id="imgCounter" style="display:none;">1 / 1</div>
@@ -1411,12 +1411,12 @@ header *{pointer-events:auto;}
 </div>
 
 <script>
-/* ---------------- Indicatore di caricamento (puntini in loop) ---------------- */
+/* ============================================================
+   Loading indicator utilities
+   ============================================================ */
 function loadingHtml(msg){
   return `<span class="loading-line">${msg}<span class="dots-count"></span></span>`;
 }
-/* Fa aumentare i puntini di numero in loop (1→2→3→1...); si ferma da solo
-   quando il contenitore viene rimpiazzato dal contenuto vero. */
 function animateDots(container){
   let n = 0;
   const timer = setInterval(() => {
@@ -1437,15 +1437,17 @@ function hideBusy(){
   t.style.display = 'none';
   t.innerHTML = '';
 }
-/* Toast breve senza animazione: per feedback istantanei ("aggiunto", ecc.) */
-function showToast(msg, ms = 1600){
+function showToast(msg, ms){
+  ms = ms || 1600;
   const t = document.getElementById('busyToast');
   t.textContent = msg;
   t.style.display = 'block';
   setTimeout(() => { if(t.textContent === msg) hideBusy(); }, ms);
 }
 
-/* ---------------- Stato chiave API ---------------- */
+/* ============================================================
+   Gemini API key management
+   ============================================================ */
 const keyBtn = document.getElementById('keyBtn');
 const keyOverlay = document.getElementById('keyOverlay');
 const keyInput = document.getElementById('keyInput');
@@ -1471,25 +1473,27 @@ document.getElementById('keySave').onclick = () => {
   keyOverlay.classList.remove('show');
 };
 
-/* ---------------- Mappa 2D zoomabile ---------------- */
+/* ============================================================
+   Map initialization
+   ============================================================ */
 const map = L.map('map', {
   worldCopyJump: true,
   zoomControl: true
 }).setView([41.9, 12.5], 5);
 
-// Sfondo 1: strade (OpenStreetMap) — quello originale
+// Street layer
 const baseStreets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 19
 }).addTo(map);
 
-// Sfondo 2: satellite (Esri World Imagery — case e strade reali, gratuita)
+// Satellite layer
 const baseSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Immagini &copy; <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics',
   maxZoom: 19
 });
 
-// Nomi dei luoghi: uniti al satellite in un gruppo, automatici e non disattivabili
+// Labels overlay for satellite
 const labelsOverlay = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Etichette &copy; Esri',
   maxZoom: 19
@@ -1497,7 +1501,6 @@ const labelsOverlay = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/s
 
 const satelliteGroup = L.layerGroup([baseSatellite, labelsOverlay]);
 
-// Selettore mappe (solo le due scelte di sfondo, nessuna spunta extra)
 L.control.layers({
   '🗺 Strade': baseStreets,
   '🛰 Satellite': satelliteGroup
@@ -1506,18 +1509,17 @@ L.control.layers({
   collapsed: false
 }).addTo(map);
 
-/* ---------------- Stato luogo corrente (dichiarato presto, usato ovunque) ---------------- */
-let currentCountry = null;      // dati del luogo riconosciuto
-let currentExactPoint = null;   // punto ESATTO cliccato/scelto (per il segnaposto)
-
-// Snapshot del luogo della scheda APERTA nel pannello: gli approfondimenti si ancorano
-// a questo, non a currentCountry, che può cambiare se l'utente clicca altrove sulla mappa
+/* ============================================================
+   Application state
+   ============================================================ */
+let currentCountry = null;
+let currentExactPoint = null;
 let _activeCardPlace = null;
-// Chiave di cache della scheda attualmente visualizzata (per aggiornarla quando
-// un approfondimento viene unito alla scheda con "Aggiungi alla scheda")
 let _currentCacheKey = null;
 
-/* ---------------- Segnaposto personali (localStorage, salvataggio immediato) ---------------- */
+/* ============================================================
+   Custom pins (localStorage)
+   ============================================================ */
 const PINS_KEY = 'atlante_pins_v2';
 
 function makePinId(){
@@ -1535,7 +1537,7 @@ function loadPins(){
 }
 function persistPins(list){
   try{ localStorage.setItem(PINS_KEY, JSON.stringify(list.slice(0, 200))); }
-  catch(e){ /* storage pieno o non disponibile */ }
+  catch(e){ /* storage full or unavailable */ }
 }
 function deletePinById(id){
   persistPins(loadPins().filter(p => p.id !== id));
@@ -1579,13 +1581,10 @@ function addPinMarker(pin){
 
 loadPins().forEach(addPinMarker);
 
-/* --- Finestra nuovo segnaposto (nome + nota) --- */
+/* --- New pin dialog --- */
 const pinOverlay = document.getElementById('pinOverlay');
 const pinNameInput = document.getElementById('pinNameInput');
 const pinNoteInput = document.getElementById('pinNoteInput');
-
-// Se impostato, il segnaposto arriva da un approfondimento (Deep Dive):
-// coordinate e nome suggeriti sono quelli dell'elemento approfondito
 let ddPinDraft = null;
 
 function openPinOverlay(coordsText, defaultName){
@@ -1602,7 +1601,7 @@ savePinBtn.onclick = () => {
     alert('Seleziona prima un luogo sulla mappa o con la ricerca.');
     return;
   }
-  ddPinDraft = null; // segnaposto normale dal luogo corrente
+  ddPinDraft = null;
   const pt = currentExactPoint || { lat: currentCountry.lat, lon: currentCountry.lon };
   openPinOverlay(
     `Posizione esatta: ${pt.lat.toFixed(5)}, ${pt.lon.toFixed(5)} — luogo: ${currentCountry.name}`,
@@ -1650,7 +1649,9 @@ pinNoteInput.addEventListener('keydown', (e) => {
   }
 });
 
-/* ---------------- Interazioni mappa ---------------- */
+/* ============================================================
+   Map interactions
+   ============================================================ */
 let activeMarker = null;
 let isProgrammaticMove = false;
 
@@ -1673,18 +1674,20 @@ function flyTo(lat, lng, zoom){
   activeMarker = L.marker([lat, lng]).addTo(map);
 }
 
-/* ---------------- Scheda paese (popup) ---------------- */
+/* ============================================================
+   Country card
+   ============================================================ */
 const card = document.getElementById('countryCard');
 const ccName = document.getElementById('ccName');
 const ccMeta = document.getElementById('ccMeta');
 const genBtn = document.getElementById('genBtn');
 
-/* --- Sezioni comprimibili: sempre CHIUSE all'avvio del programma --- */
+/* --- Collapsible sections --- */
 function setFold(sec, open){ sec.classList.toggle('closed', !open); }
 function initFolds(){
   document.querySelectorAll('#countryCard .collapsible').forEach(sec => {
     const head = sec.querySelector('.collapse-head');
-    setFold(sec, false); // all'apertura della pagina tutte chiuse
+    setFold(sec, false);
     head.onclick = () => {
       const willOpen = sec.classList.contains('closed');
       setFold(sec, willOpen);
@@ -1711,7 +1714,7 @@ function updateOptionsSummary(){
   el.textContent = parts.length ? '· ' + parts.join(' + ') : '';
 }
 
-/* --- Coordinate: clic per copiare --- */
+/* --- Coordinates copy --- */
 ccMeta.addEventListener('click', async (ev) => {
   const el = ev.target.closest('.coords-copy');
   if(!el) return;
@@ -1733,7 +1736,7 @@ ccMeta.addEventListener('click', async (ev) => {
   setTimeout(() => { el.textContent = old; }, 1200);
 });
 
-/* --- Meteo (Open-Meteo, gratuito, senza chiave) --- */
+/* --- Weather (Open-Meteo, free, no key) --- */
 let _weatherFor = null;
 
 function weatherEmoji(code){
@@ -1819,7 +1822,9 @@ function hideWeather(){
   _weatherFor = null;
 }
 
-/* ==================== INFO UTILI DA NOMINATIM ==================== */
+/* ============================================================
+   Useful info from Nominatim
+   ============================================================ */
 function updateUsefulInfo(addr){
   const grid = document.getElementById('usefulGrid');
   const summary = document.getElementById('usefulSummary');
@@ -1858,15 +1863,13 @@ function updateUsefulInfo(addr){
   summary.textContent = '· ' + count + ' dati';
 }
 
-/* ==================== RECUPERO WIKIPEDIA: intero articolo (gratis) + estrazione locale mirata (a costo zero di token) ==================== */
-
-// cache di sessione: evita di riscaricare la stessa pagina per luoghi già consultati
+/* ============================================================
+   Wikipedia integration (full article, cached, relevant extraction)
+   ============================================================ */
 const wikiFullTextCache = {};
 
-/* --- Individua il titolo dell'articolo giusto: prima per coordinate (più affidabile), poi per nome --- */
 async function resolveWikipediaTitle(placeName, lat, lon){
-  // 1) ricerca geografica: se abbiamo le coordinate esatte, troviamo l'articolo più vicino a quel punto,
-  //    evitando di prendere un articolo omonimo ma di un luogo diverso (es. "Via Roma" in un'altra città)
+  // Geographic search first (more accurate)
   if(lat != null && lon != null){
     try{
       const geoUrl = `https://it.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${lat}|${lon}&gsradius=8000&gslimit=5&format=json&origin=*`;
@@ -1876,22 +1879,21 @@ async function resolveWikipediaTitle(placeName, lat, lon){
       if(geoResults && geoResults.length){
         return geoResults[0].title;
       }
-    }catch(e){ /* si prosegue con la ricerca testuale */ }
+    }catch(e){ /* fallback to text search */ }
   }
 
-  // 2) fallback: ricerca testuale per nome
+  // Fallback: text search by name
   try{
     const searchUrl = `https://it.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(placeName)}&format=json&origin=*`;
     const searchRes = await fetch(searchUrl);
     const searchData = await searchRes.json();
     const results = searchData?.query?.search;
     if(results && results.length) return results[0].title;
-  }catch(e){ /* nessun risultato disponibile */ }
+  }catch(e){ /* no results */ }
 
   return null;
 }
 
-/* --- Scarica l'INTERO articolo (tutte le sezioni, non solo l'introduzione): gratis, è solo banda, non token --- */
 async function fetchWikipediaFullText(title){
   const extractUrl = `https://it.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&exsectionformat=plain&titles=${encodeURIComponent(title)}&format=json&origin=*`;
   const res = await fetch(extractUrl);
@@ -1901,8 +1903,6 @@ async function fetchWikipediaFullText(title){
   for(const pid in pages){
     const p = pages[pid];
     if(p.extract && p.extract.trim()){
-      // tetto di sicurezza solo per non appesantire il browser: non incide sui token,
-      // perché da qui in poi mandiamo a Gemini solo l'estratto filtrato, non tutto questo testo
       let text = p.extract;
       if(text.length > 150000) text = text.slice(0, 150000);
       return text;
@@ -1911,13 +1911,11 @@ async function fetchWikipediaFullText(title){
   return null;
 }
 
-/* --- Divide il testo completo in sezioni, riconoscendo i titoli che Wikipedia lascia come righe autonome --- */
 function splitWikipediaSections(fullText){
   const lines = fullText.split('\n');
   const sections = [{ title: 'Introduzione', content: [] }];
   for(const line of lines){
     const trimmed = line.trim();
-    // euristica: un titolo di sezione è una riga breve, senza punto finale, non vuota, isolata
     const looksLikeHeader = trimmed.length > 0 && trimmed.length < 45 && !trimmed.endsWith('.') && !trimmed.endsWith(',') && !/^\d/.test(trimmed);
     if(looksLikeHeader){
       sections.push({ title: trimmed, content: [] });
@@ -1927,10 +1925,9 @@ function splitWikipediaSections(fullText){
   }
   return sections
     .map(s => ({ title: s.title, text: s.content.join(' ') }))
-    .filter(s => s.text.length > 30); // scarta sezioni vuote o titoli senza contenuto reale
+    .filter(s => s.text.length > 30);
 }
 
-// parole chiave associate a ciascun tipo di domanda, per trovare le sezioni Wikipedia pertinenti
 const wikiSectionKeywords = {
   generale: ['geografia', 'territorio', 'clima', 'posizione', 'introduzione', 'origine del nome', 'etimologia'],
   dati: ['popolazione', 'demografia', 'superficie', 'clima', 'geografia'],
@@ -1942,12 +1939,10 @@ const wikiSectionKeywords = {
   economia: ['economia', 'industria', 'agricoltura', 'commercio', 'artigianato', 'turismo']
 };
 
-/* --- Estrae solo le sezioni pertinenti ai tipi/domanda selezionati: qui avviene il vero risparmio di token --- */
 function extractRelevantWikiExcerpt(fullText, types, customQ){
   const sections = splitWikipediaSections(fullText);
-  if(!sections.length) return fullText.slice(0, 4000); // testo senza sezioni riconoscibili: fallback semplice
+  if(!sections.length) return fullText.slice(0, 4000);
 
-  // parole chiave rilevanti in base ai tipi selezionati + parole della domanda libera
   let keywords = [];
   types.forEach(t => { if(wikiSectionKeywords[t]) keywords.push(...wikiSectionKeywords[t]); });
   if(customQ){
@@ -1955,7 +1950,6 @@ function extractRelevantWikiExcerpt(fullText, types, customQ){
   }
   if(!keywords.length) keywords = wikiSectionKeywords.generale;
 
-  // punteggio di ogni sezione: quante parole chiave compaiono nel titolo o nel contenuto
   const scored = sections.map(s => {
     const haystack = (s.title + ' ' + s.text).toLowerCase();
     let score = 0;
@@ -1965,9 +1959,9 @@ function extractRelevantWikiExcerpt(fullText, types, customQ){
 
   scored.sort((a, b) => b.score - a.score);
   const relevant = scored.filter(s => s.score > 0).slice(0, 3);
-  const chosen = relevant.length ? relevant : scored.slice(0, 1); // nessun match: prende almeno l'introduzione
+  const chosen = relevant.length ? relevant : scored.slice(0, 1);
 
-  const CHAR_BUDGET = 8000; // molto meno dei 30000 di prima, ma mirato invece che casuale
+  const CHAR_BUDGET = 8000;
   let excerpt = '';
   for(const s of chosen){
     const piece = `${s.title}\n${s.text}\n\n`;
@@ -1977,7 +1971,6 @@ function extractRelevantWikiExcerpt(fullText, types, customQ){
   return excerpt.trim() || fullText.slice(0, 4000);
 }
 
-/* --- Funzione principale usata dal resto del codice: cerca, scarica (con cache), filtra --- */
 async function fetchWikipediaText(placeName, lat, lon, types, customQ){
   try{
     const cacheKey = placeName;
@@ -2000,7 +1993,9 @@ async function fetchWikipediaText(placeName, lat, lon, types, customQ){
   }
 }
 
-/* ==================== PROMPT CON ISTRUZIONI PIÙ PRECISE ==================== */
+/* ============================================================
+   Prompt builder (with or without Wikipedia)
+   ============================================================ */
 function buildPromptMerged(luogo, luogoInfo, types, customQ, wikiText){
   const sections = types.map(sectionBlock);
 
@@ -2013,8 +2008,7 @@ Per domande su negozi, bar, benzinai o servizi specifici, rispondi con la tua co
 Considera NON pertinenti solo le domande che non hanno alcuna relazione con un luogo specifico, come calcoli matematici, richieste di scrivere codice, argomenti generici di cultura/scienza slegati dal luogo, o richieste completamente estranee. Se e SOLO se la domanda rientra in questa categoria non pertinente, scrivi esclusivamente la frase "La domanda deve essere inerente al posto o alla città scelta." e nient'altro in questa sezione.`);
   }
 
-  // MODALITÀ LEGGERA (comportamento originale, di default): nessun testo Wikipedia, nessuna istruzione extra —
-  // stesso identico prompt sintetico di prima dell'integrazione, per consumare il minimo di token possibile.
+  // Light mode (default): no Wikipedia text, minimal token consumption
   if(!wikiText){
     const baseLean = `Il luogo in questione è: "${luogo}" ${luogoInfo}. Scrivi in italiano, tono divulgativo ma curato.
 Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (niente markdown per grassetto o elenchi puntati salvo dove indicato, solo paragrafi scorrevoli). Non aggiungere sezioni oltre a quelle richieste qui sotto. Se un'informazione specifica non è certa o non applicabile, dillo onestamente invece di inventarla.`;
@@ -2026,7 +2020,7 @@ Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in qu
  ${sections.join('\n\n')}`;
   }
 
-  // MODALITÀ AVANZATA: attiva solo se l'utente ha spuntato Wikipedia
+  // Advanced mode: with Wikipedia data
   const base = `Il luogo in questione è: "${luogo}" ${luogoInfo}. Scrivi in italiano, tono divulgativo ma curato.
 Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (niente markdown per grassetto o elenchi puntati salvo dove indicato, solo paragrafi scorrevoli). Non aggiungere sezioni oltre a quelle richieste qui sotto.
 
@@ -2055,7 +2049,9 @@ Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in qu
  ${sections.join('\n\n')}`;
 }
 
-
+/* ============================================================
+   Apply place data to card
+   ============================================================ */
 function applyPlaceData(data, name){
   const addr = data.address || {};
   const place = name || addr.hamlet || addr.village || addr.city || addr.town || addr.municipality
@@ -2100,11 +2096,8 @@ function applyPlaceData(data, name){
   document.getElementById('customQuestion').value = '';
   genBtn.textContent = 'Genera scheda con AI';
 
-  // Info utili
   updateUsefulInfo(addr);
 
-  // Meteo: caricato SEMPRE appena si sceglie un luogo,
-  // così l'anteprima (icona + gradi) compare nell'intestazione anche a sezione chiusa
   hideWeather();
   if (lat != null && lon != null) {
     fetchWeather(lat, lon);
@@ -2147,7 +2140,9 @@ async function handlePointClick(lat, lng){
   }
 }
 
-/* ---------------- Ricerca città / comuni / paesi ---------------- */
+/* ============================================================
+   Search
+   ============================================================ */
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 let searchTimer;
@@ -2206,7 +2201,9 @@ document.addEventListener('click', (e) => {
   if(!e.target.closest('#searchBar')) searchResults.classList.remove('show');
 });
 
-/* ---------------- Pannello + Gemini ---------------- */
+/* ============================================================
+   Panel
+   ============================================================ */
 const panel = document.getElementById('panel');
 const panelBody = document.getElementById('panelBody');
 const panelText = document.getElementById('panelText');
@@ -2240,7 +2237,7 @@ function expandCard(){
 
 const cache = {};
 
-/* --- selezione multipla delle domande + domanda libera --- */
+/* --- Question types --- */
 const typeLabels = {
   generale: 'Panoramica generale',
   dati: 'Dati e statistiche',
@@ -2287,10 +2284,11 @@ Descrivi geografia, territorio, clima ed essenza del luogo: cosa lo caratterizza
   }
 }
 
-/* ==================== GENERAZIONE SCHEDA CON WIKIPEDIA + GEMINI (unione silenziosa) ==================== */
+/* ============================================================
+   Card generation (with Wikipedia + Gemini)
+   ============================================================ */
 const panelGallery = document.getElementById('panelGallery');
 
-/* --- Render galleria da array {thumb, full, title} --- */
 function renderGalleryThumbs(items){
   if(!items || !items.length){
     panelGallery.innerHTML = '';
@@ -2326,9 +2324,6 @@ genBtn.onclick = async () => {
   panelText.style.display = 'block';
   panelGallery.className = '';
 
-  // letto subito e usato ovunque sotto: cache, cronologia, prompt e messaggio di caricamento
-  // devono sempre riflettere lo stesso stato di questa spunta, altrimenti si rischia di
-  // riciclare una scheda generata SENZA Wikipedia quando invece ora la si vuole CON Wikipedia (o viceversa)
   const useWiki = document.getElementById('wikiToggle')?.checked || false;
 
   const labelsChosen = types.map(t => typeLabels[t]);
@@ -2342,8 +2337,6 @@ genBtn.onclick = async () => {
   setDdHint(true);
   collapseCard();
 
-  // Snapshot del luogo di questa scheda: gli approfondimenti selezionati nel testo
-  // si ancoreranno a QUESTO luogo, anche se nel frattempo clicchi altrove sulla mappa
   _activeCardPlace = {
     name: currentCountry.name,
     region: currentCountry.region,
@@ -2353,7 +2346,7 @@ genBtn.onclick = async () => {
   };
   _currentCacheKey = cacheKey;
 
-  // 1) Cache di sessione
+  // Session cache
   if(cache[cacheKey]){
     panelText.innerHTML = cache[cacheKey].text;
     renderGalleryThumbs(cache[cacheKey].imgs);
@@ -2361,9 +2354,7 @@ genBtn.onclick = async () => {
     return;
   }
 
-  // 2) Cronologia salvata: stessa scheda, stesse domande E stesso stato di "Usa anche Wikipedia"
-  // già prodotta in passato? Riusala senza consumare l'AI. Se invece la spunta Wikipedia è
-  // cambiata rispetto a quella volta, NON è la stessa scheda: si passa oltre e si rigenera.
+  // History: same card already generated?
   const histEntry = findHistoryEntry(currentCountry.name, labelsChosen, customQ, useWiki);
   if(histEntry){
     renderStreamed(histEntry.text, false);
@@ -2387,16 +2378,12 @@ genBtn.onclick = async () => {
     ? currentCountry.context.split(',').slice(0, 3).map(s => s.trim()).join(', ')
     : currentCountry.name;
 
-  // Carica le immagini in parallelo
   const galleryPromise = fetchGallery(contextName, types[0] || 'generale');
 
-  // Wikipedia viene interrogata SOLO se l'utente ha attivato l'apposita casella:
-  // di default restiamo sul comportamento leggero di prima (meno token, meno quota consumata)
   const wikiData = useWiki
     ? await fetchWikipediaText(currentCountry.name, currentCountry.lat, currentCountry.lon, types, customQ)
     : null;
 
-  // Costruisci il prompt con o senza Wikipedia (ma senza mai menzionarla)
   const luogoInfo = currentCountry.capital
     ? `(regione: ${currentCountry.region}, capitale: ${currentCountry.capital})`
     : `(posizione precisa: ${contextName}; regione/stato: ${currentCountry.region}${currentCountry.country ? ', paese: ' + currentCountry.country : ''})`;
@@ -2448,7 +2435,7 @@ genBtn.onclick = async () => {
             full += chunk;
             renderStreamed(full, true);
           }
-        }catch(e){ /* riga incompleta, ignora */ }
+        }catch(e){ /* incomplete line, ignore */ }
       }
     }
     renderStreamed(full, false);
@@ -2466,7 +2453,7 @@ genBtn.onclick = async () => {
   }
 };
 
-/* --- galleria immagini via Wikimedia Commons (gratuito, CORS abilitato) --- */
+/* --- Wikimedia Commons gallery --- */
 const gallerySearchTerms = {
   generale: '',
   dati: '',
@@ -2505,7 +2492,9 @@ async function fetchGallery(name, type){
   }
 }
 
-/* ==================== LIGHTBOX CON ZOOM PUNTUALE E PAN ==================== */
+/* ============================================================
+   Lightbox with zoom and pan
+   ============================================================ */
 let _galleryUrls = [];
 let _currentIndex = 0;
 let _zoomLevel = 1;
@@ -2545,16 +2534,14 @@ function openLightbox(index, urls) {
 function showImage(index) {
   if (index < 0 || index >= _galleryUrls.length) return;
   _currentIndex = index;
-  // Reset zoom e pan per ogni nuova immagine (già fatto in openLightbox, ma se chiamato da nav)
   resetZoomAndPan();
   imgModalPic.src = _galleryUrls[index];
-  // Estrae il nome del file e lo pulisce
   const urlParts = _galleryUrls[index].split('/');
   let fileName = urlParts[urlParts.length - 1];
   try { fileName = decodeURIComponent(fileName); } catch(e) {}
-  fileName = fileName.split(/[?#]/)[0];          // taglia parametri (?utm_source=...) e ancore (#...)
-  fileName = fileName.replace(/\.[^.]*$/, '');   // poi taglia l'estensione (.jpg, .png, ...)
-  fileName = fileName.replace(/_/g, ' ');        // underscore -> spazi, più leggibile
+  fileName = fileName.split(/[?#]/)[0];
+  fileName = fileName.replace(/\.[^.]*$/, '');
+  fileName = fileName.replace(/_/g, ' ');
   imageName.textContent = fileName;
   imgCounter.textContent = `${index + 1} / ${_galleryUrls.length}`;
   updateNavButtons();
@@ -2587,23 +2574,19 @@ function zoomAt(zoomDelta, clientX, clientY) {
   const newScale = Math.min(Math.max(oldScale + zoomDelta, 1), 10);
   if (newScale === oldScale) return;
 
-  // Tornando al 100% si riparte centrati
   if (newScale === 1) {
     resetZoomAndPan();
     return;
   }
 
-  // Centro del riquadro = centro naturale dell'immagine (transform-origin:center)
   const rect = imageWrap.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
 
-  // Posizione del mouse rispetto al centro
   const px = clientX - cx;
   const py = clientY - cy;
   const ratio = newScale / oldScale;
 
-  // Il punto sotto il mouse resta fermo durante lo zoom
   _translateX = px - ratio * (px - _translateX);
   _translateY = py - ratio * (py - _translateY);
   _zoomLevel = newScale;
@@ -2622,7 +2605,6 @@ function clampPan() {
 }
 
 function zoomIn() {
-  // Usa il centro della finestra come punto di ancoraggio
   const rect = imageWrap.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
@@ -2648,7 +2630,6 @@ function closeLightbox() {
   resetZoomAndPan();
 }
 
-// Pulsanti
 document.getElementById('imgModalClose').onclick = closeLightbox;
 imgModal.addEventListener('click', (e) => {
   if (e.target === imgModal) closeLightbox();
@@ -2661,7 +2642,6 @@ imgNext.onclick = () => {
   if (_currentIndex < _galleryUrls.length - 1) showImage(_currentIndex + 1);
 };
 
-// Tasti freccia
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     if (pinOverlay.classList.contains('show')) { pinOverlay.classList.remove('show'); ddPinDraft = null; return; }
@@ -2679,19 +2659,16 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === '0') { e.preventDefault(); zoomReset(); }
 });
 
-// Zoom con rotellina (puntuale)
 imageWrap.addEventListener('wheel', (e) => {
   e.preventDefault();
   const delta = e.deltaY < 0 ? 0.2 : -0.2;
   zoomAt(delta, e.clientX, e.clientY);
 }, { passive: false });
 
-// Pulsanti zoom
 zoomInBtn.onclick = zoomIn;
 zoomOutBtn.onclick = zoomOut;
 zoomResetBtn.onclick = zoomReset;
 
-// ===== DRAG (PAN) =====
 imageWrap.addEventListener('mousedown', (e) => {
   if (_zoomLevel <= 1) return;
   _isDragging = true;
@@ -2720,7 +2697,6 @@ document.addEventListener('mouseup', () => {
   }
 });
 
-// Touch support
 imageWrap.addEventListener('touchstart', (e) => {
   if (_zoomLevel <= 1) return;
   const touch = e.touches[0];
@@ -2749,8 +2725,9 @@ document.addEventListener('touchend', () => {
   _isDragging = false;
 });
 
-/* ---------------- Fine lightbox potenziata ---------------- */
-
+/* ============================================================
+   Render streamed text
+   ============================================================ */
 function renderStreamed(text, streaming){
   const blocks = text.split(/\n##\s*/).map((b,i) => i===0 ? b.replace(/^##\s*/,'') : b);
   let html = '';
@@ -2792,7 +2769,9 @@ function escapeHtml(s){
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-/* ==================== 1. CRONOLOGIA (localStorage) ==================== */
+/* ============================================================
+   History (localStorage)
+   ============================================================ */
 const HIST_KEY = 'atlante_history_v1';
 let lastGeneratedRaw = '';
 let _favFilter = false;
@@ -2804,7 +2783,7 @@ function loadHistory(){
 }
 function persistHistory(list){
   try{ localStorage.setItem(HIST_KEY, JSON.stringify(list)); }
-  catch(e){ /* storage pieno o non disponibile: si prosegue senza salvare */ }
+  catch(e){ /* storage full or unavailable */ }
 }
 function saveToHistory(name, labelsChosen, rawText, imgs, q, wikiUsed, place){
   lastGeneratedRaw = rawText;
@@ -2816,16 +2795,12 @@ function saveToHistory(name, labelsChosen, rawText, imgs, q, wikiUsed, place){
     fav: false,
     date: new Date().toISOString()
   };
-  // due schede sono "la stessa scheda" solo se coincidono anche per lo stato della spunta Wikipedia:
-  // altrimenti una generata senza e una con Wikipedia si sovrascriverebbero a vicenda in cronologia
   const filtered = list.filter(e => !(e.name === name && (e.labels||[]).join(',') === labelsChosen.join(',') && (e.q||'') === (q||'') && !!e.wiki === !!wikiUsed));
   filtered.unshift(entry);
   persistHistory(filtered.slice(0, 60));
 }
 function findHistoryEntry(name, labelsChosen, q, wikiUsed){
   const lj = labelsChosen.join(',');
-  // !!e.wiki === !!wikiUsed: le voci salvate prima di questo controllo non hanno il campo "wiki"
-  // (equivale a "false"/nowiki), quindi restano comunque riconosciute correttamente come "senza Wikipedia"
   return loadHistory().find(e => e.name === name && (e.labels||[]).join(',') === lj && (e.q||'') === (q||'') && !!e.wiki === !!wikiUsed && e.text);
 }
 
@@ -2857,7 +2832,7 @@ document.getElementById('histDeleteSelected').onclick = () => {
   }
 };
 
-/* --- Filtro cronologia --- */
+/* --- History filter --- */
 document.getElementById('histFilter').addEventListener('input', (e) => {
   _histFilterText = e.target.value.toLowerCase().trim();
   renderHistory();
@@ -2868,14 +2843,14 @@ document.getElementById('histFilterClear').onclick = () => {
   renderHistory();
 };
 
-/* --- Solo preferiti --- */
+/* --- Favorites filter --- */
 document.getElementById('histShowFavOnly').onclick = function(){
   _favFilter = !_favFilter;
   this.textContent = _favFilter ? '⭐ Tutti' : '⭐ Solo preferiti';
   renderHistory();
 };
 
-/* --- Backup cronologia: esporta / importa JSON --- */
+/* --- Backup export/import --- */
 document.getElementById('histExportBtn').onclick = () => {
   const list = loadHistory();
   if(!list.length){ alert('Nessuna scheda da esportare.'); return; }
@@ -2927,7 +2902,6 @@ document.getElementById('histImportFile').onchange = (ev) => {
   ev.target.value = '';
 };
 
-// Deseleziona tutto (nuovo pulsante)
 document.getElementById('histDeselectAll').onclick = () => {
   histList.querySelectorAll('.hist-item-check').forEach(cb => { cb.checked = false; });
 };
@@ -2935,12 +2909,10 @@ document.getElementById('histDeselectAll').onclick = () => {
 function renderHistory(){
   let list = loadHistory();
   
-  // Applica filtro per nome
   if(_histFilterText){
     list = list.filter(e => e.name.toLowerCase().includes(_histFilterText));
   }
   
-  // Applica filtro "solo preferiti"
   if(_favFilter){
     list = list.filter(e => e.fav === true);
   }
@@ -2967,7 +2939,7 @@ function renderHistory(){
     </div>`;
   }).join('');
 
-  // Apri scheda
+  // Open card
   histList.querySelectorAll('.hist-item-main').forEach(el => {
     el.onclick = () => {
       const idx = +el.dataset.i;
@@ -2985,8 +2957,6 @@ function renderHistory(){
       panel.classList.add('open');
       reopenTab.classList.remove('show');
       panelHasContent = true;
-      // Riaprendo dalla cronologia, ricostruiamo l'ancoraggio per gli approfondimenti:
-      // le voci salvate di recente portano con sé luogo, regione e coordinate
       _activeCardPlace = e.place || null;
       _currentCacheKey = null;
       setDdHint(true);
@@ -2994,7 +2964,7 @@ function renderHistory(){
     };
   });
   
-  // Pulsante preferiti
+  // Favorite button
   histList.querySelectorAll('.fav-btn').forEach(btn => {
     btn.onclick = (ev) => {
       ev.stopPropagation();
@@ -3008,7 +2978,7 @@ function renderHistory(){
     };
   });
   
-  // Elimina singola
+  // Delete single
   histList.querySelectorAll('.hist-item-del').forEach(btn => {
     btn.onclick = (ev) => {
       ev.stopPropagation();
@@ -3027,8 +2997,9 @@ document.getElementById('histSelectAll').onclick = () => {
   histList.querySelectorAll('.hist-item-check').forEach(cb => { cb.checked = histSelectAllState; });
 };
 
-/* ==================== PDF: helper condiviso (jsPDF) ==================== */
-/* Carica un'immagine e la converte in JPEG (dataURL) per jsPDF; null se non riuscito */
+/* ============================================================
+   PDF export
+   ============================================================ */
 function loadImageData(url){
   return new Promise((resolve) => {
     const img = new Image();
@@ -3093,11 +3064,10 @@ async function addEntryToPdf(doc, title, bodyText, isFirstPage, imgUrls){
     }
   });
 
-  // Foto della galleria
   if(imgUrls && imgUrls.length){
     for(const url of imgUrls){
       const loaded = await loadImageData(url);
-      if(!loaded) continue; // immagine non caricabile (rete/CORS): la si salta
+      if(!loaded) continue;
       let imgW = Math.min(maxWidth, 120);
       let imgH = imgW * (loaded.h / loaded.w);
       const maxImgH = pageHeight - margin*2;
@@ -3112,7 +3082,6 @@ async function addEntryToPdf(doc, title, bodyText, isFirstPage, imgUrls){
   }
 }
 
-/* --- Finestra flottante: includere le foto nel PDF? --- */
 let _pdfPhotoCb = null;
 function askPdfPhotos(cb, multi){
   _pdfPhotoCb = cb;
@@ -3150,7 +3119,9 @@ document.getElementById('histDownloadSelected').onclick = () => {
   }, checked.length > 1);
 };
 
-/* ==================== 2. ESPORTAZIONE SCHEDA (.txt / .pdf) ==================== */
+/* ============================================================
+   Export
+   ============================================================ */
 const exportBtn = document.getElementById('exportBtn');
 const exportMenu = document.getElementById('exportMenu');
 exportBtn.onclick = (ev) => {
@@ -3199,8 +3170,9 @@ document.getElementById('exportPdfBtn').onclick = () => {
   }, false);
 };
 
-
-/* ==================== 3. CONFRONTO TRA LUOGHI ==================== */
+/* ============================================================
+   Compare
+   ============================================================ */
 const compareToggle = document.getElementById('compareToggle');
 const compareSlot = document.getElementById('compareSlot');
 let compareSlots = [];
@@ -3251,8 +3223,6 @@ async function runCompare(){
   panelGallery.innerHTML = '';
   collapseCard();
 
-  // Nel confronto gli elementi appartengono a due luoghi diversi: gli approfondimenti
-  // restano disattivati (non ci sarebbe un unico luogo a cui ancorarli)
   _activeCardPlace = null;
   _currentCacheKey = null;
   setDdHint(false);
@@ -3326,7 +3296,9 @@ Un breve paragrafo conclusivo che aiuti chi legge a capire quale luogo si adatta
   }
 }
 
-/* ==================== 4. MODALITÀ FOTOGRAFICA ==================== */
+/* ============================================================
+   Photo mode
+   ============================================================ */
 const photoToggle = document.getElementById('photoToggle');
 const photoModeMsg = document.getElementById('photoModeMsg');
 let isPhotoMode = false;
@@ -3370,7 +3342,6 @@ compareToggle.addEventListener('change', function() {
   updateOptionsSummary();
 });
 
-/* --- Funzione per aprire la galleria fotografica --- */
 function openPhotoGallery(place) {
   if (!place || !place.name) return;
   isPhotoMode = true;
@@ -3411,7 +3382,6 @@ function openPhotoGallery(place) {
     });
 }
 
-/* --- Recupero foto da Wikimedia Commons con filtro geografico --- */
 async function fetchPhotoGallery(name, lat, lon, country) {
   const query = country ? `${name} ${country}` : name;
   const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=50&prop=imageinfo|coordinates&iiprop=url|mime&iiurlwidth=500&format=json&origin=*`;
@@ -3458,14 +3428,16 @@ async function fetchPhotoGallery(name, lat, lon, country) {
   return images;
 }
 
-/* ==================== 5. APPROFONDIMENTO AL VOLO (DEEP DIVE) ==================== */
+/* ============================================================
+   Deep Dive (on-the-fly)
+   ============================================================ */
 const ddPopup = document.getElementById('ddPopup');
 const ddInputElement = document.getElementById('ddInput');
 const ddTargetLabel = document.getElementById('ddTarget');
 
-let _ddPending = null;          // {selectedText, context, anchorEl} fissati all'apertura del popup
-let _ddLastRequestAt = 0;       // per il limite di 1 approfondimento ogni 10 secondi
-const _ddCache = {};            // cache di sessione degli approfondimenti
+let _ddPending = null;
+let _ddLastRequestAt = 0;
+const _ddCache = {};
 const DD_COOLDOWN_MS = 10000;
 
 function setDdHint(visible){
@@ -3473,12 +3445,11 @@ function setDdHint(visible){
   if(h) h.style.display = visible ? 'block' : 'none';
 }
 
-/* --- Risale all'elemento-blocco figlio diretto di panelText che contiene la selezione --- */
 function ddFindAnchor(sel){
   try{
     let node = sel.anchorNode;
     if(!node) return null;
-    if(node.nodeType === 3) node = node.parentNode; // nodo testo -> elemento
+    if(node.nodeType === 3) node = node.parentNode;
     while(node && node.parentNode && node.parentNode !== panelText){
       node = node.parentNode;
     }
@@ -3486,7 +3457,6 @@ function ddFindAnchor(sel){
   }catch(e){ return null; }
 }
 
-/* --- Estrae il contesto immediato (frasi attorno alla selezione) dal paragrafo contenitore --- */
 function ddGetContext(sel, selectedText){
   const anchor = ddFindAnchor(sel);
   if(!anchor) return '';
@@ -3503,12 +3473,9 @@ function ddGetContext(sel, selectedText){
   return frag;
 }
 
-/* --- Rilevazione della selezione nel testo della scheda --- */
 panelText.addEventListener('mouseup', (e) => {
   const sel = window.getSelection();
   const text = sel ? sel.toString().trim() : '';
-  // casi limite: selezione assente, troppo corta, troppo lunga (è una frase, non un nome),
-  // o luogo di ancoraggio non disponibile (es. scheda di confronto)
   if(!text || text.length < 3 || text.length > 60 || !_activeCardPlace || !panelText.contains(sel.anchorNode)){
     return;
   }
@@ -3521,7 +3488,6 @@ panelText.addEventListener('mouseup', (e) => {
   ddInputElement.value = `Dettagli su ${text}`;
   ddPopup.classList.add('show');
 
-  // posizionamento vicino al cursore, con ribaltamento se esce dallo schermo
   const pw = 380, ph = 200;
   let px = e.clientX + 12;
   let py = e.clientY + 14;
@@ -3532,13 +3498,11 @@ panelText.addEventListener('mouseup', (e) => {
   setTimeout(() => ddInputElement.focus(), 40);
 });
 
-// chiusura cliccando fuori dal popup (mousedown, così il click di selezione non lo riapre/chiude a raffica)
 document.addEventListener('mousedown', (e) => {
   if(ddPopup.classList.contains('show') && !e.target.closest('#ddPopup')){
     hideDdPopup();
   }
 });
-// chiusura anche scrollando la scheda (il popup resterebbe scollegato dal testo)
 panelBody.addEventListener('scroll', () => hideDdPopup());
 
 function hideDdPopup(){
@@ -3547,7 +3511,6 @@ function hideDdPopup(){
 
 document.getElementById('ddCancel').onclick = () => hideDdPopup();
 
-/* --- Bottone "Cerca su Google" nel popup iniziale --- */
 document.getElementById('ddGoogle').onclick = () => {
   if(!_ddPending || !_activeCardPlace) return;
   const selectedText = _ddPending.selectedText;
@@ -3566,7 +3529,6 @@ ddInputElement.addEventListener('keydown', (e) => {
   if(e.key === 'Enter'){ e.preventDefault(); goDeepDive(); }
 });
 
-/* --- Prompt ancorato al luogo principale --- */
 function buildDeepDivePrompt(place, selectedText, context, userQuestion){
   const coordLine = (place.lat != null && place.lon != null)
     ? `- Coordinate: ${place.lat.toFixed(4)}, ${place.lon.toFixed(4)}`
@@ -3590,10 +3552,9 @@ REGOLE:
 3. Se la domanda è completamente estranea all'elemento selezionato, rispondi solo con: "La domanda deve riferirsi all'elemento selezionato."
 4. Usa tono divulgativo ma preciso, con paragrafi scorrevoli (niente elenchi puntati).
 5. Non menzionare mai le fonti delle informazioni.
-6. IMPORTANTISSIMO: se e solo se l'elemento approfondito è un luogo fisico visitabile (villa, chiesa, palazzo, torre, parco, piazza, monumento, edificio, ponte, castello e simili), la risposta DEVE iniziare esattamente con la riga [LUOGO] seguita da un a capo, e poi dal testo. In ogni altro caso non scrivere [LUOGO] da nessuna parte.`;
+6. IMPORTANTE: se e solo se l'elemento approfondito è un luogo fisico visitabile (villa, chiesa, palazzo, torre, parco, piazza, monumento, edificio, ponte, castello e simili), la risposta DEVE iniziare esattamente con la riga [LUOGO] seguita da un a capo, e poi dal testo. In ogni altro caso non scrivere [LUOGO] da nessuna parte.`;
 }
 
-/* --- Formattazione del testo della risposta nei paragrafi del riquadro --- */
 function ddFormatText(text){
   const paras = text.split(/\n\s*\n/).map(p => p.replace(/\n+/g, ' ').trim()).filter(Boolean);
   if(!paras.length) return '';
@@ -3604,7 +3565,6 @@ function ddStripHeader(t){
   return t.replace(/^##[^\n]*\n+/, '');
 }
 
-/* --- Crea il riquadro di approfondimento subito dopo il paragrafo selezionato --- */
 function ddOpenResultBox(anchorEl, elementName, question){
   const box = document.createElement('div');
   box.className = 'dd-box';
@@ -3628,7 +3588,6 @@ function ddOpenResultBox(anchorEl, elementName, question){
   return box;
 }
 
-/* --- Mostra le azioni del riquadro; il segnaposto solo per luoghi fisici (marker [LUOGO]) --- */
 function ddShowActions(box, place, elementName, question, withHeaderText, isPlace){
   const actions = box.querySelector('.dd-actions');
   actions.style.display = 'flex';
@@ -3656,7 +3615,6 @@ function ddShowActions(box, place, elementName, question, withHeaderText, isPlac
   };
 }
 
-/* --- Genera (o riusa) l'approfondimento --- */
 async function goDeepDive(){
   if(!_ddPending || !_activeCardPlace) return;
   const selectedText = _ddPending.selectedText;
@@ -3677,20 +3635,17 @@ async function goDeepDive(){
     ddShowActions(box, place, selectedText, question, withHeaderText, isPlace);
   };
 
-  // 1) cache di sessione
   if(_ddCache[ddKey]){
     openWith(_ddCache[ddKey].text, _ddCache[ddKey].isPlace);
     return;
   }
 
-  // 2) cronologia: stesso approfondimento già fatto? Riusalo senza consumare token
   const hist = findHistoryEntry(histName, labels, question, false);
   if(hist){
     openWith(hist.text, !!hist.placeflag);
     return;
   }
 
-  // 3) limite di frequenza: 1 approfondimento ogni 10 secondi per non bruciare quota
   const now = Date.now();
   if(now - _ddLastRequestAt < DD_COOLDOWN_MS){
     const box = ddOpenResultBox(anchorEl, selectedText, question);
@@ -3707,7 +3662,6 @@ async function goDeepDive(){
 
   _ddLastRequestAt = now;
 
-  // 4) genera con streaming nel riquadro
   const box = ddOpenResultBox(anchorEl, selectedText, question);
   const body = box.querySelector('.dd-body');
   body.innerHTML = loadingHtml('Caricamento informazioni: approfondimento in corso');
@@ -3744,8 +3698,6 @@ async function goDeepDive(){
           const chunk = obj?.candidates?.[0]?.content?.parts?.[0]?.text;
           if(chunk){
             raw += chunk;
-            // se il flusso inizia con il marker [LUOGO] (possibilmente spezzato tra chunk),
-            // attende di vederlo completo prima di mostrare il testo
             let shown = raw;
             if(shown.startsWith('[') && shown.indexOf(']') === -1 && shown.length < 12) continue;
             let isPlaceNow = false;
@@ -3759,11 +3711,10 @@ async function goDeepDive(){
             const html = ddFormatText(shown);
             body.innerHTML = html || loadingHtml('Caricamento informazioni: approfondimento in corso');
           }
-        }catch(e){ /* riga incompleta, ignora */ }
+        }catch(e){ /* incomplete line, ignore */ }
       }
     }
 
-    // testo finale pulito + salvataggi
     let clean = raw;
     let isPlace = false;
     if(clean.startsWith('[LUOGO]')){
@@ -3775,8 +3726,6 @@ async function goDeepDive(){
 
     _ddCache[ddKey] = { text: withHeader, isPlace };
 
-    // salvataggio diretto in cronologia (senza toccare lastGeneratedRaw della scheda principale):
-    // porta con sé il luogo di ancoraggio e il flag "luogo fisico" per il riuso futuro
     const list = loadHistory();
     const entry = {
       name: histName, labels, text: withHeader,
@@ -3796,7 +3745,9 @@ async function goDeepDive(){
   }
 }
 
-/* --- Distanza in km (Haversine) --- */
+/* ============================================================
+   Haversine distance helper
+   ============================================================ */
 function haversineDistance(lat1, lon1, lat2, lon2) {
   if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return Infinity;
   const R = 6371;
@@ -3808,7 +3759,6 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
-
 </script>
 </body>
 </html>
