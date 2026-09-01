@@ -141,7 +141,7 @@ header *{pointer-events:auto;}
 .instr-body a:hover{color:var(--moss);}
 
 /* --- History modal --- */
-.hist-list{max-height:50vh;overflow-y:auto;margin-bottom:14px;padding-right:4px;}
+.hist-list{max-height:50vh;overflow-y:auto;margin-bottom:10px;padding-right:4px;}
 .hist-item{
   display:grid;
   grid-template-columns:auto 1fr auto;
@@ -196,6 +196,48 @@ header *{pointer-events:auto;}
 }
 .hist-item-del:hover{text-decoration:underline;}
 .hist-empty{font-size:13px;color:#7a8880;padding:12px 0;}
+
+/* --- Cronologia: nuova toolbar e footer --- */
+.hist-toolbar {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.hist-toolbar .btn-sm {
+  font-size:12px;
+  padding:6px 14px;
+}
+.hist-sep {
+  color:var(--line);
+  font-size:18px;
+  font-weight:200;
+  margin:0 2px;
+}
+.hist-footer {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+}
+.hist-footer-left {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.hist-footer-right {
+  display:flex;
+  gap:8px;
+}
+.hist-footer .btn-sm {
+  font-size:12px;
+  padding:6px 14px;
+}
 
 /* --- Sezioni comprimibili della scheda luogo --- */
 .collapsible{
@@ -847,84 +889,87 @@ header *{pointer-events:auto;}
     <h2>Guida all'uso di Atlante Vivo</h2>
     <div class="instr-body">
 
-      <h3>1. Configurare la chiave API Gemini</h3>
-      <p>Per generare le schede con l'intelligenza artificiale serve una chiave API Gemini personale, gratuita.</p>
-      <h4>Creare la chiave su Google AI Studio</h4>
+      <h3>1. Configura la tua chiave API Gemini</h3>
+      <p>Per generare le schede con l'intelligenza artificiale ti serve una chiave API Gemini personale, gratuita. Va fatto una sola volta.</p>
+      <h4>Crea la chiave su Google AI Studio</h4>
       <ul>
         <li>Apri <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener"><strong>Google AI Studio</strong></a> ed esegui l'accesso con un account Google (o creane uno gratuito).</li>
         <li>Individua il pulsante <strong>"Get API key"</strong> e clicca su <strong>"Create API key"</strong>.</li>
         <li>Se richiesto, scegli un progetto esistente oppure <strong>"Create API key in new project"</strong>.</li>
         <li>Copia la stringa alfanumerica generata (es. <em>AIzaSy…</em>) e conservala riservata.</li>
       </ul>
-      <h4>Importarla in Atlante Vivo</h4>
+      <h4>Inseriscila in Atlante Vivo</h4>
       <ul>
         <li>Clicca sul pulsante <strong>"Chiave Gemini"</strong> in alto a destra.</li>
         <li>Incolla il codice copiato nel campo di testo e premi <strong>Salva</strong>.</li>
-        <li>La chiave resta salvata solo nel tuo browser (localStorage) e viene usata subito per le richieste successive.</li>
+        <li>La chiave resta salvata solo nel tuo browser: non serve reinserirla ogni volta che riapri il programma.</li>
       </ul>
 
-      <h3>2. Mappa e ricerca</h3>
+      <h3>2. Muoviti sulla mappa e trova un luogo</h3>
       <p>
-        Sono disponibili due mappe, selezionabili dal riquadro in alto a sinistra:
-        <strong>"🗺 Strade"</strong>, la carta stradale classica con città, strade e confini,
-        e <strong>"🛰 Satellite"</strong>, le immagini satellitari reali dove zoomando si vedono
-        case, strade e territori nel dettaglio, con i nomi dei luoghi sovrapposti.
-        Il cambio di mappa è puramente visivo: posizione, zoom e tutte le funzioni
-        (clic, ricerca, schede) restano identici.
+        In alto a sinistra puoi scegliere tra due mappe: <strong>"🗺 Strade"</strong>, la carta
+        stradale classica con città e confini, e <strong>"🛰 Satellite"</strong>, le immagini
+        satellitari reali con i nomi dei luoghi sovrapposti. Cambiare mappa è puramente estetico:
+        posizione, zoom e tutte le funzioni restano identiche.
       </p>
       <ul>
         <li><strong>Zoom:</strong> rotella del mouse oppure i pulsanti + / − in alto a sinistra.</li>
         <li><strong>Spostamento:</strong> trascina la mappa tenendo premuto il tasto sinistro.</li>
-        <li><strong>Selezione di un luogo:</strong> clicca in un punto qualsiasi della mappa per posizionare un segnaposto e leggere subito nome, regione, stato e coordinate del punto scelto — senza bisogno della chiave AI. Le coordinate mostrate si copiano negli appunti con un clic.</li>
-        <li><strong>Meteo:</strong> selezionato un luogo, l'intestazione della sezione <strong>"Meteo"</strong> mostra subito icona e temperatura; aprila con la freccetta per il dettaglio (condizione attuale, vento, umidità e previsioni dei 3 giorni successivi), senza bisogno della chiave AI.</li>
-        <li><strong>Sezioni comprimibili:</strong> la scheda del luogo è compatta: all'apertura del programma <strong>Meteo</strong>, <strong>Comandi aggiuntivi</strong> e <strong>Domande rapide</strong> sono sempre chiuse; si aprono e chiudono con la freccetta mentre lo usi. Se lo schermo è piccolo, la scheda scorre al suo interno senza mai uscire dallo schermo.</li>
-        <li><strong>Barra di ricerca</strong> (in alto): scrivi il nome di città, frazione, monumento, fiume o montagna e seleziona il risultato corretto dall'elenco. Il pulsante rotondo <strong>"?"</strong> accanto dà consigli su come cercare luoghi piccoli o poco noti.</li>
-        <li><strong>Caricamento:</strong> durante le operazioni che richiedono qualche secondo (localizzazione, meteo, schede AI, confronti, foto, PDF) compare un messaggio con puntini animati, per indicare che il programma sta lavorando.</li>
+        <li><strong>Scegli un luogo cliccando:</strong> clicca in un punto qualsiasi della mappa e leggi subito nome, regione, stato e coordinate — non serve la chiave AI per questo. Le coordinate si copiano negli appunti con un clic.</li>
+        <li><strong>Oppure cercalo per nome:</strong> usa la barra di ricerca in alto — città, frazione, chiesa, monumento, fiume o montagna — e seleziona il risultato giusto dall'elenco. Il pulsante rotondo <strong>"?"</strong> accanto ti aiuta se un luogo piccolo o poco noto non compare.</li>
+        <li><strong>Meteo del luogo:</strong> non appena selezioni un punto, l'intestazione della sezione <strong>"Meteo"</strong> mostra già icona e temperatura; aprila con la freccetta per condizione attuale, vento, umidità e previsioni dei 3 giorni successivi — anche questo senza chiave AI.</li>
+        <li>La scheda del luogo si apre compatta, con <strong>Meteo</strong>, <strong>Comandi aggiuntivi</strong> e <strong>Domande rapide</strong> chiuse: aprile con la freccetta solo quando ti servono.</li>
       </ul>
 
-      <h3>3. Generare una scheda con l'AI</h3>
+      <h3>3. Genera una scheda con l'AI</h3>
       <ul>
-        <li>Dopo aver selezionato un luogo, apri la sezione <strong>"Domande rapide"</strong> e spunta una o più domande (facoltative, selezionabili liberamente) oppure scrivi una <strong>domanda personalizzata</strong> nel campo libero.</li>
-        <li>Premi <strong>"Genera scheda con AI"</strong>: il testo viene scritto in tempo reale man mano che arriva dall'intelligenza artificiale.</li>
-        <li>Se la domanda personalizzata contiene errori di battitura, il titolo della sezione la riporta già corretta.</li>
+        <li>Dopo aver selezionato un luogo, apri <strong>"Domande rapide"</strong> e spunta una o più domande (puoi sceglierne quante vuoi, anche nessuna), oppure scrivi una tua <strong>domanda personalizzata</strong> nel campo libero — funzionano anche insieme.</li>
+        <li>Premi <strong>"Genera scheda con AI"</strong>: il testo compare in tempo reale man mano che l'intelligenza artificiale lo scrive.</li>
+        <li>Se scrivi una domanda con errori di battitura, il titolo della sezione la riporta già corretta.</li>
       </ul>
+      <h4>L'opzione "Usa anche Wikipedia per dettagli extra"</h4>
+      <p>
+        La trovi spuntabile in <strong>"Comandi aggiuntivi"</strong>, disattivata di default. Attivala quando ti serve precisione su
+        nomi, date e cifre (ad esempio "quali chiese ci sono e di che epoca"): il programma legge l'articolo
+        Wikipedia del luogo e lo usa per rispondere in modo puntuale, invece di restare sulla conoscenza generale
+        dell'AI. Il compromesso è che la richiesta consuma più token e impiega qualche secondo in più, per questo
+        resta spenta di default. Nota: una scheda generata con questa opzione attiva è considerata diversa dalla
+        stessa scheda generata senza — se la riattivi o disattivi su una domanda già fatta, viene generata di nuovo
+        anziché essere ripresa dalla cronologia.
+      </p>
 
-      <h3>4. Confronto tra due luoghi</h3>
+      <h3>4. Confronta due luoghi</h3>
       <ul>
         <li>Attiva <strong>"Modalità confronto"</strong> nella sezione <strong>"Comandi aggiuntivi"</strong> della scheda del luogo.</li>
-        <li>Seleziona un primo luogo (mappa o ricerca), poi un secondo: viene generato automaticamente un confronto tra i due (dati, somiglianze, differenze, sintesi finale). Durante l'attesa compare il messaggio di caricamento.</li>
+        <li>Seleziona un primo luogo (mappa o ricerca), poi un secondo: il confronto tra i due (dati, somiglianze, differenze, sintesi finale) parte automaticamente, con il consueto messaggio di caricamento nell'attesa.</li>
       </ul>
 
-      <h3>5. Modalità fotografica</h3>
-      <p>Attiva <strong>"Modalità fotografica"</strong> nella sezione <strong>"Comandi aggiuntivi"</strong> per visualizzare subito una galleria di foto (fino a 50 immagini) del luogo scelto, attingendo da Wikimedia Commons. Le immagini sono filtrate per vicinanza geografica (entro 10 km) e pertinenza del titolo. In questa modalità, la generazione di schede AI e il confronto vengono disabilitati.</p>
+      <h3>5. Sfoglia le foto di un luogo</h3>
+      <p>Attiva <strong>"Modalità fotografica"</strong> nella sezione <strong>"Comandi aggiuntivi"</strong> per vedere subito una galleria (fino a 50 immagini) del luogo scelto, presa da Wikimedia Commons e filtrata per vicinanza geografica (entro 10 km) e pertinenza del titolo. Mentre questa modalità è attiva, generazione di schede e confronto restano disattivati.</p>
 
       <h3>6. Il pannello della scheda generata</h3>
       <ul>
-        <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato. Generando il PDF, il programma chiede se <strong>includere anche le foto</strong> della galleria: puoi scegliere "Con foto" o "Solo testo". Durante la generazione compare l'avviso di caricamento in alto.</li>
-        <li><strong>Linguetta "Scheda AI":</strong> compare quando chiudi il pannello pur avendo una scheda aperta; permette di consultare la mappa e riaprire la scheda con un clic, senza perderla.</li>
+        <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato. Per il PDF ti viene chiesto se includere anche le foto della galleria ("Con foto" o "Solo testo").</li>
+        <li><strong>Linguetta "Scheda AI":</strong> compare se chiudi il pannello con una scheda ancora aperta, così puoi tornare alla mappa e riaprirla con un clic senza perderla.</li>
       </ul>
 
-      <h3>7. Cronologia e gestione delle schede salvate</h3>
-      <p>Ogni scheda generata (comprese quelle di confronto) viene salvata automaticamente nel browser. Si apre dal pulsante <strong>"Cronologia"</strong> in alto a destra.</p>
+      <h3>7. Ritrova le schede salvate in Cronologia</h3>
+      <p>Ogni scheda generata (comprese quelle di confronto) viene salvata automaticamente nel browser. Aprila dal pulsante <strong>"Cronologia"</strong> in alto a destra.</p>
       <ul>
         <li><strong>Consultazione rapida:</strong> clicca sul nome di un luogo per riaprire subito la scheda salvata.</li>
-        <li><strong>Foto salvate:</strong> le immagini della galleria vengono memorizzate insieme al testo e ricompaiono riaprendo la scheda dalla cronologia.</li>
-        <li><strong>Nessuno spreco di AI:</strong> se riapri una scheda già prodotta con lo stesso luogo e le stesse domande, viene ricaricata dalla cronologia senza nuove richieste.</li>
-        <li><strong>Seleziona tutto:</strong> spunta in un clic tutte le voci in elenco.</li>
-        <li><strong>Scarica selezionati (PDF):</strong> genera un unico PDF a più pagine con tutte le schede spuntate; anche qui il programma chiede prima se includere le foto.</li>
-        <li><strong>Elimina selezionati:</strong> rimuove solo le schede con il quadratino spuntato.</li>
-        <li><strong>Elimina (riga singola):</strong> rimuove immediatamente quella singola voce.</li>
-        <li><strong>Svuota tutto:</strong> cancella l'intero archivio, previa conferma.</li>
-        <li><strong>Esporta / Importa backup:</strong> salva tutte le schede in un file JSON e rileggile in seguito o su un altro computer, senza duplicati.</li>
-        <li><strong>Chiudi:</strong> torna alla mappa senza modificare nulla.</li>
+        <li><strong>Foto incluse:</strong> le immagini della galleria restano memorizzate insieme al testo.</li>
+        <li><strong>Nessuno spreco di AI:</strong> se richiedi la stessa combinazione di luogo, domande e stato della spunta Wikipedia, la scheda viene ripresa da qui senza consumare nuove richieste; le voci generate con Wikipedia attiva sono segnate con "📚 Wikipedia" per distinguerle.</li>
+        <li><strong>Seleziona tutto</strong> / <strong>Scarica selezionati (PDF)</strong>: spunta le voci che vuoi e genera un unico PDF con tutte le schede scelte (anche qui puoi includere o meno le foto).</li>
+        <li><strong>Elimina selezionati</strong> / <strong>Elimina (riga singola)</strong> / <strong>Svuota tutto</strong>: rimuovono rispettivamente le voci spuntate, una singola voce, o l'intero archivio (con conferma).</li>
+        <li><strong>Esporta / Importa backup:</strong> salva tutte le schede in un file JSON, da rileggere in seguito o su un altro computer, senza duplicati.</li>
       </ul>
 
-      <h3>8. Segnaposto personali</h3>
+      <h3>8. Salva un segnaposto personale</h3>
       <ul>
-        <li><strong>Salva un punto:</strong> dopo aver selezionato un luogo, premi <strong>"📌 Salva come segnaposto"</strong> in fondo alla scheda: si apre una finestra dove dare un <strong>nome</strong> e una <strong>nota facoltativa</strong> (es. "aperitivo alle 18, wifi gratis").</li>
-        <li><strong>Precisione:</strong> la puntina si pianta <strong>esattamente nel punto in cui hai cliccato</strong> (o sul risultato della ricerca), non al centro del paese: puoi salvare più punti diversi nello stesso paese.</li>
-        <li><strong>Salvataggio immediato:</strong> ogni segnaposto salvato o eliminato viene registrato all'istante: chiudendo browser o programma tutto resta com'è.</li>
-        <li><strong>Riapertura:</strong> le puntine restano sulla mappa anche riavviando il programma. Clicca su una puntina per leggere nome, nota e coordinate, <strong>aprire la scheda</strong> del luogo o <strong>rimuoverla</strong>.</li>
+        <li>Dopo aver selezionato un luogo, premi <strong>"📌 Salva come segnaposto"</strong> in fondo alla scheda: si apre una finestra dove dare un <strong>nome</strong> e una <strong>nota facoltativa</strong> (es. "aperitivo alle 18, wifi gratis").</li>
+        <li>La puntina si pianta esattamente nel punto cliccato (o sul risultato della ricerca), non al centro del paese: puoi salvarne più di una nello stesso posto.</li>
+        <li>Ogni segnaposto salvato o eliminato resta registrato subito: chiudendo il browser tutto è come l'hai lasciato, e le puntine restano sulla mappa anche riaprendo il programma.</li>
+        <li>Clicca su una puntina per leggere nome, nota e coordinate, <strong>aprire la scheda</strong> del luogo o <strong>rimuoverla</strong>.</li>
       </ul>
 
     </div>
@@ -971,24 +1016,39 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
+<!-- CRONOLOGIA: NUOVA VERSIONE RIORGANIZZATA -->
 <div class="overlay" id="historyOverlay">
   <div class="keycard keycard-wide">
     <h2>Cronologia schede</h2>
     <p>Le schede generate restano salvate nel tuo browser. Tocca un luogo per riaprirlo, seleziona più voci per scaricarle insieme in un unico PDF, oppure eliminale.</p>
-    <div class="hist-select-row">
-      <button class="btn btn-ghost" id="histSelectAll">Seleziona tutto</button>
-      <button class="btn btn-primary" id="histDownloadSelected">Scarica selezionati (PDF)</button>
+    
+    <!-- Riga 1: selezione + download PDF -->
+    <div class="hist-toolbar">
+      <button class="btn btn-ghost btn-sm" id="histSelectAll">☑ Seleziona tutto</button>
+      <button class="btn btn-ghost btn-sm" id="histDeselectAll">☐ Deseleziona tutto</button>
+      <span class="hist-sep">|</span>
+      <button class="btn btn-primary btn-sm" id="histDownloadSelected">📄 Scarica selezionati (PDF)</button>
     </div>
-    <div class="hist-select-row">
-      <button class="btn btn-ghost" id="histExportBtn">💾 Esporta backup</button>
-      <button class="btn btn-ghost" id="histImportBtn">📂 Importa backup</button>
+    
+    <!-- Riga 2: backup import/export -->
+    <div class="hist-toolbar">
+      <button class="btn btn-ghost btn-sm" id="histExportBtn">💾 Esporta backup</button>
+      <button class="btn btn-ghost btn-sm" id="histImportBtn">📂 Importa backup</button>
     </div>
     <input type="file" id="histImportFile" accept=".json,application/json" style="display:none;">
+    
+    <!-- Lista schede -->
     <div class="hist-list" id="histList"></div>
-    <div class="keycard-row">
-      <button class="btn btn-ghost" id="histDeleteSelected" style="color:#b5651d; border-color:#e0b39c;">Elimina selezionati</button>
-      <button class="btn btn-ghost" id="histClearAll">Svuota tutto</button>
-      <button class="btn btn-primary" id="histClose">Chiudi</button>
+    
+    <!-- Riga inferiore: azioni di eliminazione + chiusura -->
+    <div class="hist-footer">
+      <div class="hist-footer-left">
+        <button class="btn btn-ghost btn-sm" id="histDeleteSelected" style="color:#b5651d; border-color:#e0b39c;">🗑 Elimina selezionati</button>
+        <button class="btn btn-ghost btn-sm" id="histClearAll" style="color:#7a8880;">⛔ Svuota tutto</button>
+      </div>
+      <div class="hist-footer-right">
+        <button class="btn btn-primary" id="histClose">✕ Chiudi</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1029,6 +1089,11 @@ header *{pointer-events:auto;}
         Modalità fotografica
       </label>
       <div id="photoModeMsg" class="photo-mode-msg">🖼 Modalità fotografica attiva: clicca su un luogo per vedere le foto.</div>
+      <label class="compare-toggle websearch-toggle">
+        <input type="checkbox" id="wikiToggle">
+        Usa anche Wikipedia per dettagli extra
+      </label>
+      <div class="photo-mode-msg">📚 Aggiunge fatti specifici (nomi, date, cifre) da Wikipedia, ma consuma più token per richiesta: disattivato di default per non esaurire in fretta la quota giornaliera gratuita.</div>
     </div>
   </div>
 
@@ -1529,6 +1594,204 @@ function hideWeather(){
   _weatherFor = null;
 }
 
+/* ==================== RECUPERO WIKIPEDIA: intero articolo (gratis) + estrazione locale mirata (a costo zero di token) ==================== */
+
+// cache di sessione: evita di riscaricare la stessa pagina per luoghi già consultati
+const wikiFullTextCache = {};
+
+/* --- Individua il titolo dell'articolo giusto: prima per coordinate (più affidabile), poi per nome --- */
+async function resolveWikipediaTitle(placeName, lat, lon){
+  // 1) ricerca geografica: se abbiamo le coordinate esatte, troviamo l'articolo più vicino a quel punto,
+  //    evitando di prendere un articolo omonimo ma di un luogo diverso (es. "Via Roma" in un'altra città)
+  if(lat != null && lon != null){
+    try{
+      const geoUrl = `https://it.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${lat}|${lon}&gsradius=8000&gslimit=5&format=json&origin=*`;
+      const geoRes = await fetch(geoUrl);
+      const geoData = await geoRes.json();
+      const geoResults = geoData?.query?.geosearch;
+      if(geoResults && geoResults.length){
+        return geoResults[0].title;
+      }
+    }catch(e){ /* si prosegue con la ricerca testuale */ }
+  }
+
+  // 2) fallback: ricerca testuale per nome
+  try{
+    const searchUrl = `https://it.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(placeName)}&format=json&origin=*`;
+    const searchRes = await fetch(searchUrl);
+    const searchData = await searchRes.json();
+    const results = searchData?.query?.search;
+    if(results && results.length) return results[0].title;
+  }catch(e){ /* nessun risultato disponibile */ }
+
+  return null;
+}
+
+/* --- Scarica l'INTERO articolo (tutte le sezioni, non solo l'introduzione): gratis, è solo banda, non token --- */
+async function fetchWikipediaFullText(title){
+  const extractUrl = `https://it.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&exsectionformat=plain&titles=${encodeURIComponent(title)}&format=json&origin=*`;
+  const res = await fetch(extractUrl);
+  const data = await res.json();
+  const pages = data?.query?.pages;
+  if(!pages) return null;
+  for(const pid in pages){
+    const p = pages[pid];
+    if(p.extract && p.extract.trim()){
+      // tetto di sicurezza solo per non appesantire il browser: non incide sui token,
+      // perché da qui in poi mandiamo a Gemini solo l'estratto filtrato, non tutto questo testo
+      let text = p.extract;
+      if(text.length > 150000) text = text.slice(0, 150000);
+      return text;
+    }
+  }
+  return null;
+}
+
+/* --- Divide il testo completo in sezioni, riconoscendo i titoli che Wikipedia lascia come righe autonome --- */
+function splitWikipediaSections(fullText){
+  const lines = fullText.split('\n');
+  const sections = [{ title: 'Introduzione', content: [] }];
+  for(const line of lines){
+    const trimmed = line.trim();
+    // euristica: un titolo di sezione è una riga breve, senza punto finale, non vuota, isolata
+    const looksLikeHeader = trimmed.length > 0 && trimmed.length < 45 && !trimmed.endsWith('.') && !trimmed.endsWith(',') && !/^\d/.test(trimmed);
+    if(looksLikeHeader){
+      sections.push({ title: trimmed, content: [] });
+    }else if(trimmed){
+      sections[sections.length - 1].content.push(trimmed);
+    }
+  }
+  return sections
+    .map(s => ({ title: s.title, text: s.content.join(' ') }))
+    .filter(s => s.text.length > 30); // scarta sezioni vuote o titoli senza contenuto reale
+}
+
+// parole chiave associate a ciascun tipo di domanda, per trovare le sezioni Wikipedia pertinenti
+const wikiSectionKeywords = {
+  generale: ['geografia', 'territorio', 'clima', 'posizione', 'introduzione', 'origine del nome', 'etimologia'],
+  dati: ['popolazione', 'demografia', 'superficie', 'clima', 'geografia'],
+  storia: ['storia', 'origini', 'fondazione', 'medioevo', 'epoca', 'secolo', 'antichità', 'preistoria'],
+  cultura: ['cultura', 'monumenti', 'chiese', 'architetture', 'luoghi di interesse', 'arte', 'musei', 'palazzi'],
+  dialetto: ['dialetto', 'lingua', 'linguistica', 'parlata'],
+  gastronomia: ['cucina', 'gastronomia', 'enogastronomia', 'piatti', 'prodotti tipici'],
+  feste: ['feste', 'tradizioni', 'eventi', 'sagre', 'manifestazioni', 'folclore'],
+  economia: ['economia', 'industria', 'agricoltura', 'commercio', 'artigianato', 'turismo']
+};
+
+/* --- Estrae solo le sezioni pertinenti ai tipi/domanda selezionati: qui avviene il vero risparmio di token --- */
+function extractRelevantWikiExcerpt(fullText, types, customQ){
+  const sections = splitWikipediaSections(fullText);
+  if(!sections.length) return fullText.slice(0, 4000); // testo senza sezioni riconoscibili: fallback semplice
+
+  // parole chiave rilevanti in base ai tipi selezionati + parole della domanda libera
+  let keywords = [];
+  types.forEach(t => { if(wikiSectionKeywords[t]) keywords.push(...wikiSectionKeywords[t]); });
+  if(customQ){
+    keywords.push(...customQ.toLowerCase().split(/\s+/).filter(w => w.length > 3));
+  }
+  if(!keywords.length) keywords = wikiSectionKeywords.generale;
+
+  // punteggio di ogni sezione: quante parole chiave compaiono nel titolo o nel contenuto
+  const scored = sections.map(s => {
+    const haystack = (s.title + ' ' + s.text).toLowerCase();
+    let score = 0;
+    keywords.forEach(k => { if(haystack.includes(k)) score += haystack.includes(s.title.toLowerCase() + k) ? 1 : (s.title.toLowerCase().includes(k) ? 3 : 1); });
+    return { ...s, score };
+  });
+
+  scored.sort((a, b) => b.score - a.score);
+  const relevant = scored.filter(s => s.score > 0).slice(0, 3);
+  const chosen = relevant.length ? relevant : scored.slice(0, 1); // nessun match: prende almeno l'introduzione
+
+  const CHAR_BUDGET = 8000; // molto meno dei 30000 di prima, ma mirato invece che casuale
+  let excerpt = '';
+  for(const s of chosen){
+    const piece = `${s.title}\n${s.text}\n\n`;
+    if(excerpt.length + piece.length > CHAR_BUDGET) break;
+    excerpt += piece;
+  }
+  return excerpt.trim() || fullText.slice(0, 4000);
+}
+
+/* --- Funzione principale usata dal resto del codice: cerca, scarica (con cache), filtra --- */
+async function fetchWikipediaText(placeName, lat, lon, types, customQ){
+  try{
+    const cacheKey = placeName;
+    let fullText = wikiFullTextCache[cacheKey];
+    let title = wikiFullTextCache[cacheKey + '__title'];
+
+    if(fullText === undefined){
+      title = await resolveWikipediaTitle(placeName, lat, lon);
+      if(!title) { wikiFullTextCache[cacheKey] = null; return null; }
+      fullText = await fetchWikipediaFullText(title);
+      wikiFullTextCache[cacheKey] = fullText;
+      wikiFullTextCache[cacheKey + '__title'] = title;
+    }
+    if(!fullText) return null;
+
+    const excerpt = extractRelevantWikiExcerpt(fullText, types || [], customQ || '');
+    return { title, text: excerpt };
+  }catch(e){
+    return null;
+  }
+}
+
+/* ==================== PROMPT CON ISTRUZIONI PIÙ PRECISE ==================== */
+function buildPromptMerged(luogo, luogoInfo, types, customQ, wikiText){
+  const sections = types.map(sectionBlock);
+
+  if(customQ && customQ.trim()){
+    sections.push(`## [Qui scrivi come titolo la domanda originale dell'utente riportata sotto, corretta da eventuali errori di battitura/ortografia ma senza cambiarne il significato, senza virgolette e senza premesse tipo "Risposta a...": scrivi SOLO la domanda corretta come titolo, con la lettera maiuscola iniziale e punto interrogativo se è una domanda]
+Rispondi alla seguente domanda posta dall'utente: "${customQ.trim()}", riferita al luogo "${luogo}".
+Considera PERTINENTI (e quindi da trattare normalmente) tutte le domande su: geografia, storia, cultura, servizi, negozi, attività commerciali, bar, ristoranti, benzinai, farmacie e qualunque altro esercizio o servizio locale, trasporti, eventi, curiosità, o qualunque altro aspetto di questo specifico luogo o dei suoi dintorni.
+Per domande su chiese, monumenti, edifici storici, usa le informazioni dettagliate che hai a disposizione (se presenti) e fornisci NOMI, DATE e STILI ARCHITETTONICI specifici.
+Per domande su negozi, bar, benzinai o servizi specifici, rispondi con la tua conoscenza generale, ma se non hai informazioni verificate su esercizi specifici dillo onestamente invece di inventare nomi, indirizzi o numeri precisi.
+Considera NON pertinenti solo le domande che non hanno alcuna relazione con un luogo specifico, come calcoli matematici, richieste di scrivere codice, argomenti generici di cultura/scienza slegati dal luogo, o richieste completamente estranee. Se e SOLO se la domanda rientra in questa categoria non pertinente, scrivi esclusivamente la frase "La domanda deve essere inerente al posto o alla città scelta." e nient'altro in questa sezione.`);
+  }
+
+  // MODALITÀ LEGGERA (comportamento originale, di default): nessun testo Wikipedia, nessuna istruzione extra —
+  // stesso identico prompt sintetico di prima dell'integrazione, per consumare il minimo di token possibile.
+  if(!wikiText){
+    const baseLean = `Il luogo in questione è: "${luogo}" ${luogoInfo}. Scrivi in italiano, tono divulgativo ma curato.
+Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (niente markdown per grassetto o elenchi puntati salvo dove indicato, solo paragrafi scorrevoli). Non aggiungere sezioni oltre a quelle richieste qui sotto. Se un'informazione specifica non è certa o non applicabile, dillo onestamente invece di inventarla.`;
+
+    return `${baseLean}
+
+Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in quest'ordine):
+
+${sections.join('\n\n')}`;
+  }
+
+  // MODALITÀ AVANZATA: attiva solo se l'utente ha spuntato Wikipedia
+  const base = `Il luogo in questione è: "${luogo}" ${luogoInfo}. Scrivi in italiano, tono divulgativo ma curato.
+Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (niente markdown per grassetto o elenchi puntati salvo dove indicato, solo paragrafi scorrevoli). Non aggiungere sezioni oltre a quelle richieste qui sotto.
+
+REGOLE FONDAMENTALI:
+1. SE HAI INFORMAZIONI SPECIFICHE (date, nomi di chiese, monumenti, persone famose, numeri di popolazione, periodi storici) USALE SEMPRE. Non essere vago o generico.
+2. Se l'utente chiede "quante" o "quali" chiese/monumenti/edifici ci sono, ELENCA quelli che trovi nei dati con i loro nomi e periodi storici.
+3. Se un'informazione specifica non è disponibile, dillo onestamente, ma PRIMA controlla se i dati che hai già contengono la risposta.
+4. Non dire "non è possibile fornire con certezza" se hai già i dati per rispondere.
+5. Non menzionare mai le fonti delle informazioni (Wikipedia, database, ecc.). Usa i dati e basta.
+6. Se non hai informazioni specifiche su una domanda, ma hai dati generali sul luogo, usali per dare una risposta contestualizzata.`;
+
+  const sourceInstruction = `
+INFORMAZIONI DETTAGLIATE SUL LUOGO (estratto già selezionato come pertinente alla richiesta: usale OBBLIGATORIAMENTE per date, nomi, cifre e fatti specifici):
+---
+${wikiText}
+---
+ISTRUZIONI: Estrai da queste informazioni TUTTI i dati specifici che rispondono alla domanda dell'utente. Se la domanda chiede "quante chiese" e nel testo trovi nomi di chiese, ELENCALI con i loro nomi e periodi storici. Non limitarti a dire "diverse chiese" — scrivi i nomi! Se il testo contiene date, usale. Se contiene numeri di popolazione, usali. Sii preciso e concreto. Se l'estratto non copre completamente la domanda, integra con la tua conoscenza generale dichiarando implicitamente la parte non verificata solo se necessario, senza inventare dettagli specifici (nomi, date, numeri) che non trovi né nell'estratto né nella tua conoscenza affidabile.
+`;
+
+  return `${base}
+
+${sourceInstruction}
+
+Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in quest'ordine):
+
+${sections.join('\n\n')}`;
+}
+
+
 function applyPlaceData(data, name){
   const addr = data.address || {};
   const place = name || addr.hamlet || addr.village || addr.city || addr.town || addr.municipality
@@ -1567,6 +1830,8 @@ function applyPlaceData(data, name){
   ccMeta.innerHTML = `Regione: <span>${region}</span> · Stato: <span>${country}</span>${coordsPart}`;
   genBtn.disabled = false;
   document.querySelectorAll('.cc-chip input').forEach(cb => { cb.checked = false; });
+  const wikiCb = document.getElementById('wikiToggle');
+  if(wikiCb) wikiCb.checked = false;
   updateQuestionsSummary();
   document.getElementById('customQuestion').value = '';
   genBtn.textContent = 'Genera scheda con AI';
@@ -1755,27 +2020,7 @@ Descrivi geografia, territorio, clima ed essenza del luogo: cosa lo caratterizza
   }
 }
 
-function buildPrompt(luogo, luogoInfo, types, customQ){
-  const base = `Il luogo in questione è: "${luogo}" ${luogoInfo}. Scrivi in italiano, tono divulgativo ma curato.
-Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (niente markdown per grassetto o elenchi puntati salvo dove indicato, solo paragrafi scorrevoli). Non aggiungere sezioni oltre a quelle richieste qui sotto. Se un'informazione specifica non è certa o non applicabile, dillo onestamente invece di inventarla.`;
-
-  const sections = types.map(sectionBlock);
-
-  if(customQ && customQ.trim()){
-    sections.push(`## [Qui scrivi come titolo la domanda originale dell'utente riportata sotto, corretta da eventuali errori di battitura/ortografia ma senza cambiarne il significato, senza virgolette e senza premesse tipo "Risposta a...": scrivi SOLO la domanda corretta come titolo, con la lettera maiuscola iniziale e punto interrogativo se è una domanda]
-Rispondi alla seguente domanda posta dall'utente: "${customQ.trim()}", riferita al luogo "${luogo}".
-Considera PERTINENTI (e quindi da trattare normalmente) tutte le domande su: geografia, storia, cultura, servizi, negozi, attività commerciali, bar, ristoranti, benzinai, farmacie e qualunque altro esercizio o servizio locale, trasporti, eventi, curiosità, o qualunque altro aspetto di questo specifico luogo o dei suoi dintorni. Per domande su negozi, bar, benzinai o servizi specifici, rispondi con la tua conoscenza generale, ma se non hai informazioni verificate su esercizi specifici dillo onestamente invece di inventare nomi, indirizzi o numeri precisi: in quel caso resta su indicazioni generali (es. "in centro trovi diversi bar" invece di nomi inventati).
-Considera NON pertinenti solo le domande che non hanno alcuna relazione con un luogo specifico, come calcoli matematici, richieste di scrivere codice, argomenti generici di cultura/scienza slegati dal luogo, o richieste completamente estranee. Se e SOLO se la domanda rientra in questa categoria non pertinente, scrivi esclusivamente la frase "La domanda deve essere inerente al posto o alla città scelta." e nient'altro in questa sezione (ma mantieni comunque il titolo della sezione come indicato sopra).`);
-  }
-
-  return `${base}
-
-Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in quest'ordine):
-
- ${sections.join('\n\n')}`;
-}
-
-
+/* ==================== GENERAZIONE SCHEDA CON WIKIPEDIA + GEMINI (unione silenziosa) ==================== */
 const panelGallery = document.getElementById('panelGallery');
 
 /* --- Render galleria da array {thumb, full} --- */
@@ -1811,9 +2056,14 @@ genBtn.onclick = async () => {
   panelText.style.display = 'block';
   panelGallery.className = '';
 
+  // letto subito e usato ovunque sotto: cache, cronologia, prompt e messaggio di caricamento
+  // devono sempre riflettere lo stesso stato di questa spunta, altrimenti si rischia di
+  // riciclare una scheda generata SENZA Wikipedia quando invece ora la si vuole CON Wikipedia (o viceversa)
+  const useWiki = document.getElementById('wikiToggle')?.checked || false;
+
   const labelsChosen = types.map(t => typeLabels[t]);
   if(customQ) labelsChosen.push('Domanda personalizzata');
-  const cacheKey = currentCountry.name + '|' + types.slice().sort().join(',') + '|' + customQ;
+  const cacheKey = currentCountry.name + '|' + types.slice().sort().join(',') + '|' + customQ + '|' + (useWiki ? 'wiki' : 'nowiki');
   panelEyebrow.textContent = (labelsChosen.join(' · ') || 'SCHEDA').toUpperCase();
   panelTitle.textContent = currentCountry.name;
   panel.classList.add('open');
@@ -1829,8 +2079,10 @@ genBtn.onclick = async () => {
     return;
   }
 
-  // 2) Cronologia salvata: stessa scheda già prodotta? Riusala senza consumare l'AI
-  const histEntry = findHistoryEntry(currentCountry.name, labelsChosen, customQ);
+  // 2) Cronologia salvata: stessa scheda, stesse domande E stesso stato di "Usa anche Wikipedia"
+  // già prodotta in passato? Riusala senza consumare l'AI. Se invece la spunta Wikipedia è
+  // cambiata rispetto a quella volta, NON è la stessa scheda: si passa oltre e si rigenera.
+  const histEntry = findHistoryEntry(currentCountry.name, labelsChosen, customQ, useWiki);
   if(histEntry){
     renderStreamed(histEntry.text, false);
     renderGalleryThumbs(histEntry.imgs);
@@ -1839,7 +2091,11 @@ genBtn.onclick = async () => {
     return;
   }
 
-  panelText.innerHTML = loadingHtml('Caricamento informazioni: sto componendo la scheda');
+  panelText.innerHTML = loadingHtml(
+    useWiki
+      ? 'Caricamento informazioni: consulto anche Wikipedia, può richiedere qualche secondo in più'
+      : 'Caricamento informazioni: preparo la scheda'
+  );
   animateDots(panelText);
   panelGallery.innerHTML = '';
   panelActions.style.display = 'none';
@@ -1849,20 +2105,39 @@ genBtn.onclick = async () => {
     ? currentCountry.context.split(',').slice(0, 3).map(s => s.trim()).join(', ')
     : currentCountry.name;
 
+  // Carica le immagini in parallelo
   const galleryPromise = fetchGallery(contextName, types[0] || 'generale');
 
+  // Wikipedia viene interrogata SOLO se l'utente ha attivato l'apposita casella:
+  // di default restiamo sul comportamento leggero di prima (meno token, meno quota consumata)
+  const wikiData = useWiki
+    ? await fetchWikipediaText(currentCountry.name, currentCountry.lat, currentCountry.lon, types, customQ)
+    : null;
+
+  // Log di debug (opzionale) per vedere se Wikipedia ha trovato dati
+  console.log('Wikipedia trovato:', wikiData ? wikiData.title : 'NESSUNO (disattivato o non trovato)');
+  
+  // Costruisci il prompt con o senza Wikipedia (ma senza mai menzionarla)
   const luogoInfo = currentCountry.capital
     ? `(regione: ${currentCountry.region}, capitale: ${currentCountry.capital})`
     : `(posizione precisa: ${contextName}; regione/stato: ${currentCountry.region}${currentCountry.country ? ', paese: ' + currentCountry.country : ''})`;
-  const prompt = buildPrompt(currentCountry.name, luogoInfo, types, customQ);
+  
+  const prompt = buildPromptMerged(
+    currentCountry.name, 
+    luogoInfo, 
+    types, 
+    customQ,
+    wikiData ? wikiData.text : null
+  );
 
   try{
+    const requestBody = { contents:[{ parts:[{ text: prompt }] }] };
     const resp = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`,
       {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] })
+        body: JSON.stringify(requestBody)
       }
     );
 
@@ -1904,7 +2179,7 @@ genBtn.onclick = async () => {
 
     cache[cacheKey] = { text: panelText.innerHTML, imgs: galleryImgs };
     panelActions.style.display = 'flex';
-    saveToHistory(currentCountry.name, labelsChosen, full, galleryImgs, customQ);
+    saveToHistory(currentCountry.name, labelsChosen, full, galleryImgs, customQ, useWiki);
   }catch(err){
     panelText.innerHTML = `<div class="panel-error">Non sono riuscito a generare la scheda.<br>${err.message}</div>`;
   }finally{
@@ -2250,21 +2525,25 @@ function persistHistory(list){
   try{ localStorage.setItem(HIST_KEY, JSON.stringify(list)); }
   catch(e){ /* storage pieno o non disponibile: si prosegue senza salvare */ }
 }
-function saveToHistory(name, labelsChosen, rawText, imgs, q){
+function saveToHistory(name, labelsChosen, rawText, imgs, q, wikiUsed){
   lastGeneratedRaw = rawText;
   const list = loadHistory();
   const entry = {
     name, labels: labelsChosen, text: rawText,
-    imgs: imgs || [], q: q || '',
+    imgs: imgs || [], q: q || '', wiki: !!wikiUsed,
     date: new Date().toISOString()
   };
-  const filtered = list.filter(e => !(e.name === name && (e.labels||[]).join(',') === labelsChosen.join(',') && (e.q||'') === (q||'')));
+  // due schede sono "la stessa scheda" solo se coincidono anche per lo stato della spunta Wikipedia:
+  // altrimenti una generata senza e una con Wikipedia si sovrascriverebbero a vicenda in cronologia
+  const filtered = list.filter(e => !(e.name === name && (e.labels||[]).join(',') === labelsChosen.join(',') && (e.q||'') === (q||'') && !!e.wiki === !!wikiUsed));
   filtered.unshift(entry);
   persistHistory(filtered.slice(0, 60));
 }
-function findHistoryEntry(name, labelsChosen, q){
+function findHistoryEntry(name, labelsChosen, q, wikiUsed){
   const lj = labelsChosen.join(',');
-  return loadHistory().find(e => e.name === name && (e.labels||[]).join(',') === lj && (e.q||'') === (q||'') && e.text);
+  // !!e.wiki === !!wikiUsed: le voci salvate prima di questo controllo non hanno il campo "wiki"
+  // (equivale a "false"/nowiki), quindi restano comunque riconosciute correttamente come "senza Wikipedia"
+  return loadHistory().find(e => e.name === name && (e.labels||[]).join(',') === lj && (e.q||'') === (q||'') && !!e.wiki === !!wikiUsed && e.text);
 }
 
 const historyOverlay = document.getElementById('historyOverlay');
@@ -2347,6 +2626,11 @@ document.getElementById('histImportFile').onchange = (ev) => {
   ev.target.value = '';
 };
 
+// Deseleziona tutto (nuovo pulsante)
+document.getElementById('histDeselectAll').onclick = () => {
+  histList.querySelectorAll('.hist-item-check').forEach(cb => { cb.checked = false; });
+};
+
 function renderHistory(){
   const list = loadHistory();
   if(!list.length){
@@ -2360,7 +2644,7 @@ function renderHistory(){
       <input type="checkbox" class="hist-item-check" data-check="${i}">
       <div class="hist-item-main" data-i="${i}">
         <span class="hist-item-name">${escapeHtml(e.name)}</span>
-        <span class="hist-item-labels">(${escapeHtml((e.labels||[]).join(' · '))})</span>
+        <span class="hist-item-labels">(${escapeHtml((e.labels||[]).join(' · '))}${e.wiki ? ' · 📚 Wikipedia' : ''})</span>
       </div>
       <div class="hist-item-right">
         <span class="hist-item-meta">${dateStr}</span>
@@ -2690,7 +2974,7 @@ Un breve paragrafo conclusivo che aiuti chi legge a capire quale luogo si adatta
     cache[compareCacheKey] = { text: panelText.innerHTML, raw: full };
     lastGeneratedRaw = full;
     panelActions.style.display = 'flex';
-    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto'], full, [], '');
+    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto'], full, [], '', false);
     compareSlots = [];
     updateCompareSlotUI();
   }catch(err){
