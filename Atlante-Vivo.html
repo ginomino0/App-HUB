@@ -629,6 +629,66 @@ header *{pointer-events:auto;}
 }
 .photo-thumb:hover{transform:scale(1.02);}
 
+/* --- Approfondimento al volo (Deep Dive) --- */
+#ddPopup{
+  position:fixed; display:none; z-index:200;
+  width:min(380px,92vw);
+  background:rgba(255,255,255,0.97);
+  backdrop-filter:blur(6px);
+  border:1px solid var(--line);
+  border-radius:8px;
+  box-shadow:0 14px 40px rgba(0,0,0,0.28);
+  padding:12px 14px;
+}
+#ddPopup.show{ display:block; animation:ddFade .18s ease; }
+@keyframes ddFade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+#ddPopup .dd-popup-title{
+  font-size:12px; color:var(--moss-dark); font-weight:600;
+  margin-bottom:8px; word-break:break-word;
+}
+#ddPopup input{
+  width:100%; box-sizing:border-box;
+  padding:8px 10px; border:1px solid var(--line); border-radius:4px;
+  font-family:var(--font-body); font-size:13px;
+  margin-bottom:10px; outline:none; background:#fff; color:var(--ink);
+}
+#ddPopup input:focus{ border-color:#8fb59f; }
+#ddPopup .dd-popup-row{ display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+#ddPopup .dd-popup-row .btn{ font-size:12px; padding:7px 14px; }
+#ddHint{
+  display:none; margin:6px 0 18px;
+  font-size:12.5px; color:#7a8880;
+  background:#f2f6f2; border:1px dashed var(--line);
+  border-radius:4px; padding:8px 12px;
+}
+.dd-box{
+  margin:14px 0;
+  background:#f4f8f4;
+  border:1px solid #bcd3bd;
+  border-left:4px solid var(--moss);
+  border-radius:6px;
+  padding:12px 14px;
+}
+.dd-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:4px; }
+.dd-title{ font-family:var(--font-display); font-weight:700; font-size:14.5px; color:var(--moss-dark); }
+.dd-close{ background:none; border:none; color:#8a958e; font-size:16px; cursor:pointer; line-height:1; padding:2px 6px; }
+.dd-close:hover{ color:var(--ink); }
+.dd-q{ font-size:12px; color:#7a8880; font-style:italic; margin-bottom:8px; }
+.dd-body{ font-size:14.5px; line-height:1.65; color:#2c372f; }
+.dd-body p{ margin:0 0 10px; }
+.dd-actions{
+  display:none; gap:8px; flex-wrap:wrap;
+  margin-top:10px; padding-top:10px; border-top:1px solid #d5e2d5;
+}
+.dd-btn{
+  background:#fff; border:1px solid var(--line); color:#5c6b62;
+  font-family:var(--font-body); font-size:12px;
+  padding:6px 12px; border-radius:3px; cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.dd-btn:hover{ border-color:#8fb59f; color:var(--ink); }
+.dd-btn:disabled{ opacity:.5; cursor:default; }
+
 /* --- Lightbox con finestra trasparente e zoom puntuale --- */
 #imgModal {
   z-index:110;
@@ -927,6 +987,17 @@ header *{pointer-events:auto;}
         <li>Premi <strong>"Genera scheda con AI"</strong>: il testo compare in tempo reale man mano che l'intelligenza artificiale lo scrive.</li>
         <li>Se scrivi una domanda con errori di battitura, il titolo della sezione la riporta già corretta.</li>
       </ul>
+      <h4>Approfondisci al volo qualsiasi nome</h4>
+      <p>
+        Nella scheda generata, seleziona con il mouse un nome presente nel testo (una villa, una chiesa, un quartiere…):
+        accanto al cursore si apre un piccolo riquadro con una domanda precompilata ("Dettagli su …"), che puoi modificare
+        come vuoi. Premi <strong>"🔍 Approfondisci"</strong> e sotto il paragrafo compare una mini-scheda dedicata a quell'elemento,
+        ancorata al luogo principale per evitare confusioni con luoghi omonimi. Se l'elemento è un luogo fisico visitabile,
+        nella mini-scheda compare anche <strong>"📌 Salva come segnaposto"</strong> (con la domanda come nota); con
+        <strong>"📄 Aggiungi alla scheda"</strong> unisci il testo alla scheda principale e lo ritrovi anche nell'export.
+        Ogni approfondimento viene salvato in Cronologia come voce separata "Luogo → Elemento" e, se lo richiedi di nuovo
+        identico, viene riutilizzato senza consumare token.
+      </p>
       <h4>L'opzione "Usa anche Wikipedia per dettagli extra"</h4>
       <p>
         La trovi spuntabile in <strong>"Comandi aggiuntivi"</strong>, disattivata di default. Attivala quando ti serve precisione su
@@ -949,16 +1020,16 @@ header *{pointer-events:auto;}
 
       <h3>6. Il pannello della scheda generata</h3>
       <ul>
-        <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato. Per il PDF ti viene chiesto se includere anche le foto della galleria ("Con foto" o "Solo testo").</li>
+        <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato. Per il PDF ti viene chiesto se includere anche le foto della galleria ("Con foto" o "Solo testo"). Gli approfondimenti uniti alla scheda con "📄 Aggiungi alla scheda" finiscono anch'essi nell'export.</li>
         <li><strong>Linguetta "Scheda AI":</strong> compare se chiudi il pannello con una scheda ancora aperta, così puoi tornare alla mappa e riaprirla con un clic senza perderla.</li>
       </ul>
 
       <h3>7. Ritrova le schede salvate in Cronologia</h3>
-      <p>Ogni scheda generata (comprese quelle di confronto) viene salvata automaticamente nel browser. Aprila dal pulsante <strong>"Cronologia"</strong> in alto a destra.</p>
+      <p>Ogni scheda generata (comprese quelle di confronto e i singoli approfondimenti) viene salvata automaticamente nel browser. Aprila dal pulsante <strong>"Cronologia"</strong> in alto a destra.</p>
       <ul>
         <li><strong>Consultazione rapida:</strong> clicca sul nome di un luogo per riaprire subito la scheda salvata.</li>
         <li><strong>Foto incluse:</strong> le immagini della galleria restano memorizzate insieme al testo.</li>
-        <li><strong>Nessuno spreco di AI:</strong> se richiedi la stessa combinazione di luogo, domande e stato della spunta Wikipedia, la scheda viene ripresa da qui senza consumare nuove richieste; le voci generate con Wikipedia attiva sono segnate con "📚 Wikipedia" per distinguerle.</li>
+        <li><strong>Nessuno spreco di AI:</strong> se richiedi la stessa combinazione di luogo, domande e stato della spunta Wikipedia, la scheda viene ripresa da qui senza consumare nuove richieste; le voci generate con Wikipedia attiva sono segnate con "📚 Wikipedia", gli approfondimenti con etichetta "Approfondimento: …".</li>
         <li><strong>Seleziona tutto</strong> / <strong>Scarica selezionati (PDF)</strong>: spunta le voci che vuoi e genera un unico PDF con tutte le schede scelte (anche qui puoi includere o meno le foto).</li>
         <li><strong>Elimina selezionati</strong> / <strong>Elimina (riga singola)</strong> / <strong>Svuota tutto</strong>: rimuovono rispettivamente le voci spuntate, una singola voce, o l'intero archivio (con conferma).</li>
         <li><strong>Esporta / Importa backup:</strong> salva tutte le schede in un file JSON, da rileggere in seguito o su un altro computer, senza duplicati.</li>
@@ -1152,6 +1223,7 @@ header *{pointer-events:auto;}
     </div>
     <div id="panelGallery"></div>
     <div id="panelText"></div>
+    <div id="ddHint">💡 <strong>Suggerimento</strong>: seleziona con il mouse un nome nel testo (es. un monumento o una chiesa) per generarne una mini-scheda di approfondimento.</div>
   </div>
 </div>
 
@@ -1179,6 +1251,17 @@ header *{pointer-events:auto;}
       <button class="btn btn-ghost" id="pinCancel">Annulla</button>
       <button class="btn btn-primary" id="pinSave">Salva</button>
     </div>
+  </div>
+</div>
+
+<!-- Mini popup: Approfondimento al volo -->
+<div id="ddPopup">
+  <div class="dd-popup-title" id="ddTarget">Approfondisci</div>
+  <input type="text" id="ddInput" placeholder="La tua domanda…" autocomplete="off">
+  <div class="dd-popup-row">
+    <button class="btn btn-ghost" id="ddCancel" style="font-size:12px;padding:5px 10px;">↺ Annulla</button>
+    <button class="btn btn-ghost" id="ddGoogle" style="font-size:12px;padding:5px 10px;">🌐 Cerca su Google</button>
+    <button class="btn btn-primary" id="ddGo" style="font-size:12px;padding:5px 10px;">🔍 Approfondisci</button>
   </div>
 </div>
 
@@ -1245,6 +1328,13 @@ function hideBusy(){
   t.style.display = 'none';
   t.innerHTML = '';
 }
+/* Toast breve senza animazione: per feedback istantanei ("aggiunto", ecc.) */
+function showToast(msg, ms = 1600){
+  const t = document.getElementById('busyToast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => { if(t.textContent === msg) hideBusy(); }, ms);
+}
 
 /* ---------------- Stato chiave API ---------------- */
 const keyBtn = document.getElementById('keyBtn');
@@ -1310,6 +1400,13 @@ L.control.layers({
 /* ---------------- Stato luogo corrente (dichiarato presto, usato ovunque) ---------------- */
 let currentCountry = null;      // dati del luogo riconosciuto
 let currentExactPoint = null;   // punto ESATTO cliccato/scelto (per il segnaposto)
+
+// Snapshot del luogo della scheda APERTA nel pannello: gli approfondimenti si ancorano
+// a questo, non a currentCountry, che può cambiare se l'utente clicca altrove sulla mappa
+let _activeCardPlace = null;
+// Chiave di cache della scheda attualmente visualizzata (per aggiornarla quando
+// un approfondimento viene unito alla scheda con "Aggiungi alla scheda")
+let _currentCacheKey = null;
 
 /* ---------------- Segnaposto personali (localStorage, salvataggio immediato) ---------------- */
 const PINS_KEY = 'atlante_pins_v2';
@@ -1378,27 +1475,45 @@ const pinOverlay = document.getElementById('pinOverlay');
 const pinNameInput = document.getElementById('pinNameInput');
 const pinNoteInput = document.getElementById('pinNoteInput');
 
+// Se impostato, il segnaposto arriva da un approfondimento (Deep Dive):
+// coordinate e nome suggeriti sono quelli dell'elemento approfondito
+let ddPinDraft = null;
+
+function openPinOverlay(coordsText, defaultName){
+  document.getElementById('pinOverlayCoords').textContent = coordsText;
+  pinNameInput.value = defaultName;
+  pinNoteInput.value = '';
+  pinOverlay.classList.add('show');
+  setTimeout(() => pinNameInput.focus(), 50);
+}
+
 const savePinBtn = document.getElementById('savePinBtn');
 savePinBtn.onclick = () => {
   if(!currentCountry || (currentCountry.lat == null || currentCountry.lon == null)){
     alert('Seleziona prima un luogo sulla mappa o con la ricerca.');
     return;
   }
+  ddPinDraft = null; // segnaposto normale dal luogo corrente
   const pt = currentExactPoint || { lat: currentCountry.lat, lon: currentCountry.lon };
-  document.getElementById('pinOverlayCoords').textContent =
-    `Posizione esatta: ${pt.lat.toFixed(5)}, ${pt.lon.toFixed(5)} — luogo: ${currentCountry.name}`;
-  pinNameInput.value = currentCountry.name || '';
-  pinNoteInput.value = '';
-  pinOverlay.classList.add('show');
-  setTimeout(() => pinNameInput.focus(), 50);
+  openPinOverlay(
+    `Posizione esatta: ${pt.lat.toFixed(5)}, ${pt.lon.toFixed(5)} — luogo: ${currentCountry.name}`,
+    currentCountry.name || ''
+  );
 };
 
-document.getElementById('pinCancel').onclick = () => pinOverlay.classList.remove('show');
+document.getElementById('pinCancel').onclick = () => {
+  ddPinDraft = null;
+  pinOverlay.classList.remove('show');
+};
 
 document.getElementById('pinSave').onclick = () => {
-  if(!currentCountry) return;
-  const pt = currentExactPoint || { lat: currentCountry.lat, lon: currentCountry.lon };
-  const name = (pinNameInput.value.trim() || currentCountry.name || 'Luogo');
+  if(!currentCountry && !ddPinDraft) return;
+  const src = ddPinDraft;
+  const pt = src
+    ? { lat: src.lat, lon: src.lon }
+    : (currentExactPoint || { lat: currentCountry.lat, lon: currentCountry.lon });
+  const fallbackName = src ? src.name : (currentCountry ? currentCountry.name : 'Luogo');
+  const name = (pinNameInput.value.trim() || fallbackName);
   const note = pinNoteInput.value.trim();
   const pin = {
     id: makePinId(),
@@ -1410,6 +1525,7 @@ document.getElementById('pinSave').onclick = () => {
   pins.push(pin);
   persistPins(pins);
   addPinMarker(pin);
+  ddPinDraft = null;
   pinOverlay.classList.remove('show');
   savePinBtn.textContent = '📌 Segnaposto salvato ✓';
   setTimeout(() => { savePinBtn.textContent = '📌 Salva come segnaposto'; }, 1600);
@@ -1759,7 +1875,7 @@ Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (nient
 
 Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in quest'ordine):
 
-${sections.join('\n\n')}`;
+ ${sections.join('\n\n')}`;
   }
 
   // MODALITÀ AVANZATA: attiva solo se l'utente ha spuntato Wikipedia
@@ -1777,18 +1893,18 @@ REGOLE FONDAMENTALI:
   const sourceInstruction = `
 INFORMAZIONI DETTAGLIATE SUL LUOGO (estratto già selezionato come pertinente alla richiesta: usale OBBLIGATORIAMENTE per date, nomi, cifre e fatti specifici):
 ---
-${wikiText}
+ ${wikiText}
 ---
 ISTRUZIONI: Estrai da queste informazioni TUTTI i dati specifici che rispondono alla domanda dell'utente. Se la domanda chiede "quante chiese" e nel testo trovi nomi di chiese, ELENCALI con i loro nomi e periodi storici. Non limitarti a dire "diverse chiese" — scrivi i nomi! Se il testo contiene date, usale. Se contiene numeri di popolazione, usali. Sii preciso e concreto. Se l'estratto non copre completamente la domanda, integra con la tua conoscenza generale dichiarando implicitamente la parte non verificata solo se necessario, senza inventare dettagli specifici (nomi, date, numeri) che non trovi né nell'estratto né nella tua conoscenza affidabile.
 `;
 
   return `${base}
 
-${sourceInstruction}
+ ${sourceInstruction}
 
 Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in quest'ordine):
 
-${sections.join('\n\n')}`;
+ ${sections.join('\n\n')}`;
 }
 
 
@@ -2069,7 +2185,19 @@ genBtn.onclick = async () => {
   panel.classList.add('open');
   reopenTab.classList.remove('show');
   panelHasContent = true;
+  setDdHint(true);
   collapseCard();
+
+  // Snapshot del luogo di questa scheda: gli approfondimenti selezionati nel testo
+  // si ancoreranno a QUESTO luogo, anche se nel frattempo clicchi altrove sulla mappa
+  _activeCardPlace = {
+    name: currentCountry.name,
+    region: currentCountry.region,
+    country: currentCountry.country,
+    lat: currentCountry.lat,
+    lon: currentCountry.lon
+  };
+  _currentCacheKey = cacheKey;
 
   // 1) Cache di sessione
   if(cache[cacheKey]){
@@ -2114,9 +2242,6 @@ genBtn.onclick = async () => {
     ? await fetchWikipediaText(currentCountry.name, currentCountry.lat, currentCountry.lon, types, customQ)
     : null;
 
-  // Log di debug (opzionale) per vedere se Wikipedia ha trovato dati
-  console.log('Wikipedia trovato:', wikiData ? wikiData.title : 'NESSUNO (disattivato o non trovato)');
-  
   // Costruisci il prompt con o senza Wikipedia (ma senza mai menzionarla)
   const luogoInfo = currentCountry.capital
     ? `(regione: ${currentCountry.region}, capitale: ${currentCountry.capital})`
@@ -2179,7 +2304,7 @@ genBtn.onclick = async () => {
 
     cache[cacheKey] = { text: panelText.innerHTML, imgs: galleryImgs };
     panelActions.style.display = 'flex';
-    saveToHistory(currentCountry.name, labelsChosen, full, galleryImgs, customQ, useWiki);
+    saveToHistory(currentCountry.name, labelsChosen, full, galleryImgs, customQ, useWiki, _activeCardPlace);
   }catch(err){
     panelText.innerHTML = `<div class="panel-error">Non sono riuscito a generare la scheda.<br>${err.message}</div>`;
   }finally{
@@ -2387,9 +2512,11 @@ imgNext.onclick = () => {
 // Tasti freccia
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    if (pinOverlay.classList.contains('show')) { pinOverlay.classList.remove('show'); return; }
+    if (pinOverlay.classList.contains('show')) { pinOverlay.classList.remove('show'); ddPinDraft = null; return; }
     const ppOverlay = document.getElementById('pdfPhotoOverlay');
     if (ppOverlay.classList.contains('show')) { ppOverlay.classList.remove('show'); _pdfPhotoCb = null; return; }
+    const ddP = document.getElementById('ddPopup');
+    if (ddP && ddP.classList.contains('show')) { ddP.classList.remove('show'); return; }
   }
   if (!imgModal.classList.contains('show')) return;
   if (e.key === 'ArrowLeft') { e.preventDefault(); imgPrev.click(); }
@@ -2525,12 +2652,13 @@ function persistHistory(list){
   try{ localStorage.setItem(HIST_KEY, JSON.stringify(list)); }
   catch(e){ /* storage pieno o non disponibile: si prosegue senza salvare */ }
 }
-function saveToHistory(name, labelsChosen, rawText, imgs, q, wikiUsed){
+function saveToHistory(name, labelsChosen, rawText, imgs, q, wikiUsed, place){
   lastGeneratedRaw = rawText;
   const list = loadHistory();
   const entry = {
     name, labels: labelsChosen, text: rawText,
     imgs: imgs || [], q: q || '', wiki: !!wikiUsed,
+    place: place || null,
     date: new Date().toISOString()
   };
   // due schede sono "la stessa scheda" solo se coincidono anche per lo stato della spunta Wikipedia:
@@ -2668,6 +2796,11 @@ function renderHistory(){
       panel.classList.add('open');
       reopenTab.classList.remove('show');
       panelHasContent = true;
+      // Riaprendo dalla cronologia, ricostruiamo l'ancoraggio per gli approfondimenti:
+      // le voci salvate di recente portano con sé luogo, regione e coordinate
+      _activeCardPlace = e.place || null;
+      _currentCacheKey = null;
+      setDdHint(true);
       historyOverlay.classList.remove('show');
     };
   });
@@ -2913,6 +3046,12 @@ async function runCompare(){
   panelGallery.innerHTML = '';
   collapseCard();
 
+  // Nel confronto gli elementi appartengono a due luoghi diversi: gli approfondimenti
+  // restano disattivati (non ci sarebbe un unico luogo a cui ancorarli)
+  _activeCardPlace = null;
+  _currentCacheKey = null;
+  setDdHint(false);
+
   const compareCacheKey = 'CMP|' + [a.name, b.name].sort().join('|');
   if(cache[compareCacheKey]){
     panelText.innerHTML = cache[compareCacheKey].text;
@@ -2974,7 +3113,7 @@ Un breve paragrafo conclusivo che aiuti chi legge a capire quale luogo si adatta
     cache[compareCacheKey] = { text: panelText.innerHTML, raw: full };
     lastGeneratedRaw = full;
     panelActions.style.display = 'flex';
-    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto'], full, [], '', false);
+    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto'], full, [], '', false, null);
     compareSlots = [];
     updateCompareSlotUI();
   }catch(err){
@@ -3035,6 +3174,7 @@ function openPhotoGallery(place) {
   panel.classList.add('open');
   reopenTab.classList.remove('show');
   panelHasContent = true;
+  setDdHint(false);
   collapseCard();
 
   panelText.style.display = 'none';
@@ -3111,6 +3251,343 @@ async function fetchPhotoGallery(name, lat, lon, country) {
     }
   }
   return images;
+}
+
+/* ==================== 5. APPROFONDIMENTO AL VOLO (DEEP DIVE) ==================== */
+const ddPopup = document.getElementById('ddPopup');
+const ddInputElement = document.getElementById('ddInput');
+const ddTargetLabel = document.getElementById('ddTarget');
+
+let _ddPending = null;          // {selectedText, context, anchorEl} fissati all'apertura del popup
+let _ddLastRequestAt = 0;       // per il limite di 1 approfondimento ogni 10 secondi
+const _ddCache = {};            // cache di sessione degli approfondimenti
+const DD_COOLDOWN_MS = 10000;
+
+function setDdHint(visible){
+  const h = document.getElementById('ddHint');
+  if(h) h.style.display = visible ? 'block' : 'none';
+}
+
+/* --- Risale all'elemento-blocco figlio diretto di panelText che contiene la selezione --- */
+function ddFindAnchor(sel){
+  try{
+    let node = sel.anchorNode;
+    if(!node) return null;
+    if(node.nodeType === 3) node = node.parentNode; // nodo testo -> elemento
+    while(node && node.parentNode && node.parentNode !== panelText){
+      node = node.parentNode;
+    }
+    return (node && node !== panelText) ? node : null;
+  }catch(e){ return null; }
+}
+
+/* --- Estrae il contesto immediato (frasi attorno alla selezione) dal paragrafo contenitore --- */
+function ddGetContext(sel, selectedText){
+  const anchor = ddFindAnchor(sel);
+  if(!anchor) return '';
+  const blockText = (anchor.innerText || '').replace(/\s+/g, ' ').trim();
+  if(!blockText) return '';
+  const norm = selectedText.replace(/\s+/g, ' ');
+  const i = blockText.indexOf(norm);
+  if(i === -1) return blockText.slice(0, 240);
+  const start = Math.max(0, i - 160);
+  const end = Math.min(blockText.length, i + norm.length + 160);
+  let frag = blockText.slice(start, end);
+  if(start > 0) frag = '…' + frag;
+  if(end < blockText.length) frag += '…';
+  return frag;
+}
+
+/* --- Rilevazione della selezione nel testo della scheda --- */
+panelText.addEventListener('mouseup', (e) => {
+  const sel = window.getSelection();
+  const text = sel ? sel.toString().trim() : '';
+  // casi limite: selezione assente, troppo corta, troppo lunga (è una frase, non un nome),
+  // o luogo di ancoraggio non disponibile (es. scheda di confronto)
+  if(!text || text.length < 3 || text.length > 60 || !_activeCardPlace || !panelText.contains(sel.anchorNode)){
+    return;
+  }
+  _ddPending = {
+    selectedText: text,
+    context: ddGetContext(sel, text),
+    anchorEl: ddFindAnchor(sel)
+  };
+  ddTargetLabel.textContent = `📝 Approfondisci: "${text}"`;
+  ddInputElement.value = `Dettagli su ${text}`;
+  ddPopup.classList.add('show');
+
+  // posizionamento vicino al cursore, con ribaltamento se esce dallo schermo
+  const pw = 380, ph = 200;
+  let px = e.clientX + 12;
+  let py = e.clientY + 14;
+  if(px + pw > window.innerWidth - 8) px = Math.max(8, window.innerWidth - pw - 8);
+  if(py + ph > window.innerHeight - 8) py = Math.max(8, e.clientY - ph - 10);
+  ddPopup.style.left = px + 'px';
+  ddPopup.style.top = py + 'px';
+  setTimeout(() => ddInputElement.focus(), 40);
+});
+
+// chiusura cliccando fuori dal popup (mousedown, così il click di selezione non lo riapre/chiude a raffica)
+document.addEventListener('mousedown', (e) => {
+  if(ddPopup.classList.contains('show') && !e.target.closest('#ddPopup')){
+    hideDdPopup();
+  }
+});
+// chiusura anche scrollando la scheda (il popup resterebbe scollegato dal testo)
+panelBody.addEventListener('scroll', () => hideDdPopup());
+
+function hideDdPopup(){
+  ddPopup.classList.remove('show');
+}
+
+document.getElementById('ddCancel').onclick = () => hideDdPopup();
+
+/* --- Bottone "Cerca su Google" nel popup iniziale --- */
+document.getElementById('ddGoogle').onclick = () => {
+  if(!_ddPending || !_activeCardPlace) return;
+  const selectedText = _ddPending.selectedText;
+  const place = _activeCardPlace;
+  const placeName = place.name || '';
+  const q = placeName && selectedText.toLowerCase().includes(placeName.toLowerCase())
+    ? selectedText
+    : `${selectedText} ${placeName}`;
+  const url = 'https://www.google.com/search?q=' + encodeURIComponent(q);
+  window.open(url, '_blank', 'noopener');
+  hideDdPopup();
+};
+
+document.getElementById('ddGo').onclick = () => goDeepDive();
+ddInputElement.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){ e.preventDefault(); goDeepDive(); }
+});
+
+/* --- Prompt ancorato al luogo principale --- */
+function buildDeepDivePrompt(place, selectedText, context, userQuestion){
+  const coordLine = (place.lat != null && place.lon != null)
+    ? `- Coordinate: ${place.lat.toFixed(4)}, ${place.lon.toFixed(4)}`
+    : '- Coordinate: non disponibili';
+  return `CONTESTO PRINCIPALE:
+- Luogo: ${place.name}
+- Regione: ${place.region || '—'}
+- Paese: ${place.country || '—'}
+ ${coordLine}
+
+ELEMENTO SELEZIONATO: "${selectedText}"
+CONTESTO IMMEDIATO DAL TESTO DELLA SCHEDA:
+"${context}"
+
+DOMANDA DELL'UTENTE:
+"${userQuestion}"
+
+REGOLE:
+1. Rispondi riferendoti ESCLUSIVAMENTE all'elemento "${selectedText}" nel contesto specifico di ${place.name}${place.region && place.region !== '—' ? ' (' + place.region + ')' : ''}. Non confondere con elementi omonimi in altri luoghi.
+2. Se non hai informazioni verificate su questo specifico elemento in questo luogo, dillo onestamente invece di generalizzare su altri elementi simili altrove.
+3. Se la domanda è completamente estranea all'elemento selezionato, rispondi solo con: "La domanda deve riferirsi all'elemento selezionato."
+4. Usa tono divulgativo ma preciso, con paragrafi scorrevoli (niente elenchi puntati).
+5. Non menzionare mai le fonti delle informazioni.
+6. IMPORTANTISSIMO: se e solo se l'elemento approfondito è un luogo fisico visitabile (villa, chiesa, palazzo, torre, parco, piazza, monumento, edificio, ponte, castello e simili), la risposta DEVE iniziare esattamente con la riga [LUOGO] seguita da un a capo, e poi dal testo. In ogni altro caso non scrivere [LUOGO] da nessuna parte.`;
+}
+
+/* --- Formattazione del testo della risposta nei paragrafi del riquadro --- */
+function ddFormatText(text){
+  const paras = text.split(/\n\s*\n/).map(p => p.replace(/\n+/g, ' ').trim()).filter(Boolean);
+  if(!paras.length) return '';
+  return paras.map(p => `<p>${escapeHtml(p)}</p>`).join('');
+}
+
+function ddStripHeader(t){
+  return t.replace(/^##[^\n]*\n+/, '');
+}
+
+/* --- Crea il riquadro di approfondimento subito dopo il paragrafo selezionato --- */
+function ddOpenResultBox(anchorEl, elementName, question){
+  const box = document.createElement('div');
+  box.className = 'dd-box';
+  box.innerHTML = `
+    <div class="dd-head">
+      <span class="dd-title">🔍 Approfondimento: ${escapeHtml(elementName)}</span>
+      <button class="dd-close" title="Chiudi">✕</button>
+    </div>
+    <div class="dd-q">${escapeHtml(question)}</div>
+    <div class="dd-body"></div>
+    <div class="dd-actions">
+      <button class="dd-btn dd-pin">📌 Salva come segnaposto</button>
+      <button class="dd-btn dd-add">📄 Aggiungi alla scheda</button>
+    </div>`;
+  if(anchorEl && anchorEl.parentNode === panelText && anchorEl.nextSibling){
+    anchorEl.parentNode.insertBefore(box, anchorEl.nextSibling);
+  }else{
+    panelText.appendChild(box);
+  }
+  box.querySelector('.dd-close').onclick = () => box.remove();
+  return box;
+}
+
+/* --- Mostra le azioni del riquadro; il segnaposto solo per luoghi fisici (marker [LUOGO]) --- */
+function ddShowActions(box, place, elementName, question, withHeaderText, isPlace){
+  const actions = box.querySelector('.dd-actions');
+  actions.style.display = 'flex';
+  const pinBtn = actions.querySelector('.dd-pin');
+  if(!isPlace){
+    pinBtn.style.display = 'none';
+  }else{
+    pinBtn.onclick = () => {
+      ddPinDraft = { name: elementName, note: 'Approfondimento da scheda: ' + question, lat: place.lat, lon: place.lon };
+      openPinOverlay(
+        `Elemento: ${elementName} — nel luogo: ${place.name} (coordinate del luogo)`,
+        elementName
+      );
+      pinNoteInput.value = 'Approfondimento da scheda: ' + question;
+    };
+  }
+  const addBtn = actions.querySelector('.dd-add');
+  addBtn.onclick = () => {
+    lastGeneratedRaw = (lastGeneratedRaw ? lastGeneratedRaw + '\n\n' : '') + withHeaderText;
+    renderStreamed(lastGeneratedRaw, false);
+    if(_currentCacheKey && cache[_currentCacheKey]) cache[_currentCacheKey].text = panelText.innerHTML;
+    addBtn.disabled = true;
+    addBtn.textContent = '✓ Aggiunta alla scheda';
+    showToast('Approfondimento unito alla scheda ✓');
+  };
+}
+
+/* --- Genera (o riusa) l'approfondimento --- */
+async function goDeepDive(){
+  if(!_ddPending || !_activeCardPlace) return;
+  const selectedText = _ddPending.selectedText;
+  const context = _ddPending.context;
+  const anchorEl = _ddPending.anchorEl;
+  const place = _activeCardPlace;
+  const question = ddInputElement.value.trim();
+  hideDdPopup();
+  if(!question) return;
+
+  const ddKey = place.name + '|' + selectedText + '|' + question;
+  const labels = ['Approfondimento: ' + selectedText];
+  const histName = place.name + ' → ' + selectedText;
+
+  const openWith = (withHeaderText, isPlace) => {
+    const box = ddOpenResultBox(anchorEl, selectedText, question);
+    box.querySelector('.dd-body').innerHTML = ddFormatText(ddStripHeader(withHeaderText));
+    ddShowActions(box, place, selectedText, question, withHeaderText, isPlace);
+  };
+
+  // 1) cache di sessione
+  if(_ddCache[ddKey]){
+    openWith(_ddCache[ddKey].text, _ddCache[ddKey].isPlace);
+    return;
+  }
+
+  // 2) cronologia: stesso approfondimento già fatto? Riusalo senza consumare token
+  const hist = findHistoryEntry(histName, labels, question, false);
+  if(hist){
+    openWith(hist.text, !!hist.placeflag);
+    return;
+  }
+
+  // 3) limite di frequenza: 1 approfondimento ogni 10 secondi per non bruciare quota
+  const now = Date.now();
+  if(now - _ddLastRequestAt < DD_COOLDOWN_MS){
+    const box = ddOpenResultBox(anchorEl, selectedText, question);
+    box.querySelector('.dd-body').innerHTML =
+      '<p>⏳ Attendi qualche secondo prima di un nuovo approfondimento: le richieste all\'AI vanno distanziate un attimo.</p>';
+    return;
+  }
+
+  const key = getKey();
+  if(!key){
+    keyOverlay.classList.add('show');
+    return;
+  }
+
+  _ddLastRequestAt = now;
+
+  // 4) genera con streaming nel riquadro
+  const box = ddOpenResultBox(anchorEl, selectedText, question);
+  const body = box.querySelector('.dd-body');
+  body.innerHTML = loadingHtml('Caricamento informazioni: approfondimento in corso');
+  animateDots(body);
+
+  const prompt = buildDeepDivePrompt(place, selectedText, context, question);
+
+  try{
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`,
+      { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] }) }
+    );
+    if(!resp.ok || !resp.body){
+      const errText = await resp.text().catch(()=> '');
+      throw new Error(`Richiesta non riuscita (${resp.status}). ${errText.slice(0,200)}`);
+    }
+
+    let raw = '';
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+    while(true){
+      const { value, done } = await reader.read();
+      if(done) break;
+      buf += decoder.decode(value, { stream:true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data:')) continue;
+        const jsonStr = line.slice(5).trim();
+        if(!jsonStr || jsonStr === '[DONE]') continue;
+        try{
+          const obj = JSON.parse(jsonStr);
+          const chunk = obj?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if(chunk){
+            raw += chunk;
+            // se il flusso inizia con il marker [LUOGO] (possibilmente spezzato tra chunk),
+            // attende di vederlo completo prima di mostrare il testo
+            let shown = raw;
+            if(shown.startsWith('[') && shown.indexOf(']') === -1 && shown.length < 12) continue;
+            let isPlaceNow = false;
+            if(shown.startsWith('[LUOGO]')){
+              isPlaceNow = true;
+              shown = shown.slice(7);
+            }else if(shown.startsWith('[LUOGO')){
+              continue;
+            }
+            shown = shown.replace(/^\s+/, '');
+            const html = ddFormatText(shown);
+            body.innerHTML = html || loadingHtml('Caricamento informazioni: approfondimento in corso');
+          }
+        }catch(e){ /* riga incompleta, ignora */ }
+      }
+    }
+
+    // testo finale pulito + salvataggi
+    let clean = raw;
+    let isPlace = false;
+    if(clean.startsWith('[LUOGO]')){
+      isPlace = true;
+      clean = clean.slice(7);
+    }
+    clean = clean.replace(/^\s+/, '');
+    const withHeader = `## Approfondimento: ${selectedText}\n\n${clean}`;
+
+    _ddCache[ddKey] = { text: withHeader, isPlace };
+
+    // salvataggio diretto in cronologia (senza toccare lastGeneratedRaw della scheda principale):
+    // porta con sé il luogo di ancoraggio e il flag "luogo fisico" per il riuso futuro
+    const list = loadHistory();
+    const entry = {
+      name: histName, labels, text: withHeader,
+      imgs: [], q: question, wiki: false,
+      placeflag: isPlace, place,
+      date: new Date().toISOString()
+    };
+    const filtered = list.filter(e => !(e.name === histName && (e.labels||[]).join(',') === labels.join(',') && (e.q||'') === question));
+    filtered.unshift(entry);
+    persistHistory(filtered.slice(0, 60));
+
+    body.innerHTML = ddFormatText(clean);
+    ddShowActions(box, place, selectedText, question, withHeader, isPlace);
+  }catch(err){
+    body.innerHTML = `<div class="panel-error">Non sono riuscito a generare l'approfondimento.<br>${escapeHtml(err.message)}</div>`;
+  }
 }
 
 /* --- Distanza in km (Haversine) --- */
