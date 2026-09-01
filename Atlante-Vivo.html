@@ -57,13 +57,6 @@ header *{pointer-events:auto;}
   backdrop-filter:blur(4px);
 }
 .brand em{color:var(--moss);font-style:italic;}
-.brand-sub{
-  font-size:11.5px;
-  color:#5c6b62;
-  margin-top:4px;
-  margin-left:14px;
-  letter-spacing:0.2px;
-}
 #keyBtn{
   background:rgba(16,28,26,0.85);
   border:1px solid #4a5c53;
@@ -185,38 +178,36 @@ header *{pointer-events:auto;}
 .hist-item-del:hover{text-decoration:underline;}
 .hist-empty{font-size:13px;color:#7a8880;padding:12px 0;}
 
-/* --- Gruppi opzioni e domande rapide --- */
-.option-group, .quick-group{
+/* --- Sezioni comprimibili della scheda luogo --- */
+.collapsible{
   border:1px solid var(--line);
   border-radius:4px;
-  padding:10px 12px 8px;
-  margin-bottom:12px;
+  margin-bottom:10px;
   background:rgba(255,255,255,0.5);
 }
-.option-group .group-label, .quick-group .group-label{
-  font-size:10.5px;
-  text-transform:uppercase;
-  letter-spacing:0.6px;
-  color:#7a8880;
-  margin:-2px 0 6px;
-  font-weight:600;
+.collapse-head{
+  width:100%;
+  display:flex;align-items:center;gap:8px;
+  background:none;border:none;cursor:pointer;
+  padding:8px 12px;
+  font-family:var(--font-body);
+  text-align:left;
 }
-.option-group .compare-toggle, 
-.option-group .photo-toggle{
-  margin-bottom:4px;
+.collapse-title{
+  flex:1;
+  font-size:10.5px;text-transform:uppercase;letter-spacing:0.6px;
+  color:#7a8880;font-weight:600;
 }
-.option-group .compare-toggle:last-child,
-.option-group .photo-toggle:last-child{
-  margin-bottom:0;
-}
-.quick-group .cc-chips{
-  margin-bottom:0;
-}
-.quick-group .cc-chips .cc-chip{
-  padding:2px 4px;
-}
+.collapse-summary{font-size:11px;color:var(--moss-dark);white-space:nowrap;}
+.chev{font-size:11px;color:#7a8880;transition:transform .2s;flex:none;}
+.collapsible.closed .chev{transform:rotate(-90deg);}
+.collapse-body{padding:0 12px 10px;}
+.collapsible.closed .collapse-body{display:none;}
+.collapsible .compare-toggle{margin-bottom:4px;}
+.collapse-body .cc-chips{margin-bottom:2px;}
+.cc-chips .cc-chip{padding:2px 4px;}
 
-/* --- Compare mode (inside group) --- */
+/* --- Compare mode --- */
 .compare-toggle{
   display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5c6b62;
   cursor:pointer;
@@ -292,6 +283,14 @@ header *{pointer-events:auto;}
   font-family:var(--font-mono);font-size:13px;
   margin-bottom:14px;background:#fff;color:var(--ink);
 }
+.keycard textarea{
+  width:100%;padding:11px 12px;
+  border:1px solid var(--line);border-radius:3px;
+  font-family:var(--font-body);font-size:13px;
+  margin-bottom:14px;background:#fff;color:var(--ink);
+  resize:vertical;outline:none;
+}
+.keycard textarea:focus{border-color:#8fb59f;}
 .keycard-row{display:flex;gap:10px;justify-content:flex-end;}
 .btn{
   font-family:var(--font-body);font-size:13.5px;
@@ -307,6 +306,8 @@ header *{pointer-events:auto;}
   position:fixed;
   left:26px;bottom:40px;transform:translateY(30px);
   width:min(290px,84vw);
+  max-height:calc(100vh - 56px);
+  overflow-y:auto;
   background:var(--panel);color:var(--ink);
   border-radius:4px;
   padding:18px 20px;
@@ -316,6 +317,13 @@ header *{pointer-events:auto;}
   z-index:30;
 }
 #countryCard.show{opacity:1;pointer-events:auto;transform:translateY(0);}
+@media (max-height:760px){
+  #countryCard{padding:12px 14px;}
+  .cc-title{font-size:18px;}
+  .cc-meta{font-size:12px;margin-bottom:10px;}
+  #customQuestion{min-height:40px;margin-bottom:8px;}
+  .collapse-head{padding:6px 10px;}
+}
 #cardReopenTab{
   position:fixed;bottom:0;left:26px;
   background:var(--ink);color:#f2f2ec;
@@ -395,6 +403,57 @@ header *{pointer-events:auto;}
   cursor:pointer;transition:border-color .2s, color .2s;
 }
 #genHelpBtn:hover{border-color:#8fb59f;color:var(--ink);}
+
+/* --- Meteo nella scheda luogo --- */
+.wx-loading{font-size:12px;color:#7a8880;font-style:italic;padding:2px 0;}
+.wx-current{display:flex;align-items:center;gap:10px;margin-top:2px;}
+.wx-ico{font-size:26px;line-height:1;}
+.wx-temp{font-size:20px;font-weight:700;color:var(--ink);}
+.wx-desc{font-size:12.5px;color:#5c6b62;}
+.wx-extra{font-size:11.5px;color:#7a8880;margin-top:2px;}
+.wx-days{display:flex;gap:6px;margin-top:8px;}
+.wx-day{flex:1;text-align:center;background:#fff;border:1px solid var(--line);border-radius:3px;padding:6px 2px;}
+.wx-day-name{font-size:10.5px;text-transform:uppercase;letter-spacing:0.4px;color:#7a8880;}
+.wx-day-ico{font-size:18px;margin:2px 0;}
+.wx-day-temp{font-size:11px;color:#3a453f;font-weight:600;}
+
+/* --- Coordinate copiabili --- */
+.coords-copy{cursor:pointer;text-decoration:underline dotted;}
+.coords-copy:hover{color:var(--clay);}
+
+/* --- Segnaposto personali --- */
+.pin-btn{
+  width:100%;margin-top:8px;
+  background:#fff;border:1px solid var(--line);color:#5c6b62;
+  font-family:var(--font-body);font-size:12.5px;
+  padding:8px 12px;border-radius:3px;cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.pin-btn:hover{border-color:#8fb59f;color:var(--ink);}
+.custom-pin{
+  font-size:26px;line-height:34px;text-align:center;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+}
+.pin-popup{font-size:12.5px;line-height:1.5;min-width:150px;}
+.pin-popup .pin-popup-coords{color:#7a8880;font-size:11px;}
+.pin-popup-note{
+  display:block;
+  font-size:11.5px;
+  color:#3a453f;
+  background:#eef2ee;
+  border-radius:3px;
+  padding:4px 7px;
+  margin:4px 0 2px;
+  max-width:220px;
+  white-space:pre-wrap;
+}
+.pin-popup button{
+  margin:6px 6px 0 0;padding:4px 10px;font-size:11.5px;
+  border:1px solid var(--line);background:#fff;border-radius:3px;
+  cursor:pointer;font-family:var(--font-body);
+}
+.pin-popup button.pin-open:hover{border-color:#8fb59f;}
+.pin-popup button.pin-del{color:#b5651d;}
 
 /* --- Sliding panel --- */
 #panel{
@@ -512,7 +571,7 @@ header *{pointer-events:auto;}
 /* --- Lightbox con finestra trasparente e zoom puntuale --- */
 #imgModal {
   z-index:110;
-  background:transparent;  /* finestra trasparente: si vede la mappa sotto */
+  background:transparent;
   display:none;
   align-items:center;
   justify-content:center;
@@ -794,29 +853,31 @@ header *{pointer-events:auto;}
       <ul>
         <li><strong>Zoom:</strong> rotella del mouse oppure i pulsanti + / − in alto a sinistra.</li>
         <li><strong>Spostamento:</strong> trascina la mappa tenendo premuto il tasto sinistro.</li>
-        <li><strong>Selezione di un luogo:</strong> clicca in un punto qualsiasi della mappa per posizionare un segnaposto e leggere subito nome, regione, stato e coordinate del punto scelto — senza bisogno della chiave AI.</li>
+        <li><strong>Selezione di un luogo:</strong> clicca in un punto qualsiasi della mappa per posizionare un segnaposto e leggere subito nome, regione, stato e coordinate del punto scelto — senza bisogno della chiave AI. Le coordinate mostrate si copiano negli appunti con un clic.</li>
+        <li><strong>Meteo:</strong> selezionato un luogo, l'intestazione della sezione <strong>"Meteo"</strong> mostra subito icona e temperatura; aprila con la freccetta per il dettaglio (condizione attuale, vento, umidità e previsioni dei 3 giorni successivi), senza bisogno della chiave AI.</li>
+        <li><strong>Sezioni comprimibili:</strong> la scheda del luogo è compatta: all'apertura del programma <strong>Meteo</strong>, <strong>Comandi aggiuntivi</strong> e <strong>Domande rapide</strong> sono sempre chiuse; si aprono e chiudono con la freccetta mentre lo usi. Se lo schermo è piccolo, la scheda scorre al suo interno senza mai uscire dallo schermo.</li>
         <li><strong>Barra di ricerca</strong> (in alto): scrivi il nome di città, frazione, monumento, fiume o montagna e seleziona il risultato corretto dall'elenco. Il pulsante rotondo <strong>"?"</strong> accanto dà consigli su come cercare luoghi piccoli o poco noti.</li>
       </ul>
 
       <h3>3. Generare una scheda con l'AI</h3>
       <ul>
-        <li>Dopo aver selezionato un luogo, spunta una o più <strong>domande preimpostate</strong> a sinistra (facoltative, selezionabili liberamente) oppure scrivi una <strong>domanda personalizzata</strong> nel campo libero.</li>
+        <li>Dopo aver selezionato un luogo, apri la sezione <strong>"Domande rapide"</strong> e spunta una o più domande (facoltative, selezionabili liberamente) oppure scrivi una <strong>domanda personalizzata</strong> nel campo libero.</li>
         <li>Premi <strong>"Genera scheda con AI"</strong>: il testo viene scritto in tempo reale man mano che arriva dall'intelligenza artificiale.</li>
         <li>Se la domanda personalizzata contiene errori di battitura, il titolo della sezione la riporta già corretta.</li>
       </ul>
 
       <h3>4. Confronto tra due luoghi</h3>
       <ul>
-        <li>Attiva <strong>"Modalità confronto"</strong> nella scheda del luogo.</li>
+        <li>Attiva <strong>"Modalità confronto"</strong> nella sezione <strong>"Comandi aggiuntivi"</strong> della scheda del luogo.</li>
         <li>Seleziona un primo luogo (mappa o ricerca), poi un secondo: viene generato automaticamente un confronto tra i due (dati, somiglianze, differenze, sintesi finale).</li>
       </ul>
 
       <h3>5. Modalità fotografica</h3>
-      <p>Attiva la modalità per visualizzare subito una galleria di foto (fino a 50 immagini) del luogo scelto, attingendo da Wikimedia Commons. Le immagini sono filtrate per vicinanza geografica (entro 10 km) e pertinenza del titolo. In questa modalità, la generazione di schede AI e il confronto vengono disabilitati.</p>
+      <p>Attiva <strong>"Modalità fotografica"</strong> nella sezione <strong>"Comandi aggiuntivi"</strong> per visualizzare subito una galleria di foto (fino a 50 immagini) del luogo scelto, attingendo da Wikimedia Commons. Le immagini sono filtrate per vicinanza geografica (entro 10 km) e pertinenza del titolo. In questa modalità, la generazione di schede AI e il confronto vengono disabilitati.</p>
 
       <h3>6. Il pannello della scheda generata</h3>
       <ul>
-        <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato.</li>
+        <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato. Generando il PDF, il programma chiede se <strong>includere anche le foto</strong> della galleria: puoi scegliere "Con foto" o "Solo testo".</li>
         <li><strong>Linguetta "Scheda AI":</strong> compare quando chiudi il pannello pur avendo una scheda aperta; permette di consultare la mappa e riaprire la scheda con un clic, senza perderla.</li>
       </ul>
 
@@ -824,12 +885,23 @@ header *{pointer-events:auto;}
       <p>Ogni scheda generata (comprese quelle di confronto) viene salvata automaticamente nel browser. Si apre dal pulsante <strong>"Cronologia"</strong> in alto a destra.</p>
       <ul>
         <li><strong>Consultazione rapida:</strong> clicca sul nome di un luogo per riaprire subito la scheda salvata.</li>
+        <li><strong>Foto salvate:</strong> le immagini della galleria vengono memorizzate insieme al testo e ricompaiono riaprendo la scheda dalla cronologia.</li>
+        <li><strong>Nessuno spreco di AI:</strong> se riapri una scheda già prodotta con lo stesso luogo e le stesse domande, viene ricaricata dalla cronologia senza nuove richieste.</li>
         <li><strong>Seleziona tutto:</strong> spunta in un clic tutte le voci in elenco.</li>
-        <li><strong>Scarica selezionati (PDF):</strong> genera un unico PDF a più pagine con tutte le schede spuntate.</li>
+        <li><strong>Scarica selezionati (PDF):</strong> genera un unico PDF a più pagine con tutte le schede spuntate; anche qui il programma chiede prima se includere le foto.</li>
         <li><strong>Elimina selezionati:</strong> rimuove solo le schede con il quadratino spuntato.</li>
         <li><strong>Elimina (riga singola):</strong> rimuove immediatamente quella singola voce.</li>
         <li><strong>Svuota tutto:</strong> cancella l'intero archivio, previa conferma.</li>
+        <li><strong>Esporta / Importa backup:</strong> salva tutte le schede in un file JSON e rileggile in seguito o su un altro computer, senza duplicati.</li>
         <li><strong>Chiudi:</strong> torna alla mappa senza modificare nulla.</li>
+      </ul>
+
+      <h3>8. Segnaposto personali</h3>
+      <ul>
+        <li><strong>Salva un punto:</strong> dopo aver selezionato un luogo, premi <strong>"📌 Salva come segnaposto"</strong> in fondo alla scheda: si apre una finestra dove dare un <strong>nome</strong> e una <strong>nota facoltativa</strong> (es. "aperitivo alle 18, wifi gratis").</li>
+        <li><strong>Precisione:</strong> la puntina si pianta <strong>esattamente nel punto in cui hai cliccato</strong> (o sul risultato della ricerca), non al centro del paese: puoi salvare più punti diversi nello stesso paese.</li>
+        <li><strong>Salvataggio immediato:</strong> ogni segnaposto salvato o eliminato viene registrato all'istante: chiudendo browser o programma tutto resta com'è.</li>
+        <li><strong>Riapertura:</strong> le puntine restano sulla mappa anche riavviando il programma. Clicca su una puntina per leggere nome, nota e coordinate, <strong>aprire la scheda</strong> del luogo o <strong>rimuoverla</strong>.</li>
       </ul>
 
     </div>
@@ -884,6 +956,11 @@ header *{pointer-events:auto;}
       <button class="btn btn-ghost" id="histSelectAll">Seleziona tutto</button>
       <button class="btn btn-primary" id="histDownloadSelected">Scarica selezionati (PDF)</button>
     </div>
+    <div class="hist-select-row">
+      <button class="btn btn-ghost" id="histExportBtn">💾 Esporta backup</button>
+      <button class="btn btn-ghost" id="histImportBtn">📂 Importa backup</button>
+    </div>
+    <input type="file" id="histImportFile" accept=".json,application/json" style="display:none;">
     <div class="hist-list" id="histList"></div>
     <div class="keycard-row">
       <button class="btn btn-ghost" id="histDeleteSelected" style="color:#b5651d; border-color:#e0b39c;">Elimina selezionati</button>
@@ -900,34 +977,58 @@ header *{pointer-events:auto;}
   <h2 class="cc-title" id="ccName">—</h2>
   <div class="cc-meta" id="ccMeta">—</div>
 
-  <!-- Riquadro Opzioni aggiuntive -->
-  <div class="option-group">
-    <div class="group-label">Opzioni aggiuntive</div>
-    <label class="compare-toggle">
-      <input type="checkbox" id="compareToggle">
-      Modalità confronto (scegli 2 luoghi)
-    </label>
-    <label class="compare-toggle photo-toggle">
-      <input type="checkbox" id="photoToggle">
-      Modalità fotografica
-    </label>
-    <div id="photoModeMsg" class="photo-mode-msg">🖼 Modalità fotografica attiva: clicca su un luogo per vedere le foto.</div>
+  <!-- Meteo (sezione comprimibile) -->
+  <div id="weatherSection" class="collapsible closed">
+    <button type="button" class="collapse-head">
+      <span class="collapse-title">Meteo</span>
+      <span class="collapse-summary" id="weatherSummary"></span>
+      <span class="chev">▾</span>
+    </button>
+    <div class="collapse-body">
+      <div id="weatherBox"></div>
+    </div>
+  </div>
+
+  <!-- Comandi aggiuntivi (sezione comprimibile) -->
+  <div id="optionsSection" class="collapsible closed">
+    <button type="button" class="collapse-head">
+      <span class="collapse-title">Comandi aggiuntivi</span>
+      <span class="collapse-summary" id="optionsSummary"></span>
+      <span class="chev">▾</span>
+    </button>
+    <div class="collapse-body">
+      <label class="compare-toggle">
+        <input type="checkbox" id="compareToggle">
+        Modalità confronto (scegli 2 luoghi)
+      </label>
+      <label class="compare-toggle photo-toggle">
+        <input type="checkbox" id="photoToggle">
+        Modalità fotografica
+      </label>
+      <div id="photoModeMsg" class="photo-mode-msg">🖼 Modalità fotografica attiva: clicca su un luogo per vedere le foto.</div>
+    </div>
   </div>
 
   <div class="compare-slot" id="compareSlot" style="display:none;"></div>
 
-  <!-- Riquadro Domande rapide -->
-  <div class="quick-group">
-    <div class="group-label">Domande rapide</div>
-    <div class="cc-chips" id="ccQuestions">
-      <label class="cc-chip"><input type="checkbox" value="generale">Panoramica</label>
-      <label class="cc-chip"><input type="checkbox" value="dati">Dati e statistiche</label>
-      <label class="cc-chip"><input type="checkbox" value="storia">Storia</label>
-      <label class="cc-chip"><input type="checkbox" value="cultura">Cultura</label>
-      <label class="cc-chip"><input type="checkbox" value="dialetto">Dialetto e detti</label>
-      <label class="cc-chip"><input type="checkbox" value="gastronomia">Gastronomia</label>
-      <label class="cc-chip"><input type="checkbox" value="feste">Feste</label>
-      <label class="cc-chip"><input type="checkbox" value="economia">Economia</label>
+  <!-- Domande rapide (sezione comprimibile) -->
+  <div id="questionsSection" class="collapsible closed">
+    <button type="button" class="collapse-head">
+      <span class="collapse-title">Domande rapide</span>
+      <span class="collapse-summary" id="questionsSummary"></span>
+      <span class="chev">▾</span>
+    </button>
+    <div class="collapse-body">
+      <div class="cc-chips" id="ccQuestions">
+        <label class="cc-chip"><input type="checkbox" value="generale">Panoramica</label>
+        <label class="cc-chip"><input type="checkbox" value="dati">Dati e statistiche</label>
+        <label class="cc-chip"><input type="checkbox" value="storia">Storia</label>
+        <label class="cc-chip"><input type="checkbox" value="cultura">Cultura</label>
+        <label class="cc-chip"><input type="checkbox" value="dialetto">Dialetto e detti</label>
+        <label class="cc-chip"><input type="checkbox" value="gastronomia">Gastronomia</label>
+        <label class="cc-chip"><input type="checkbox" value="feste">Feste</label>
+        <label class="cc-chip"><input type="checkbox" value="economia">Economia</label>
+      </div>
     </div>
   </div>
 
@@ -937,6 +1038,7 @@ header *{pointer-events:auto;}
     <button id="genBtn">Genera scheda con AI</button>
     <button id="genHelpBtn" aria-label="Esempi di domande">?</button>
   </div>
+  <button id="savePinBtn" class="pin-btn">📌 Salva come segnaposto</button>
 </div>
 
 <button id="reopenTab">Scheda AI</button>
@@ -962,6 +1064,33 @@ header *{pointer-events:auto;}
     </div>
     <div id="panelGallery"></div>
     <div id="panelText"></div>
+  </div>
+</div>
+
+<!-- Finestra: aggiungere le foto al PDF? -->
+<div class="overlay" id="pdfPhotoOverlay">
+  <div class="keycard">
+    <h2>Generazione PDF</h2>
+    <p id="pdfPhotoQuestion">Vuoi includere anche le foto nel PDF?</p>
+    <div class="keycard-row">
+      <button class="btn btn-ghost" id="pdfPhotosCancel">Annulla</button>
+      <button class="btn btn-ghost" id="pdfPhotosNo">Solo testo</button>
+      <button class="btn btn-primary" id="pdfPhotosYes">Con foto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Finestra: nuovo segnaposto -->
+<div class="overlay" id="pinOverlay">
+  <div class="keycard">
+    <h2>Nuovo segnaposto</h2>
+    <p id="pinOverlayCoords">—</p>
+    <input type="text" id="pinNameInput" placeholder="Nome del punto (es. Bar Centrale)" autocomplete="off">
+    <textarea id="pinNoteInput" rows="3" placeholder="Nota facoltativa (es. aperitivo alle 18, wifi gratis…)" style="font-family:var(--font-body);"></textarea>
+    <div class="keycard-row">
+      <button class="btn btn-ghost" id="pinCancel">Annulla</button>
+      <button class="btn btn-primary" id="pinSave">Salva</button>
+    </div>
   </div>
 </div>
 
@@ -1063,6 +1192,128 @@ L.control.layers({
   collapsed: false
 }).addTo(map);
 
+/* ---------------- Stato luogo corrente (dichiarato presto, usato ovunque) ---------------- */
+let currentCountry = null;      // dati del luogo riconosciuto
+let currentExactPoint = null;   // punto ESATTO cliccato/scelto (per il segnaposto)
+
+/* ---------------- Segnaposto personali (localStorage, salvataggio immediato) ---------------- */
+const PINS_KEY = 'atlante_pins_v2';
+
+function makePinId(){
+  return 'pin_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+}
+
+function loadPins(){
+  try{
+    const list = JSON.parse(localStorage.getItem(PINS_KEY) || '[]');
+    // Migrazione: ai pin vecchi senza id ne assegna uno e riscrive subito
+    let changed = false;
+    list.forEach(p => { if(!p.id){ p.id = makePinId(); changed = true; } });
+    if(changed) persistPins(list);
+    return list;
+  }catch(e){ return []; }
+}
+function persistPins(list){
+  try{ localStorage.setItem(PINS_KEY, JSON.stringify(list.slice(0, 200))); }
+  catch(e){ /* storage pieno o non disponibile */ }
+}
+// Eliminazione per ID: immediata e affidabile anche dopo riapertura del programma
+function deletePinById(id){
+  persistPins(loadPins().filter(p => p.id !== id));
+}
+
+const pinIcon = L.divIcon({
+  className: 'custom-pin',
+  html: '📌',
+  iconSize: [28, 34],
+  iconAnchor: [14, 34],
+  popupAnchor: [0, -30]
+});
+
+function pinPopupHtml(pin){
+  return `<div class="pin-popup">
+    <strong>${escapeHtml(pin.name)}</strong>
+    ${pin.note ? `<span class="pin-popup-note">${escapeHtml(pin.note)}</span>` : ''}
+    <br><span class="pin-popup-coords">${pin.lat.toFixed(4)}, ${pin.lon.toFixed(4)}</span><br>
+    <button class="pin-open">Apri scheda</button>
+    <button class="pin-del">Rimuovi</button>
+  </div>`;
+}
+
+function addPinMarker(pin){
+  const m = L.marker([pin.lat, pin.lon], { icon: pinIcon }).addTo(map);
+  m.bindPopup(() => pinPopupHtml(pin));
+  m.on('popupopen', (e) => {
+    const node = e.popup.getElement();
+    node.querySelector('.pin-open').onclick = () => {
+      map.closePopup();
+      flyTo(pin.lat, pin.lon, 15);
+      handlePointClick(pin.lat, pin.lon);
+    };
+    node.querySelector('.pin-del').onclick = () => {
+      deletePinById(pin.id);   // rimozione immediata e persistente
+      map.removeLayer(m);
+    };
+  });
+  return m;
+}
+
+// Carica i segnaposto salvati dalle sessioni precedenti
+loadPins().forEach(addPinMarker);
+
+/* --- Finestra nuovo segnaposto (nome + nota) --- */
+const pinOverlay = document.getElementById('pinOverlay');
+const pinNameInput = document.getElementById('pinNameInput');
+const pinNoteInput = document.getElementById('pinNoteInput');
+
+const savePinBtn = document.getElementById('savePinBtn');
+savePinBtn.onclick = () => {
+  if(!currentCountry || (currentCountry.lat == null || currentCountry.lon == null)){
+    alert('Seleziona prima un luogo sulla mappa o con la ricerca.');
+    return;
+  }
+  const pt = currentExactPoint || { lat: currentCountry.lat, lon: currentCountry.lon };
+  document.getElementById('pinOverlayCoords').textContent =
+    `Posizione esatta: ${pt.lat.toFixed(5)}, ${pt.lon.toFixed(5)} — luogo: ${currentCountry.name}`;
+  pinNameInput.value = currentCountry.name || '';
+  pinNoteInput.value = '';
+  pinOverlay.classList.add('show');
+  setTimeout(() => pinNameInput.focus(), 50);
+};
+
+document.getElementById('pinCancel').onclick = () => pinOverlay.classList.remove('show');
+
+document.getElementById('pinSave').onclick = () => {
+  if(!currentCountry) return;
+  const pt = currentExactPoint || { lat: currentCountry.lat, lon: currentCountry.lon };
+  const name = (pinNameInput.value.trim() || currentCountry.name || 'Luogo');
+  const note = pinNoteInput.value.trim();
+  const pin = {
+    id: makePinId(),
+    name, note,
+    lat: pt.lat, lon: pt.lon,
+    date: new Date().toISOString()
+  };
+  const pins = loadPins();
+  pins.push(pin);
+  persistPins(pins);        // salvataggio immediato su disco
+  addPinMarker(pin);        // puntina subito visibile sulla mappa
+  pinOverlay.classList.remove('show');
+  savePinBtn.textContent = '📌 Segnaposto salvato ✓';
+  setTimeout(() => { savePinBtn.textContent = '📌 Salva come segnaposto'; }, 1600);
+};
+
+pinNameInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('pinSave').click(); }
+});
+pinNoteInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    document.getElementById('pinSave').click();
+  }
+});
+
+/* ---------------- Interazioni mappa ---------------- */
 let activeMarker = null;
 let isProgrammaticMove = false;
 
@@ -1090,7 +1341,147 @@ const card = document.getElementById('countryCard');
 const ccName = document.getElementById('ccName');
 const ccMeta = document.getElementById('ccMeta');
 const genBtn = document.getElementById('genBtn');
-let currentCountry = null;
+
+/* --- Sezioni comprimibili: sempre CHIUSE all'avvio del programma --- */
+function setFold(sec, open){ sec.classList.toggle('closed', !open); }
+function initFolds(){
+  document.querySelectorAll('#countryCard .collapsible').forEach(sec => {
+    const head = sec.querySelector('.collapse-head');
+    setFold(sec, false); // all'apertura della pagina tutte chiuse
+    head.onclick = () => {
+      const willOpen = sec.classList.contains('closed');
+      setFold(sec, willOpen);
+      if(sec.id === 'weatherSection' && willOpen) maybeFetchWeather();
+    };
+  });
+}
+initFolds();
+
+function updateQuestionsSummary(){
+  const n = document.querySelectorAll('#ccQuestions input:checked').length;
+  const el = document.getElementById('questionsSummary');
+  if(el) el.textContent = n ? '· ' + n : '';
+}
+document.getElementById('ccQuestions').addEventListener('change', updateQuestionsSummary);
+updateQuestionsSummary();
+
+function updateOptionsSummary(){
+  const el = document.getElementById('optionsSummary');
+  if(!el) return;
+  const parts = [];
+  if(compareToggle.checked) parts.push('confronto');
+  if(photoToggle.checked) parts.push('foto');
+  el.textContent = parts.length ? '· ' + parts.join(' + ') : '';
+}
+
+/* --- Coordinate: clic per copiare --- */
+ccMeta.addEventListener('click', async (ev) => {
+  const el = ev.target.closest('.coords-copy');
+  if(!el) return;
+  const text = `${el.dataset.lat}, ${el.dataset.lon}`;
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(e){
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }catch(e2){}
+  }
+  const old = el.textContent;
+  el.textContent = 'copiate ✓';
+  setTimeout(() => { el.textContent = old; }, 1200);
+});
+
+/* --- Meteo (Open-Meteo, gratuito, senza chiave) --- */
+let _weatherFor = null;
+
+function weatherEmoji(code){
+  if(code === 0) return '☀️';
+  if(code === 1 || code === 2) return '🌤️';
+  if(code === 3) return '☁️';
+  if(code === 45 || code === 48) return '🌫️';
+  if(code >= 51 && code <= 57) return '🌦️';
+  if(code >= 61 && code <= 67) return '🌧️';
+  if(code >= 71 && code <= 77) return '🌨️';
+  if(code >= 80 && code <= 82) return '🌦️';
+  if(code === 85 || code === 86) return '🌨️';
+  if(code >= 95) return '⛈️';
+  return '🌡️';
+}
+function weatherDesc(code){
+  const m = {
+    0:'Sereno',1:'Prevalentemente sereno',2:'Parzialmente nuvoloso',3:'Coperto',
+    45:'Nebbia',48:'Nebbia con brina',
+    51:'Pioviggine debole',53:'Pioviggine',55:'Pioviggine intensa',
+    56:'Pioviggine gelata',57:'Pioviggine gelata intensa',
+    61:'Pioggia debole',63:'Pioggia moderata',65:'Pioggia forte',
+    66:'Pioggia gelata',67:'Pioggia gelata forte',
+    71:'Neve debole',73:'Neve moderata',75:'Neve forte',77:'Grani di neve',
+    80:'Rovesci deboli',81:'Rovesci',82:'Rovesci violenti',
+    85:'Rovesci di neve',86:'Rovesci di neve forti',
+    95:'Temporale',96:'Temporale con grandine',99:'Temporale con grandine forte'
+  };
+  return m[code] || '—';
+}
+
+// Chiamato all'APERTURA della sezione meteo: rifà il fetch solo se serve davvero
+function maybeFetchWeather(){
+  const box = document.getElementById('weatherBox');
+  if(!currentCountry || currentCountry.lat == null || currentCountry.lon == null){
+    box.innerHTML = '<div class="wx-loading">Seleziona un luogo per vedere il meteo.</div>';
+    return;
+  }
+  const key = currentCountry.lat + ',' + currentCountry.lon;
+  if(_weatherFor === key) return; // già caricato (o in caricamento) per questo luogo
+  fetchWeather(currentCountry.lat, currentCountry.lon);
+}
+
+async function fetchWeather(lat, lon){
+  const box = document.getElementById('weatherBox');
+  const summary = document.getElementById('weatherSummary');
+  box.innerHTML = '<div class="wx-loading">Meteo in caricamento…</div>';
+  summary.textContent = '';
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4`;
+    const res = await fetch(url);
+    const d = await res.json();
+    const c = d.current;
+    const days = d.daily;
+    _weatherFor = lat + ',' + lon;
+    // Anteprima nell'intestazione: visibile anche a sezione chiusa
+    summary.textContent = weatherEmoji(c.weather_code) + ' ' + Math.round(c.temperature_2m) + '°C';
+    let daysHtml = '';
+    for(let i = 1; i < days.time.length; i++){
+      const dt = new Date(days.time[i] + 'T12:00:00');
+      const label = dt.toLocaleDateString('it-IT', { weekday:'short' });
+      daysHtml += `<div class="wx-day">
+        <div class="wx-day-name">${label}</div>
+        <div class="wx-day-ico">${weatherEmoji(days.weather_code[i])}</div>
+        <div class="wx-day-temp">${Math.round(days.temperature_2m_min[i])}°/${Math.round(days.temperature_2m_max[i])}°</div>
+      </div>`;
+    }
+    box.innerHTML = `
+      <div class="wx-current">
+        <span class="wx-ico">${weatherEmoji(c.weather_code)}</span>
+        <span class="wx-temp">${Math.round(c.temperature_2m)}°C</span>
+        <span class="wx-desc">${weatherDesc(c.weather_code)}</span>
+      </div>
+      <div class="wx-extra">Umidità ${c.relative_humidity_2m}% · Vento ${Math.round(c.wind_speed_10m)} km/h</div>
+      <div class="wx-days">${daysHtml}</div>`;
+  }catch(e){
+    box.innerHTML = '<div class="wx-loading">Meteo non disponibile.</div>';
+  }
+}
+
+function hideWeather(){
+  document.getElementById('weatherBox').innerHTML = '';
+  document.getElementById('weatherSummary').textContent = '';
+  _weatherFor = null;
+}
 
 function applyPlaceData(data, name){
   const addr = data.address || {};
@@ -1104,6 +1495,7 @@ function applyPlaceData(data, name){
     ccName.textContent = 'Nessun luogo qui';
     ccMeta.textContent = 'Prova a cliccare più vicino a una città o a un paese, oppure usa la ricerca qui sopra.';
     genBtn.disabled = true;
+    hideWeather();
     return;
   }
 
@@ -1116,16 +1508,29 @@ function applyPlaceData(data, name){
     lat: data.lat ? +data.lat : null,
     lon: data.lon ? +data.lon : null
   };
+  if(!currentExactPoint && currentCountry.lat != null && currentCountry.lon != null){
+    currentExactPoint = { lat: currentCountry.lat, lon: currentCountry.lon };
+  }
   ccName.textContent = displayName;
   const lat = currentCountry.lat;
   const lon = currentCountry.lon;
-  const coordsPart = (lat && lon) ? ` · Coordinate: <span>${lat.toFixed(4)}, ${lon.toFixed(4)}</span>` : '';
+  const coordsPart = (lat != null && lon != null)
+    ? ` · Coordinate: <span class="coords-copy" data-lat="${lat}" data-lon="${lon}" title="Clicca per copiare le coordinate">${lat.toFixed(4)}, ${lon.toFixed(4)}</span>`
+    : '';
 
   ccMeta.innerHTML = `Regione: <span>${region}</span> · Stato: <span>${country}</span>${coordsPart}`;
   genBtn.disabled = false;
   document.querySelectorAll('.cc-chip input').forEach(cb => { cb.checked = false; });
+  updateQuestionsSummary();
   document.getElementById('customQuestion').value = '';
   genBtn.textContent = 'Genera scheda con AI';
+
+  // Meteo: caricato SEMPRE appena si sceglie un luogo,
+  // così l'anteprima (icona + gradi) compare nell'intestazione anche a sezione chiusa
+  hideWeather();
+  if (lat != null && lon != null) {
+    fetchWeather(lat, lon);
+  }
 
   if (photoToggle && photoToggle.checked) {
     openPhotoGallery(currentCountry);
@@ -1140,6 +1545,8 @@ function applyPlaceData(data, name){
 async function handlePointClick(lat, lng){
   ccName.textContent = 'Sto localizzando…';
   ccMeta.textContent = '—';
+  hideWeather();
+  currentExactPoint = { lat, lon: lng }; // punto esatto del clic, per il segnaposto
   if (!photoToggle || !photoToggle.checked) {
     expandCard();
   } else {
@@ -1157,6 +1564,7 @@ async function handlePointClick(lat, lng){
     ccName.textContent = 'Errore di localizzazione';
     ccMeta.textContent = 'Riprova tra qualche secondo.';
     genBtn.disabled = true;
+    hideWeather();
   }
 }
 
@@ -1198,6 +1606,7 @@ async function runSearch(q){
         searchResults.classList.remove('show');
         const exactName = r.namedetails?.name || r.display_name.split(',')[0];
         searchInput.value = exactName;
+        currentExactPoint = { lat: +r.lat, lon: +r.lon }; // punto scelto dalla ricerca
         flyTo(+r.lat, +r.lon, 15);
         if (photoToggle && photoToggle.checked) {
           collapseCard();
@@ -1217,8 +1626,6 @@ async function runSearch(q){
 document.addEventListener('click', (e) => {
   if(!e.target.closest('#searchBar')) searchResults.classList.remove('show');
 });
-
-/* ---------------- Scheda paese (popup) ---------------- */
 
 /* ---------------- Pannello + Gemini ---------------- */
 const panel = document.getElementById('panel');
@@ -1324,6 +1731,21 @@ Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in qu
 
 const panelGallery = document.getElementById('panelGallery');
 
+/* --- Render galleria da array {thumb, full} --- */
+function renderGalleryThumbs(items){
+  if(!items || !items.length){
+    panelGallery.innerHTML = '';
+    return;
+  }
+  panelGallery.innerHTML = items.map(im =>
+    `<img class="gallery-thumb" src="${im.thumb}" data-full="${im.full}" alt="">`
+  ).join('');
+  const urls = items.map(im => im.full);
+  panelGallery.querySelectorAll('.gallery-thumb').forEach((img, idx) => {
+    img.onclick = () => openLightbox(idx, urls);
+  });
+}
+
 genBtn.onclick = async () => {
   if(!currentCountry) return;
   const key = getKey();
@@ -1352,9 +1774,20 @@ genBtn.onclick = async () => {
   panelHasContent = true;
   collapseCard();
 
+  // 1) Cache di sessione
   if(cache[cacheKey]){
     panelText.innerHTML = cache[cacheKey].text;
-    panelGallery.innerHTML = cache[cacheKey].gallery;
+    renderGalleryThumbs(cache[cacheKey].imgs);
+    panelActions.style.display = 'flex';
+    return;
+  }
+
+  // 2) Cronologia salvata: stessa scheda già prodotta? Riusala senza consumare l'AI
+  const histEntry = findHistoryEntry(currentCountry.name, labelsChosen, customQ);
+  if(histEntry){
+    renderStreamed(histEntry.text, false);
+    renderGalleryThumbs(histEntry.imgs);
+    lastGeneratedRaw = histEntry.text;
     panelActions.style.display = 'flex';
     return;
   }
@@ -1368,7 +1801,7 @@ genBtn.onclick = async () => {
     ? currentCountry.context.split(',').slice(0, 3).map(s => s.trim()).join(', ')
     : currentCountry.name;
 
-  fetchGallery(contextName, types[0] || 'generale');
+  const galleryPromise = fetchGallery(contextName, types[0] || 'generale');
 
   const luogoInfo = currentCountry.capital
     ? `(regione: ${currentCountry.region}, capitale: ${currentCountry.capital})`
@@ -1417,9 +1850,13 @@ genBtn.onclick = async () => {
       }
     }
     renderStreamed(full, false);
-    cache[cacheKey] = { text: panelText.innerHTML, gallery: panelGallery.innerHTML };
+
+    let galleryImgs = [];
+    try{ galleryImgs = (await galleryPromise) || []; }catch(e){}
+
+    cache[cacheKey] = { text: panelText.innerHTML, imgs: galleryImgs };
     panelActions.style.display = 'flex';
-    saveToHistory(currentCountry.name, labelsChosen, full);
+    saveToHistory(currentCountry.name, labelsChosen, full, galleryImgs, customQ);
   }catch(err){
     panelText.innerHTML = `<div class="panel-error">Non sono riuscito a generare la scheda.<br>${err.message}</div>`;
   }finally{
@@ -1448,20 +1885,24 @@ async function fetchGallery(name, type){
     );
     const data = await res.json();
     const pages = data?.query?.pages;
-    if(!pages) return;
+    if(!pages) return [];
     const items = Object.values(pages)
       .map(p => p.imageinfo && p.imageinfo[0])
       .filter(info => info && info.mime && info.mime.startsWith('image/') && !info.mime.includes('svg'))
-      .slice(0, 4);
-    if(!items.length) return;
-    panelGallery.innerHTML = items.map(info =>
-      `<img class="gallery-thumb" src="${info.thumburl || info.url}" data-full="${info.url}" alt="${escapeHtml(name)}">`
+      .slice(0, 4)
+      .map(info => ({ thumb: info.thumburl || info.url, full: info.url }));
+    if(!items.length) return [];
+    panelGallery.innerHTML = items.map(im =>
+      `<img class="gallery-thumb" src="${im.thumb}" data-full="${im.full}" alt="${escapeHtml(name)}">`
     ).join('');
-    const urls = items.map(info => info.url);
+    const urls = items.map(im => im.full);
     panelGallery.querySelectorAll('.gallery-thumb').forEach((img, idx) => {
       img.onclick = () => openLightbox(idx, urls);
     });
-  }catch(e){ /* nessuna immagine disponibile, si prosegue senza */ }
+    return items;
+  }catch(e){
+    return [];
+  }
 }
 
 /* ==================== LIGHTBOX CON ZOOM PUNTUALE E PAN ==================== */
@@ -1622,6 +2063,11 @@ imgNext.onclick = () => {
 
 // Tasti freccia
 document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (pinOverlay.classList.contains('show')) { pinOverlay.classList.remove('show'); return; }
+    const ppOverlay = document.getElementById('pdfPhotoOverlay');
+    if (ppOverlay.classList.contains('show')) { ppOverlay.classList.remove('show'); _pdfPhotoCb = null; return; }
+  }
   if (!imgModal.classList.contains('show')) return;
   if (e.key === 'ArrowLeft') { e.preventDefault(); imgPrev.click(); }
   else if (e.key === 'ArrowRight') { e.preventDefault(); imgNext.click(); }
@@ -1756,16 +2202,21 @@ function persistHistory(list){
   try{ localStorage.setItem(HIST_KEY, JSON.stringify(list)); }
   catch(e){ /* storage pieno o non disponibile: si prosegue senza salvare */ }
 }
-function saveToHistory(name, labelsChosen, rawText){
+function saveToHistory(name, labelsChosen, rawText, imgs, q){
   lastGeneratedRaw = rawText;
   const list = loadHistory();
   const entry = {
     name, labels: labelsChosen, text: rawText,
+    imgs: imgs || [], q: q || '',
     date: new Date().toISOString()
   };
-  const filtered = list.filter(e => !(e.name === name && (e.labels||[]).join(',') === labelsChosen.join(',')));
+  const filtered = list.filter(e => !(e.name === name && (e.labels||[]).join(',') === labelsChosen.join(',') && (e.q||'') === (q||'')));
   filtered.unshift(entry);
   persistHistory(filtered.slice(0, 60));
+}
+function findHistoryEntry(name, labelsChosen, q){
+  const lj = labelsChosen.join(',');
+  return loadHistory().find(e => e.name === name && (e.labels||[]).join(',') === lj && (e.q||'') === (q||'') && e.text);
 }
 
 const historyOverlay = document.getElementById('historyOverlay');
@@ -1794,6 +2245,58 @@ document.getElementById('histDeleteSelected').onclick = () => {
     persistHistory(updatedList);
     renderHistory();
   }
+};
+
+/* --- Backup cronologia: esporta / importa JSON --- */
+document.getElementById('histExportBtn').onclick = () => {
+  const list = loadHistory();
+  if(!list.length){ alert('Nessuna scheda da esportare.'); return; }
+  const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const d = new Date();
+  a.download = `atlante_backup_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById('histImportBtn').onclick = () => {
+  document.getElementById('histImportFile').click();
+};
+
+document.getElementById('histImportFile').onchange = (ev) => {
+  const file = ev.target.files && ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const imported = JSON.parse(reader.result);
+      if(!Array.isArray(imported)) throw new Error('formato non valido');
+      const current = loadHistory();
+      const seen = new Set(current.map(e => (e.name||'') + '|' + (e.date||'')));
+      let added = 0;
+      imported.forEach(e => {
+        if(e && e.name && e.text){
+          const key = (e.name||'') + '|' + (e.date||'');
+          if(!seen.has(key)){
+            current.unshift(e);
+            seen.add(key);
+            added++;
+          }
+        }
+      });
+      persistHistory(current.slice(0, 200));
+      renderHistory();
+      alert(`Import completato: ${added} nuove schede aggiunte.`);
+    }catch(err){
+      alert('File di backup non valido: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
 };
 
 function renderHistory(){
@@ -1827,7 +2330,7 @@ function renderHistory(){
       panelText.style.display = 'block';
       panelGallery.className = '';
       renderStreamed(e.text, false);
-      panelGallery.innerHTML = '';
+      renderGalleryThumbs(e.imgs);
       panelActions.style.display = 'flex';
       lastGeneratedRaw = e.text;
       panel.classList.add('open');
@@ -1855,7 +2358,28 @@ document.getElementById('histSelectAll').onclick = () => {
 };
 
 /* ==================== PDF: helper condiviso (jsPDF) ==================== */
-function addEntryToPdf(doc, title, bodyText, isFirstPage){
+/* Carica un'immagine e la converte in JPEG (dataURL) per jsPDF; null se non riuscito */
+function loadImageData(url){
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try{
+        const maxW = 800;
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve({ data: canvas.toDataURL('image/jpeg', 0.85), w: canvas.width, h: canvas.height });
+      }catch(e){ resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+async function addEntryToPdf(doc, title, bodyText, isFirstPage, imgUrls){
   if(!isFirstPage) doc.addPage();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -1898,20 +2422,57 @@ function addEntryToPdf(doc, title, bodyText, isFirstPage){
       y += 4;
     }
   });
+
+  // Foto della galleria
+  if(imgUrls && imgUrls.length){
+    for(const url of imgUrls){
+      const loaded = await loadImageData(url);
+      if(!loaded) continue; // immagine non caricabile (rete/CORS): la si salta
+      let imgW = Math.min(maxWidth, 120);
+      let imgH = imgW * (loaded.h / loaded.w);
+      const maxImgH = pageHeight - margin*2;
+      if(imgH > maxImgH){
+        imgW = imgW * (maxImgH / imgH);
+        imgH = maxImgH;
+      }
+      if(y + imgH > pageHeight - margin){ doc.addPage(); y = margin; }
+      doc.addImage(loaded.data, 'JPEG', margin, y, imgW, imgH);
+      y += imgH + 6;
+    }
+  }
 }
+
+/* --- Finestra flottante: includere le foto nel PDF? --- */
+let _pdfPhotoCb = null;
+function askPdfPhotos(cb, multi){
+  _pdfPhotoCb = cb;
+  document.getElementById('pdfPhotoQuestion').textContent = multi
+    ? 'Vuoi includere le foto delle schede nel PDF?'
+    : 'Vuoi includere anche le foto nel PDF?';
+  document.getElementById('pdfPhotoOverlay').classList.add('show');
+}
+function closePdfPhotos(){
+  document.getElementById('pdfPhotoOverlay').classList.remove('show');
+}
+document.getElementById('pdfPhotosYes').onclick = () => { closePdfPhotos(); const cb = _pdfPhotoCb; _pdfPhotoCb = null; cb && cb(true); };
+document.getElementById('pdfPhotosNo').onclick = () => { closePdfPhotos(); const cb = _pdfPhotoCb; _pdfPhotoCb = null; cb && cb(false); };
+document.getElementById('pdfPhotosCancel').onclick = () => { closePdfPhotos(); _pdfPhotoCb = null; };
 
 document.getElementById('histDownloadSelected').onclick = () => {
   const list = loadHistory();
   const checked = Array.from(histList.querySelectorAll('.hist-item-check:checked')).map(cb => +cb.dataset.check);
   if(!checked.length){ alert('Seleziona almeno una scheda dalla cronologia.'); return; }
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit:'mm', format:'a4' });
-  checked.forEach((idx, i) => {
-    const e = list[idx];
-    if(!e) return;
-    addEntryToPdf(doc, e.name, e.text, i === 0);
-  });
-  doc.save(checked.length > 1 ? 'atlante_schede.pdf' : `${(list[checked[0]].name||'scheda').replace(/[^\w\-]+/g,'_')}.pdf`);
+  askPdfPhotos(async (withPhotos) => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    for(let i = 0; i < checked.length; i++){
+      const e = list[checked[i]];
+      if(!e) continue;
+      const imgs = withPhotos ? (e.imgs || []).map(im => im.thumb).filter(Boolean) : [];
+      await addEntryToPdf(doc, e.name, e.text, i === 0, imgs);
+    }
+    doc.save(checked.length > 1 ? 'atlante_schede.pdf' : `${(list[checked[0]].name||'scheda').replace(/[^\w\-]+/g,'_')}.pdf`);
+  }, checked.length > 1);
 };
 
 /* ==================== 2. ESPORTAZIONE SCHEDA (.txt / .pdf) ==================== */
@@ -1943,11 +2504,19 @@ document.getElementById('exportTxtBtn').onclick = () => {
 document.getElementById('exportPdfBtn').onclick = () => {
   exportMenu.classList.remove('show');
   if(!lastGeneratedRaw){ alert('Nessuna scheda da esportare.'); return; }
-  const title = panelTitle.textContent || 'scheda';
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit:'mm', format:'a4' });
-  addEntryToPdf(doc, title, lastGeneratedRaw, true);
-  doc.save(`${title.replace(/[^\w\-]+/g,'_')}.pdf`);
+  askPdfPhotos(async (withPhotos) => {
+    const title = panelTitle.textContent || 'scheda';
+    let imgUrls = [];
+    if(withPhotos){
+      imgUrls = Array.from(panelGallery.querySelectorAll('.gallery-thumb'))
+        .map(im => im.getAttribute('src'))
+        .filter(Boolean);
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    await addEntryToPdf(doc, title, lastGeneratedRaw, true, imgUrls);
+    doc.save(`${title.replace(/[^\w\-]+/g,'_')}.pdf`);
+  }, false);
 };
 
 
@@ -1964,6 +2533,7 @@ compareToggle.addEventListener('change', () => {
   compareSlots = [];
   compareSlot.style.display = compareToggle.checked ? 'block' : 'none';
   updateCompareSlotUI();
+  updateOptionsSummary();
 });
 
 function addToCompare(country){
@@ -2061,7 +2631,7 @@ Un breve paragrafo conclusivo che aiuti chi legge a capire quale luogo si adatta
     cache[compareCacheKey] = { text: panelText.innerHTML, raw: full };
     lastGeneratedRaw = full;
     panelActions.style.display = 'flex';
-    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto'], full);
+    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto'], full, [], '');
     compareSlots = [];
     updateCompareSlotUI();
   }catch(err){
@@ -2102,6 +2672,7 @@ photoToggle.addEventListener('change', function() {
       panel.classList.remove('open');
     }
   }
+  updateOptionsSummary();
 });
 
 compareToggle.addEventListener('change', function() {
@@ -2109,6 +2680,7 @@ compareToggle.addEventListener('change', function() {
     photoToggle.checked = false;
     photoToggle.dispatchEvent(new Event('change'));
   }
+  updateOptionsSummary();
 });
 
 /* --- Funzione per aprire la galleria fotografica --- */
