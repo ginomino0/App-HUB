@@ -52,6 +52,51 @@ html,body{
 }
 #busyToast .loading-line{color:#e4ece7;font-style:normal;font-size:13px;}
 
+/* --- Tooltip per toggle --- */
+.toggle-with-tip{
+  position:relative;
+  cursor:pointer;
+}
+.toggle-with-tip .tooltip-text{
+  visibility:hidden;
+  opacity:0;
+  width:240px;
+  background:var(--ink);
+  color:#e4ece7;
+  text-align:left;
+  border-radius:4px;
+  padding:8px 12px;
+  position:absolute;
+  z-index:40;
+  bottom:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  font-size:11.5px;
+  font-weight:400;
+  line-height:1.45;
+  box-shadow:0 4px 12px rgba(0,0,0,0.25);
+  transition:opacity .2s, visibility .2s;
+  pointer-events:none;
+  white-space:normal;
+}
+.toggle-with-tip .tooltip-text::after{
+  content:'';
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  border:6px solid transparent;
+  border-top-color:var(--ink);
+}
+.toggle-with-tip:hover .tooltip-text{
+  visibility:visible;
+  opacity:1;
+}
+.toggle-with-tip .tooltip-text a{
+  color:#a9d4b8;
+  text-decoration:underline;
+}
+
 /* --- Header --- */
 header{
   position:fixed;top:0;left:0;right:0;
@@ -196,8 +241,27 @@ header *{pointer-events:auto;}
 }
 .hist-item-del:hover{text-decoration:underline;}
 .hist-empty{font-size:13px;color:#7a8880;padding:12px 0;}
+.hist-item .fav-btn{
+  background:none;border:none;font-size:16px;cursor:pointer;
+  padding:0 4px;transition:transform .15s;
+}
+.hist-item .fav-btn:hover{transform:scale(1.2);}
+.hist-item.fav{background:#f4f8f4;border-left:3px solid #f5b342;}
 
-/* --- Cronologia: nuova toolbar e footer --- */
+/* --- Filtro cronologia --- */
+.hist-filter-row{
+  display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;
+}
+.hist-filter-row input{
+  flex:1;min-width:120px;padding:8px 12px;
+  border:1px solid var(--line);border-radius:4px;
+  font-family:var(--font-body);font-size:13px;
+  outline:none;background:#fff;color:var(--ink);
+}
+.hist-filter-row input:focus{border-color:#8fb59f;}
+.hist-filter-row .btn{font-size:12px;padding:7px 14px;}
+
+/* --- Cronologia: toolbar e footer --- */
 .hist-toolbar {
   display:flex;
   align-items:center;
@@ -361,6 +425,12 @@ header *{pointer-events:auto;}
 .btn:hover{opacity:0.85;}
 .btn-primary{background:var(--moss);color:#fff;}
 .btn-ghost{background:transparent;color:#7a8880;border:1px solid var(--line);}
+.btn-star{
+  background:transparent;border:1px solid var(--line);color:#f5b342;
+  font-size:12px;padding:6px 12px;border-radius:3px;cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.btn-star:hover{border-color:#f5b342;color:#e09d2a;}
 
 /* --- Country card (popup) --- */
 #countryCard{
@@ -414,6 +484,18 @@ header *{pointer-events:auto;}
   font-size:12.5px;color:#5c6b62;line-height:1.5;margin-bottom:13px;
 }
 .cc-meta span{color:var(--moss-dark);}
+.cc-meta .coords-copy{cursor:pointer;text-decoration:underline dotted;}
+.cc-meta .coords-copy:hover{color:var(--clay);}
+
+/* --- Info utili (sezione comprimibile) --- */
+#usefulSection .useful-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:12.5px;
+}
+#usefulSection .useful-grid .label{color:#7a8880;}
+#usefulSection .useful-grid .value{color:var(--ink);}
+#usefulSection .useful-grid .value a{color:var(--moss-dark);text-decoration:underline;}
+#usefulSection .useful-grid .value a:hover{color:var(--moss);}
+
 .cc-chips{
   display:flex;flex-direction:column;gap:4px;margin-bottom:12px;
 }
@@ -477,10 +559,6 @@ header *{pointer-events:auto;}
 .wx-day-name{font-size:10.5px;text-transform:uppercase;letter-spacing:0.4px;color:#7a8880;}
 .wx-day-ico{font-size:18px;margin:2px 0;}
 .wx-day-temp{font-size:11px;color:#3a453f;font-weight:600;}
-
-/* --- Coordinate copiabili --- */
-.coords-copy{cursor:pointer;text-decoration:underline dotted;}
-.coords-copy:hover{color:var(--clay);}
 
 /* --- Segnaposto personali --- */
 .pin-btn{
@@ -600,20 +678,28 @@ header *{pointer-events:auto;}
   padding:12px 14px;border-radius:3px;font-size:13.5px;
 }
 
-
-/* --- galleria immagini --- */
+/* --- galleria immagini con didascalie --- */
 #panelGallery{
   display:grid;grid-template-columns:1fr 1fr;gap:8px;
   margin-bottom:20px;
 }
 #panelGallery:empty{margin-bottom:0;}
-.gallery-thumb{
-  width:100%;aspect-ratio:4/3;object-fit:cover;
-  border-radius:3px;cursor:pointer;
-  border:1px solid var(--line);
-  transition:opacity .15s;
+#panelGallery .gallery-item{
+  display:flex;flex-direction:column;
+  border:1px solid var(--line);border-radius:4px;overflow:hidden;
+  background:#fff;
 }
-.gallery-thumb:hover{opacity:0.85;}
+#panelGallery .gallery-thumb{
+  width:100%;aspect-ratio:4/3;object-fit:cover;
+  cursor:pointer;transition:opacity .15s;
+}
+#panelGallery .gallery-thumb:hover{opacity:0.85;}
+#panelGallery .gallery-caption{
+  font-size:10.5px;color:#7a8880;
+  padding:4px 6px;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  background:#fafafa;border-top:1px solid var(--line);
+}
 
 /* --- Modalità fotografica: griglia più grande --- */
 .photo-grid{
@@ -654,7 +740,7 @@ header *{pointer-events:auto;}
 }
 #ddPopup input:focus{ border-color:#8fb59f; }
 #ddPopup .dd-popup-row{ display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
-#ddPopup .dd-popup-row .btn{ font-size:12px; padding:7px 14px; }
+#ddPopup .dd-popup-row .btn{ font-size:12px; padding:5px 10px; }
 #ddHint{
   display:none; margin:6px 0 18px;
   font-size:12.5px; color:#7a8880;
@@ -1093,6 +1179,12 @@ header *{pointer-events:auto;}
     <h2>Cronologia schede</h2>
     <p>Le schede generate restano salvate nel tuo browser. Tocca un luogo per riaprirlo, seleziona più voci per scaricarle insieme in un unico PDF, oppure eliminale.</p>
     
+    <!-- Filtro di ricerca -->
+    <div class="hist-filter-row">
+      <input type="text" id="histFilter" placeholder="🔍 Filtra per nome…" autocomplete="off">
+      <button class="btn btn-ghost btn-sm" id="histFilterClear">✕ Cancella</button>
+    </div>
+    
     <!-- Riga 1: selezione + download PDF -->
     <div class="hist-toolbar">
       <button class="btn btn-ghost btn-sm" id="histSelectAll">☑ Seleziona tutto</button>
@@ -1105,6 +1197,8 @@ header *{pointer-events:auto;}
     <div class="hist-toolbar">
       <button class="btn btn-ghost btn-sm" id="histExportBtn">💾 Esporta backup</button>
       <button class="btn btn-ghost btn-sm" id="histImportBtn">📂 Importa backup</button>
+      <span class="hist-sep">|</span>
+      <button class="btn btn-ghost btn-sm" id="histShowFavOnly">⭐ Solo preferiti</button>
     </div>
     <input type="file" id="histImportFile" accept=".json,application/json" style="display:none;">
     
@@ -1131,6 +1225,18 @@ header *{pointer-events:auto;}
   <h2 class="cc-title" id="ccName">—</h2>
   <div class="cc-meta" id="ccMeta">—</div>
 
+  <!-- Info utili (sezione comprimibile) -->
+  <div id="usefulSection" class="collapsible closed">
+    <button type="button" class="collapse-head">
+      <span class="collapse-title">Info utili</span>
+      <span class="collapse-summary" id="usefulSummary"></span>
+      <span class="chev">▾</span>
+    </button>
+    <div class="collapse-body">
+      <div class="useful-grid" id="usefulGrid"></div>
+    </div>
+  </div>
+
   <!-- Meteo (sezione comprimibile) -->
   <div id="weatherSection" class="collapsible closed">
     <button type="button" class="collapse-head">
@@ -1151,18 +1257,21 @@ header *{pointer-events:auto;}
       <span class="chev">▾</span>
     </button>
     <div class="collapse-body">
-      <label class="compare-toggle">
+      <label class="compare-toggle toggle-with-tip">
         <input type="checkbox" id="compareToggle">
         Modalità confronto (scegli 2 luoghi)
+        <span class="tooltip-text">Attiva per confrontare due luoghi diversi: seleziona il primo, poi il secondo. Il sistema genererà un'analisi comparativa automatica.</span>
       </label>
-      <label class="compare-toggle photo-toggle">
+      <label class="compare-toggle photo-toggle toggle-with-tip">
         <input type="checkbox" id="photoToggle">
         Modalità fotografica
+        <span class="tooltip-text">Cerca e mostra fino a 50 immagini del luogo da Wikimedia Commons. Le foto sono filtrate per vicinanza geografica (entro 10 km).</span>
       </label>
       <div id="photoModeMsg" class="photo-mode-msg">🖼 Modalità fotografica attiva: clicca su un luogo per vedere le foto.</div>
-      <label class="compare-toggle websearch-toggle">
+      <label class="compare-toggle websearch-toggle toggle-with-tip">
         <input type="checkbox" id="wikiToggle">
         Usa anche Wikipedia per dettagli extra
+        <span class="tooltip-text">Aggiunge fatti specifici (nomi, date, cifre) da Wikipedia. Consuma più token: disattivato di default per non esaurire la quota giornaliera gratuita.</span>
       </label>
       <div class="photo-mode-msg">📚 Aggiunge fatti specifici (nomi, date, cifre) da Wikipedia, ma consuma più token per richiesta: disattivato di default per non esaurire in fretta la quota giornaliera gratuita.</div>
     </div>
@@ -1191,7 +1300,7 @@ header *{pointer-events:auto;}
     </div>
   </div>
 
-  <textarea id="customQuestion" placeholder="Oppure scrivi qui una domanda libera su questo luogo…" rows="2"></textarea>
+  <textarea id="customQuestion" placeholder="Seleziona una domanda rapida o chiedi informazioni su questo luogo…" rows="2"></textarea>
   <div class="cc-note">Nota: le informazioni fornite dall'AI possono contenere imprecisioni, verifica sempre i dati importanti.</div>
   <div class="gen-row">
     <button id="genBtn">Genera scheda con AI</button>
@@ -1710,6 +1819,45 @@ function hideWeather(){
   _weatherFor = null;
 }
 
+/* ==================== INFO UTILI DA NOMINATIM ==================== */
+function updateUsefulInfo(addr){
+  const grid = document.getElementById('usefulGrid');
+  const summary = document.getElementById('usefulSummary');
+  if(!addr || !Object.keys(addr).length){
+    grid.innerHTML = '<div style="font-size:12px;color:#7a8880;">Nessuna informazione disponibile per questo luogo.</div>';
+    summary.textContent = '';
+    return;
+  }
+  const fields = {
+    'CAP': addr.postcode || null,
+    'Prefisso': addr.phone || null,
+    'Codice ISTAT': addr.istat || null,
+    'Comune': addr.municipality || addr.city || addr.town || null,
+    'Provincia': addr.county || addr.state_district || null,
+    'Regione': addr.state || addr.region || null,
+    'Sito web': addr.website || null,
+    'Patrono': addr.patron_saint || null
+  };
+  let rows = '';
+  let count = 0;
+  for(const [label, value] of Object.entries(fields)){
+    if(value){
+      const val = label === 'Sito web' && value.startsWith('http')
+        ? `<a href="${value}" target="_blank" rel="noopener">${value.replace(/^https?:\/\//, '')}</a>`
+        : escapeHtml(value);
+      rows += `<div class="label">${label}</div><div class="value">${val}</div>`;
+      count++;
+    }
+  }
+  if(!count){
+    grid.innerHTML = '<div style="font-size:12px;color:#7a8880;">Nessuna informazione disponibile per questo luogo.</div>';
+    summary.textContent = '';
+    return;
+  }
+  grid.innerHTML = rows;
+  summary.textContent = '· ' + count + ' dati';
+}
+
 /* ==================== RECUPERO WIKIPEDIA: intero articolo (gratis) + estrazione locale mirata (a costo zero di token) ==================== */
 
 // cache di sessione: evita di riscaricare la stessa pagina per luoghi già consultati
@@ -1952,6 +2100,9 @@ function applyPlaceData(data, name){
   document.getElementById('customQuestion').value = '';
   genBtn.textContent = 'Genera scheda con AI';
 
+  // Info utili
+  updateUsefulInfo(addr);
+
   // Meteo: caricato SEMPRE appena si sceglie un luogo,
   // così l'anteprima (icona + gradi) compare nell'intestazione anche a sezione chiusa
   hideWeather();
@@ -2139,15 +2290,18 @@ Descrivi geografia, territorio, clima ed essenza del luogo: cosa lo caratterizza
 /* ==================== GENERAZIONE SCHEDA CON WIKIPEDIA + GEMINI (unione silenziosa) ==================== */
 const panelGallery = document.getElementById('panelGallery');
 
-/* --- Render galleria da array {thumb, full} --- */
+/* --- Render galleria da array {thumb, full, title} --- */
 function renderGalleryThumbs(items){
   if(!items || !items.length){
     panelGallery.innerHTML = '';
     return;
   }
-  panelGallery.innerHTML = items.map(im =>
-    `<img class="gallery-thumb" src="${im.thumb}" data-full="${im.full}" alt="">`
-  ).join('');
+  panelGallery.innerHTML = items.map(im => `
+    <div class="gallery-item">
+      <img class="gallery-thumb" src="${im.thumb}" data-full="${im.full}" alt="${escapeHtml(im.title || '')}">
+      <div class="gallery-caption">${escapeHtml(im.title || '')}</div>
+    </div>
+  `).join('');
   const urls = items.map(im => im.full);
   panelGallery.querySelectorAll('.gallery-thumb').forEach((img, idx) => {
     img.onclick = () => openLightbox(idx, urls);
@@ -2338,15 +2492,13 @@ async function fetchGallery(name, type){
       .map(p => p.imageinfo && p.imageinfo[0])
       .filter(info => info && info.mime && info.mime.startsWith('image/') && !info.mime.includes('svg'))
       .slice(0, 4)
-      .map(info => ({ thumb: info.thumburl || info.url, full: info.url }));
+      .map(info => ({ 
+        thumb: info.thumburl || info.url, 
+        full: info.url,
+        title: p.title ? p.title.replace(/\.(jpg|jpeg|png|gif|svg|webp)$/i, '').replace(/_/g, ' ') : ''
+      }));
     if(!items.length) return [];
-    panelGallery.innerHTML = items.map(im =>
-      `<img class="gallery-thumb" src="${im.thumb}" data-full="${im.full}" alt="${escapeHtml(name)}">`
-    ).join('');
-    const urls = items.map(im => im.full);
-    panelGallery.querySelectorAll('.gallery-thumb').forEach((img, idx) => {
-      img.onclick = () => openLightbox(idx, urls);
-    });
+    renderGalleryThumbs(items);
     return items;
   }catch(e){
     return [];
@@ -2643,6 +2795,8 @@ function escapeHtml(s){
 /* ==================== 1. CRONOLOGIA (localStorage) ==================== */
 const HIST_KEY = 'atlante_history_v1';
 let lastGeneratedRaw = '';
+let _favFilter = false;
+let _histFilterText = '';
 
 function loadHistory(){
   try{ return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); }
@@ -2659,6 +2813,7 @@ function saveToHistory(name, labelsChosen, rawText, imgs, q, wikiUsed, place){
     name, labels: labelsChosen, text: rawText,
     imgs: imgs || [], q: q || '', wiki: !!wikiUsed,
     place: place || null,
+    fav: false,
     date: new Date().toISOString()
   };
   // due schede sono "la stessa scheda" solo se coincidono anche per lo stato della spunta Wikipedia:
@@ -2700,6 +2855,24 @@ document.getElementById('histDeleteSelected').onclick = () => {
     persistHistory(updatedList);
     renderHistory();
   }
+};
+
+/* --- Filtro cronologia --- */
+document.getElementById('histFilter').addEventListener('input', (e) => {
+  _histFilterText = e.target.value.toLowerCase().trim();
+  renderHistory();
+});
+document.getElementById('histFilterClear').onclick = () => {
+  document.getElementById('histFilter').value = '';
+  _histFilterText = '';
+  renderHistory();
+};
+
+/* --- Solo preferiti --- */
+document.getElementById('histShowFavOnly').onclick = function(){
+  _favFilter = !_favFilter;
+  this.textContent = _favFilter ? '⭐ Tutti' : '⭐ Solo preferiti';
+  renderHistory();
 };
 
 /* --- Backup cronologia: esporta / importa JSON --- */
@@ -2760,7 +2933,18 @@ document.getElementById('histDeselectAll').onclick = () => {
 };
 
 function renderHistory(){
-  const list = loadHistory();
+  let list = loadHistory();
+  
+  // Applica filtro per nome
+  if(_histFilterText){
+    list = list.filter(e => e.name.toLowerCase().includes(_histFilterText));
+  }
+  
+  // Applica filtro "solo preferiti"
+  if(_favFilter){
+    list = list.filter(e => e.fav === true);
+  }
+  
   if(!list.length){
     histList.innerHTML = '<div class="hist-empty">Nessuna scheda salvata finora. Genera una scheda per vederla comparire qui.</div>';
     return;
@@ -2768,22 +2952,27 @@ function renderHistory(){
   histList.innerHTML = list.map((e,i) => {
     const d = new Date(e.date);
     const dateStr = d.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' });
-    return `<div class="hist-item">
+    const star = e.fav ? '⭐' : '☆';
+    return `<div class="hist-item${e.fav ? ' fav' : ''}" data-index="${i}">
       <input type="checkbox" class="hist-item-check" data-check="${i}">
       <div class="hist-item-main" data-i="${i}">
         <span class="hist-item-name">${escapeHtml(e.name)}</span>
         <span class="hist-item-labels">(${escapeHtml((e.labels||[]).join(' · '))}${e.wiki ? ' · 📚 Wikipedia' : ''})</span>
       </div>
       <div class="hist-item-right">
+        <button class="fav-btn" data-fav="${i}" title="${e.fav ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}">${star}</button>
         <span class="hist-item-meta">${dateStr}</span>
         <button class="hist-item-del" data-del="${i}">Elimina</button>
       </div>
     </div>`;
   }).join('');
 
+  // Apri scheda
   histList.querySelectorAll('.hist-item-main').forEach(el => {
     el.onclick = () => {
-      const e = list[+el.dataset.i];
+      const idx = +el.dataset.i;
+      const fullList = loadHistory();
+      const e = fullList[idx];
       if(!e) return;
       panelEyebrow.textContent = (e.labels.join(' · ') || 'SCHEDA').toUpperCase();
       panelTitle.textContent = e.name;
@@ -2804,6 +2993,22 @@ function renderHistory(){
       historyOverlay.classList.remove('show');
     };
   });
+  
+  // Pulsante preferiti
+  histList.querySelectorAll('.fav-btn').forEach(btn => {
+    btn.onclick = (ev) => {
+      ev.stopPropagation();
+      const idx = +btn.dataset.fav;
+      const fullList = loadHistory();
+      if(fullList[idx]){
+        fullList[idx].fav = !fullList[idx].fav;
+        persistHistory(fullList);
+        renderHistory();
+      }
+    };
+  });
+  
+  // Elimina singola
   histList.querySelectorAll('.hist-item-del').forEach(btn => {
     btn.onclick = (ev) => {
       ev.stopPropagation();
@@ -2924,7 +3129,7 @@ document.getElementById('pdfPhotosNo').onclick = () => { closePdfPhotos(); const
 document.getElementById('pdfPhotosCancel').onclick = () => { closePdfPhotos(); _pdfPhotoCb = null; };
 
 document.getElementById('histDownloadSelected').onclick = () => {
-  const list = loadHistory();
+  const fullList = loadHistory();
   const checked = Array.from(histList.querySelectorAll('.hist-item-check:checked')).map(cb => +cb.dataset.check);
   if(!checked.length){ alert('Seleziona almeno una scheda dalla cronologia.'); return; }
   askPdfPhotos(async (withPhotos) => {
@@ -2933,12 +3138,12 @@ document.getElementById('histDownloadSelected').onclick = () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit:'mm', format:'a4' });
       for(let i = 0; i < checked.length; i++){
-        const e = list[checked[i]];
+        const e = fullList[checked[i]];
         if(!e) continue;
         const imgs = withPhotos ? (e.imgs || []).map(im => im.thumb).filter(Boolean) : [];
         await addEntryToPdf(doc, e.name, e.text, i === 0, imgs);
       }
-      doc.save(checked.length > 1 ? 'atlante_schede.pdf' : `${(list[checked[0]].name||'scheda').replace(/[^\w\-]+/g,'_')}.pdf`);
+      doc.save(checked.length > 1 ? 'atlante_schede.pdf' : `${(fullList[checked[0]].name||'scheda').replace(/[^\w\-]+/g,'_')}.pdf`);
     }finally{
       hideBusy();
     }
@@ -3577,6 +3782,7 @@ async function goDeepDive(){
       name: histName, labels, text: withHeader,
       imgs: [], q: question, wiki: false,
       placeflag: isPlace, place,
+      fav: false,
       date: new Date().toISOString()
     };
     const filtered = list.filter(e => !(e.name === histName && (e.labels||[]).join(',') === labels.join(',') && (e.q||'') === question));
