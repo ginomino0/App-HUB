@@ -33,6 +33,25 @@ html,body{
 .leaflet-control-zoom a{color:var(--ink) !important;}
 .leaflet-popup-content-wrapper{border-radius:4px;}
 
+/* --- Indicatore di caricamento con puntini in loop --- */
+.loading-line{
+  display:inline-flex;align-items:baseline;
+  color:#8a958e;font-size:14px;font-style:italic;
+}
+.loading-line .dots-count{display:inline-block;min-width:14px;text-align:left;font-weight:700;}
+#busyToast{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  background:rgba(16,28,26,0.92);color:#e4ece7;
+  padding:10px 22px;border-radius:30px;
+  z-index:300;
+  box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(4px);
+  max-width:80vw;
+  display:none;
+}
+#busyToast .loading-line{color:#e4ece7;font-style:normal;font-size:13px;}
+
 /* --- Header --- */
 header{
   position:fixed;top:0;left:0;right:0;
@@ -812,6 +831,9 @@ header *{pointer-events:auto;}
 
 <div id="hint">Trascina per spostarti · scorri per lo zoom fin dentro le vie · clicca ovunque</div>
 
+<!-- Pillola di caricamento flottante (per PDF e operazioni lunghe) -->
+<div id="busyToast"></div>
+
 <div id="searchBar">
   <div class="search-row">
     <input type="text" id="searchInput" placeholder="Cerca una città, frazione, chiesa, monumento, montagna…" autocomplete="off">
@@ -857,6 +879,7 @@ header *{pointer-events:auto;}
         <li><strong>Meteo:</strong> selezionato un luogo, l'intestazione della sezione <strong>"Meteo"</strong> mostra subito icona e temperatura; aprila con la freccetta per il dettaglio (condizione attuale, vento, umidità e previsioni dei 3 giorni successivi), senza bisogno della chiave AI.</li>
         <li><strong>Sezioni comprimibili:</strong> la scheda del luogo è compatta: all'apertura del programma <strong>Meteo</strong>, <strong>Comandi aggiuntivi</strong> e <strong>Domande rapide</strong> sono sempre chiuse; si aprono e chiudono con la freccetta mentre lo usi. Se lo schermo è piccolo, la scheda scorre al suo interno senza mai uscire dallo schermo.</li>
         <li><strong>Barra di ricerca</strong> (in alto): scrivi il nome di città, frazione, monumento, fiume o montagna e seleziona il risultato corretto dall'elenco. Il pulsante rotondo <strong>"?"</strong> accanto dà consigli su come cercare luoghi piccoli o poco noti.</li>
+        <li><strong>Caricamento:</strong> durante le operazioni che richiedono qualche secondo (localizzazione, meteo, schede AI, confronti, foto, PDF) compare un messaggio con puntini animati, per indicare che il programma sta lavorando.</li>
       </ul>
 
       <h3>3. Generare una scheda con l'AI</h3>
@@ -869,7 +892,7 @@ header *{pointer-events:auto;}
       <h3>4. Confronto tra due luoghi</h3>
       <ul>
         <li>Attiva <strong>"Modalità confronto"</strong> nella sezione <strong>"Comandi aggiuntivi"</strong> della scheda del luogo.</li>
-        <li>Seleziona un primo luogo (mappa o ricerca), poi un secondo: viene generato automaticamente un confronto tra i due (dati, somiglianze, differenze, sintesi finale).</li>
+        <li>Seleziona un primo luogo (mappa o ricerca), poi un secondo: viene generato automaticamente un confronto tra i due (dati, somiglianze, differenze, sintesi finale). Durante l'attesa compare il messaggio di caricamento.</li>
       </ul>
 
       <h3>5. Modalità fotografica</h3>
@@ -877,7 +900,7 @@ header *{pointer-events:auto;}
 
       <h3>6. Il pannello della scheda generata</h3>
       <ul>
-        <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato. Generando il PDF, il programma chiede se <strong>includere anche le foto</strong> della galleria: puoi scegliere "Con foto" o "Solo testo".</li>
+        <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato. Generando il PDF, il programma chiede se <strong>includere anche le foto</strong> della galleria: puoi scegliere "Con foto" o "Solo testo". Durante la generazione compare l'avviso di caricamento in alto.</li>
         <li><strong>Linguetta "Scheda AI":</strong> compare quando chiudi il pannello pur avendo una scheda aperta; permette di consultare la mappa e riaprire la scheda con un clic, senza perderla.</li>
       </ul>
 
@@ -1131,6 +1154,33 @@ header *{pointer-events:auto;}
 </div>
 
 <script>
+/* ---------------- Indicatore di caricamento (puntini in loop) ---------------- */
+function loadingHtml(msg){
+  return `<span class="loading-line">${msg}<span class="dots-count"></span></span>`;
+}
+/* Fa aumentare i puntini di numero in loop (1→2→3→1...); si ferma da solo
+   quando il contenitore viene rimpiazzato dal contenuto vero. */
+function animateDots(container){
+  let n = 0;
+  const timer = setInterval(() => {
+    const d = container.querySelector('.dots-count');
+    if(!d){ clearInterval(timer); return; }
+    n = (n % 3) + 1;
+    d.textContent = '.'.repeat(n);
+  }, 350);
+}
+function showBusy(msg){
+  const t = document.getElementById('busyToast');
+  t.innerHTML = loadingHtml(msg);
+  t.style.display = 'block';
+  animateDots(t);
+}
+function hideBusy(){
+  const t = document.getElementById('busyToast');
+  t.style.display = 'none';
+  t.innerHTML = '';
+}
+
 /* ---------------- Stato chiave API ---------------- */
 const keyBtn = document.getElementById('keyBtn');
 const keyOverlay = document.getElementById('keyOverlay');
@@ -1206,7 +1256,6 @@ function makePinId(){
 function loadPins(){
   try{
     const list = JSON.parse(localStorage.getItem(PINS_KEY) || '[]');
-    // Migrazione: ai pin vecchi senza id ne assegna uno e riscrive subito
     let changed = false;
     list.forEach(p => { if(!p.id){ p.id = makePinId(); changed = true; } });
     if(changed) persistPins(list);
@@ -1217,7 +1266,6 @@ function persistPins(list){
   try{ localStorage.setItem(PINS_KEY, JSON.stringify(list.slice(0, 200))); }
   catch(e){ /* storage pieno o non disponibile */ }
 }
-// Eliminazione per ID: immediata e affidabile anche dopo riapertura del programma
 function deletePinById(id){
   persistPins(loadPins().filter(p => p.id !== id));
 }
@@ -1251,14 +1299,13 @@ function addPinMarker(pin){
       handlePointClick(pin.lat, pin.lon);
     };
     node.querySelector('.pin-del').onclick = () => {
-      deletePinById(pin.id);   // rimozione immediata e persistente
+      deletePinById(pin.id);
       map.removeLayer(m);
     };
   });
   return m;
 }
 
-// Carica i segnaposto salvati dalle sessioni precedenti
 loadPins().forEach(addPinMarker);
 
 /* --- Finestra nuovo segnaposto (nome + nota) --- */
@@ -1296,8 +1343,8 @@ document.getElementById('pinSave').onclick = () => {
   };
   const pins = loadPins();
   pins.push(pin);
-  persistPins(pins);        // salvataggio immediato su disco
-  addPinMarker(pin);        // puntina subito visibile sulla mappa
+  persistPins(pins);
+  addPinMarker(pin);
   pinOverlay.classList.remove('show');
   savePinBtn.textContent = '📌 Segnaposto salvato ✓';
   setTimeout(() => { savePinBtn.textContent = '📌 Salva come segnaposto'; }, 1600);
@@ -1428,7 +1475,6 @@ function weatherDesc(code){
   return m[code] || '—';
 }
 
-// Chiamato all'APERTURA della sezione meteo: rifà il fetch solo se serve davvero
 function maybeFetchWeather(){
   const box = document.getElementById('weatherBox');
   if(!currentCountry || currentCountry.lat == null || currentCountry.lon == null){
@@ -1436,14 +1482,15 @@ function maybeFetchWeather(){
     return;
   }
   const key = currentCountry.lat + ',' + currentCountry.lon;
-  if(_weatherFor === key) return; // già caricato (o in caricamento) per questo luogo
+  if(_weatherFor === key) return;
   fetchWeather(currentCountry.lat, currentCountry.lon);
 }
 
 async function fetchWeather(lat, lon){
   const box = document.getElementById('weatherBox');
   const summary = document.getElementById('weatherSummary');
-  box.innerHTML = '<div class="wx-loading">Meteo in caricamento…</div>';
+  box.innerHTML = loadingHtml('Caricamento informazioni meteo');
+  animateDots(box);
   summary.textContent = '';
   try{
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4`;
@@ -1452,7 +1499,6 @@ async function fetchWeather(lat, lon){
     const c = d.current;
     const days = d.daily;
     _weatherFor = lat + ',' + lon;
-    // Anteprima nell'intestazione: visibile anche a sezione chiusa
     summary.textContent = weatherEmoji(c.weather_code) + ' ' + Math.round(c.temperature_2m) + '°C';
     let daysHtml = '';
     for(let i = 1; i < days.time.length; i++){
@@ -1544,9 +1590,10 @@ function applyPlaceData(data, name){
 
 async function handlePointClick(lat, lng){
   ccName.textContent = 'Sto localizzando…';
-  ccMeta.textContent = '—';
+  ccMeta.innerHTML = loadingHtml('Caricamento informazioni luogo');
+  animateDots(ccMeta);
   hideWeather();
-  currentExactPoint = { lat, lon: lng }; // punto esatto del clic, per il segnaposto
+  currentExactPoint = { lat, lon: lng };
   if (!photoToggle || !photoToggle.checked) {
     expandCard();
   } else {
@@ -1606,7 +1653,7 @@ async function runSearch(q){
         searchResults.classList.remove('show');
         const exactName = r.namedetails?.name || r.display_name.split(',')[0];
         searchInput.value = exactName;
-        currentExactPoint = { lat: +r.lat, lon: +r.lon }; // punto scelto dalla ricerca
+        currentExactPoint = { lat: +r.lat, lon: +r.lon };
         flyTo(+r.lat, +r.lon, 15);
         if (photoToggle && photoToggle.checked) {
           collapseCard();
@@ -1792,7 +1839,8 @@ genBtn.onclick = async () => {
     return;
   }
 
-  panelText.innerHTML = '<div class="panel-loading">Sto componendo la scheda…</div>';
+  panelText.innerHTML = loadingHtml('Caricamento informazioni: sto componendo la scheda');
+  animateDots(panelText);
   panelGallery.innerHTML = '';
   panelActions.style.display = 'none';
   genBtn.disabled = true;
@@ -2463,15 +2511,20 @@ document.getElementById('histDownloadSelected').onclick = () => {
   const checked = Array.from(histList.querySelectorAll('.hist-item-check:checked')).map(cb => +cb.dataset.check);
   if(!checked.length){ alert('Seleziona almeno una scheda dalla cronologia.'); return; }
   askPdfPhotos(async (withPhotos) => {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit:'mm', format:'a4' });
-    for(let i = 0; i < checked.length; i++){
-      const e = list[checked[i]];
-      if(!e) continue;
-      const imgs = withPhotos ? (e.imgs || []).map(im => im.thumb).filter(Boolean) : [];
-      await addEntryToPdf(doc, e.name, e.text, i === 0, imgs);
+    showBusy('Caricamento informazioni: sto generando il PDF');
+    try{
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit:'mm', format:'a4' });
+      for(let i = 0; i < checked.length; i++){
+        const e = list[checked[i]];
+        if(!e) continue;
+        const imgs = withPhotos ? (e.imgs || []).map(im => im.thumb).filter(Boolean) : [];
+        await addEntryToPdf(doc, e.name, e.text, i === 0, imgs);
+      }
+      doc.save(checked.length > 1 ? 'atlante_schede.pdf' : `${(list[checked[0]].name||'scheda').replace(/[^\w\-]+/g,'_')}.pdf`);
+    }finally{
+      hideBusy();
     }
-    doc.save(checked.length > 1 ? 'atlante_schede.pdf' : `${(list[checked[0]].name||'scheda').replace(/[^\w\-]+/g,'_')}.pdf`);
   }, checked.length > 1);
 };
 
@@ -2505,17 +2558,22 @@ document.getElementById('exportPdfBtn').onclick = () => {
   exportMenu.classList.remove('show');
   if(!lastGeneratedRaw){ alert('Nessuna scheda da esportare.'); return; }
   askPdfPhotos(async (withPhotos) => {
-    const title = panelTitle.textContent || 'scheda';
-    let imgUrls = [];
-    if(withPhotos){
-      imgUrls = Array.from(panelGallery.querySelectorAll('.gallery-thumb'))
-        .map(im => im.getAttribute('src'))
-        .filter(Boolean);
+    showBusy('Caricamento informazioni: sto generando il PDF');
+    try{
+      const title = panelTitle.textContent || 'scheda';
+      let imgUrls = [];
+      if(withPhotos){
+        imgUrls = Array.from(panelGallery.querySelectorAll('.gallery-thumb'))
+          .map(im => im.getAttribute('src'))
+          .filter(Boolean);
+      }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit:'mm', format:'a4' });
+      await addEntryToPdf(doc, title, lastGeneratedRaw, true, imgUrls);
+      doc.save(`${title.replace(/[^\w\-]+/g,'_')}.pdf`);
+    }finally{
+      hideBusy();
     }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit:'mm', format:'a4' });
-    await addEntryToPdf(doc, title, lastGeneratedRaw, true, imgUrls);
-    doc.save(`${title.replace(/[^\w\-]+/g,'_')}.pdf`);
   }, false);
 };
 
@@ -2579,7 +2637,8 @@ async function runCompare(){
     return;
   }
 
-  panelText.innerHTML = '<div class="panel-loading">Sto confrontando i due luoghi…</div>';
+  panelText.innerHTML = loadingHtml('Caricamento informazioni: sto confrontando i due luoghi');
+  animateDots(panelText);
 
   const prompt = `Confronta questi due luoghi: "${a.name}" (regione: ${a.region}, stato: ${a.country}) e "${b.name}" (regione: ${b.region}, stato: ${b.country}).
 Scrivi in italiano, tono divulgativo. Usa "##" prima di ogni titolo di sezione e testo semplice sotto (no markdown per grassetto/elenchi salvo dove indicato).
@@ -2698,7 +2757,8 @@ function openPhotoGallery(place) {
   panelActions.style.display = 'none';
   panelGallery.className = 'photo-grid';
   panelGallery.style.display = 'grid';
-  panelGallery.innerHTML = '<div class="panel-loading">Caricamento foto…</div>';
+  panelGallery.innerHTML = loadingHtml('Caricamento informazioni: cerco le foto');
+  animateDots(panelGallery);
 
   const lat = place.lat;
   const lon = place.lon;
