@@ -33,7 +33,6 @@ html,body{
 .leaflet-control-zoom a{color:var(--ink) !important;}
 .leaflet-popup-content-wrapper{border-radius:4px;}
 
-/* --- Loading indicator --- */
 .loading-line{
   display:inline-flex;align-items:baseline;
   color:#8a958e;font-size:14px;font-style:italic;
@@ -52,7 +51,6 @@ html,body{
 }
 #busyToast .loading-line{color:#e4ece7;font-style:normal;font-size:13px;}
 
-/* --- Tooltips for toggles --- */
 .toggle-with-tip{
   position:relative;
   cursor:pointer;
@@ -97,7 +95,6 @@ html,body{
   text-decoration:underline;
 }
 
-/* --- Header --- */
 header{
   position:fixed;top:0;left:0;right:0;
   display:flex;align-items:center;justify-content:space-between;
@@ -170,7 +167,6 @@ header *{pointer-events:auto;}
 }
 #instrBtn:hover{background:#cc3c30;transform:scale(1.05);}
 
-/* --- Instructions modal --- */
 .instr-body{max-height:65vh;overflow-y:auto;padding-right:6px;font-size:13.5px;line-height:1.55;}
 .instr-body h3{
   font-family:var(--font-display);color:var(--moss-dark);
@@ -185,7 +181,6 @@ header *{pointer-events:auto;}
 .instr-body a{color:var(--moss-dark);text-decoration:underline;}
 .instr-body a:hover{color:var(--moss);}
 
-/* --- History modal --- */
 .hist-list{max-height:50vh;overflow-y:auto;margin-bottom:10px;padding-right:4px;}
 .hist-item{
   display:grid;
@@ -248,7 +243,6 @@ header *{pointer-events:auto;}
 .hist-item .fav-btn:hover{transform:scale(1.2);}
 .hist-item.fav{background:#f4f8f4;border-left:3px solid #f5b342;}
 
-/* --- History filter --- */
 .hist-filter-row{
   display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;
 }
@@ -261,7 +255,6 @@ header *{pointer-events:auto;}
 .hist-filter-row input:focus{border-color:#8fb59f;}
 .hist-filter-row .btn{font-size:12px;padding:7px 14px;}
 
-/* --- History toolbar and footer --- */
 .hist-toolbar {
   display:flex;
   align-items:center;
@@ -303,7 +296,6 @@ header *{pointer-events:auto;}
   padding:6px 14px;
 }
 
-/* --- Collapsible sections --- */
 .collapsible{
   border:1px solid var(--line);
   border-radius:4px;
@@ -332,7 +324,6 @@ header *{pointer-events:auto;}
 .collapse-body .cc-chips{margin-bottom:2px;}
 .cc-chips .cc-chip{padding:2px 4px;}
 
-/* --- Compare mode --- */
 .compare-toggle{
   display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5c6b62;
   cursor:pointer;
@@ -349,7 +340,6 @@ header *{pointer-events:auto;}
   display:none;
 }
 
-/* --- Panel actions --- */
 .panel-actions{
   display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap;
 }
@@ -380,7 +370,6 @@ header *{pointer-events:auto;}
 .hist-select-row .btn{font-size:12px;padding:7px 12px;}
 .hist-item-check{margin-right:4px;accent-color:var(--moss);cursor:pointer;flex:none;}
 
-/* --- Key modal --- */
 .overlay{
   position:fixed;inset:0;background:rgba(8,14,12,0.72);
   display:none;align-items:center;justify-content:center;z-index:100;
@@ -432,7 +421,6 @@ header *{pointer-events:auto;}
 }
 .btn-star:hover{border-color:#f5b342;color:#e09d2a;}
 
-/* --- Country card --- */
 #countryCard{
   position:fixed;
   left:26px;bottom:40px;transform:translateY(30px);
@@ -487,7 +475,6 @@ header *{pointer-events:auto;}
 .cc-meta .coords-copy{cursor:pointer;text-decoration:underline dotted;}
 .cc-meta .coords-copy:hover{color:var(--clay);}
 
-/* --- Useful info section --- */
 #usefulSection .useful-grid{
   display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:12.5px;
 }
@@ -547,7 +534,6 @@ header *{pointer-events:auto;}
 }
 #genHelpBtn:hover{border-color:#8fb59f;color:var(--ink);}
 
-/* --- Weather --- */
 .wx-loading{font-size:12px;color:#7a8880;font-style:italic;padding:2px 0;}
 .wx-current{display:flex;align-items:center;gap:10px;margin-top:2px;}
 .wx-ico{font-size:26px;line-height:1;}
@@ -560,7 +546,6 @@ header *{pointer-events:auto;}
 .wx-day-ico{font-size:18px;margin:2px 0;}
 .wx-day-temp{font-size:11px;color:#3a453f;font-weight:600;}
 
-/* --- Custom pins --- */
 .pin-btn{
   width:100%;margin-top:8px;
   background:#fff;border:1px solid var(--line);color:#5c6b62;
@@ -594,7 +579,6 @@ header *{pointer-events:auto;}
 .pin-popup button.pin-open:hover{border-color:#8fb59f;}
 .pin-popup button.pin-del{color:#b5651d;}
 
-/* --- Sliding panel --- */
 #panel{
   position:fixed;top:0;right:0;bottom:0;
   width:min(460px,100vw);
@@ -678,7 +662,6 @@ header *{pointer-events:auto;}
   padding:12px 14px;border-radius:3px;font-size:13.5px;
 }
 
-/* --- Gallery with captions --- */
 #panelGallery{
   display:grid;grid-template-columns:1fr 1fr;gap:8px;
   margin-bottom:20px;
@@ -701,7 +684,6 @@ header *{pointer-events:auto;}
   background:#fafafa;border-top:1px solid var(--line);
 }
 
-/* --- Photo mode grid --- */
 .photo-grid{
   display:grid !important;
   grid-template-columns:repeat(auto-fill, minmax(130px,1fr)) !important;
@@ -715,7 +697,6 @@ header *{pointer-events:auto;}
 }
 .photo-thumb:hover{transform:scale(1.02);}
 
-/* --- Deep Dive popup --- */
 #ddPopup{
   position:fixed; display:none; z-index:200;
   width:min(380px,92vw);
@@ -775,7 +756,6 @@ header *{pointer-events:auto;}
 .dd-btn:hover{ border-color:#8fb59f; color:var(--ink); }
 .dd-btn:disabled{ opacity:.5; cursor:default; }
 
-/* --- Lightbox --- */
 #imgModal {
   z-index:110;
   background:transparent;
@@ -842,7 +822,6 @@ header *{pointer-events:auto;}
   -webkit-user-drag:none;
 }
 
-/* Image name (top, clean, no blur) */
 #imgModal .image-name {
   position:absolute;
   top:14px;
@@ -864,7 +843,6 @@ header *{pointer-events:auto;}
   z-index:6;
 }
 
-/* Navigation buttons */
 .nav-btn {
   position:fixed;
   top:50%;
@@ -893,7 +871,6 @@ header *{pointer-events:auto;}
   pointer-events:none;
 }
 
-/* Counter */
 #imgModal #imgCounter {
   position:absolute;
   top:16px;
@@ -910,7 +887,6 @@ header *{pointer-events:auto;}
   letter-spacing:0.5px;
 }
 
-/* Zoom controls */
 #imgModal .zoom-controls {
   display:flex;
   gap:8px;
@@ -949,17 +925,15 @@ header *{pointer-events:auto;}
   border-color:rgba(255,255,255,0.1);
 }
 
-/* --- Footer hint --- */
 #hint{
   position:fixed;bottom:20px;left:30px;
   font-size:12px;color:#7e8f86;z-index:20;
   letter-spacing:0.2px;
 }
 
-/* --- Search --- */
 #searchBar{
   position:fixed;top:16px;left:50%;transform:translateX(-50%);
-  width:min(380px,80vw);z-index:25;
+  width:min(420px,82vw);z-index:25;
 }
 .search-row{display:flex;gap:8px;align-items:center;}
 #searchInput{
@@ -970,6 +944,16 @@ header *{pointer-events:auto;}
   backdrop-filter:blur(6px);
   outline:none;
 }
+#randomBtn{
+  flex-shrink:0;width:38px;height:38px;box-sizing:border-box;
+  background:rgba(16,28,26,0.78);
+  border:1px solid #3f524a;border-radius:50%;
+  color:#f5b342;font-family:var(--font-body);font-size:20px;
+  cursor:pointer;backdrop-filter:blur(6px);
+  transition:border-color .2s, background .2s, transform .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+#randomBtn:hover{border-color:#f5b342;background:rgba(16,28,26,0.95);transform:scale(1.05);}
 #helpBtn{
   flex-shrink:0;width:38px;height:38px;box-sizing:border-box;
   background:rgba(16,28,26,0.78);
@@ -1017,13 +1001,13 @@ header *{pointer-events:auto;}
   </div>
 </header>
 
-<div id="hint">Trascina per spostarti · scorri per lo zoom fin dentro le vie · clicca ovunque</div>
+<div id="hint">Trascina per spostarti · scorri per lo zoom · clicca ovunque · 🎲 per esplorare</div>
 
-<!-- Floating loading pill -->
 <div id="busyToast"></div>
 
 <div id="searchBar">
   <div class="search-row">
+    <button id="randomBtn" title="Esplora un luogo a caso nel mondo">🎲</button>
     <input type="text" id="searchInput" placeholder="Cerca una città, frazione, chiesa, monumento, montagna…" autocomplete="off">
     <button id="helpBtn" aria-label="Aiuto ricerca">?</button>
   </div>
@@ -1034,7 +1018,6 @@ header *{pointer-events:auto;}
   <div class="keycard keycard-wide">
     <h2>Guida all'uso di Atlante Vivo</h2>
     <div class="instr-body">
-
       <h3>1. Configura la tua chiave API Gemini</h3>
       <p>Per generare le schede con l'intelligenza artificiale ti serve una chiave API Gemini personale, gratuita. Va fatto una sola volta.</p>
       <h4>Crea la chiave su Google AI Studio</h4>
@@ -1050,7 +1033,6 @@ header *{pointer-events:auto;}
         <li>Incolla il codice copiato nel campo di testo e premi <strong>Salva</strong>.</li>
         <li>La chiave resta salvata solo nel tuo browser: non serve reinserirla ogni volta che riapri il programma.</li>
       </ul>
-
       <h3>2. Muoviti sulla mappa e trova un luogo</h3>
       <p>
         In alto a sinistra puoi scegliere tra due mappe: <strong>"🗺 Strade"</strong>, la carta
@@ -1063,10 +1045,10 @@ header *{pointer-events:auto;}
         <li><strong>Spostamento:</strong> trascina la mappa tenendo premuto il tasto sinistro.</li>
         <li><strong>Scegli un luogo cliccando:</strong> clicca in un punto qualsiasi della mappa e leggi subito nome, regione, stato e coordinate — non serve la chiave AI per questo. Le coordinate si copiano negli appunti con un clic.</li>
         <li><strong>Oppure cercalo per nome:</strong> usa la barra di ricerca in alto — città, frazione, chiesa, monumento, fiume o montagna — e seleziona il risultato giusto dall'elenco. Il pulsante rotondo <strong>"?"</strong> accanto ti aiuta se un luogo piccolo o poco noto non compare.</li>
-        <li><strong>Meteo del luogo:</strong> non appena selezioni un punto, l'intestazione della sezione <strong>"Meteo"</strong> mostra già icona e temperatura; aprila con la freccetta per condizione attuale, vento, umidità e previsioni dei 3 giorni successivi — anche questo senza chiave AI.</li>
+        <li><strong>🎲 Esplora a caso:</strong> clicca sul dado per essere portato in un luogo a caso nel mondo. Puoi farlo quante volte vuoi.</li>
+        <li><strong>Meteo del luogo:</strong> non appena selezioni un punto, l'intestazione della sezione <strong>"Meteo"</strong> mostra già icona e temperatura; aprilia con la freccetta per condizione attuale, vento, umidità e previsioni dei 3 giorni successivi — anche questo senza chiave AI.</li>
         <li>La scheda del luogo si apre compatta, con <strong>Meteo</strong>, <strong>Comandi aggiuntivi</strong> e <strong>Domande rapide</strong> chiuse: aprile con la freccetta solo quando ti servono.</li>
       </ul>
-
       <h3>3. Genera una scheda con l'AI</h3>
       <ul>
         <li>Dopo aver selezionato un luogo, apri <strong>"Domande rapide"</strong> e spunta una o più domande (puoi sceglierne quante vuoi, anche nessuna), oppure scrivi una tua <strong>domanda personalizzata</strong> nel campo libero — funzionano anche insieme.</li>
@@ -1094,22 +1076,19 @@ header *{pointer-events:auto;}
         stessa scheda generata senza — se la riattivi o disattivi su una domanda già fatta, viene generata di nuovo
         anziché essere ripresa dalla cronologia.
       </p>
-
       <h3>4. Confronta due luoghi</h3>
       <ul>
         <li>Attiva <strong>"Modalità confronto"</strong> nella sezione <strong>"Comandi aggiuntivi"</strong> della scheda del luogo.</li>
         <li>Seleziona un primo luogo (mappa o ricerca), poi un secondo: il confronto tra i due (dati, somiglianze, differenze, sintesi finale) parte automaticamente, con il consueto messaggio di caricamento nell'attesa.</li>
+        <li>Il confronto utilizza automaticamente i dati di Wikipedia per arricchire la risposta con dati specifici (popolazione, superficie, altitudine, ecc.).</li>
       </ul>
-
       <h3>5. Sfoglia le foto di un luogo</h3>
       <p>Attiva <strong>"Modalità fotografica"</strong> nella sezione <strong>"Comandi aggiuntivi"</strong> per vedere subito una galleria (fino a 50 immagini) del luogo scelto, presa da Wikimedia Commons e filtrata per vicinanza geografica (entro 10 km) e pertinenza del titolo. Mentre questa modalità è attiva, generazione di schede e confronto restano disattivati.</p>
-
       <h3>6. Il pannello della scheda generata</h3>
       <ul>
         <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato. Per il PDF ti viene chiesto se includere anche le foto della galleria ("Con foto" o "Solo testo"). Gli approfondimenti uniti alla scheda con "📄 Aggiungi alla scheda" finiscono anch'essi nell'export.</li>
-        <li><strong>Linguetta "Scheda AI":</strong> compare se chiudi il pannello con una scheda ancora aperta, così puoi tornare alla mappa e riaprirla con un clic senza perderla.</li>
+        <li><strong>Linguetta "Scheda AI":</strong> compare se chiudi il pannello con una scheda ancora aperta, così puoi tornare alla mappa e riaprirlo con un clic senza perderla.</li>
       </ul>
-
       <h3>7. Ritrova le schede salvate in Cronologia</h3>
       <p>Ogni scheda generata (comprese quelle di confronto e i singoli approfondimenti) viene salvata automaticamente nel browser. Aprila dal pulsante <strong>"Cronologia"</strong> in alto a destra.</p>
       <ul>
@@ -1120,7 +1099,6 @@ header *{pointer-events:auto;}
         <li><strong>Elimina selezionati</strong> / <strong>Elimina (riga singola)</strong> / <strong>Svuota tutto</strong>: rimuovono rispettivamente le voci spuntate, una singola voce, o l'intero archivio (con conferma).</li>
         <li><strong>Esporta / Importa backup:</strong> salva tutte le schede in un file JSON, da rileggere in seguito o su un altro computer, senza duplicati.</li>
       </ul>
-
       <h3>8. Salva un segnaposto personale</h3>
       <ul>
         <li>Dopo aver selezionato un luogo, premi <strong>"📌 Salva come segnaposto"</strong> in fondo alla scheda: si apre una finestra dove dare un <strong>nome</strong> e una <strong>nota facoltativa</strong> (es. "aperitivo alle 18, wifi gratis").</li>
@@ -1128,7 +1106,6 @@ header *{pointer-events:auto;}
         <li>Ogni segnaposto salvato o eliminato resta registrato subito: chiudendo il browser tutto è come l'hai lasciato, e le puntine restano sulla mappa anche riaprendo il programma.</li>
         <li>Clicca su una puntina per leggere nome, nota e coordinate, <strong>aprire la scheda</strong> del luogo o <strong>rimuoverla</strong>.</li>
       </ul>
-
     </div>
     <div class="keycard-row">
       <button class="btn btn-primary" id="instrClose">Chiudi</button>
@@ -1173,27 +1150,20 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
-<!-- HISTORY: Reorganized version -->
 <div class="overlay" id="historyOverlay">
   <div class="keycard keycard-wide">
     <h2>Cronologia schede</h2>
     <p>Le schede generate restano salvate nel tuo browser. Tocca un luogo per riaprirlo, seleziona più voci per scaricarle insieme in un unico PDF, oppure eliminale.</p>
-    
-    <!-- Filter -->
     <div class="hist-filter-row">
       <input type="text" id="histFilter" placeholder="🔍 Filtra per nome…" autocomplete="off">
       <button class="btn btn-ghost btn-sm" id="histFilterClear">✕ Cancella</button>
     </div>
-    
-    <!-- Row 1: selection + PDF download -->
     <div class="hist-toolbar">
       <button class="btn btn-ghost btn-sm" id="histSelectAll">☑ Seleziona tutto</button>
       <button class="btn btn-ghost btn-sm" id="histDeselectAll">☐ Deseleziona tutto</button>
       <span class="hist-sep">|</span>
       <button class="btn btn-primary btn-sm" id="histDownloadSelected">📄 Scarica selezionati (PDF)</button>
     </div>
-    
-    <!-- Row 2: backup import/export -->
     <div class="hist-toolbar">
       <button class="btn btn-ghost btn-sm" id="histExportBtn">💾 Esporta backup</button>
       <button class="btn btn-ghost btn-sm" id="histImportBtn">📂 Importa backup</button>
@@ -1201,11 +1171,7 @@ header *{pointer-events:auto;}
       <button class="btn btn-ghost btn-sm" id="histShowFavOnly">⭐ Solo preferiti</button>
     </div>
     <input type="file" id="histImportFile" accept=".json,application/json" style="display:none;">
-    
-    <!-- Cards list -->
     <div class="hist-list" id="histList"></div>
-    
-    <!-- Bottom row: delete actions + close -->
     <div class="hist-footer">
       <div class="hist-footer-left">
         <button class="btn btn-ghost btn-sm" id="histDeleteSelected" style="color:#b5651d; border-color:#e0b39c;">🗑 Elimina selezionati</button>
@@ -1220,12 +1186,9 @@ header *{pointer-events:auto;}
 
 <div id="countryCard">
   <button class="cc-close" id="ccClose" aria-label="Chiudi">&times;</button>
-
   <div class="cc-eyebrow">LUOGO SELEZIONATO</div>
   <h2 class="cc-title" id="ccName">—</h2>
   <div class="cc-meta" id="ccMeta">—</div>
-
-  <!-- Useful info (collapsible) -->
   <div id="usefulSection" class="collapsible closed">
     <button type="button" class="collapse-head">
       <span class="collapse-title">Info utili</span>
@@ -1236,8 +1199,6 @@ header *{pointer-events:auto;}
       <div class="useful-grid" id="usefulGrid"></div>
     </div>
   </div>
-
-  <!-- Weather (collapsible) -->
   <div id="weatherSection" class="collapsible closed">
     <button type="button" class="collapse-head">
       <span class="collapse-title">Meteo</span>
@@ -1248,8 +1209,6 @@ header *{pointer-events:auto;}
       <div id="weatherBox"></div>
     </div>
   </div>
-
-  <!-- Additional commands (collapsible) -->
   <div id="optionsSection" class="collapsible closed">
     <button type="button" class="collapse-head">
       <span class="collapse-title">Comandi aggiuntivi</span>
@@ -1260,7 +1219,7 @@ header *{pointer-events:auto;}
       <label class="compare-toggle toggle-with-tip">
         <input type="checkbox" id="compareToggle">
         Modalità confronto (scegli 2 luoghi)
-        <span class="tooltip-text">Attiva per confrontare due luoghi diversi: seleziona il primo, poi il secondo. Il sistema genererà un'analisi comparativa automatica.</span>
+        <span class="tooltip-text">Attiva per confrontare due luoghi diversi: seleziona il primo, poi il secondo. Il sistema genererà un'analisi comparativa automatica con dati da Wikipedia.</span>
       </label>
       <label class="compare-toggle photo-toggle toggle-with-tip">
         <input type="checkbox" id="photoToggle">
@@ -1273,13 +1232,9 @@ header *{pointer-events:auto;}
         Usa anche Wikipedia per dettagli extra
         <span class="tooltip-text">Aggiunge fatti specifici (nomi, date, cifre) da Wikipedia. Consuma più token: disattivato di default per non esaurire la quota giornaliera gratuita.</span>
       </label>
-      <div class="photo-mode-msg">📚 Aggiunge fatti specifici (nomi, date, cifre) da Wikipedia, ma consuma più token per richiesta: disattivato di default per non esaurire in fretta la quota giornaliera gratuita.</div>
     </div>
   </div>
-
   <div class="compare-slot" id="compareSlot" style="display:none;"></div>
-
-  <!-- Quick questions (collapsible) -->
   <div id="questionsSection" class="collapsible closed">
     <button type="button" class="collapse-head">
       <span class="collapse-title">Domande rapide</span>
@@ -1299,7 +1254,6 @@ header *{pointer-events:auto;}
       </div>
     </div>
   </div>
-
   <textarea id="customQuestion" placeholder="Seleziona una domanda rapida o chiedi informazioni su questo luogo…" rows="2"></textarea>
   <div class="cc-note">Nota: le informazioni fornite dall'AI possono contenere imprecisioni, verifica sempre i dati importanti.</div>
   <div class="gen-row">
@@ -1336,7 +1290,6 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
-<!-- Window: add photos to PDF? -->
 <div class="overlay" id="pdfPhotoOverlay">
   <div class="keycard">
     <h2>Generazione PDF</h2>
@@ -1349,7 +1302,6 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
-<!-- Window: new pin -->
 <div class="overlay" id="pinOverlay">
   <div class="keycard">
     <h2>Nuovo segnaposto</h2>
@@ -1363,7 +1315,6 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
-<!-- Mini popup: Deep Dive -->
 <div id="ddPopup">
   <div class="dd-popup-title" id="ddTarget">Approfondisci</div>
   <input type="text" id="ddInput" placeholder="La tua domanda…" autocomplete="off">
@@ -1374,7 +1325,6 @@ header *{pointer-events:auto;}
   </div>
 </div>
 
-<!-- Lightbox -->
 <div class="overlay" id="imgModal">
   <button class="img-modal-close" id="imgModalClose" aria-label="Chiudi">&times;</button>
   <div id="imgCounter" style="display:none;">1 / 1</div>
@@ -1474,26 +1424,44 @@ document.getElementById('keySave').onclick = () => {
 };
 
 /* ============================================================
-   Map initialization
+   Map initialization with saved position
    ============================================================ */
+const MAP_POS_KEY = 'atlante_map_pos';
+
+function getSavedMapPosition(){
+  try{
+    const data = JSON.parse(localStorage.getItem(MAP_POS_KEY));
+    if(data && typeof data.lat === 'number' && typeof data.lng === 'number' && typeof data.zoom === 'number'){
+      return data;
+    }
+  }catch(e){}
+  return null;
+}
+
+function saveMapPosition(lat, lng, zoom){
+  try{
+    localStorage.setItem(MAP_POS_KEY, JSON.stringify({ lat, lng, zoom }));
+  }catch(e){}
+}
+
+const savedPos = getSavedMapPosition();
+const defaultPos = savedPos || { lat: 41.9, lng: 12.5, zoom: 5 };
+
 const map = L.map('map', {
   worldCopyJump: true,
   zoomControl: true
-}).setView([41.9, 12.5], 5);
+}).setView([defaultPos.lat, defaultPos.lng], defaultPos.zoom);
 
-// Street layer
 const baseStreets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 19
 }).addTo(map);
 
-// Satellite layer
 const baseSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Immagini &copy; <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics',
   maxZoom: 19
 });
 
-// Labels overlay for satellite
 const labelsOverlay = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Etichette &copy; Esri',
   maxZoom: 19
@@ -1509,6 +1477,11 @@ L.control.layers({
   collapsed: false
 }).addTo(map);
 
+map.on('moveend', () => {
+  const center = map.getCenter();
+  saveMapPosition(center.lat, center.lng, map.getZoom());
+});
+
 /* ============================================================
    Application state
    ============================================================ */
@@ -1516,6 +1489,112 @@ let currentCountry = null;
 let currentExactPoint = null;
 let _activeCardPlace = null;
 let _currentCacheKey = null;
+
+/* ============================================================
+   Random place explorer
+   ============================================================ */
+const randomBtn = document.getElementById('randomBtn');
+
+const RANDOM_PLACES = [
+  { name: 'Roma, Italia', lat: 41.9028, lon: 12.4964 },
+  { name: 'Parigi, Francia', lat: 48.8566, lon: 2.3522 },
+  { name: 'Londra, Regno Unito', lat: 51.5074, lon: -0.1278 },
+  { name: 'Berlino, Germania', lat: 52.5200, lon: 13.4050 },
+  { name: 'Madrid, Spagna', lat: 40.4168, lon: -3.7038 },
+  { name: 'Lisbona, Portogallo', lat: 38.7223, lon: -9.1393 },
+  { name: 'Atene, Grecia', lat: 37.9838, lon: 23.7275 },
+  { name: 'Mosca, Russia', lat: 55.7558, lon: 37.6173 },
+  { name: 'Istanbul, Turchia', lat: 41.0082, lon: 28.9784 },
+  { name: 'Dubai, Emirati Arabi', lat: 25.2048, lon: 55.2708 },
+  { name: 'Tokyo, Giappone', lat: 35.6762, lon: 139.6503 },
+  { name: 'Pechino, Cina', lat: 39.9042, lon: 116.4074 },
+  { name: 'New Delhi, India', lat: 28.6139, lon: 77.2090 },
+  { name: 'Bangkok, Thailandia', lat: 13.7563, lon: 100.5018 },
+  { name: 'Singapore', lat: 1.3521, lon: 103.8198 },
+  { name: 'Sydney, Australia', lat: -33.8688, lon: 151.2093 },
+  { name: 'Melbourne, Australia', lat: -37.8136, lon: 144.9631 },
+  { name: 'Città del Capo, Sudafrica', lat: -33.9249, lon: 18.4241 },
+  { name: 'Cairo, Egitto', lat: 30.0444, lon: 31.2357 },
+  { name: 'Marrakech, Marocco', lat: 31.6295, lon: -7.9811 },
+  { name: 'Buenos Aires, Argentina', lat: -34.6037, lon: -58.3816 },
+  { name: 'Rio de Janeiro, Brasile', lat: -22.9068, lon: -43.1729 },
+  { name: 'Città del Messico, Messico', lat: 19.4326, lon: -99.1332 },
+  { name: 'New York, USA', lat: 40.7128, lon: -74.0060 },
+  { name: 'Los Angeles, USA', lat: 34.0522, lon: -118.2437 },
+  { name: 'Chicago, USA', lat: 41.8781, lon: -87.6298 },
+  { name: 'Toronto, Canada', lat: 43.6532, lon: -79.3832 },
+  { name: 'Vancouver, Canada', lat: 49.2827, lon: -123.1207 },
+  { name: 'Venezia, Italia', lat: 45.4408, lon: 12.3155 },
+  { name: 'Firenze, Italia', lat: 43.7696, lon: 11.2558 },
+  { name: 'Napoli, Italia', lat: 40.8518, lon: 14.2681 },
+  { name: 'Milano, Italia', lat: 45.4642, lon: 9.1900 },
+  { name: 'Torino, Italia', lat: 45.0703, lon: 7.6869 },
+  { name: 'Bologna, Italia', lat: 44.4949, lon: 11.3426 },
+  { name: 'Palermo, Italia', lat: 38.1157, lon: 13.3615 },
+  { name: 'Catania, Italia', lat: 37.5079, lon: 15.0830 },
+  { name: 'Bari, Italia', lat: 41.1171, lon: 16.8719 },
+  { name: 'Verona, Italia', lat: 45.4384, lon: 10.9916 },
+  { name: 'Siena, Italia', lat: 43.3188, lon: 11.3307 },
+  { name: 'Pisa, Italia', lat: 43.7228, lon: 10.4017 },
+  { name: 'Ravenna, Italia', lat: 44.4164, lon: 12.1996 },
+  { name: 'Matera, Italia', lat: 40.6663, lon: 16.6046 },
+  { name: 'Lecce, Italia', lat: 40.3521, lon: 18.1690 },
+  { name: 'Cagliari, Italia', lat: 39.2238, lon: 9.1217 },
+  { name: 'Trento, Italia', lat: 46.0666, lon: 11.1177 },
+  { name: 'Trieste, Italia', lat: 45.6495, lon: 13.7768 },
+  { name: 'Genova, Italia', lat: 44.4056, lon: 8.9463 },
+  { name: 'Perugia, Italia', lat: 43.1122, lon: 12.3888 },
+  { name: 'Torre Eiffel, Parigi', lat: 48.8584, lon: 2.2945 },
+  { name: 'Colosseo, Roma', lat: 41.8902, lon: 12.4922 },
+  { name: 'Piramidi di Giza, Egitto', lat: 29.9792, lon: 31.1342 },
+  { name: 'Machu Picchu, Perù', lat: -13.1631, lon: -72.5450 },
+  { name: 'Grand Canyon, USA', lat: 36.1069, lon: -112.1129 },
+  { name: 'Cascate del Niagara, USA/Canada', lat: 43.0799, lon: -79.0747 },
+  { name: 'Sagrada Familia, Barcellona', lat: 41.4036, lon: 2.1744 },
+  { name: 'Taj Mahal, India', lat: 27.1751, lon: 78.0421 },
+  { name: 'Opera House, Sydney', lat: -33.8568, lon: 151.2153 },
+  { name: 'Cristo Redentore, Rio', lat: -22.9519, lon: -43.2105 },
+  { name: 'Stonehenge, Inghilterra', lat: 51.1789, lon: -1.8262 },
+  { name: 'Angkor Wat, Cambogia', lat: 13.4125, lon: 103.8670 },
+  { name: 'Petra, Giordania', lat: 30.3285, lon: 35.4444 },
+  { name: 'Chichén Itzá, Messico', lat: 20.6829, lon: -88.5686 },
+  { name: 'Piazza San Marco, Venezia', lat: 45.4344, lon: 12.3388 },
+  { name: 'Duomo di Milano, Italia', lat: 45.4642, lon: 9.1914 },
+  { name: 'Ponte Vecchio, Firenze', lat: 43.7677, lon: 11.2532 },
+  { name: 'Mole Antonelliana, Torino', lat: 45.0692, lon: 7.6934 },
+  { name: 'Vesuvio, Italia', lat: 40.8214, lon: 14.4260 },
+  { name: 'Etna, Italia', lat: 37.7506, lon: 14.9937 },
+  { name: 'Costa Smeralda, Italia', lat: 41.0915, lon: 9.5337 },
+  { name: 'Cinque Terre, Italia', lat: 44.1034, lon: 9.7349 },
+  { name: 'Valle dei Templi, Agrigento', lat: 37.2900, lon: 13.5840 },
+  { name: 'Amsterdam, Paesi Bassi', lat: 52.3676, lon: 4.9041 },
+  { name: 'Bruxelles, Belgio', lat: 50.8503, lon: 4.3517 },
+  { name: 'Vienna, Austria', lat: 48.2082, lon: 16.3738 },
+  { name: 'Budapest, Ungheria', lat: 47.4979, lon: 19.0402 },
+  { name: 'Praga, Repubblica Ceca', lat: 50.0755, lon: 14.4378 },
+  { name: 'Varsavia, Polonia', lat: 52.2297, lon: 21.0122 },
+  { name: 'Stoccolma, Svezia', lat: 59.3293, lon: 18.0686 },
+  { name: 'Copenaghen, Danimarca', lat: 55.6761, lon: 12.5683 },
+  { name: 'Oslo, Norvegia', lat: 59.9139, lon: 10.7522 },
+  { name: 'Helsinki, Finlandia', lat: 60.1699, lon: 24.9384 },
+  { name: 'Seul, Corea del Sud', lat: 37.5665, lon: 126.9780 },
+  { name: 'Kyoto, Giappone', lat: 35.0116, lon: 135.7681 },
+  { name: 'Shanghai, Cina', lat: 31.2304, lon: 121.4737 },
+  { name: 'Hong Kong, Cina', lat: 22.3193, lon: 114.1694 },
+  { name: 'Mumbai, India', lat: 19.0760, lon: 72.8777 },
+  { name: 'Dubrovnik, Croazia', lat: 42.6507, lon: 18.0944 },
+  { name: 'Santorini, Grecia', lat: 36.3932, lon: 25.4615 },
+  { name: 'Mykonos, Grecia', lat: 37.4467, lon: 25.3289 }
+];
+
+randomBtn.onclick = () => {
+  const place = RANDOM_PLACES[Math.floor(Math.random() * RANDOM_PLACES.length)];
+  flyTo(place.lat, place.lon, 12);
+  searchInput.value = place.name;
+  setTimeout(() => {
+    handlePointClick(place.lat, place.lon);
+  }, 400);
+};
 
 /* ============================================================
    Custom pins (localStorage)
@@ -1537,7 +1616,7 @@ function loadPins(){
 }
 function persistPins(list){
   try{ localStorage.setItem(PINS_KEY, JSON.stringify(list.slice(0, 200))); }
-  catch(e){ /* storage full or unavailable */ }
+  catch(e){}
 }
 function deletePinById(id){
   persistPins(loadPins().filter(p => p.id !== id));
@@ -1581,7 +1660,6 @@ function addPinMarker(pin){
 
 loadPins().forEach(addPinMarker);
 
-/* --- New pin dialog --- */
 const pinOverlay = document.getElementById('pinOverlay');
 const pinNameInput = document.getElementById('pinNameInput');
 const pinNoteInput = document.getElementById('pinNoteInput');
@@ -1682,7 +1760,6 @@ const ccName = document.getElementById('ccName');
 const ccMeta = document.getElementById('ccMeta');
 const genBtn = document.getElementById('genBtn');
 
-/* --- Collapsible sections --- */
 function setFold(sec, open){ sec.classList.toggle('closed', !open); }
 function initFolds(){
   document.querySelectorAll('#countryCard .collapsible').forEach(sec => {
@@ -1714,7 +1791,6 @@ function updateOptionsSummary(){
   el.textContent = parts.length ? '· ' + parts.join(' + ') : '';
 }
 
-/* --- Coordinates copy --- */
 ccMeta.addEventListener('click', async (ev) => {
   const el = ev.target.closest('.coords-copy');
   if(!el) return;
@@ -1736,8 +1812,8 @@ ccMeta.addEventListener('click', async (ev) => {
   setTimeout(() => { el.textContent = old; }, 1200);
 });
 
-/* --- Weather (Open-Meteo, free, no key) --- */
 let _weatherFor = null;
+let _weatherCache = {};
 
 function weatherEmoji(code){
   if(code === 0) return '☀️';
@@ -1775,8 +1851,41 @@ function maybeFetchWeather(){
     return;
   }
   const key = currentCountry.lat + ',' + currentCountry.lon;
-  if(_weatherFor === key) return;
+  const cached = _weatherCache[key];
+  if(cached && (Date.now() - cached.timestamp < 600000)){
+    displayWeather(cached.data);
+    _weatherFor = key;
+    document.getElementById('weatherSummary').textContent = weatherEmoji(cached.data.current.weather_code) + ' ' + Math.round(cached.data.current.temperature_2m) + '°C';
+    return;
+  }
+  if(_weatherFor === key && cached) return;
   fetchWeather(currentCountry.lat, currentCountry.lon);
+}
+
+function displayWeather(d){
+  const box = document.getElementById('weatherBox');
+  const summary = document.getElementById('weatherSummary');
+  const c = d.current;
+  const days = d.daily;
+  summary.textContent = weatherEmoji(c.weather_code) + ' ' + Math.round(c.temperature_2m) + '°C';
+  let daysHtml = '';
+  for(let i = 1; i < days.time.length; i++){
+    const dt = new Date(days.time[i] + 'T12:00:00');
+    const label = dt.toLocaleDateString('it-IT', { weekday:'short' });
+    daysHtml += `<div class="wx-day">
+      <div class="wx-day-name">${label}</div>
+      <div class="wx-day-ico">${weatherEmoji(days.weather_code[i])}</div>
+      <div class="wx-day-temp">${Math.round(days.temperature_2m_min[i])}°/${Math.round(days.temperature_2m_max[i])}°</div>
+    </div>`;
+  }
+  box.innerHTML = `
+    <div class="wx-current">
+      <span class="wx-ico">${weatherEmoji(c.weather_code)}</span>
+      <span class="wx-temp">${Math.round(c.temperature_2m)}°C</span>
+      <span class="wx-desc">${weatherDesc(c.weather_code)}</span>
+    </div>
+    <div class="wx-extra">Umidità ${c.relative_humidity_2m}% · Vento ${Math.round(c.wind_speed_10m)} km/h</div>
+    <div class="wx-days">${daysHtml}</div>`;
 }
 
 async function fetchWeather(lat, lon){
@@ -1789,28 +1898,9 @@ async function fetchWeather(lat, lon){
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4`;
     const res = await fetch(url);
     const d = await res.json();
-    const c = d.current;
-    const days = d.daily;
     _weatherFor = lat + ',' + lon;
-    summary.textContent = weatherEmoji(c.weather_code) + ' ' + Math.round(c.temperature_2m) + '°C';
-    let daysHtml = '';
-    for(let i = 1; i < days.time.length; i++){
-      const dt = new Date(days.time[i] + 'T12:00:00');
-      const label = dt.toLocaleDateString('it-IT', { weekday:'short' });
-      daysHtml += `<div class="wx-day">
-        <div class="wx-day-name">${label}</div>
-        <div class="wx-day-ico">${weatherEmoji(days.weather_code[i])}</div>
-        <div class="wx-day-temp">${Math.round(days.temperature_2m_min[i])}°/${Math.round(days.temperature_2m_max[i])}°</div>
-      </div>`;
-    }
-    box.innerHTML = `
-      <div class="wx-current">
-        <span class="wx-ico">${weatherEmoji(c.weather_code)}</span>
-        <span class="wx-temp">${Math.round(c.temperature_2m)}°C</span>
-        <span class="wx-desc">${weatherDesc(c.weather_code)}</span>
-      </div>
-      <div class="wx-extra">Umidità ${c.relative_humidity_2m}% · Vento ${Math.round(c.wind_speed_10m)} km/h</div>
-      <div class="wx-days">${daysHtml}</div>`;
+    _weatherCache[_weatherFor] = { data: d, timestamp: Date.now() };
+    displayWeather(d);
   }catch(e){
     box.innerHTML = '<div class="wx-loading">Meteo non disponibile.</div>';
   }
@@ -1822,9 +1912,6 @@ function hideWeather(){
   _weatherFor = null;
 }
 
-/* ============================================================
-   Useful info from Nominatim
-   ============================================================ */
 function updateUsefulInfo(addr){
   const grid = document.getElementById('usefulGrid');
   const summary = document.getElementById('usefulSummary');
@@ -1864,12 +1951,11 @@ function updateUsefulInfo(addr){
 }
 
 /* ============================================================
-   Wikipedia integration (full article, cached, relevant extraction)
+   Wikipedia integration
    ============================================================ */
 const wikiFullTextCache = {};
 
 async function resolveWikipediaTitle(placeName, lat, lon){
-  // Geographic search first (more accurate)
   if(lat != null && lon != null){
     try{
       const geoUrl = `https://it.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord=${lat}|${lon}&gsradius=8000&gslimit=5&format=json&origin=*`;
@@ -1879,18 +1965,15 @@ async function resolveWikipediaTitle(placeName, lat, lon){
       if(geoResults && geoResults.length){
         return geoResults[0].title;
       }
-    }catch(e){ /* fallback to text search */ }
+    }catch(e){}
   }
-
-  // Fallback: text search by name
   try{
     const searchUrl = `https://it.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(placeName)}&format=json&origin=*`;
     const searchRes = await fetch(searchUrl);
     const searchData = await searchRes.json();
     const results = searchData?.query?.search;
     if(results && results.length) return results[0].title;
-  }catch(e){ /* no results */ }
-
+  }catch(e){}
   return null;
 }
 
@@ -1942,25 +2025,21 @@ const wikiSectionKeywords = {
 function extractRelevantWikiExcerpt(fullText, types, customQ){
   const sections = splitWikipediaSections(fullText);
   if(!sections.length) return fullText.slice(0, 4000);
-
   let keywords = [];
   types.forEach(t => { if(wikiSectionKeywords[t]) keywords.push(...wikiSectionKeywords[t]); });
   if(customQ){
     keywords.push(...customQ.toLowerCase().split(/\s+/).filter(w => w.length > 3));
   }
   if(!keywords.length) keywords = wikiSectionKeywords.generale;
-
   const scored = sections.map(s => {
     const haystack = (s.title + ' ' + s.text).toLowerCase();
     let score = 0;
     keywords.forEach(k => { if(haystack.includes(k)) score += haystack.includes(s.title.toLowerCase() + k) ? 1 : (s.title.toLowerCase().includes(k) ? 3 : 1); });
     return { ...s, score };
   });
-
   scored.sort((a, b) => b.score - a.score);
   const relevant = scored.filter(s => s.score > 0).slice(0, 3);
   const chosen = relevant.length ? relevant : scored.slice(0, 1);
-
   const CHAR_BUDGET = 8000;
   let excerpt = '';
   for(const s of chosen){
@@ -1976,7 +2055,6 @@ async function fetchWikipediaText(placeName, lat, lon, types, customQ){
     const cacheKey = placeName;
     let fullText = wikiFullTextCache[cacheKey];
     let title = wikiFullTextCache[cacheKey + '__title'];
-
     if(fullText === undefined){
       title = await resolveWikipediaTitle(placeName, lat, lon);
       if(!title) { wikiFullTextCache[cacheKey] = null; return null; }
@@ -1985,7 +2063,6 @@ async function fetchWikipediaText(placeName, lat, lon, types, customQ){
       wikiFullTextCache[cacheKey + '__title'] = title;
     }
     if(!fullText) return null;
-
     const excerpt = extractRelevantWikiExcerpt(fullText, types || [], customQ || '');
     return { title, text: excerpt };
   }catch(e){
@@ -1994,11 +2071,10 @@ async function fetchWikipediaText(placeName, lat, lon, types, customQ){
 }
 
 /* ============================================================
-   Prompt builder (with or without Wikipedia)
+   Prompt builder
    ============================================================ */
 function buildPromptMerged(luogo, luogoInfo, types, customQ, wikiText){
   const sections = types.map(sectionBlock);
-
   if(customQ && customQ.trim()){
     sections.push(`## [Qui scrivi come titolo la domanda originale dell'utente riportata sotto, corretta da eventuali errori di battitura/ortografia ma senza cambiarne il significato, senza virgolette e senza premesse tipo "Risposta a...": scrivi SOLO la domanda corretta come titolo, con la lettera maiuscola iniziale e punto interrogativo se è una domanda]
 Rispondi alla seguente domanda posta dall'utente: "${customQ.trim()}", riferita al luogo "${luogo}".
@@ -2007,20 +2083,15 @@ Per domande su chiese, monumenti, edifici storici, usa le informazioni dettaglia
 Per domande su negozi, bar, benzinai o servizi specifici, rispondi con la tua conoscenza generale, ma se non hai informazioni verificate su esercizi specifici dillo onestamente invece di inventare nomi, indirizzi o numeri precisi.
 Considera NON pertinenti solo le domande che non hanno alcuna relazione con un luogo specifico, come calcoli matematici, richieste di scrivere codice, argomenti generici di cultura/scienza slegati dal luogo, o richieste completamente estranee. Se e SOLO se la domanda rientra in questa categoria non pertinente, scrivi esclusivamente la frase "La domanda deve essere inerente al posto o alla città scelta." e nient'altro in questa sezione.`);
   }
-
-  // Light mode (default): no Wikipedia text, minimal token consumption
   if(!wikiText){
     const baseLean = `Il luogo in questione è: "${luogo}" ${luogoInfo}. Scrivi in italiano, tono divulgativo ma curato.
 Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (niente markdown per grassetto o elenchi puntati salvo dove indicato, solo paragrafi scorrevoli). Non aggiungere sezioni oltre a quelle richieste qui sotto. Se un'informazione specifica non è certa o non applicabile, dillo onestamente invece di inventarla.`;
-
     return `${baseLean}
 
 Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in quest'ordine):
 
  ${sections.join('\n\n')}`;
   }
-
-  // Advanced mode: with Wikipedia data
   const base = `Il luogo in questione è: "${luogo}" ${luogoInfo}. Scrivi in italiano, tono divulgativo ma curato.
 Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (niente markdown per grassetto o elenchi puntati salvo dove indicato, solo paragrafi scorrevoli). Non aggiungere sezioni oltre a quelle richieste qui sotto.
 
@@ -2031,7 +2102,6 @@ REGOLE FONDAMENTALI:
 4. Non dire "non è possibile fornire con certezza" se hai già i dati per rispondere.
 5. Non menzionare mai le fonti delle informazioni (Wikipedia, database, ecc.). Usa i dati e basta.
 6. Se non hai informazioni specifiche su una domanda, ma hai dati generali sul luogo, usali per dare una risposta contestualizzata.`;
-
   const sourceInstruction = `
 INFORMAZIONI DETTAGLIATE SUL LUOGO (estratto già selezionato come pertinente alla richiesta: usale OBBLIGATORIAMENTE per date, nomi, cifre e fatti specifici):
 ---
@@ -2039,7 +2109,6 @@ INFORMAZIONI DETTAGLIATE SUL LUOGO (estratto già selezionato come pertinente al
 ---
 ISTRUZIONI: Estrai da queste informazioni TUTTI i dati specifici che rispondono alla domanda dell'utente. Se la domanda chiede "quante chiese" e nel testo trovi nomi di chiese, ELENCALI con i loro nomi e periodi storici. Non limitarti a dire "diverse chiese" — scrivi i nomi! Se il testo contiene date, usale. Se contiene numeri di popolazione, usali. Sii preciso e concreto. Se l'estratto non copre completamente la domanda, integra con la tua conoscenza generale dichiarando implicitamente la parte non verificata solo se necessario, senza inventare dettagli specifici (nomi, date, numeri) che non trovi né nell'estratto né nella tua conoscenza affidabile.
 `;
-
   return `${base}
 
  ${sourceInstruction}
@@ -2059,7 +2128,6 @@ function applyPlaceData(data, name){
     || (data.display_name ? data.display_name.split(',')[0] : null);
   const region = addr.state || addr.region || addr.county || addr.state_district || '—';
   const country = addr.country || '—';
-
   if(!place && !country){
     ccName.textContent = 'Nessun luogo qui';
     ccMeta.textContent = 'Prova a cliccare più vicino a una città o a un paese, oppure usa la ricerca qui sopra.';
@@ -2067,7 +2135,6 @@ function applyPlaceData(data, name){
     hideWeather();
     return;
   }
-
   const displayName = place || country;
   currentCountry = {
     name: displayName,
@@ -2086,7 +2153,6 @@ function applyPlaceData(data, name){
   const coordsPart = (lat != null && lon != null)
     ? ` · Coordinate: <span class="coords-copy" data-lat="${lat}" data-lon="${lon}" title="Clicca per copiare le coordinate">${lat.toFixed(4)}, ${lon.toFixed(4)}</span>`
     : '';
-
   ccMeta.innerHTML = `Regione: <span>${region}</span> · Stato: <span>${country}</span>${coordsPart}`;
   genBtn.disabled = false;
   document.querySelectorAll('.cc-chip input').forEach(cb => { cb.checked = false; });
@@ -2095,19 +2161,15 @@ function applyPlaceData(data, name){
   updateQuestionsSummary();
   document.getElementById('customQuestion').value = '';
   genBtn.textContent = 'Genera scheda con AI';
-
   updateUsefulInfo(addr);
-
   hideWeather();
   if (lat != null && lon != null) {
     fetchWeather(lat, lon);
   }
-
   if (photoToggle && photoToggle.checked) {
     openPhotoGallery(currentCountry);
     return;
   }
-
   if(compareToggle && compareToggle.checked){
     addToCompare(currentCountry);
   }
@@ -2125,7 +2187,6 @@ async function handlePointClick(lat, lng){
     collapseCard();
   }
   currentCountry = null;
-
   try{
     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=12&addressdetails=1&accept-language=it`, {
       headers: { 'Accept': 'application/json' }
@@ -2172,7 +2233,6 @@ async function runSearch(q){
       </div>
     `).join('');
     searchResults.classList.add('show');
-
     searchResults.querySelectorAll('.sr-item').forEach(el => {
       el.onclick = () => {
         const r = results[+el.dataset.i];
@@ -2237,7 +2297,6 @@ function expandCard(){
 
 const cache = {};
 
-/* --- Question types --- */
 const typeLabels = {
   generale: 'Panoramica generale',
   dati: 'Dati e statistiche',
@@ -2258,34 +2317,27 @@ function sectionBlock(type){
   switch(type){
     case 'dati': return `## Dati e statistiche
 Fornisci numeri precisi e concreti, non vaghi: popolazione (cifra esatta o la più recente disponibile, con anno di riferimento), superficie in km², densità abitativa (ab/km²), altitudine in metri sul livello del mare, coordinate geografiche (latitudine/longitudine), prefisso telefonico e codice postale se pertinenti, fuso orario, lingua ufficiale/locale. Presenta i numeri dentro paragrafi scorrevoli (non un elenco), specificando sempre l'unità di misura. Se una cifra esatta non è verificabile, indica la stima più affidabile e dillo esplicitamente.`;
-
     case 'storia': return `## Storia e origini
 Racconta le origini del luogo, i periodi storici principali che lo hanno segnato, eventi chiave, e come è arrivato alla forma attuale. 3-4 paragrafi.`;
-
     case 'dialetto': return `## Dialetto, proverbi e detti popolari
 Descrivi in 1-2 paragrafi il dialetto o la parlata locale se esiste (famiglia linguistica, tratti distintivi). Se non ci sono informazioni affidabili su un dialetto specifico di questo luogo esatto, dillo chiaramente e parla invece della parlata regionale più ampia a cui appartiene.
 
 Poi, su righe separate che iniziano ciascuna con "- ", elenca da 4 a 8 proverbi o modi di dire tipici scritti nella lingua o dialetto originale, seguiti da un trattino e dalla traduzione/significato in italiano tra parentesi. Esempio di formato riga: "- [espressione originale] — ([traduzione in italiano])". Se non conosci detti autentici specifici del luogo, ometti l'elenco e spiegalo invece nel testo.`;
-
     case 'gastronomia': return `## Gastronomia e piatti tipici
 Racconta la cucina tradizionale del luogo: ingredienti caratteristici, piatti tipici, eventuali prodotti a denominazione o specialità locali, e occasioni in cui si preparano. 2-3 paragrafi.`;
-
     case 'feste': return `## Feste e tradizioni
 Descrivi le feste patronali, le celebrazioni religiose o civili, sagre e riti tradizionali del luogo, con eventuali date indicative. 2-3 paragrafi.`;
-
     case 'economia': return `## Economia locale
 Descrivi le principali attività economiche del luogo: agricoltura, industria, turismo, artigianato o altri settori rilevanti, e come sono cambiate nel tempo se noto. 2-3 paragrafi.`;
-
     case 'cultura': return `## Cultura e curiosità
 Racconta tradizioni, monumenti iconici, personaggi legati al luogo e aspetti poco noti o curiosi. 2-3 paragrafi.`;
-
     case 'generale': default: return `## Panoramica generale
 Descrivi geografia, territorio, clima ed essenza del luogo: cosa lo caratterizza, come si presenta a chi lo visita, il contesto in cui si trova. 3-4 paragrafi. Non includere storia, cultura o altri argomenti: solo la descrizione generale del posto.`;
   }
 }
 
 /* ============================================================
-   Card generation (with Wikipedia + Gemini)
+   Card generation
    ============================================================ */
 const panelGallery = document.getElementById('panelGallery');
 
@@ -2313,19 +2365,15 @@ genBtn.onclick = async () => {
     keyOverlay.classList.add('show');
     return;
   }
-
   const types = getSelectedTypes();
   const customQ = customQuestionEl.value.trim();
   if(!types.length && !customQ){
     ccMeta.innerHTML = `Regione: <span>${currentCountry.region}</span> · Stato: <span>${currentCountry.country}</span> — <span style="color:var(--clay)">seleziona almeno una domanda</span>`;
     return;
   }
-
   panelText.style.display = 'block';
   panelGallery.className = '';
-
   const useWiki = document.getElementById('wikiToggle')?.checked || false;
-
   const labelsChosen = types.map(t => typeLabels[t]);
   if(customQ) labelsChosen.push('Domanda personalizzata');
   const cacheKey = currentCountry.name + '|' + types.slice().sort().join(',') + '|' + customQ + '|' + (useWiki ? 'wiki' : 'nowiki');
@@ -2336,7 +2384,6 @@ genBtn.onclick = async () => {
   panelHasContent = true;
   setDdHint(true);
   collapseCard();
-
   _activeCardPlace = {
     name: currentCountry.name,
     region: currentCountry.region,
@@ -2345,16 +2392,12 @@ genBtn.onclick = async () => {
     lon: currentCountry.lon
   };
   _currentCacheKey = cacheKey;
-
-  // Session cache
   if(cache[cacheKey]){
     panelText.innerHTML = cache[cacheKey].text;
     renderGalleryThumbs(cache[cacheKey].imgs);
     panelActions.style.display = 'flex';
     return;
   }
-
-  // History: same card already generated?
   const histEntry = findHistoryEntry(currentCountry.name, labelsChosen, customQ, useWiki);
   if(histEntry){
     renderStreamed(histEntry.text, false);
@@ -2363,7 +2406,6 @@ genBtn.onclick = async () => {
     panelActions.style.display = 'flex';
     return;
   }
-
   panelText.innerHTML = loadingHtml(
     useWiki
       ? 'Caricamento informazioni: consulto anche Wikipedia, può richiedere qualche secondo in più'
@@ -2373,21 +2415,16 @@ genBtn.onclick = async () => {
   panelGallery.innerHTML = '';
   panelActions.style.display = 'none';
   genBtn.disabled = true;
-
   const contextName = currentCountry.context
     ? currentCountry.context.split(',').slice(0, 3).map(s => s.trim()).join(', ')
     : currentCountry.name;
-
   const galleryPromise = fetchGallery(contextName, types[0] || 'generale');
-
   const wikiData = useWiki
     ? await fetchWikipediaText(currentCountry.name, currentCountry.lat, currentCountry.lon, types, customQ)
     : null;
-
   const luogoInfo = currentCountry.capital
     ? `(regione: ${currentCountry.region}, capitale: ${currentCountry.capital})`
     : `(posizione precisa: ${contextName}; regione/stato: ${currentCountry.region}${currentCountry.country ? ', paese: ' + currentCountry.country : ''})`;
-  
   const prompt = buildPromptMerged(
     currentCountry.name, 
     luogoInfo, 
@@ -2395,7 +2432,6 @@ genBtn.onclick = async () => {
     customQ,
     wikiData ? wikiData.text : null
   );
-
   try{
     const requestBody = { contents:[{ parts:[{ text: prompt }] }] };
     const resp = await fetch(
@@ -2406,18 +2442,15 @@ genBtn.onclick = async () => {
         body: JSON.stringify(requestBody)
       }
     );
-
     if(!resp.ok || !resp.body){
       const errText = await resp.text().catch(()=> '');
       throw new Error(`Richiesta non riuscita (${resp.status}). ${errText.slice(0,200)}`);
     }
-
     panelText.innerHTML = '';
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
     let buf = '';
     let full = '';
-
     while(true){
       const { value, done } = await reader.read();
       if(done) break;
@@ -2435,14 +2468,12 @@ genBtn.onclick = async () => {
             full += chunk;
             renderStreamed(full, true);
           }
-        }catch(e){ /* incomplete line, ignore */ }
+        }catch(e){}
       }
     }
     renderStreamed(full, false);
-
     let galleryImgs = [];
     try{ galleryImgs = (await galleryPromise) || []; }catch(e){}
-
     cache[cacheKey] = { text: panelText.innerHTML, imgs: galleryImgs };
     panelActions.style.display = 'flex';
     saveToHistory(currentCountry.name, labelsChosen, full, galleryImgs, customQ, useWiki, _activeCardPlace);
@@ -2453,7 +2484,6 @@ genBtn.onclick = async () => {
   }
 };
 
-/* --- Wikimedia Commons gallery --- */
 const gallerySearchTerms = {
   generale: '',
   dati: '',
@@ -2573,24 +2603,19 @@ function zoomAt(zoomDelta, clientX, clientY) {
   const oldScale = _zoomLevel;
   const newScale = Math.min(Math.max(oldScale + zoomDelta, 1), 10);
   if (newScale === oldScale) return;
-
   if (newScale === 1) {
     resetZoomAndPan();
     return;
   }
-
   const rect = imageWrap.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
-
   const px = clientX - cx;
   const py = clientY - cy;
   const ratio = newScale / oldScale;
-
   _translateX = px - ratio * (px - _translateX);
   _translateY = py - ratio * (py - _translateY);
   _zoomLevel = newScale;
-
   clampPan();
   updateTransform();
   updateZoomDisplay();
@@ -2783,7 +2808,7 @@ function loadHistory(){
 }
 function persistHistory(list){
   try{ localStorage.setItem(HIST_KEY, JSON.stringify(list)); }
-  catch(e){ /* storage full or unavailable */ }
+  catch(e){}
 }
 function saveToHistory(name, labelsChosen, rawText, imgs, q, wikiUsed, place){
   lastGeneratedRaw = rawText;
@@ -2819,12 +2844,10 @@ document.getElementById('histDeleteSelected').onclick = () => {
   const list = loadHistory();
   const checkedIndices = Array.from(histList.querySelectorAll('.hist-item-check:checked'))
     .map(cb => +cb.dataset.check);
-  
   if(!checkedIndices.length){
     alert('Seleziona almeno una scheda da eliminare.');
     return;
   }
-  
   if(confirm(`Eliminare le ${checkedIndices.length} schede selezionate?`)){
     const updatedList = list.filter((_, idx) => !checkedIndices.includes(idx));
     persistHistory(updatedList);
@@ -2832,7 +2855,6 @@ document.getElementById('histDeleteSelected').onclick = () => {
   }
 };
 
-/* --- History filter --- */
 document.getElementById('histFilter').addEventListener('input', (e) => {
   _histFilterText = e.target.value.toLowerCase().trim();
   renderHistory();
@@ -2843,14 +2865,12 @@ document.getElementById('histFilterClear').onclick = () => {
   renderHistory();
 };
 
-/* --- Favorites filter --- */
 document.getElementById('histShowFavOnly').onclick = function(){
   _favFilter = !_favFilter;
   this.textContent = _favFilter ? '⭐ Tutti' : '⭐ Solo preferiti';
   renderHistory();
 };
 
-/* --- Backup export/import --- */
 document.getElementById('histExportBtn').onclick = () => {
   const list = loadHistory();
   if(!list.length){ alert('Nessuna scheda da esportare.'); return; }
@@ -2908,15 +2928,12 @@ document.getElementById('histDeselectAll').onclick = () => {
 
 function renderHistory(){
   let list = loadHistory();
-  
   if(_histFilterText){
     list = list.filter(e => e.name.toLowerCase().includes(_histFilterText));
   }
-  
   if(_favFilter){
     list = list.filter(e => e.fav === true);
   }
-  
   if(!list.length){
     histList.innerHTML = '<div class="hist-empty">Nessuna scheda salvata finora. Genera una scheda per vederla comparire qui.</div>';
     return;
@@ -2938,8 +2955,6 @@ function renderHistory(){
       </div>
     </div>`;
   }).join('');
-
-  // Open card
   histList.querySelectorAll('.hist-item-main').forEach(el => {
     el.onclick = () => {
       const idx = +el.dataset.i;
@@ -2963,8 +2978,6 @@ function renderHistory(){
       historyOverlay.classList.remove('show');
     };
   });
-  
-  // Favorite button
   histList.querySelectorAll('.fav-btn').forEach(btn => {
     btn.onclick = (ev) => {
       ev.stopPropagation();
@@ -2977,8 +2990,6 @@ function renderHistory(){
       }
     };
   });
-  
-  // Delete single
   histList.querySelectorAll('.hist-item-del').forEach(btn => {
     btn.onclick = (ev) => {
       ev.stopPropagation();
@@ -3027,22 +3038,18 @@ async function addEntryToPdf(doc, title, bodyText, isFirstPage, imgUrls){
   const margin = 15;
   const maxWidth = pageWidth - margin*2;
   let y = margin;
-
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
   const titleLines = doc.splitTextToSize(title, maxWidth);
   doc.text(titleLines, margin, y);
   y += titleLines.length * 7 + 4;
-
   doc.setDrawColor(180,180,180);
   doc.line(margin, y, pageWidth - margin, y);
   y += 8;
-
   const blocks = bodyText.split(/\n##\s*/).map((b,i) => i===0 ? b.replace(/^##\s*/,'') : b);
   blocks.forEach(block => {
     const [titleLine, ...rest] = block.split('\n');
     const paragraph = rest.join('\n').trim();
-
     if(titleLine && titleLine.trim()){
       if(y > pageHeight - margin - 20){ doc.addPage(); y = margin; }
       doc.setFont('helvetica', 'bold');
@@ -3063,7 +3070,6 @@ async function addEntryToPdf(doc, title, bodyText, isFirstPage, imgUrls){
       y += 4;
     }
   });
-
   if(imgUrls && imgUrls.length){
     for(const url of imgUrls){
       const loaded = await loadImageData(url);
@@ -3171,7 +3177,7 @@ document.getElementById('exportPdfBtn').onclick = () => {
 };
 
 /* ============================================================
-   Compare
+   Compare (with Wikipedia by default)
    ============================================================ */
 const compareToggle = document.getElementById('compareToggle');
 const compareSlot = document.getElementById('compareSlot');
@@ -3235,18 +3241,37 @@ async function runCompare(){
     return;
   }
 
-  panelText.innerHTML = loadingHtml('Caricamento informazioni: sto confrontando i due luoghi');
+  panelText.innerHTML = loadingHtml('Caricamento informazioni: sto confrontando i due luoghi (con Wikipedia)');
   animateDots(panelText);
 
+  const wikiA = await fetchWikipediaText(a.name, a.lat, a.lon, ['dati', 'generale'], null);
+  const wikiB = await fetchWikipediaText(b.name, b.lat, b.lon, ['dati', 'generale'], null);
+
+  const wikiSectionA = wikiA ? `INFORMAZIONI SU ${a.name}:\n${wikiA.text}` : `Nessuna informazione dettagliata disponibile per ${a.name}.`;
+  const wikiSectionB = wikiB ? `INFORMAZIONI SU ${b.name}:\n${wikiB.text}` : `Nessuna informazione dettagliata disponibile per ${b.name}.`;
+
   const prompt = `Confronta questi due luoghi: "${a.name}" (regione: ${a.region}, stato: ${a.country}) e "${b.name}" (regione: ${b.region}, stato: ${b.country}).
-Scrivi in italiano, tono divulgativo. Usa "##" prima di ogni titolo di sezione e testo semplice sotto (no markdown per grassetto/elenchi salvo dove indicato).
+
+INFORMAZIONI DETTAGLIATE DA WIKIPEDIA (usale OBBLIGATORIAMENTE per dati specifici come popolazione, superficie, altitudine, fondazione, ecc.):
+---
+${wikiSectionA}
+---
+${wikiSectionB}
+---
+
+REGOLE:
+1. Usa SEMPRE i dati di Wikipedia sopra quando disponibili per popolazione, superficie, altitudine, data di fondazione e altri fatti concreti.
+2. Se un dato specifico manca in Wikipedia, usa la tua conoscenza generale, ma dillo onestamente.
+3. Non menzionare mai le fonti delle informazioni (Wikipedia, database, ecc.) nel testo finale.
+4. Scrivi in italiano, tono divulgativo.
+
 Struttura la risposta ESATTAMENTE con queste sezioni, in quest'ordine:
 
 ## Dati a confronto
-Confronta in un paragrafo scorrevole i dati concreti disponibili: popolazione, superficie, altitudine, densità, se noti; se una cifra non è certa dillo onestamente.
+Confronta in un paragrafo scorrevole i dati concreti disponibili: popolazione (con anno), superficie, altitudine, densità, fondazione o prima menzione storica. Usa numeri precisi da Wikipedia quando disponibili.
 
 ## Somiglianze
-2-3 paragrafi su ciò che i due luoghi hanno in contatto: geografia, storia, cultura o altro.
+2-3 paragrafi su ciò che i due luoghi hanno in comune: geografia, storia, cultura o altro.
 
 ## Differenze principali
 2-3 paragrafi sulle differenze più rilevanti tra i due luoghi.
@@ -3288,7 +3313,7 @@ Un breve paragrafo conclusivo che aiuti chi legge a capire quale luogo si adatta
     cache[compareCacheKey] = { text: panelText.innerHTML, raw: full };
     lastGeneratedRaw = full;
     panelActions.style.display = 'flex';
-    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto'], full, [], '', false, null);
+    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto (con Wikipedia)'], full, [], '', true, null);
     compareSlots = [];
     updateCompareSlotUI();
   }catch(err){
@@ -3429,7 +3454,7 @@ async function fetchPhotoGallery(name, lat, lon, country) {
 }
 
 /* ============================================================
-   Deep Dive (on-the-fly)
+   Deep Dive
    ============================================================ */
 const ddPopup = document.getElementById('ddPopup');
 const ddInputElement = document.getElementById('ddInput');
@@ -3711,7 +3736,7 @@ async function goDeepDive(){
             const html = ddFormatText(shown);
             body.innerHTML = html || loadingHtml('Caricamento informazioni: approfondimento in corso');
           }
-        }catch(e){ /* incomplete line, ignore */ }
+        }catch(e){}
       }
     }
 
