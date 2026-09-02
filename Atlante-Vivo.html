@@ -3018,6 +3018,28 @@ function applyDeepDiveLinks(){
     (m, id, txt) => `<span class="dd-linked-text" data-ddkey="${id}" title="Clicca per riaprire l'approfondimento">${txt}</span>`);
 }
 
+function buildExportTextWithDeepDives(rawText){
+  if(!rawText) return { mainText: '', deepDivesText: '' };
+  const ids = [];
+  const cleanMain = rawText.replace(/§DD:([a-zA-Z0-9_]+)§([\s\S]*?)§\/DD§/g, (m, id, txt) => { ids.push(id); return txt; });
+  if(!ids.length) return { mainText: cleanMain, deepDivesText: '' };
+  const list = loadHistoryApprofondimenti();
+  let section = '';
+  const seen = new Set();
+  ids.forEach(id => {
+    if(seen.has(id)) return;
+    seen.add(id);
+    const entry = list.find(e => e.id === id);
+    if(!entry) return;
+    const label = (entry.labels && entry.labels[0]) || entry.name;
+    const elementName = label.replace(/^Approfondimento:\s*/, '') || entry.name;
+    let bodyText = ddStripHeader(entry.text || '');
+    bodyText = bodyText.replace(/\n\s*—\s*Domanda:\s*(.+?)\s*—\s*\n/g, '\n\nDomanda: $1\n');
+    section += `\n\n---\n\nApprofondimento: ${elementName}\n\n${bodyText.trim()}`;
+  });
+  return { mainText: cleanMain, deepDivesText: section };
+}
+
 function insertDeepDiveMarker(rawText, selectedText, entryId){
   const parts = rawText.split(/(§DD:[a-zA-Z0-9_]+§[\s\S]*?§\/DD§)/g);
   for(let i = 0; i < parts.length; i++){
@@ -3536,7 +3558,8 @@ document.getElementById('histDownloadSelectedRicerche').onclick = () => {
         const e = fullList[checked[i]];
         if(!e) continue;
         const imgs = withPhotos ? (e.imgs || []).map(im => im.thumb).filter(Boolean) : [];
-        await addEntryToPdf(doc, e.name, e.text, i === 0, imgs);
+        const { mainText, deepDivesText } = buildExportTextWithDeepDives(e.text);
+        await addEntryToPdf(doc, e.name, mainText + deepDivesText, i === 0, imgs);
       }
       doc.save(checked.length > 1 ? 'atlante_schede.pdf' : `${(fullList[checked[0]].name||'scheda').replace(/[^\w\-]+/g,'_')}.pdf`);
     }finally{
@@ -3785,7 +3808,9 @@ document.getElementById('exportTxtBtn').onclick = () => {
   exportMenu.classList.remove('show');
   if(!lastGeneratedRaw){ alert('Nessuna scheda da esportare.'); return; }
   const title = panelTitle.textContent || 'scheda';
-  const blob = new Blob([`${title}\n${'='.repeat(title.length)}\n\n${lastGeneratedRaw}`], { type: 'text/plain;charset=utf-8' });
+  const { mainText, deepDivesText } = buildExportTextWithDeepDives(lastGeneratedRaw);
+  const fullContent = mainText + (deepDivesText ? `\n\n${'='.repeat(title.length)}\nAPPROFONDIMENTI COLLEGATI\n${'='.repeat(title.length)}${deepDivesText}` : '');
+  const blob = new Blob([`${title}\n${'='.repeat(title.length)}\n\n${fullContent}`], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -3811,7 +3836,8 @@ document.getElementById('exportPdfBtn').onclick = () => {
       }
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit:'mm', format:'a4' });
-      await addEntryToPdf(doc, title, lastGeneratedRaw, true, imgUrls);
+      const { mainText, deepDivesText } = buildExportTextWithDeepDives(lastGeneratedRaw);
+      await addEntryToPdf(doc, title, mainText + deepDivesText, true, imgUrls);
       doc.save(`${title.replace(/[^\w\-]+/g,'_')}.pdf`);
     }finally{
       hideBusy();
@@ -4117,7 +4143,7 @@ let _ddPending = null;
 let _ddLastRequestAt = 0;
 const _ddCache = {};
 const _ddPendingEntries = {};
-const DD_COOLDOWN_MS = 10000;
+const DD_COOLDOWN_MS = 5000;
 
 function setDdHint(visible){
   const h = document.getElementById('ddHint');
