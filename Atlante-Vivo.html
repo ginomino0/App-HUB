@@ -16,6 +16,7 @@
   --clay:#b5651d;
   --line:#c9d2c7;
   --panel:#fbfbf9;
+  --panel-w:min(460px,100vw);
   --font-display:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
   --font-body:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
   --font-mono:'IBM Plex Mono',ui-monospace,monospace;
@@ -181,7 +182,21 @@ header *{pointer-events:auto;}
 .instr-body a{color:var(--moss-dark);text-decoration:underline;}
 .instr-body a:hover{color:var(--moss);}
 
-.hist-list{max-height:50vh;overflow-y:auto;margin-bottom:10px;padding-right:4px;}
+.hist-tabs{
+  display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--line);
+}
+.hist-tab{
+  padding:10px 20px;font-family:var(--font-body);font-size:13px;
+  background:none;border:none;border-bottom:3px solid transparent;
+  cursor:pointer;color:#7a8880;transition:color .2s,border-color .2s;
+  font-weight:600;
+}
+.hist-tab:hover{color:var(--moss-dark);}
+.hist-tab.active{color:var(--moss-dark);border-bottom-color:var(--moss);}
+.hist-panel{display:none;}
+.hist-panel.active{display:block;}
+
+.hist-list{max-height:45vh;overflow-y:auto;margin-bottom:10px;padding-right:4px;}
 .hist-item{
   display:grid;
   grid-template-columns:auto 1fr auto;
@@ -208,6 +223,9 @@ header *{pointer-events:auto;}
   font-weight:600;
   color:var(--ink);
   white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:200px;
 }
 .hist-item-labels{
   font-size:11px;
@@ -220,6 +238,7 @@ header *{pointer-events:auto;}
   display:flex;
   align-items:center;
   gap:12px;
+  flex-shrink:0;
 }
 .hist-item-meta{
   font-size:11px;
@@ -363,6 +382,26 @@ header *{pointer-events:auto;}
   cursor:pointer;
 }
 .export-menu button:hover{background:#eef2ee;}
+.view-cards-menu{
+  min-width:260px;max-width:min(340px, 80vw);
+  max-height:280px;overflow-y:auto;
+}
+.view-cards-menu .vc-section-label{
+  padding:8px 13px 4px;font-size:11px;letter-spacing:0.4px;
+  color:#8a958e;text-transform:uppercase;
+}
+.view-cards-menu .vc-item{
+  display:block;width:100%;text-align:left;background:none;border:none;
+  padding:8px 13px;font-family:var(--font-body);font-size:12.5px;color:#3a453f;
+  cursor:pointer;border-top:1px solid #f0f2ef;
+}
+.view-cards-menu .vc-item:hover{background:#eef2ee;}
+.view-cards-menu .vc-item .vc-date{
+  display:block;font-size:11px;color:#8a958e;margin-top:2px;
+}
+.view-cards-menu .vc-empty{
+  padding:10px 13px;font-size:12px;color:#8a958e;font-style:italic;
+}
 .hist-select-row{
   display:flex;justify-content:space-between;align-items:center;
   margin-bottom:10px;gap:8px;flex-wrap:wrap;
@@ -581,7 +620,7 @@ header *{pointer-events:auto;}
 
 #panel{
   position:fixed;top:0;right:0;bottom:0;
-  width:min(460px,100vw);
+  width:var(--panel-w);
   background:
     radial-gradient(ellipse at 15% 10%, rgba(181,101,29,0.05), transparent 45%),
     radial-gradient(ellipse at 85% 90%, rgba(60,98,85,0.06), transparent 50%),
@@ -602,6 +641,57 @@ header *{pointer-events:auto;}
   opacity:0.5;mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.66 0 0 0 0 0.6 0 0 0 0 0.48 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+#ddPanel{
+  position:fixed;top:0;bottom:0;
+  right:var(--panel-w);
+  width:min(400px, 100vw);
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(60,98,85,0.07), transparent 45%),
+    var(--panel);
+  color:var(--ink);
+  transform:translateX(calc(100% + var(--panel-w)));
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  z-index:49;
+  display:flex;flex-direction:column;
+  box-shadow:-10px 0 40px rgba(0,0,0,0.3);
+  overflow:hidden;
+  border-right:1px solid var(--line);
+}
+#ddPanel.open{transform:translateX(0);}
+#ddPanel .panel-body{padding:22px 26px 40px;}
+#ddPanel .dd-q{
+  font-size:13px;color:#5c6b62;font-style:italic;
+  margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line);
+}
+#ddPanel .dd-actions{
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;
+  padding-top:16px;border-top:1px solid var(--line);
+}
+#ddPanelLinkedNote{
+  margin-top:18px;padding-top:14px;border-top:1px solid var(--line);
+  font-size:12.5px;color:#5c6b62;
+}
+#ddPanelFollowUp{
+  margin-top:20px;padding-top:16px;border-top:1px dashed var(--line);
+}
+#ddPanelFollowUp .dd-followup-label{
+  font-size:12px;color:#7a8880;margin-bottom:8px;
+}
+#ddPanelFollowUp input{
+  width:100%;box-sizing:border-box;padding:9px 12px;
+  border:1px solid var(--line);border-radius:8px;
+  font-family:var(--font-body);font-size:13px;margin-bottom:8px;
+  background:#fff;color:var(--ink);
+}
+#ddPanelFollowUp input:focus{border-color:#8fb59f;outline:none;}
+#ddPanelFollowUpBtn{width:100%;}
+.dd-followup-q{
+  font-size:12.5px;color:#5c6b62;font-style:italic;font-weight:600;
+  margin-top:18px;margin-bottom:6px;padding-top:14px;border-top:1px solid var(--line);
+}
+@media (max-width: 920px){
+  #ddPanel{ right:0; width:var(--panel-w); z-index:51; transform:translateX(100%); }
+}
 #reopenTab{
   position:fixed;top:50%;right:0;transform:translateY(-50%);
   background:var(--ink);color:#f2f2ec;
@@ -615,6 +705,14 @@ header *{pointer-events:auto;}
 }
 #reopenTab.show{opacity:1;pointer-events:auto;}
 #reopenTab:hover{background:var(--moss-dark);}
+#reopenTab .reopen-dot{
+  display:none;
+  position:absolute;top:6px;left:50%;transform:translateX(-50%);
+  width:8px;height:8px;border-radius:50%;
+  background:#e0503c;
+  box-shadow:0 0 0 2px var(--ink);
+}
+#reopenTab.has-history .reopen-dot{display:block;}
 .panel-head{
   padding:26px 30px 18px;
   border-bottom:1px solid var(--line);
@@ -699,7 +797,7 @@ header *{pointer-events:auto;}
 
 #ddPopup{
   position:fixed; display:none; z-index:200;
-  width:min(380px,92vw);
+  width:min(420px,92vw);
   background:rgba(255,255,255,0.97);
   backdrop-filter:blur(6px);
   border:1px solid var(--line);
@@ -735,6 +833,7 @@ header *{pointer-events:auto;}
   border-left:4px solid var(--moss);
   border-radius:6px;
   padding:12px 14px;
+  position:relative;
 }
 .dd-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:4px; }
 .dd-title{ font-family:var(--font-display); font-weight:700; font-size:14.5px; color:var(--moss-dark); }
@@ -755,6 +854,19 @@ header *{pointer-events:auto;}
 }
 .dd-btn:hover{ border-color:#8fb59f; color:var(--ink); }
 .dd-btn:disabled{ opacity:.5; cursor:default; }
+
+.dd-linked-text{
+  color:#1a6fb5;
+  text-decoration:underline dotted;
+  cursor:pointer;
+  transition:color .15s;
+  border-radius:2px;
+  padding:0 2px;
+}
+.dd-linked-text:hover{
+  color:#0d4b7a;
+  background:rgba(26,111,181,0.08);
+}
 
 #imgModal {
   z-index:110;
@@ -1059,11 +1171,11 @@ header *{pointer-events:auto;}
       <p>
         Nella scheda generata, seleziona con il mouse un nome presente nel testo (una villa, una chiesa, un quartiere…):
         accanto al cursore si apre un piccolo riquadro con una domanda precompilata ("Dettagli su …"), che puoi modificare
-        come vuoi. Premi <strong>"🔍 Approfondisci"</strong> e sotto il paragrafo compare una mini-scheda dedicata a quell'elemento,
-        ancorata al luogo principale per evitare confusioni con luoghi omonimi. Se l'elemento è un luogo fisico visitabile,
+        come vuoi. Premi <strong>"🔍 Approfondisci"</strong> e una mini-scheda dedicata a quell'elemento appare direttamente 
+        a fianco del testo selezionato, ben visibile. Se l'elemento è un luogo fisico visitabile,
         nella mini-scheda compare anche <strong>"📌 Salva come segnaposto"</strong> (con la domanda come nota); con
-        <strong>"📄 Aggiungi alla scheda"</strong> unisci il testo alla scheda principale e lo ritrovi anche nell'export.
-        Ogni approfondimento viene salvato in Cronologia come voce separata "Luogo → Elemento" e, se lo richiedi di nuovo
+        <strong>"📄 Aggiungi alla scheda"</strong> il testo selezionato diventa un link blu che, cliccato, riapre la mini-scheda.
+        Ogni approfondimento viene salvato in Cronologia (nella scheda "Approfondimenti") come voce separata e, se lo richiedi di nuovo
         identico, viene riutilizzato senza consumare token.
       </p>
       <h4>L'opzione "Usa anche Wikipedia per dettagli extra"</h4>
@@ -1074,7 +1186,9 @@ header *{pointer-events:auto;}
         dell'AI. Il compromesso è che la richiesta consuma più token e impiega qualche secondo in più, per questo
         resta spenta di default. Nota: una scheda generata con questa opzione attiva è considerata diversa dalla
         stessa scheda generata senza — se la riattivi o disattivi su una domanda già fatta, viene generata di nuovo
-        anziché essere ripresa dalla cronologia.
+        anziché essere ripresa dalla cronologia. La spunta vale anche per gli <strong>approfondimenti</strong>
+        aperti selezionando un testo nella scheda: se è attiva quando li generi, anche loro consultano Wikipedia
+        per l'elemento specifico approfondito.
       </p>
       <h3>4. Confronta due luoghi</h3>
       <ul>
@@ -1088,13 +1202,15 @@ header *{pointer-events:auto;}
       <ul>
         <li><strong>Esporta ▾:</strong> scarica la scheda aperta come file <strong>.txt</strong> oppure <strong>.pdf</strong> impaginato. Per il PDF ti viene chiesto se includere anche le foto della galleria ("Con foto" o "Solo testo"). Gli approfondimenti uniti alla scheda con "📄 Aggiungi alla scheda" finiscono anch'essi nell'export.</li>
         <li><strong>Linguetta "Scheda AI":</strong> compare se chiudi il pannello con una scheda ancora aperta, così puoi tornare alla mappa e riaprirlo con un clic senza perderla.</li>
+        <li><strong>Pallino rosso sulla linguetta:</strong> avvisa che per il luogo appena selezionato esistono già ricerche salvate in Cronologia, pronte da riaprire.</li>
       </ul>
       <h3>7. Ritrova le schede salvate in Cronologia</h3>
       <p>Ogni scheda generata (comprese quelle di confronto e i singoli approfondimenti) viene salvata automaticamente nel browser. Aprila dal pulsante <strong>"Cronologia"</strong> in alto a destra.</p>
       <ul>
+        <li><strong>Due sezioni:</strong> "Ricerche" per le schede dei luoghi e "Approfondimenti" per le mini-schede generate selezionando un testo.</li>
         <li><strong>Consultazione rapida:</strong> clicca sul nome di un luogo per riaprire subito la scheda salvata.</li>
         <li><strong>Foto incluse:</strong> le immagini della galleria restano memorizzate insieme al testo.</li>
-        <li><strong>Nessuno spreco di AI:</strong> se richiedi la stessa combinazione di luogo, domande e stato della spunta Wikipedia, la scheda viene ripresa da qui senza consumare nuove richieste; le voci generate con Wikipedia attiva sono segnate con "📚 Wikipedia", gli approfondimenti con etichetta "Approfondimento: …".</li>
+        <li><strong>Nessuno spreco di AI:</strong> se richiedi la stessa combinazione di luogo, domande e stato della spunta Wikipedia, la scheda viene ripresa da qui senza consumare nuove richieste; le voci generate con Wikipedia attiva sono segnate con "📚 Wikipedia".</li>
         <li><strong>Seleziona tutto</strong> / <strong>Scarica selezionati (PDF)</strong>: spunta le voci che vuoi e genera un unico PDF con tutte le schede scelte (anche qui puoi includere o meno le foto).</li>
         <li><strong>Elimina selezionati</strong> / <strong>Elimina (riga singola)</strong> / <strong>Svuota tutto</strong>: rimuovono rispettivamente le voci spuntate, una singola voce, o l'intero archivio (con conferma).</li>
         <li><strong>Esporta / Importa backup:</strong> salva tutte le schede in un file JSON, da rileggere in seguito o su un altro computer, senza duplicati.</li>
@@ -1154,31 +1270,72 @@ header *{pointer-events:auto;}
   <div class="keycard keycard-wide">
     <h2>Cronologia schede</h2>
     <p>Le schede generate restano salvate nel tuo browser. Tocca un luogo per riaprirlo, seleziona più voci per scaricarle insieme in un unico PDF, oppure eliminale.</p>
-    <div class="hist-filter-row">
-      <input type="text" id="histFilter" placeholder="🔍 Filtra per nome…" autocomplete="off">
-      <button class="btn btn-ghost btn-sm" id="histFilterClear">✕ Cancella</button>
+    
+    <!-- Tabs -->
+    <div class="hist-tabs">
+      <button class="hist-tab active" data-tab="ricerche">📋 Ricerche</button>
+      <button class="hist-tab" data-tab="approfondimenti">🔍 Approfondimenti</button>
     </div>
-    <div class="hist-toolbar">
-      <button class="btn btn-ghost btn-sm" id="histSelectAll">☑ Seleziona tutto</button>
-      <button class="btn btn-ghost btn-sm" id="histDeselectAll">☐ Deseleziona tutto</button>
-      <span class="hist-sep">|</span>
-      <button class="btn btn-primary btn-sm" id="histDownloadSelected">📄 Scarica selezionati (PDF)</button>
-    </div>
-    <div class="hist-toolbar">
-      <button class="btn btn-ghost btn-sm" id="histExportBtn">💾 Esporta backup</button>
-      <button class="btn btn-ghost btn-sm" id="histImportBtn">📂 Importa backup</button>
-      <span class="hist-sep">|</span>
-      <button class="btn btn-ghost btn-sm" id="histShowFavOnly">⭐ Solo preferiti</button>
-    </div>
-    <input type="file" id="histImportFile" accept=".json,application/json" style="display:none;">
-    <div class="hist-list" id="histList"></div>
-    <div class="hist-footer">
-      <div class="hist-footer-left">
-        <button class="btn btn-ghost btn-sm" id="histDeleteSelected" style="color:#b5651d; border-color:#e0b39c;">🗑 Elimina selezionati</button>
-        <button class="btn btn-ghost btn-sm" id="histClearAll" style="color:#7a8880;">⛔ Svuota tutto</button>
+    
+    <!-- Panel Ricerche -->
+    <div class="hist-panel active" id="panelRicerche">
+      <div class="hist-filter-row">
+        <input type="text" id="histFilterRicerche" placeholder="🔍 Filtra per nome…" autocomplete="off">
+        <button class="btn btn-ghost btn-sm" id="histFilterClearRicerche">✕ Cancella</button>
       </div>
-      <div class="hist-footer-right">
-        <button class="btn btn-primary" id="histClose">✕ Chiudi</button>
+      <div class="hist-toolbar">
+        <button class="btn btn-ghost btn-sm" id="histSelectAllRicerche">☑ Seleziona tutto</button>
+        <button class="btn btn-ghost btn-sm" id="histDeselectAllRicerche">☐ Deseleziona tutto</button>
+        <span class="hist-sep">|</span>
+        <button class="btn btn-primary btn-sm" id="histDownloadSelectedRicerche">📄 Scarica selezionati (PDF)</button>
+      </div>
+      <div class="hist-toolbar">
+        <button class="btn btn-ghost btn-sm" id="histExportBtnRicerche">💾 Esporta backup</button>
+        <button class="btn btn-ghost btn-sm" id="histImportBtnRicerche">📂 Importa backup</button>
+        <span class="hist-sep">|</span>
+        <button class="btn btn-ghost btn-sm" id="histShowFavOnlyRicerche">⭐ Solo preferiti</button>
+      </div>
+      <input type="file" id="histImportFileRicerche" accept=".json,application/json" style="display:none;">
+      <div class="hist-list" id="histListRicerche"></div>
+      <div class="hist-footer">
+        <div class="hist-footer-left">
+          <button class="btn btn-ghost btn-sm" id="histDeleteSelectedRicerche" style="color:#b5651d; border-color:#e0b39c;">🗑 Elimina selezionati</button>
+          <button class="btn btn-ghost btn-sm" id="histClearAllRicerche" style="color:#7a8880;">⛔ Svuota tutto</button>
+        </div>
+        <div class="hist-footer-right">
+          <button class="btn btn-primary" id="histClose">✕ Chiudi</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Panel Approfondimenti -->
+    <div class="hist-panel" id="panelApprofondimenti">
+      <div class="hist-filter-row">
+        <input type="text" id="histFilterApprofondimenti" placeholder="🔍 Filtra per nome…" autocomplete="off">
+        <button class="btn btn-ghost btn-sm" id="histFilterClearApprofondimenti">✕ Cancella</button>
+      </div>
+      <div class="hist-toolbar">
+        <button class="btn btn-ghost btn-sm" id="histSelectAllApprofondimenti">☑ Seleziona tutto</button>
+        <button class="btn btn-ghost btn-sm" id="histDeselectAllApprofondimenti">☐ Deseleziona tutto</button>
+        <span class="hist-sep">|</span>
+        <button class="btn btn-primary btn-sm" id="histDownloadSelectedApprofondimenti">📄 Scarica selezionati (PDF)</button>
+      </div>
+      <div class="hist-toolbar">
+        <button class="btn btn-ghost btn-sm" id="histExportBtnApprofondimenti">💾 Esporta backup</button>
+        <button class="btn btn-ghost btn-sm" id="histImportBtnApprofondimenti">📂 Importa backup</button>
+        <span class="hist-sep">|</span>
+        <button class="btn btn-ghost btn-sm" id="histShowFavOnlyApprofondimenti">⭐ Solo preferiti</button>
+      </div>
+      <input type="file" id="histImportFileApprofondimenti" accept=".json,application/json" style="display:none;">
+      <div class="hist-list" id="histListApprofondimenti"></div>
+      <div class="hist-footer">
+        <div class="hist-footer-left">
+          <button class="btn btn-ghost btn-sm" id="histDeleteSelectedApprofondimenti" style="color:#b5651d; border-color:#e0b39c;">🗑 Elimina selezionati</button>
+          <button class="btn btn-ghost btn-sm" id="histClearAllApprofondimenti" style="color:#7a8880;">⛔ Svuota tutto</button>
+        </div>
+        <div class="hist-footer-right">
+          <button class="btn btn-primary" id="histCloseApprofondimenti">✕ Chiudi</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1263,7 +1420,7 @@ header *{pointer-events:auto;}
   <button id="savePinBtn" class="pin-btn">📌 Salva come segnaposto</button>
 </div>
 
-<button id="reopenTab">Scheda AI</button>
+<button id="reopenTab">Scheda AI<span class="reopen-dot"></span></button>
 <button id="cardReopenTab">Scheda luogo</button>
 
 <div id="panel">
@@ -1283,10 +1440,38 @@ header *{pointer-events:auto;}
           <button id="exportPdfBtn">Esporta come .pdf</button>
         </div>
       </div>
+      <div class="export-wrap" id="viewCardsWrap" style="display:none;">
+        <button class="panel-action-btn" id="viewCardsBtn">Ricerche già fatte ▾</button>
+        <div class="export-menu view-cards-menu" id="viewCardsMenu"></div>
+      </div>
     </div>
     <div id="panelGallery"></div>
     <div id="panelText"></div>
     <div id="ddHint">💡 <strong>Suggerimento</strong>: seleziona con il mouse un nome nel testo (es. un monumento o una chiesa) per generarne una mini-scheda di approfondimento.</div>
+  </div>
+</div>
+
+<div id="ddPanel">
+  <div class="panel-head">
+    <div class="panel-head-text">
+      <div class="cc-eyebrow">🔍 APPROFONDIMENTO</div>
+      <h2 id="ddPanelTitle">—</h2>
+    </div>
+    <button class="panel-close" id="ddPanelClose">&times;</button>
+  </div>
+  <div class="panel-body" id="ddPanelBody">
+    <div class="dd-q" id="ddPanelQuestion"></div>
+    <div id="ddPanelText"></div>
+    <div class="dd-actions" id="ddPanelActions" style="display:none;">
+      <button class="dd-btn" id="ddPanelPinBtn">📌 Salva come segnaposto</button>
+      <button class="dd-btn" id="ddPanelAddBtn">📄 Aggiungi alla scheda</button>
+    </div>
+    <div id="ddPanelLinkedNote" style="display:none;">🔗 Questo approfondimento è già collegato al testo della scheda.</div>
+    <div id="ddPanelFollowUp" style="display:none;">
+      <div class="dd-followup-label">💬 Fai un'altra domanda su questo argomento:</div>
+      <input type="text" id="ddPanelFollowUpInput" placeholder="Es. ci sono orari di apertura?" autocomplete="off">
+      <button class="dd-btn" id="ddPanelFollowUpBtn" style="width:100%;text-align:center;">➕ Approfondisci con una nuova domanda</button>
+    </div>
   </div>
 </div>
 
@@ -1424,33 +1609,12 @@ document.getElementById('keySave').onclick = () => {
 };
 
 /* ============================================================
-   Map initialization with saved position
+   Map initialization
    ============================================================ */
-const MAP_POS_KEY = 'atlante_map_pos';
-
-function getSavedMapPosition(){
-  try{
-    const data = JSON.parse(localStorage.getItem(MAP_POS_KEY));
-    if(data && typeof data.lat === 'number' && typeof data.lng === 'number' && typeof data.zoom === 'number'){
-      return data;
-    }
-  }catch(e){}
-  return null;
-}
-
-function saveMapPosition(lat, lng, zoom){
-  try{
-    localStorage.setItem(MAP_POS_KEY, JSON.stringify({ lat, lng, zoom }));
-  }catch(e){}
-}
-
-const savedPos = getSavedMapPosition();
-const defaultPos = savedPos || { lat: 41.9, lng: 12.5, zoom: 5 };
-
 const map = L.map('map', {
   worldCopyJump: true,
   zoomControl: true
-}).setView([defaultPos.lat, defaultPos.lng], defaultPos.zoom);
+}).setView([44.8125, 20.4612], 5);
 
 const baseStreets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -1477,17 +1641,13 @@ L.control.layers({
   collapsed: false
 }).addTo(map);
 
-map.on('moveend', () => {
-  const center = map.getCenter();
-  saveMapPosition(center.lat, center.lng, map.getZoom());
-});
-
 /* ============================================================
    Application state
    ============================================================ */
 let currentCountry = null;
 let currentExactPoint = null;
 let _activeCardPlace = null;
+let _panelActivePlaceName = null;
 let _currentCacheKey = null;
 
 /* ============================================================
@@ -2085,7 +2245,8 @@ Considera NON pertinenti solo le domande che non hanno alcuna relazione con un l
   }
   if(!wikiText){
     const baseLean = `Il luogo in questione è: "${luogo}" ${luogoInfo}. Scrivi in italiano, tono divulgativo ma curato.
-Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (niente markdown per grassetto o elenchi puntati salvo dove indicato, solo paragrafi scorrevoli). Non aggiungere sezioni oltre a quelle richieste qui sotto. Se un'informazione specifica non è certa o non applicabile, dillo onestamente invece di inventarla.`;
+Usa "##" prima di ogni titolo di sezione richiesto e testo semplice sotto (niente markdown per grassetto o elenchi puntati salvo dove indicato, solo paragrafi scorrevoli). Non aggiungere sezioni oltre a quelle richieste qui sotto. Se un'informazione specifica non è certa o non applicabile, dillo onestamente invece di inventarla.
+IMPORTANTE: Quando scrivi numeri (date, prefissi telefonici, anni, cifre, percentuali, coordinate, ecc.) scrivili SEMPRE in forma numerica (es. "+41", "2024", "15 km", "1200 abitanti", "45.4642°N") e MAI in lettere (es. "più quarantuno", "duemilaventiquattro", "quindici chilometri").`;
     return `${baseLean}
 
 Struttura la risposta ESATTAMENTE così, una sezione per ognuna di queste (in quest'ordine):
@@ -2101,7 +2262,8 @@ REGOLE FONDAMENTALI:
 3. Se un'informazione specifica non è disponibile, dillo onestamente, ma PRIMA controlla se i dati che hai già contengono la risposta.
 4. Non dire "non è possibile fornire con certezza" se hai già i dati per rispondere.
 5. Non menzionare mai le fonti delle informazioni (Wikipedia, database, ecc.). Usa i dati e basta.
-6. Se non hai informazioni specifiche su una domanda, ma hai dati generali sul luogo, usali per dare una risposta contestualizzata.`;
+6. Se non hai informazioni specifiche su una domanda, ma hai dati generali sul luogo, usali per dare una risposta contestualizzata.
+7. IMPORTANTE: Quando scrivi numeri (date, prefissi telefonici, anni, cifre, percentuali, coordinate, ecc.) scrivili SEMPRE in forma numerica (es. "+41", "2024", "15 km", "1200 abitanti", "45.4642°N") e MAI in lettere (es. "più quarantuno", "duemilaventiquattro", "quindici chilometri").`;
   const sourceInstruction = `
 INFORMAZIONI DETTAGLIATE SUL LUOGO (estratto già selezionato come pertinente alla richiesta: usale OBBLIGATORIAMENTE per date, nomi, cifre e fatti specifici):
 ---
@@ -2136,6 +2298,29 @@ function applyPlaceData(data, name){
     return;
   }
   const displayName = place || country;
+
+  if(panelHasContent && _panelActivePlaceName && _panelActivePlaceName !== displayName){
+    panel.classList.remove('open');
+    reopenTab.classList.add('show');
+    closeDdPanel();
+    panelHasContent = false;
+    panelText.innerHTML = '';
+    panelGallery.innerHTML = '';
+    panelGallery.style.display = '';
+    panelGallery.className = '';
+    panelText.style.display = 'block';
+    panelActions.style.display = 'none';
+    viewCardsWrap.style.display = 'none';
+    viewCardsMenu.classList.remove('show');
+    viewCardsMenu.innerHTML = '';
+    _activeCardPlace = null;
+    _currentCacheKey = null;
+    _activeMainEntryId = null;
+    _activeMainRawText = '';
+    _panelActivePlaceName = null;
+    setDdHint(false);
+  }
+
   currentCountry = {
     name: displayName,
     region, capital: null, country,
@@ -2173,6 +2358,7 @@ function applyPlaceData(data, name){
   if(compareToggle && compareToggle.checked){
     addToCompare(currentCountry);
   }
+  maybeShowHistoryForEmptyPanel();
 }
 
 async function handlePointClick(lat, lng){
@@ -2273,14 +2459,19 @@ const panelActions = document.getElementById('panelActions');
 
 document.getElementById('panelClose').onclick = () => {
   panel.classList.remove('open');
-  if(panelHasContent) reopenTab.classList.add('show');
+  reopenTab.classList.add('show');
+  closeDdPanel();
+  maybeShowHistoryForEmptyPanel();
 };
 const reopenTab = document.getElementById('reopenTab');
 let panelHasContent = false;
 reopenTab.onclick = () => {
   panel.classList.add('open');
   reopenTab.classList.remove('show');
+  reopenTab.classList.remove('has-history');
+  maybeShowHistoryForEmptyPanel();
 };
+reopenTab.classList.add('show');
 
 document.getElementById('ccClose').onclick = () => collapseCard();
 const cardReopenTab = document.getElementById('cardReopenTab');
@@ -2360,6 +2551,7 @@ function renderGalleryThumbs(items){
 
 genBtn.onclick = async () => {
   if(!currentCountry) return;
+  closeDdPanel();
   const key = getKey();
   if(!key){
     keyOverlay.classList.add('show');
@@ -2381,7 +2573,9 @@ genBtn.onclick = async () => {
   panelTitle.textContent = currentCountry.name;
   panel.classList.add('open');
   reopenTab.classList.remove('show');
+  reopenTab.classList.remove('has-history');
   panelHasContent = true;
+  _panelActivePlaceName = currentCountry.name;
   setDdHint(true);
   collapseCard();
   _activeCardPlace = {
@@ -2393,17 +2587,25 @@ genBtn.onclick = async () => {
   };
   _currentCacheKey = cacheKey;
   if(cache[cacheKey]){
-    panelText.innerHTML = cache[cacheKey].text;
+    _activeMainEntryId = cache[cacheKey].entryId || null;
+    _activeMainRawText = cache[cacheKey].raw || '';
+    renderMainCard(_activeMainRawText);
     renderGalleryThumbs(cache[cacheKey].imgs);
     panelActions.style.display = 'flex';
+    updateViewCardsButton(currentCountry.name);
     return;
   }
-  const histEntry = findHistoryEntry(currentCountry.name, labelsChosen, customQ, useWiki);
+  const _ricercheList = loadHistoryRicerche();
+  const histEntry = _ricercheList.find(e => e.name === currentCountry.name && (e.labels||[]).join(',') === labelsChosen.join(',') && (e.q||'') === (customQ||'') && !!e.wiki === !!useWiki && e.text);
   if(histEntry){
-    renderStreamed(histEntry.text, false);
+    ensureEntryId(histEntry, _ricercheList, persistHistoryRicerche);
+    _activeMainEntryId = histEntry.id;
+    _activeMainRawText = histEntry.text;
+    renderMainCard(_activeMainRawText);
     renderGalleryThumbs(histEntry.imgs);
     lastGeneratedRaw = histEntry.text;
     panelActions.style.display = 'flex';
+    updateViewCardsButton(currentCountry.name);
     return;
   }
   panelText.innerHTML = loadingHtml(
@@ -2472,11 +2674,15 @@ genBtn.onclick = async () => {
       }
     }
     renderStreamed(full, false);
+    applyDeepDiveLinks();
     let galleryImgs = [];
     try{ galleryImgs = (await galleryPromise) || []; }catch(e){}
-    cache[cacheKey] = { text: panelText.innerHTML, imgs: galleryImgs };
     panelActions.style.display = 'flex';
-    saveToHistory(currentCountry.name, labelsChosen, full, galleryImgs, customQ, useWiki, _activeCardPlace);
+    const savedEntry = saveToHistory(currentCountry.name, labelsChosen, full, galleryImgs, customQ, useWiki, _activeCardPlace);
+    _activeMainEntryId = savedEntry.id;
+    _activeMainRawText = full;
+    cache[cacheKey] = { raw: full, imgs: galleryImgs, entryId: savedEntry.id };
+    updateViewCardsButton(currentCountry.name);
   }catch(err){
     panelText.innerHTML = `<div class="panel-error">Non sono riuscito a generare la scheda.<br>${err.message}</div>`;
   }finally{
@@ -2787,7 +2993,8 @@ function renderStreamed(text, streaming){
   });
   if(streaming) html += '<span class="cursor-blink"></span>';
   panelText.innerHTML = html;
-  panelBody.scrollTop = panelBody.scrollHeight;
+  if(streaming) panelBody.scrollTop = panelBody.scrollHeight;
+  else panelBody.scrollTop = 0;
 }
 
 function escapeHtml(s){
@@ -2795,102 +3002,445 @@ function escapeHtml(s){
 }
 
 /* ============================================================
-   History (localStorage)
+   Rendering centralizzato della scheda principale + link permanenti
+   agli approfondimenti ("§DD:id§testo§/DD§" dentro al testo grezzo)
    ============================================================ */
-const HIST_KEY = 'atlante_history_v1';
-let lastGeneratedRaw = '';
-let _favFilter = false;
-let _histFilterText = '';
 
-function loadHistory(){
-  try{ return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); }
+function renderMainCard(rawText){
+  renderStreamed(rawText, false);
+  applyDeepDiveLinks();
+}
+
+function applyDeepDiveLinks(){
+  const html = panelText.innerHTML;
+  if(html.indexOf('§DD:') === -1) return;
+  panelText.innerHTML = html.replace(/§DD:([a-zA-Z0-9_]+)§([\s\S]*?)§\/DD§/g,
+    (m, id, txt) => `<span class="dd-linked-text" data-ddkey="${id}" title="Clicca per riaprire l'approfondimento">${txt}</span>`);
+}
+
+function insertDeepDiveMarker(rawText, selectedText, entryId){
+  const parts = rawText.split(/(§DD:[a-zA-Z0-9_]+§[\s\S]*?§\/DD§)/g);
+  for(let i = 0; i < parts.length; i++){
+    if(parts[i].startsWith('§DD:')) continue;
+    const idx = parts[i].indexOf(selectedText);
+    if(idx !== -1){
+      parts[i] = parts[i].slice(0, idx) + `§DD:${entryId}§${selectedText}§/DD§` + parts[i].slice(idx + selectedText.length);
+      return parts.join('');
+    }
+  }
+  return null;
+}
+
+/* ============================================================
+   History (localStorage) - Split into Ricerche and Approfondimenti
+   ============================================================ */
+const HIST_KEY_RICERCHE = 'atlante_history_ricerche';
+const HIST_KEY_APPROFONDIMENTI = 'atlante_history_approfondimenti';
+
+function genId(prefix){
+  return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+}
+function ensureEntryId(entry, list, persistFn){
+  if(!entry.id){
+    entry.id = genId('h');
+    persistFn(list);
+  }
+  return entry.id;
+}
+
+let _activeMainEntryId = null;
+let _activeMainRawText = '';
+
+let lastGeneratedRaw = '';
+let _favFilterRicerche = false;
+let _favFilterApprofondimenti = false;
+let _histFilterTextRicerche = '';
+let _histFilterTextApprofondimenti = '';
+
+function loadHistoryRicerche(){
+  try{ return JSON.parse(localStorage.getItem(HIST_KEY_RICERCHE) || '[]'); }
   catch(e){ return []; }
 }
-function persistHistory(list){
-  try{ localStorage.setItem(HIST_KEY, JSON.stringify(list)); }
+function persistHistoryRicerche(list){
+  try{ localStorage.setItem(HIST_KEY_RICERCHE, JSON.stringify(list.slice(0, 100))); }
   catch(e){}
 }
-function saveToHistory(name, labelsChosen, rawText, imgs, q, wikiUsed, place){
+
+function loadHistoryApprofondimenti(){
+  try{ return JSON.parse(localStorage.getItem(HIST_KEY_APPROFONDIMENTI) || '[]'); }
+  catch(e){ return []; }
+}
+function persistHistoryApprofondimenti(list){
+  try{ localStorage.setItem(HIST_KEY_APPROFONDIMENTI, JSON.stringify(list.slice(0, 100))); }
+  catch(e){}
+}
+
+function extractLinkedDeepDiveIds(ricercheEntries){
+  const ids = new Set();
+  const re = /§DD:([a-zA-Z0-9_]+)§/g;
+  (ricercheEntries || []).forEach(e => {
+    if(!e || !e.text) return;
+    let m;
+    re.lastIndex = 0;
+    while((m = re.exec(e.text)) !== null) ids.add(m[1]);
+  });
+  return ids;
+}
+
+function cascadeDeleteApprofondimenti(removedRicercheEntries){
+  const ids = extractLinkedDeepDiveIds(removedRicercheEntries);
+  if(!ids.size) return;
+  const list = loadHistoryApprofondimenti();
+  const filtered = list.filter(e => !ids.has(e.id));
+  if(filtered.length !== list.length) persistHistoryApprofondimenti(filtered);
+}
+
+function saveToHistory(name, labelsChosen, rawText, imgs, q, wikiUsed, place, isDeepDive){
   lastGeneratedRaw = rawText;
-  const list = loadHistory();
   const entry = {
+    id: genId(isDeepDive ? 'dd' : 'h'),
     name, labels: labelsChosen, text: rawText,
     imgs: imgs || [], q: q || '', wiki: !!wikiUsed,
     place: place || null,
     fav: false,
     date: new Date().toISOString()
   };
-  const filtered = list.filter(e => !(e.name === name && (e.labels||[]).join(',') === labelsChosen.join(',') && (e.q||'') === (q||'') && !!e.wiki === !!wikiUsed));
-  filtered.unshift(entry);
-  persistHistory(filtered.slice(0, 60));
+  
+  if(isDeepDive){
+    const list = loadHistoryApprofondimenti();
+    const filtered = list.filter(e => !(e.name === name && (e.labels||[]).join(',') === labelsChosen.join(',') && (e.q||'') === (q||'')));
+    filtered.unshift(entry);
+    persistHistoryApprofondimenti(filtered);
+  }else{
+    const list = loadHistoryRicerche();
+    const filtered = list.filter(e => !(e.name === name && (e.labels||[]).join(',') === labelsChosen.join(',') && (e.q||'') === (q||'') && !!e.wiki === !!wikiUsed));
+    filtered.unshift(entry);
+    persistHistoryRicerche(filtered);
+  }
+  return entry;
 }
+
 function findHistoryEntry(name, labelsChosen, q, wikiUsed){
   const lj = labelsChosen.join(',');
-  return loadHistory().find(e => e.name === name && (e.labels||[]).join(',') === lj && (e.q||'') === (q||'') && !!e.wiki === !!wikiUsed && e.text);
+  return loadHistoryRicerche().find(e => e.name === name && (e.labels||[]).join(',') === lj && (e.q||'') === (q||'') && !!e.wiki === !!wikiUsed && e.text);
 }
 
+function findHistoryDeepDive(name, labelsChosen, q){
+  const lj = labelsChosen.join(',');
+  return loadHistoryApprofondimenti().find(e => e.name === name && (e.labels||[]).join(',') === lj && (e.q||'') === (q||'') && e.text);
+}
+
+/* ============================================================
+   History UI Tabs
+   ============================================================ */
 const historyOverlay = document.getElementById('historyOverlay');
-const histList = document.getElementById('histList');
-document.getElementById('historyBtn').onclick = () => { renderHistory(); historyOverlay.classList.add('show'); };
-document.getElementById('histClose').onclick = () => historyOverlay.classList.remove('show');
-document.getElementById('histClearAll').onclick = () => {
-  if(confirm('Svuotare tutta la cronologia salvata su questo browser?')){
-    persistHistory([]);
-    renderHistory();
-  }
+document.getElementById('historyBtn').onclick = () => {
+  renderHistoryRicerche();
+  renderHistoryApprofondimenti();
+  historyOverlay.classList.add('show');
 };
 
-document.getElementById('histDeleteSelected').onclick = () => {
-  const list = loadHistory();
-  const checkedIndices = Array.from(histList.querySelectorAll('.hist-item-check:checked'))
-    .map(cb => +cb.dataset.check);
-  if(!checkedIndices.length){
-    alert('Seleziona almeno una scheda da eliminare.');
+document.querySelectorAll('.hist-tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.hist-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.hist-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel' + tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)).classList.add('active');
+  };
+});
+
+document.getElementById('histClose').onclick = () => historyOverlay.classList.remove('show');
+document.getElementById('histCloseApprofondimenti').onclick = () => historyOverlay.classList.remove('show');
+
+/* ============================================================
+   History Ricerche functions
+   ============================================================ */
+function renderHistoryRicerche(){
+  let list = loadHistoryRicerche();
+  if(_histFilterTextRicerche){
+    list = list.filter(e => e.name.toLowerCase().includes(_histFilterTextRicerche));
+  }
+  if(_favFilterRicerche){
+    list = list.filter(e => e.fav === true);
+  }
+  const container = document.getElementById('histListRicerche');
+  if(!list.length){
+    container.innerHTML = '<div class="hist-empty">Nessuna ricerca salvata finora. Genera una scheda per vederla comparire qui.</div>';
     return;
   }
+  container.innerHTML = list.map((e,i) => {
+    const d = new Date(e.date);
+    const dateStr = d.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' });
+    const star = e.fav ? '⭐' : '☆';
+    const nameTrunc = e.name.length > 40 ? e.name.slice(0, 40) + '…' : e.name;
+    return `<div class="hist-item${e.fav ? ' fav' : ''}" data-index="${i}">
+      <input type="checkbox" class="hist-item-check" data-check="${i}">
+      <div class="hist-item-main" data-i="${i}">
+        <span class="hist-item-name" title="${escapeHtml(e.name)}">${escapeHtml(nameTrunc)}</span>
+        <span class="hist-item-labels">(${escapeHtml((e.labels||[]).join(' · '))}${e.wiki ? ' · 📚 Wikipedia' : ''})</span>
+      </div>
+      <div class="hist-item-right">
+        <button class="fav-btn" data-fav="${i}" title="${e.fav ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}">${star}</button>
+        <span class="hist-item-meta">${dateStr}</span>
+        <button class="hist-item-del" data-del="${i}">Elimina</button>
+      </div>
+    </div>`;
+  }).join('');
+  
+  container.querySelectorAll('.hist-item-main').forEach(el => {
+    el.onclick = () => {
+      const idx = +el.dataset.i;
+      const fullList = loadHistoryRicerche();
+      const e = fullList[idx];
+      if(!e) return;
+      openHistoryEntry(e, fullList, persistHistoryRicerche);
+    };
+  });
+  
+  container.querySelectorAll('.fav-btn').forEach(btn => {
+    btn.onclick = (ev) => {
+      ev.stopPropagation();
+      const idx = +btn.dataset.fav;
+      const fullList = loadHistoryRicerche();
+      if(fullList[idx]){
+        fullList[idx].fav = !fullList[idx].fav;
+        persistHistoryRicerche(fullList);
+        renderHistoryRicerche();
+      }
+    };
+  });
+  
+  container.querySelectorAll('.hist-item-del').forEach(btn => {
+    btn.onclick = (ev) => {
+      ev.stopPropagation();
+      const idx = +btn.dataset.del;
+      const l = loadHistoryRicerche();
+      const entry = l[idx];
+      if(!entry) return;
+      if(!confirm(`Eliminare la scheda "${entry.name}"?`)) return;
+      const removed = l.splice(idx, 1);
+      persistHistoryRicerche(l);
+      cascadeDeleteApprofondimenti(removed);
+      renderHistoryRicerche();
+      renderHistoryApprofondimenti();
+    };
+  });
+}
+
+/* ============================================================
+   History Approfondimenti functions
+   ============================================================ */
+function renderHistoryApprofondimenti(){
+  let list = loadHistoryApprofondimenti();
+  if(_histFilterTextApprofondimenti){
+    list = list.filter(e => e.name.toLowerCase().includes(_histFilterTextApprofondimenti));
+  }
+  if(_favFilterApprofondimenti){
+    list = list.filter(e => e.fav === true);
+  }
+  const container = document.getElementById('histListApprofondimenti');
+  if(!list.length){
+    container.innerHTML = '<div class="hist-empty">Nessun approfondimento salvato finora. Seleziona un testo in una scheda per crearne uno.</div>';
+    return;
+  }
+  container.innerHTML = list.map((e,i) => {
+    const d = new Date(e.date);
+    const dateStr = d.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' });
+    const star = e.fav ? '⭐' : '☆';
+    const nameTrunc = e.name.length > 40 ? e.name.slice(0, 40) + '…' : e.name;
+    return `<div class="hist-item${e.fav ? ' fav' : ''}" data-index="${i}">
+      <input type="checkbox" class="hist-item-check" data-check="${i}">
+      <div class="hist-item-main" data-i="${i}">
+        <span class="hist-item-name" title="${escapeHtml(e.name)}">${escapeHtml(nameTrunc)}</span>
+        <span class="hist-item-labels">(${escapeHtml((e.labels||[]).join(' · '))}${e.wiki ? ' · 📚 Wikipedia' : ''})</span>
+      </div>
+      <div class="hist-item-right">
+        <button class="fav-btn" data-fav="${i}" title="${e.fav ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}">${star}</button>
+        <span class="hist-item-meta">${dateStr}</span>
+        <button class="hist-item-del" data-del="${i}">Elimina</button>
+      </div>
+    </div>`;
+  }).join('');
+  
+  container.querySelectorAll('.hist-item-main').forEach(el => {
+    el.onclick = () => {
+      const idx = +el.dataset.i;
+      const fullList = loadHistoryApprofondimenti();
+      const e = fullList[idx];
+      if(!e) return;
+      openHistoryEntry(e, fullList, persistHistoryApprofondimenti);
+    };
+  });
+  
+  container.querySelectorAll('.fav-btn').forEach(btn => {
+    btn.onclick = (ev) => {
+      ev.stopPropagation();
+      const idx = +btn.dataset.fav;
+      const fullList = loadHistoryApprofondimenti();
+      if(fullList[idx]){
+        fullList[idx].fav = !fullList[idx].fav;
+        persistHistoryApprofondimenti(fullList);
+        renderHistoryApprofondimenti();
+      }
+    };
+  });
+  
+  container.querySelectorAll('.hist-item-del').forEach(btn => {
+    btn.onclick = (ev) => {
+      ev.stopPropagation();
+      const idx = +btn.dataset.del;
+      const l = loadHistoryApprofondimenti();
+      const entry = l[idx];
+      if(!entry) return;
+      if(!confirm(`Eliminare l'approfondimento "${entry.name}"?`)) return;
+      l.splice(idx, 1);
+      persistHistoryApprofondimenti(l);
+      renderHistoryApprofondimenti();
+    };
+  });
+}
+
+function openHistoryEntry(e, list, persistFn){
+  closeDdPanel();
+  panelEyebrow.textContent = (e.labels.join(' · ') || 'SCHEDA').toUpperCase();
+  panelTitle.textContent = e.name;
+  panelText.style.display = 'block';
+  panelGallery.className = '';
+  if(list && persistFn) ensureEntryId(e, list, persistFn);
+  _activeMainEntryId = e.id || null;
+  _activeMainRawText = e.text;
+  renderMainCard(e.text);
+  renderGalleryThumbs(e.imgs);
+  panelActions.style.display = 'flex';
+  lastGeneratedRaw = e.text;
+  panel.classList.add('open');
+  reopenTab.classList.remove('show');
+  reopenTab.classList.remove('has-history');
+  panelHasContent = true;
+  _activeCardPlace = e.place || null;
+  _currentCacheKey = null;
+  _panelActivePlaceName = (e.place && e.place.name) || (e.name || '').split(' → ')[0] || null;
+  setDdHint(true);
+  historyOverlay.classList.remove('show');
+  updateViewCardsButton(e.name);
+}
+
+document.getElementById('histFilterRicerche').addEventListener('input', (e) => {
+  _histFilterTextRicerche = e.target.value.toLowerCase().trim();
+  renderHistoryRicerche();
+});
+document.getElementById('histFilterClearRicerche').onclick = () => {
+  document.getElementById('histFilterRicerche').value = '';
+  _histFilterTextRicerche = '';
+  renderHistoryRicerche();
+};
+
+document.getElementById('histFilterApprofondimenti').addEventListener('input', (e) => {
+  _histFilterTextApprofondimenti = e.target.value.toLowerCase().trim();
+  renderHistoryApprofondimenti();
+});
+document.getElementById('histFilterClearApprofondimenti').onclick = () => {
+  document.getElementById('histFilterApprofondimenti').value = '';
+  _histFilterTextApprofondimenti = '';
+  renderHistoryApprofondimenti();
+};
+
+document.getElementById('histShowFavOnlyRicerche').onclick = function(){
+  _favFilterRicerche = !_favFilterRicerche;
+  this.textContent = _favFilterRicerche ? '⭐ Tutti' : '⭐ Solo preferiti';
+  renderHistoryRicerche();
+};
+
+document.getElementById('histShowFavOnlyApprofondimenti').onclick = function(){
+  _favFilterApprofondimenti = !_favFilterApprofondimenti;
+  this.textContent = _favFilterApprofondimenti ? '⭐ Tutti' : '⭐ Solo preferiti';
+  renderHistoryApprofondimenti();
+};
+
+let histSelectAllRicerche = false;
+document.getElementById('histSelectAllRicerche').onclick = () => {
+  histSelectAllRicerche = !histSelectAllRicerche;
+  document.querySelectorAll('#histListRicerche .hist-item-check').forEach(cb => { cb.checked = histSelectAllRicerche; });
+};
+document.getElementById('histDeselectAllRicerche').onclick = () => {
+  histSelectAllRicerche = false;
+  document.querySelectorAll('#histListRicerche .hist-item-check').forEach(cb => { cb.checked = false; });
+};
+
+let histSelectAllApprofondimenti = false;
+document.getElementById('histSelectAllApprofondimenti').onclick = () => {
+  histSelectAllApprofondimenti = !histSelectAllApprofondimenti;
+  document.querySelectorAll('#histListApprofondimenti .hist-item-check').forEach(cb => { cb.checked = histSelectAllApprofondimenti; });
+};
+document.getElementById('histDeselectAllApprofondimenti').onclick = () => {
+  histSelectAllApprofondimenti = false;
+  document.querySelectorAll('#histListApprofondimenti .hist-item-check').forEach(cb => { cb.checked = false; });
+};
+
+document.getElementById('histDeleteSelectedRicerche').onclick = () => {
+  const list = loadHistoryRicerche();
+  const checkedIndices = Array.from(document.querySelectorAll('#histListRicerche .hist-item-check:checked'))
+    .map(cb => +cb.dataset.check);
+  if(!checkedIndices.length){ alert('Seleziona almeno una scheda da eliminare.'); return; }
   if(confirm(`Eliminare le ${checkedIndices.length} schede selezionate?`)){
+    const removed = list.filter((_, idx) => checkedIndices.includes(idx));
     const updatedList = list.filter((_, idx) => !checkedIndices.includes(idx));
-    persistHistory(updatedList);
-    renderHistory();
+    persistHistoryRicerche(updatedList);
+    cascadeDeleteApprofondimenti(removed);
+    renderHistoryRicerche();
+    renderHistoryApprofondimenti();
   }
 };
 
-document.getElementById('histFilter').addEventListener('input', (e) => {
-  _histFilterText = e.target.value.toLowerCase().trim();
-  renderHistory();
-});
-document.getElementById('histFilterClear').onclick = () => {
-  document.getElementById('histFilter').value = '';
-  _histFilterText = '';
-  renderHistory();
+document.getElementById('histDeleteSelectedApprofondimenti').onclick = () => {
+  const list = loadHistoryApprofondimenti();
+  const checkedIndices = Array.from(document.querySelectorAll('#histListApprofondimenti .hist-item-check:checked'))
+    .map(cb => +cb.dataset.check);
+  if(!checkedIndices.length){ alert('Seleziona almeno un approfondimento da eliminare.'); return; }
+  if(confirm(`Eliminare i ${checkedIndices.length} approfondimenti selezionati?`)){
+    const updatedList = list.filter((_, idx) => !checkedIndices.includes(idx));
+    persistHistoryApprofondimenti(updatedList);
+    renderHistoryApprofondimenti();
+  }
 };
 
-document.getElementById('histShowFavOnly').onclick = function(){
-  _favFilter = !_favFilter;
-  this.textContent = _favFilter ? '⭐ Tutti' : '⭐ Solo preferiti';
-  renderHistory();
+document.getElementById('histClearAllRicerche').onclick = () => {
+  if(confirm('Svuotare tutte le schede di ricerca salvate su questo browser?')){
+    const removed = loadHistoryRicerche();
+    persistHistoryRicerche([]);
+    cascadeDeleteApprofondimenti(removed);
+    renderHistoryRicerche();
+    renderHistoryApprofondimenti();
+  }
 };
 
-document.getElementById('histExportBtn').onclick = () => {
-  const list = loadHistory();
+document.getElementById('histClearAllApprofondimenti').onclick = () => {
+  if(confirm('Svuotare tutti gli approfondimenti salvati su questo browser?')){
+    persistHistoryApprofondimenti([]);
+    renderHistoryApprofondimenti();
+  }
+};
+
+document.getElementById('histExportBtnRicerche').onclick = () => {
+  const list = loadHistoryRicerche();
   if(!list.length){ alert('Nessuna scheda da esportare.'); return; }
   const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   const d = new Date();
-  a.download = `atlante_backup_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
+  a.download = `atlante_backup_ricerche_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 };
 
-document.getElementById('histImportBtn').onclick = () => {
-  document.getElementById('histImportFile').click();
+document.getElementById('histImportBtnRicerche').onclick = () => {
+  document.getElementById('histImportFileRicerche').click();
 };
 
-document.getElementById('histImportFile').onchange = (ev) => {
+document.getElementById('histImportFileRicerche').onchange = (ev) => {
   const file = ev.target.files && ev.target.files[0];
   if(!file) return;
   const reader = new FileReader();
@@ -2898,7 +3448,7 @@ document.getElementById('histImportFile').onchange = (ev) => {
     try{
       const imported = JSON.parse(reader.result);
       if(!Array.isArray(imported)) throw new Error('formato non valido');
-      const current = loadHistory();
+      const current = loadHistoryRicerche();
       const seen = new Set(current.map(e => (e.name||'') + '|' + (e.date||'')));
       let added = 0;
       imported.forEach(e => {
@@ -2911,8 +3461,8 @@ document.getElementById('histImportFile').onchange = (ev) => {
           }
         }
       });
-      persistHistory(current.slice(0, 200));
-      renderHistory();
+      persistHistoryRicerche(current);
+      renderHistoryRicerche();
       alert(`Import completato: ${added} nuove schede aggiunte.`);
     }catch(err){
       alert('File di backup non valido: ' + err.message);
@@ -2922,90 +3472,99 @@ document.getElementById('histImportFile').onchange = (ev) => {
   ev.target.value = '';
 };
 
-document.getElementById('histDeselectAll').onclick = () => {
-  histList.querySelectorAll('.hist-item-check').forEach(cb => { cb.checked = false; });
+document.getElementById('histExportBtnApprofondimenti').onclick = () => {
+  const list = loadHistoryApprofondimenti();
+  if(!list.length){ alert('Nessun approfondimento da esportare.'); return; }
+  const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const d = new Date();
+  a.download = `atlante_backup_approfondimenti_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };
 
-function renderHistory(){
-  let list = loadHistory();
-  if(_histFilterText){
-    list = list.filter(e => e.name.toLowerCase().includes(_histFilterText));
-  }
-  if(_favFilter){
-    list = list.filter(e => e.fav === true);
-  }
-  if(!list.length){
-    histList.innerHTML = '<div class="hist-empty">Nessuna scheda salvata finora. Genera una scheda per vederla comparire qui.</div>';
-    return;
-  }
-  histList.innerHTML = list.map((e,i) => {
-    const d = new Date(e.date);
-    const dateStr = d.toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' });
-    const star = e.fav ? '⭐' : '☆';
-    return `<div class="hist-item${e.fav ? ' fav' : ''}" data-index="${i}">
-      <input type="checkbox" class="hist-item-check" data-check="${i}">
-      <div class="hist-item-main" data-i="${i}">
-        <span class="hist-item-name">${escapeHtml(e.name)}</span>
-        <span class="hist-item-labels">(${escapeHtml((e.labels||[]).join(' · '))}${e.wiki ? ' · 📚 Wikipedia' : ''})</span>
-      </div>
-      <div class="hist-item-right">
-        <button class="fav-btn" data-fav="${i}" title="${e.fav ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti'}">${star}</button>
-        <span class="hist-item-meta">${dateStr}</span>
-        <button class="hist-item-del" data-del="${i}">Elimina</button>
-      </div>
-    </div>`;
-  }).join('');
-  histList.querySelectorAll('.hist-item-main').forEach(el => {
-    el.onclick = () => {
-      const idx = +el.dataset.i;
-      const fullList = loadHistory();
-      const e = fullList[idx];
-      if(!e) return;
-      panelEyebrow.textContent = (e.labels.join(' · ') || 'SCHEDA').toUpperCase();
-      panelTitle.textContent = e.name;
-      panelText.style.display = 'block';
-      panelGallery.className = '';
-      renderStreamed(e.text, false);
-      renderGalleryThumbs(e.imgs);
-      panelActions.style.display = 'flex';
-      lastGeneratedRaw = e.text;
-      panel.classList.add('open');
-      reopenTab.classList.remove('show');
-      panelHasContent = true;
-      _activeCardPlace = e.place || null;
-      _currentCacheKey = null;
-      setDdHint(true);
-      historyOverlay.classList.remove('show');
-    };
-  });
-  histList.querySelectorAll('.fav-btn').forEach(btn => {
-    btn.onclick = (ev) => {
-      ev.stopPropagation();
-      const idx = +btn.dataset.fav;
-      const fullList = loadHistory();
-      if(fullList[idx]){
-        fullList[idx].fav = !fullList[idx].fav;
-        persistHistory(fullList);
-        renderHistory();
-      }
-    };
-  });
-  histList.querySelectorAll('.hist-item-del').forEach(btn => {
-    btn.onclick = (ev) => {
-      ev.stopPropagation();
-      const idx = +btn.dataset.del;
-      const l = loadHistory();
-      l.splice(idx, 1);
-      persistHistory(l);
-      renderHistory();
-    };
-  });
-}
+document.getElementById('histImportBtnApprofondimenti').onclick = () => {
+  document.getElementById('histImportFileApprofondimenti').click();
+};
 
-let histSelectAllState = false;
-document.getElementById('histSelectAll').onclick = () => {
-  histSelectAllState = !histSelectAllState;
-  histList.querySelectorAll('.hist-item-check').forEach(cb => { cb.checked = histSelectAllState; });
+document.getElementById('histImportFileApprofondimenti').onchange = (ev) => {
+  const file = ev.target.files && ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const imported = JSON.parse(reader.result);
+      if(!Array.isArray(imported)) throw new Error('formato non valido');
+      const current = loadHistoryApprofondimenti();
+      const seen = new Set(current.map(e => (e.name||'') + '|' + (e.date||'')));
+      let added = 0;
+      imported.forEach(e => {
+        if(e && e.name && e.text){
+          const key = (e.name||'') + '|' + (e.date||'');
+          if(!seen.has(key)){
+            current.unshift(e);
+            seen.add(key);
+            added++;
+          }
+        }
+      });
+      persistHistoryApprofondimenti(current);
+      renderHistoryApprofondimenti();
+      alert(`Import completato: ${added} nuovi approfondimenti aggiunti.`);
+    }catch(err){
+      alert('File di backup non valido: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
+};
+
+document.getElementById('histDownloadSelectedRicerche').onclick = () => {
+  const fullList = loadHistoryRicerche();
+  const checked = Array.from(document.querySelectorAll('#histListRicerche .hist-item-check:checked')).map(cb => +cb.dataset.check);
+  if(!checked.length){ alert('Seleziona almeno una scheda dalla cronologia.'); return; }
+  askPdfPhotos(async (withPhotos) => {
+    showBusy('Caricamento informazioni: sto generando il PDF');
+    try{
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit:'mm', format:'a4' });
+      for(let i = 0; i < checked.length; i++){
+        const e = fullList[checked[i]];
+        if(!e) continue;
+        const imgs = withPhotos ? (e.imgs || []).map(im => im.thumb).filter(Boolean) : [];
+        await addEntryToPdf(doc, e.name, e.text, i === 0, imgs);
+      }
+      doc.save(checked.length > 1 ? 'atlante_schede.pdf' : `${(fullList[checked[0]].name||'scheda').replace(/[^\w\-]+/g,'_')}.pdf`);
+    }finally{
+      hideBusy();
+    }
+  }, checked.length > 1);
+};
+
+document.getElementById('histDownloadSelectedApprofondimenti').onclick = () => {
+  const fullList = loadHistoryApprofondimenti();
+  const checked = Array.from(document.querySelectorAll('#histListApprofondimenti .hist-item-check:checked')).map(cb => +cb.dataset.check);
+  if(!checked.length){ alert('Seleziona almeno un approfondimento dalla cronologia.'); return; }
+  askPdfPhotos(async (withPhotos) => {
+    showBusy('Caricamento informazioni: sto generando il PDF');
+    try{
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit:'mm', format:'a4' });
+      for(let i = 0; i < checked.length; i++){
+        const e = fullList[checked[i]];
+        if(!e) continue;
+        const imgs = withPhotos ? (e.imgs || []).map(im => im.thumb).filter(Boolean) : [];
+        await addEntryToPdf(doc, e.name, e.text, i === 0, imgs);
+      }
+      doc.save(checked.length > 1 ? 'atlante_approfondimenti.pdf' : `${(fullList[checked[0]].name||'approfondimento').replace(/[^\w\-]+/g,'_')}.pdf`);
+    }finally{
+      hideBusy();
+    }
+  }, checked.length > 1);
 };
 
 /* ============================================================
@@ -3103,28 +3662,6 @@ document.getElementById('pdfPhotosYes').onclick = () => { closePdfPhotos(); cons
 document.getElementById('pdfPhotosNo').onclick = () => { closePdfPhotos(); const cb = _pdfPhotoCb; _pdfPhotoCb = null; cb && cb(false); };
 document.getElementById('pdfPhotosCancel').onclick = () => { closePdfPhotos(); _pdfPhotoCb = null; };
 
-document.getElementById('histDownloadSelected').onclick = () => {
-  const fullList = loadHistory();
-  const checked = Array.from(histList.querySelectorAll('.hist-item-check:checked')).map(cb => +cb.dataset.check);
-  if(!checked.length){ alert('Seleziona almeno una scheda dalla cronologia.'); return; }
-  askPdfPhotos(async (withPhotos) => {
-    showBusy('Caricamento informazioni: sto generando il PDF');
-    try{
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit:'mm', format:'a4' });
-      for(let i = 0; i < checked.length; i++){
-        const e = fullList[checked[i]];
-        if(!e) continue;
-        const imgs = withPhotos ? (e.imgs || []).map(im => im.thumb).filter(Boolean) : [];
-        await addEntryToPdf(doc, e.name, e.text, i === 0, imgs);
-      }
-      doc.save(checked.length > 1 ? 'atlante_schede.pdf' : `${(fullList[checked[0]].name||'scheda').replace(/[^\w\-]+/g,'_')}.pdf`);
-    }finally{
-      hideBusy();
-    }
-  }, checked.length > 1);
-};
-
 /* ============================================================
    Export
    ============================================================ */
@@ -3132,11 +3669,117 @@ const exportBtn = document.getElementById('exportBtn');
 const exportMenu = document.getElementById('exportMenu');
 exportBtn.onclick = (ev) => {
   ev.stopPropagation();
+  viewCardsMenu.classList.remove('show');
   exportMenu.classList.toggle('show');
 };
 document.addEventListener('click', (ev) => {
-  if(!ev.target.closest('.export-wrap')) exportMenu.classList.remove('show');
+  if(!ev.target.closest('#exportBtn') && !ev.target.closest('#exportMenu')) exportMenu.classList.remove('show');
+  if(!ev.target.closest('#viewCardsBtn') && !ev.target.closest('#viewCardsMenu')) viewCardsMenu.classList.remove('show');
 });
+
+/* ============================================================
+   "Ricerche già fatte": elenco (da Cronologia) di Ricerche + Approfondimenti
+   già esistenti per il luogo attualmente aperto nel pannello
+   ============================================================ */
+const viewCardsWrap = document.getElementById('viewCardsWrap');
+const viewCardsBtn = document.getElementById('viewCardsBtn');
+const viewCardsMenu = document.getElementById('viewCardsMenu');
+
+function updateViewCardsButton(placeName){
+  if(!placeName){
+    viewCardsWrap.style.display = 'none';
+    viewCardsMenu.classList.remove('show');
+    viewCardsMenu.innerHTML = '';
+    return;
+  }
+  const ricerche = loadHistoryRicerche().filter(e => e.name === placeName);
+  const approfondimenti = loadHistoryApprofondimenti().filter(e => e.name && e.name.startsWith(placeName + ' → '));
+  if(!ricerche.length && !approfondimenti.length){
+    viewCardsWrap.style.display = 'none';
+    viewCardsMenu.classList.remove('show');
+    viewCardsMenu.innerHTML = '';
+    return;
+  }
+  viewCardsWrap.style.display = 'inline-block';
+  buildViewCardsMenu(placeName, ricerche, approfondimenti);
+}
+
+function buildViewCardsMenu(placeName, ricerche, approfondimenti){
+  const fmtDate = (iso) => {
+    try{ return new Date(iso).toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' }); }
+    catch(e){ return ''; }
+  };
+  let html = '';
+  html += `<div class="vc-section-label">📋 Ricerche di ${escapeHtml(placeName)}</div>`;
+  if(ricerche.length){
+    ricerche.forEach(e => {
+      const labelsTxt = (e.labels||[]).join(' · ') + (e.wiki ? ' · 📚 Wikipedia' : '');
+      html += `<button class="vc-item" data-vc-kind="ricerca" data-vc-id="${escapeHtml(e.id||'')}">${escapeHtml(labelsTxt || 'Scheda')}<span class="vc-date">${fmtDate(e.date)}</span></button>`;
+    });
+  }else{
+    html += `<div class="vc-empty">Nessuna ricerca salvata.</div>`;
+  }
+  html += `<div class="vc-section-label">🔍 Approfondimenti di ${escapeHtml(placeName)}</div>`;
+  if(approfondimenti.length){
+    approfondimenti.forEach(e => {
+      const label = (e.labels && e.labels[0] || '').replace(/^Approfondimento:\s*/, '') || e.name;
+      html += `<button class="vc-item" data-vc-kind="approfondimento" data-vc-id="${escapeHtml(e.id||'')}">${escapeHtml(label)}<span class="vc-date">${fmtDate(e.date)}</span></button>`;
+    });
+  }else{
+    html += `<div class="vc-empty">Nessun approfondimento salvato.</div>`;
+  }
+  viewCardsMenu.innerHTML = html;
+
+  viewCardsMenu.querySelectorAll('.vc-item').forEach(btn => {
+    btn.onclick = () => {
+      viewCardsMenu.classList.remove('show');
+      const id = btn.dataset.vcId;
+      if(btn.dataset.vcKind === 'ricerca'){
+        const list = loadHistoryRicerche();
+        const entry = list.find(x => x.id === id);
+        if(entry) openHistoryEntry(entry, list, persistHistoryRicerche);
+      }else{
+        const list = loadHistoryApprofondimenti();
+        const entry = list.find(x => x.id === id);
+        if(entry) openHistoryEntry(entry, list, persistHistoryApprofondimenti);
+      }
+    };
+  });
+}
+
+viewCardsBtn.onclick = (ev) => {
+  ev.stopPropagation();
+  exportMenu.classList.remove('show');
+  viewCardsMenu.classList.toggle('show');
+};
+
+function maybeShowHistoryForEmptyPanel(){
+  if(panelHasContent) return;
+  if(!currentCountry) return;
+  const name = currentCountry.name;
+  const ricerche = loadHistoryRicerche().filter(e => e.name === name);
+  const approfondimenti = loadHistoryApprofondimenti().filter(e => e.name && e.name.startsWith(name + ' → '));
+  if(!ricerche.length && !approfondimenti.length){
+    panelEyebrow.textContent = 'SCHEDA';
+    panelTitle.textContent = '—';
+    panelActions.style.display = 'none';
+    viewCardsWrap.style.display = 'none';
+    viewCardsMenu.classList.remove('show');
+    viewCardsMenu.innerHTML = '';
+    reopenTab.classList.remove('has-history');
+    return;
+  }
+  panelEyebrow.textContent = 'CRONOLOGIA DISPONIBILE';
+  panelTitle.textContent = name;
+  panelActions.style.display = 'flex';
+  updateViewCardsButton(name);
+  viewCardsMenu.classList.add('show');
+  if(!panel.classList.contains('open')){
+    reopenTab.classList.add('has-history');
+  }else{
+    reopenTab.classList.remove('has-history');
+  }
+}
 
 document.getElementById('exportTxtBtn').onclick = () => {
   exportMenu.classList.remove('show');
@@ -3218,12 +3861,14 @@ function updateCompareSlotUI(){
 async function runCompare(){
   const key = getKey();
   if(!key){ keyOverlay.classList.add('show'); return; }
+  closeDdPanel();
 
   const [a, b] = compareSlots;
   panelEyebrow.textContent = 'CONFRONTO';
   panelTitle.textContent = `${a.name} vs ${b.name}`;
   panel.classList.add('open');
   reopenTab.classList.remove('show');
+  reopenTab.classList.remove('has-history');
   panelHasContent = true;
   panelActions.style.display = 'none';
   panelGallery.innerHTML = '';
@@ -3231,12 +3876,16 @@ async function runCompare(){
 
   _activeCardPlace = null;
   _currentCacheKey = null;
+  _activeMainEntryId = null;
+  _activeMainRawText = '';
+  _panelActivePlaceName = null;
   setDdHint(false);
 
   const compareCacheKey = 'CMP|' + [a.name, b.name].sort().join('|');
   if(cache[compareCacheKey]){
     panelText.innerHTML = cache[compareCacheKey].text;
     panelActions.style.display = 'flex';
+    updateViewCardsButton(null);
     lastGeneratedRaw = cache[compareCacheKey].raw;
     return;
   }
@@ -3264,6 +3913,7 @@ REGOLE:
 2. Se un dato specifico manca in Wikipedia, usa la tua conoscenza generale, ma dillo onestamente.
 3. Non menzionare mai le fonti delle informazioni (Wikipedia, database, ecc.) nel testo finale.
 4. Scrivi in italiano, tono divulgativo.
+5. IMPORTANTE: Quando scrivi numeri (date, prefissi telefonici, anni, cifre, percentuali, coordinate, ecc.) scrivili SEMPRE in forma numerica (es. "+41", "2024", "15 km", "1200 abitanti", "45.4642°N") e MAI in lettere (es. "più quarantuno", "duemilaventiquattro", "quindici chilometri").
 
 Struttura la risposta ESATTAMENTE con queste sezioni, in quest'ordine:
 
@@ -3313,7 +3963,8 @@ Un breve paragrafo conclusivo che aiuti chi legge a capire quale luogo si adatta
     cache[compareCacheKey] = { text: panelText.innerHTML, raw: full };
     lastGeneratedRaw = full;
     panelActions.style.display = 'flex';
-    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto (con Wikipedia)'], full, [], '', true, null);
+    updateViewCardsButton(null);
+    saveToHistory(`${a.name} vs ${b.name}`, ['Confronto (con Wikipedia)'], full, [], '', true, null, false);
     compareSlots = [];
     updateCompareSlotUI();
   }catch(err){
@@ -3374,7 +4025,9 @@ function openPhotoGallery(place) {
   panelTitle.textContent = place.name;
   panel.classList.add('open');
   reopenTab.classList.remove('show');
+  reopenTab.classList.remove('has-history');
   panelHasContent = true;
+  _panelActivePlaceName = place.name;
   setDdHint(false);
   collapseCard();
 
@@ -3454,7 +4107,7 @@ async function fetchPhotoGallery(name, lat, lon, country) {
 }
 
 /* ============================================================
-   Deep Dive
+   Deep Dive - LATERALE (a fianco del testo)
    ============================================================ */
 const ddPopup = document.getElementById('ddPopup');
 const ddInputElement = document.getElementById('ddInput');
@@ -3463,6 +4116,7 @@ const ddTargetLabel = document.getElementById('ddTarget');
 let _ddPending = null;
 let _ddLastRequestAt = 0;
 const _ddCache = {};
+const _ddPendingEntries = {};
 const DD_COOLDOWN_MS = 10000;
 
 function setDdHint(visible){
@@ -3489,31 +4143,55 @@ function ddGetContext(sel, selectedText){
   if(!blockText) return '';
   const norm = selectedText.replace(/\s+/g, ' ');
   const i = blockText.indexOf(norm);
-  if(i === -1) return blockText.slice(0, 240);
-  const start = Math.max(0, i - 160);
-  const end = Math.min(blockText.length, i + norm.length + 160);
+  if(i === -1) return blockText.slice(0, 300);
+  const start = Math.max(0, i - 200);
+  const end = Math.min(blockText.length, i + norm.length + 200);
   let frag = blockText.slice(start, end);
   if(start > 0) frag = '…' + frag;
   if(end < blockText.length) frag += '…';
   return frag;
 }
 
+function openDeepDiveById(entryId){
+  if(_ddPanelState && _ddPanelState.entryId === entryId && ddPanel.classList.contains('open')){
+    closeDdPanel();
+    return;
+  }
+  const list = loadHistoryApprofondimenti();
+  const entry = list.find(e => e.id === entryId);
+  if(!entry){
+    showToast('Approfondimento non trovato: forse è stato eliminato dalla Cronologia.');
+    return;
+  }
+  const label = (entry.labels && entry.labels[0]) || '';
+  const elementName = label.replace(/^Approfondimento:\s*/, '') || entry.name;
+  const bodyHtml = ddFormatText(ddStripHeader(entry.text));
+  showDdPanel(elementName, entry.q, bodyHtml, entry.place, !!entry.placeflag, entryId, true);
+}
+
+panelText.addEventListener('click', (e) => {
+  const link = e.target.closest('.dd-linked-text');
+  if(!link) return;
+  openDeepDiveById(link.dataset.ddkey);
+});
+
 panelText.addEventListener('mouseup', (e) => {
   const sel = window.getSelection();
   const text = sel ? sel.toString().trim() : '';
-  if(!text || text.length < 3 || text.length > 60 || !_activeCardPlace || !panelText.contains(sel.anchorNode)){
+  if(!text || text.length < 3 || text.length > 80 || !_activeCardPlace || !panelText.contains(sel.anchorNode)){
     return;
   }
   _ddPending = {
     selectedText: text,
     context: ddGetContext(sel, text),
-    anchorEl: ddFindAnchor(sel)
+    anchorEl: ddFindAnchor(sel),
+    selection: sel
   };
   ddTargetLabel.textContent = `📝 Approfondisci: "${text}"`;
   ddInputElement.value = `Dettagli su ${text}`;
   ddPopup.classList.add('show');
 
-  const pw = 380, ph = 200;
+  const pw = 420, ph = 200;
   let px = e.clientX + 12;
   let py = e.clientY + 14;
   if(px + pw > window.innerWidth - 8) px = Math.max(8, window.innerWidth - pw - 8);
@@ -3554,73 +4232,104 @@ ddInputElement.addEventListener('keydown', (e) => {
   if(e.key === 'Enter'){ e.preventDefault(); goDeepDive(); }
 });
 
-function buildDeepDivePrompt(place, selectedText, context, userQuestion){
+function buildDeepDivePrompt(place, selectedText, context, userQuestion, wikiText){
   const coordLine = (place.lat != null && place.lon != null)
     ? `- Coordinate: ${place.lat.toFixed(4)}, ${place.lon.toFixed(4)}`
     : '- Coordinate: non disponibili';
+  
+  const hasRelevantWiki = wikiText && wikiText.text && wikiText.text.trim().length > 50;
+  
+  const wikiBlock = hasRelevantWiki ? `
+INFORMAZIONI DETTAGLIATE SU "${selectedText}" (estratto pertinente: usale OBBLIGATORIAMENTE per date, nomi e fatti specifici, se riferite in modo inequivocabile a questo elemento nel contesto di ${place.name}):
+---
+${wikiText.text}
+---
+` : '';
+
+  const fallbackInstruction = !hasRelevantWiki ? `
+NOTA: Non sono state trovate informazioni specifiche su Wikipedia per "${selectedText}" in questo contesto. 
+Per rispondere alla domanda dell'utente, usa la tua conoscenza generale sul luogo ${place.name} e sui suoi dintorni, 
+senza inventare nomi, date o cifre specifiche che non puoi verificare.
+` : '';
+
   return `CONTESTO PRINCIPALE:
 - Luogo: ${place.name}
 - Regione: ${place.region || '—'}
 - Paese: ${place.country || '—'}
- ${coordLine}
+${coordLine}
 
 ELEMENTO SELEZIONATO: "${selectedText}"
 CONTESTO IMMEDIATO DAL TESTO DELLA SCHEDA:
 "${context}"
-
+${wikiBlock}
+${fallbackInstruction}
 DOMANDA DELL'UTENTE:
 "${userQuestion}"
 
 REGOLE:
 1. Rispondi riferendoti ESCLUSIVAMENTE all'elemento "${selectedText}" nel contesto specifico di ${place.name}${place.region && place.region !== '—' ? ' (' + place.region + ')' : ''}. Non confondere con elementi omonimi in altri luoghi.
 2. Se non hai informazioni verificate su questo specifico elemento in questo luogo, dillo onestamente invece di generalizzare su altri elementi simili altrove.
-3. Se la domanda è completamente estranea all'elemento selezionato, rispondi solo con: "La domanda deve riferirsi all'elemento selezionato."
-4. Usa tono divulgativo ma preciso, con paragrafi scorrevoli (niente elenchi puntati).
-5. Non menzionare mai le fonti delle informazioni.
-6. IMPORTANTE: se e solo se l'elemento approfondito è un luogo fisico visitabile (villa, chiesa, palazzo, torre, parco, piazza, monumento, edificio, ponte, castello e simili), la risposta DEVE iniziare esattamente con la riga [LUOGO] seguita da un a capo, e poi dal testo. In ogni altro caso non scrivere [LUOGO] da nessuna parte.`;
+3. La domanda è considerata ESTRANEA solo se NON ha alcuna relazione con il luogo selezionato.
+   Esempi di domande estranee: "Che tempo fa a Tokyo?", "Chi ha vinto l'ultimo campionato di calcio?"
+   Esempi di domande PERTINENTI (anche se Wikipedia non ha info specifiche):
+   - "dove portano questi sentieri?" → pertinente (sentieri → territorio)
+   - "si possono fare escursioni?" → pertinente (escursioni → territorio)
+   - "ci sono parcheggi?" → pertinente (servizi → territorio)
+4. Se la domanda è pertinente al luogo, rispondi SEMPRE, anche se non hai trovato informazioni specifiche su Wikipedia.
+5. Usa tono divulgativo ma preciso, con paragrafi scorrevoli (niente elenchi puntati).
+6. Non menzionare mai le fonti delle informazioni (Wikipedia, database, ecc.). Usa i dati e basta.
+7. IMPORTANTE: se e solo se l'elemento approfondito è un luogo fisico visitabile (villa, chiesa, palazzo, torre, parco, piazza, monumento, edificio, ponte, castello e simili), la risposta DEVE iniziare esattamente con la riga [LUOGO] seguita da un a capo, e poi dal testo. In ogni altro caso non scrivere [LUOGO] da nessuna parte.
+8. IMPORTANTE: Quando scrivi numeri (date, prefissi telefonici, anni, cifre, percentuali, coordinate, ecc.) scrivili SEMPRE in forma numerica (es. "+41", "2024", "15 km", "1200 abitanti", "45.4642°N") e MAI in lettere (es. "più quarantuno", "duemilaventiquattro", "quindici chilometri").`;
 }
 
 function ddFormatText(text){
   const paras = text.split(/\n\s*\n/).map(p => p.replace(/\n+/g, ' ').trim()).filter(Boolean);
   if(!paras.length) return '';
-  return paras.map(p => `<p>${escapeHtml(p)}</p>`).join('');
+  return paras.map(p => {
+    const m = /^—\s*Domanda:\s*(.+?)\s*—$/.exec(p);
+    if(m) return `<div class="dd-followup-q">D: ${escapeHtml(m[1])}</div>`;
+    return `<p>${escapeHtml(p)}</p>`;
+  }).join('');
 }
 
 function ddStripHeader(t){
   return t.replace(/^##[^\n]*\n+/, '');
 }
 
-function ddOpenResultBox(anchorEl, elementName, question){
-  const box = document.createElement('div');
-  box.className = 'dd-box';
-  box.innerHTML = `
-    <div class="dd-head">
-      <span class="dd-title">🔍 Approfondimento: ${escapeHtml(elementName)}</span>
-      <button class="dd-close" title="Chiudi">✕</button>
-    </div>
-    <div class="dd-q">${escapeHtml(question)}</div>
-    <div class="dd-body"></div>
-    <div class="dd-actions">
-      <button class="dd-btn dd-pin">📌 Salva come segnaposto</button>
-      <button class="dd-btn dd-add">📄 Aggiungi alla scheda</button>
-    </div>`;
-  if(anchorEl && anchorEl.parentNode === panelText && anchorEl.nextSibling){
-    anchorEl.parentNode.insertBefore(box, anchorEl.nextSibling);
-  }else{
-    panelText.appendChild(box);
-  }
-  box.querySelector('.dd-close').onclick = () => box.remove();
-  return box;
-}
+const ddPanel = document.getElementById('ddPanel');
+const ddPanelTitle = document.getElementById('ddPanelTitle');
+const ddPanelQuestion = document.getElementById('ddPanelQuestion');
+const ddPanelTextEl = document.getElementById('ddPanelText');
+const ddPanelActions = document.getElementById('ddPanelActions');
+const ddPanelPinBtn = document.getElementById('ddPanelPinBtn');
+const ddPanelAddBtn = document.getElementById('ddPanelAddBtn');
+const ddPanelLinkedNote = document.getElementById('ddPanelLinkedNote');
+const ddPanelFollowUp = document.getElementById('ddPanelFollowUp');
+const ddPanelFollowUpInput = document.getElementById('ddPanelFollowUpInput');
+const ddPanelFollowUpBtn = document.getElementById('ddPanelFollowUpBtn');
 
-function ddShowActions(box, place, elementName, question, withHeaderText, isPlace){
-  const actions = box.querySelector('.dd-actions');
-  actions.style.display = 'flex';
-  const pinBtn = actions.querySelector('.dd-pin');
-  if(!isPlace){
-    pinBtn.style.display = 'none';
-  }else{
-    pinBtn.onclick = () => {
+let _ddPanelState = null;
+
+function closeDdPanel(){
+  if(_ddPanelState && !_ddPanelState.linked && _ddPanelState.entryId && _ddPendingEntries[_ddPanelState.entryId]){
+    delete _ddPendingEntries[_ddPanelState.entryId];
+    for(const k in _ddCache){ if(_ddCache[k] && _ddCache[k].id === _ddPanelState.entryId) delete _ddCache[k]; }
+  }
+  ddPanel.classList.remove('open');
+  _ddPanelState = null;
+}
+document.getElementById('ddPanelClose').onclick = () => closeDdPanel();
+
+function showDdPanel(elementName, question, bodyHtml, place, isPlace, entryId, linked){
+  ddPanelTitle.textContent = elementName;
+  ddPanelQuestion.textContent = question || '';
+  ddPanelQuestion.style.display = question ? 'block' : 'none';
+  ddPanelTextEl.innerHTML = bodyHtml;
+  _ddPanelState = { entryId, elementName, question, place, isPlace, linked };
+
+  if(isPlace && place){
+    ddPanelPinBtn.style.display = 'inline-block';
+    ddPanelPinBtn.onclick = () => {
       ddPinDraft = { name: elementName, note: 'Approfondimento da scheda: ' + question, lat: place.lat, lon: place.lon };
       openPinOverlay(
         `Elemento: ${elementName} — nel luogo: ${place.name} (coordinate del luogo)`,
@@ -3628,54 +4337,112 @@ function ddShowActions(box, place, elementName, question, withHeaderText, isPlac
       );
       pinNoteInput.value = 'Approfondimento da scheda: ' + question;
     };
+  }else{
+    ddPanelPinBtn.style.display = 'none';
   }
-  const addBtn = actions.querySelector('.dd-add');
-  addBtn.onclick = () => {
-    lastGeneratedRaw = (lastGeneratedRaw ? lastGeneratedRaw + '\n\n' : '') + withHeaderText;
-    renderStreamed(lastGeneratedRaw, false);
-    if(_currentCacheKey && cache[_currentCacheKey]) cache[_currentCacheKey].text = panelText.innerHTML;
-    addBtn.disabled = true;
-    addBtn.textContent = '✓ Aggiunta alla scheda';
-    showToast('Approfondimento unito alla scheda ✓');
-  };
+
+  if(linked){
+    ddPanelAddBtn.style.display = 'none';
+    ddPanelLinkedNote.style.display = 'block';
+  }else{
+    ddPanelLinkedNote.style.display = 'none';
+    ddPanelAddBtn.style.display = entryId ? 'inline-block' : 'none';
+    ddPanelAddBtn.disabled = false;
+    ddPanelAddBtn.textContent = '📄 Aggiungi alla scheda';
+    ddPanelAddBtn.onclick = () => addDeepDiveToMainCard();
+  }
+  ddPanelActions.style.display = (ddPanelPinBtn.style.display !== 'none' || ddPanelAddBtn.style.display !== 'none') ? 'flex' : 'none';
+
+  if(entryId){
+    ddPanelFollowUp.style.display = 'block';
+    ddPanelFollowUpInput.value = '';
+    ddPanelFollowUpBtn.disabled = false;
+    ddPanelFollowUpBtn.textContent = '➕ Approfondisci con una nuova domanda';
+  }else{
+    ddPanelFollowUp.style.display = 'none';
+  }
+
+  ddPanel.classList.add('open');
+}
+
+function mergeDeepDiveIntoMainCard(entryId, elementName){
+  if(!entryId || !_activeMainEntryId || !_activeMainRawText) return false;
+  const newRaw = insertDeepDiveMarker(_activeMainRawText, elementName, entryId);
+  if(!newRaw) return false;
+  _activeMainRawText = newRaw;
+  const ricercheList = loadHistoryRicerche();
+  const mainEntry = ricercheList.find(r => r.id === _activeMainEntryId);
+  if(mainEntry){
+    mainEntry.text = newRaw;
+    persistHistoryRicerche(ricercheList);
+  }
+  if(_currentCacheKey && cache[_currentCacheKey]) cache[_currentCacheKey].raw = newRaw;
+  lastGeneratedRaw = newRaw;
+  renderMainCard(newRaw);
+  const linkedEl = panelText.querySelector(`.dd-linked-text[data-ddkey="${entryId}"]`);
+  if(linkedEl){
+    linkedEl.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+  return true;
+}
+
+function addDeepDiveToMainCard(){
+  if(!_ddPanelState) return;
+  const { entryId, elementName } = _ddPanelState;
+  if(entryId && _ddPendingEntries[entryId]){
+    const list = loadHistoryApprofondimenti();
+    const pending = _ddPendingEntries[entryId];
+    const filtered = list.filter(e => !(e.name === pending.name && (e.labels||[]).join(',') === (pending.labels||[]).join(',') && (e.q||'') === (pending.q||'') && !!e.wiki === !!pending.wiki));
+    filtered.unshift(pending);
+    persistHistoryApprofondimenti(filtered.slice(0, 100));
+    delete _ddPendingEntries[entryId];
+  }
+  let linkedOk = false;
+  if(entryId && _activeMainEntryId && _activeMainRawText){
+    linkedOk = mergeDeepDiveIntoMainCard(entryId, elementName);
+  }
+  if(!linkedOk){
+    showToast('Approfondimento salvato in Cronologia (impossibile collegarlo qui al testo).');
+    closeDdPanel();
+    return;
+  }
+  showToast('Approfondimento unito alla scheda ✓');
+  closeDdPanel();
 }
 
 async function goDeepDive(){
   if(!_ddPending || !_activeCardPlace) return;
   const selectedText = _ddPending.selectedText;
   const context = _ddPending.context;
-  const anchorEl = _ddPending.anchorEl;
   const place = _activeCardPlace;
   const question = ddInputElement.value.trim();
   hideDdPopup();
   if(!question) return;
 
-  const ddKey = place.name + '|' + selectedText + '|' + question;
+  const useWiki = document.getElementById('wikiToggle')?.checked || false;
+  const ddKey = place.name + '|' + selectedText + '|' + question + '|' + (useWiki ? 'wiki' : 'nowiki');
   const labels = ['Approfondimento: ' + selectedText];
   const histName = place.name + ' → ' + selectedText;
 
-  const openWith = (withHeaderText, isPlace) => {
-    const box = ddOpenResultBox(anchorEl, selectedText, question);
-    box.querySelector('.dd-body').innerHTML = ddFormatText(ddStripHeader(withHeaderText));
-    ddShowActions(box, place, selectedText, question, withHeaderText, isPlace);
-  };
-
   if(_ddCache[ddKey]){
-    openWith(_ddCache[ddKey].text, _ddCache[ddKey].isPlace);
+    const c = _ddCache[ddKey];
+    showDdPanel(selectedText, question, ddFormatText(ddStripHeader(c.text)), place, c.isPlace, c.id, false);
     return;
   }
 
-  const hist = findHistoryEntry(histName, labels, question, false);
+  const _approfondimentiList = loadHistoryApprofondimenti();
+  const hist = _approfondimentiList.find(e => e.name === histName && (e.labels||[]).join(',') === labels.join(',') && (e.q||'') === (question||'') && !!e.wiki === useWiki && e.text);
   if(hist){
-    openWith(hist.text, !!hist.placeflag);
+    ensureEntryId(hist, _approfondimentiList, persistHistoryApprofondimenti);
+    _ddCache[ddKey] = { text: hist.text, isPlace: !!hist.placeflag, id: hist.id };
+    showDdPanel(selectedText, question, ddFormatText(ddStripHeader(hist.text)), place, !!hist.placeflag, hist.id, false);
     return;
   }
 
   const now = Date.now();
   if(now - _ddLastRequestAt < DD_COOLDOWN_MS){
-    const box = ddOpenResultBox(anchorEl, selectedText, question);
-    box.querySelector('.dd-body').innerHTML =
-      '<p>⏳ Attendi qualche secondo prima di un nuovo approfondimento: le richieste all\'AI vanno distanziate un attimo.</p>';
+    showDdPanel(selectedText, question, '<p>⏳ Attendi qualche secondo prima di un nuovo approfondimento: le richieste all\'AI vanno distanziate un attimo.</p>', place, false, null, false);
+    ddPanelActions.style.display = 'none';
     return;
   }
 
@@ -3687,12 +4454,20 @@ async function goDeepDive(){
 
   _ddLastRequestAt = now;
 
-  const box = ddOpenResultBox(anchorEl, selectedText, question);
-  const body = box.querySelector('.dd-body');
-  body.innerHTML = loadingHtml('Caricamento informazioni: approfondimento in corso');
-  animateDots(body);
+  showDdPanel(selectedText, question, loadingHtml(
+    useWiki
+      ? 'Caricamento informazioni: consulto anche Wikipedia, può richiedere qualche secondo in più'
+      : 'Caricamento informazioni: approfondimento in corso'
+  ), place, false, null, false);
+  ddPanelActions.style.display = 'none';
+  animateDots(ddPanelTextEl);
 
-  const prompt = buildDeepDivePrompt(place, selectedText, context, question);
+  let wikiData = null;
+  if(useWiki){
+    wikiData = await fetchWikipediaText(selectedText, place.lat, place.lon, [], question);
+  }
+
+  const prompt = buildDeepDivePrompt(place, selectedText, context, question, wikiData);
 
   try{
     const resp = await fetch(
@@ -3734,7 +4509,7 @@ async function goDeepDive(){
             }
             shown = shown.replace(/^\s+/, '');
             const html = ddFormatText(shown);
-            body.innerHTML = html || loadingHtml('Caricamento informazioni: approfondimento in corso');
+            ddPanelTextEl.innerHTML = html || loadingHtml('Caricamento informazioni: approfondimento in corso');
           }
         }catch(e){}
       }
@@ -3749,30 +4524,209 @@ async function goDeepDive(){
     clean = clean.replace(/^\s+/, '');
     const withHeader = `## Approfondimento: ${selectedText}\n\n${clean}`;
 
-    _ddCache[ddKey] = { text: withHeader, isPlace };
-
-    const list = loadHistory();
     const entry = {
+      id: genId('dd'),
       name: histName, labels, text: withHeader,
-      imgs: [], q: question, wiki: false,
+      imgs: [], q: question, wiki: useWiki,
       placeflag: isPlace, place,
       fav: false,
       date: new Date().toISOString()
     };
-    const filtered = list.filter(e => !(e.name === histName && (e.labels||[]).join(',') === labels.join(',') && (e.q||'') === question));
-    filtered.unshift(entry);
-    persistHistory(filtered.slice(0, 60));
 
-    body.innerHTML = ddFormatText(clean);
-    ddShowActions(box, place, selectedText, question, withHeader, isPlace);
+    // Salva subito in Cronologia (scheda Approfondimenti)
+    const _list = loadHistoryApprofondimenti();
+    const _filtered = _list.filter(e => !(e.name === entry.name && (e.labels||[]).join(',') === entry.labels.join(',') && (e.q||'') === (entry.q||'') && !!e.wiki === !!entry.wiki));
+    _filtered.unshift(entry);
+    persistHistoryApprofondimenti(_filtered.slice(0, 100));
+    renderHistoryApprofondimenti();
+
+    _ddCache[ddKey] = { text: withHeader, isPlace, id: entry.id };
+
+    // Collega automaticamente il nuovo approfondimento al testo della scheda (link cliccabile),
+    // senza bisogno di premere alcun pulsante.
+    const linked = mergeDeepDiveIntoMainCard(entry.id, selectedText);
+    if(linked) showToast('Approfondimento collegato al testo ✓');
+
+    showDdPanel(selectedText, question, ddFormatText(clean), place, isPlace, entry.id, linked);
   }catch(err){
-    body.innerHTML = `<div class="panel-error">Non sono riuscito a generare l'approfondimento.<br>${escapeHtml(err.message)}</div>`;
+    ddPanelTextEl.innerHTML = `<div class="panel-error">Non sono riuscito a generare l'approfondimento.<br>${escapeHtml(err.message)}</div>`;
+    ddPanelActions.style.display = 'none';
   }
 }
 
-/* ============================================================
-   Haversine distance helper
-   ============================================================ */
+function buildFollowUpPrompt(place, elementName, previousText, userQuestion, wikiText){
+  const coordLine = (place.lat != null && place.lon != null)
+    ? `- Coordinate: ${place.lat.toFixed(4)}, ${place.lon.toFixed(4)}`
+    : '- Coordinate: non disponibili';
+
+  const hasRelevantWiki = wikiText && wikiText.text && wikiText.text.trim().length > 50;
+
+  const wikiBlock = hasRelevantWiki ? `
+INFORMAZIONI DETTAGLIATE SU "${elementName}" (estratto pertinente: usale OBBLIGATORIAMENTE per date, nomi e fatti specifici, se riferite in modo inequivocabile a questo elemento nel contesto di ${place.name}):
+---
+${wikiText.text}
+---
+` : '';
+
+  const fallbackInstruction = !hasRelevantWiki ? `
+NOTA: Non sono state trovate informazioni specifiche su Wikipedia per "${elementName}" in questo contesto.
+Per rispondere alla domanda dell'utente, usa la tua conoscenza generale sul luogo ${place.name} e sui suoi dintorni,
+senza inventare nomi, date o cifre specifiche che non puoi verificare.
+` : '';
+
+  return `CONTESTO PRINCIPALE:
+- Luogo: ${place.name}
+- Regione: ${place.region || '—'}
+- Paese: ${place.country || '—'}
+${coordLine}
+
+ELEMENTO GIÀ APPROFONDITO: "${elementName}"
+RISPOSTE GIÀ FORNITE FINORA IN QUESTO APPROFONDIMENTO (per tua conoscenza, NON ripeterle né riassumerle, servono solo per continuità e per non contraddirti):
+"${previousText}"
+${wikiBlock}
+${fallbackInstruction}
+NUOVA DOMANDA DI FOLLOW-UP DELL'UTENTE SULLO STESSO ARGOMENTO ("${elementName}"):
+"${userQuestion}"
+
+REGOLE:
+1. Rispondi ESCLUSIVAMENTE alla nuova domanda, riferendoti sempre a "${elementName}" nel contesto specifico di ${place.name}${place.region && place.region !== '—' ? ' (' + place.region + ')' : ''}. Non confondere con elementi omonimi in altri luoghi.
+2. Non ripetere quanto già detto nelle risposte precedenti: aggiungi solo informazioni nuove pertinenti alla nuova domanda.
+3. Se non hai informazioni verificate, dillo onestamente invece di inventare.
+4. La domanda è considerata ESTRANEA solo se NON ha alcuna relazione con l'argomento o il luogo.
+5. Usa tono divulgativo ma preciso, con paragrafi scorrevoli (niente elenchi puntati).
+6. Non menzionare mai le fonti delle informazioni (Wikipedia, database, ecc.). Usa i dati e basta.
+7. Non scrivere mai il tag [LUOGO] in questa risposta.
+8. IMPORTANTE: Quando scrivi numeri (date, prefissi telefonici, anni, cifre, percentuali, coordinate, ecc.) scrivili SEMPRE in forma numerica (es. "+41", "2024", "15 km", "1200 abitanti", "45.4642°N") e MAI in lettere.`;
+}
+
+function ddGetStoredText(entryId){
+  if(_ddPendingEntries[entryId]) return _ddPendingEntries[entryId].text || '';
+  const list = loadHistoryApprofondimenti();
+  const e = list.find(x => x.id === entryId);
+  return e ? (e.text || '') : '';
+}
+
+function ddAppendToEntry(entryId, newSection){
+  if(_ddPendingEntries[entryId]){
+    _ddPendingEntries[entryId].text = (_ddPendingEntries[entryId].text || '') + newSection;
+    for(const k in _ddCache){ if(_ddCache[k] && _ddCache[k].id === entryId) _ddCache[k].text = _ddPendingEntries[entryId].text; }
+    return;
+  }
+  const list = loadHistoryApprofondimenti();
+  const idx = list.findIndex(e => e.id === entryId);
+  if(idx > -1){
+    list[idx].text = (list[idx].text || '') + newSection;
+    persistHistoryApprofondimenti(list);
+    for(const k in _ddCache){ if(_ddCache[k] && _ddCache[k].id === entryId) _ddCache[k].text = list[idx].text; }
+    renderHistoryApprofondimenti();
+  }
+}
+
+async function goDeepDiveFollowUp(){
+  if(!_ddPanelState || !_ddPanelState.entryId) return;
+  const { entryId, elementName, place } = _ddPanelState;
+  const question = ddPanelFollowUpInput.value.trim();
+  if(!question) return;
+
+  const now = Date.now();
+  if(now - _ddLastRequestAt < DD_COOLDOWN_MS){
+    showToast('⏳ Attendi qualche secondo prima di un nuovo approfondimento.');
+    return;
+  }
+
+  const key = getKey();
+  if(!key){
+    keyOverlay.classList.add('show');
+    return;
+  }
+
+  _ddLastRequestAt = now;
+
+  ddPanelFollowUpBtn.disabled = true;
+  ddPanelFollowUpBtn.textContent = '⏳ Ricerca in corso…';
+  ddPanelFollowUpInput.disabled = true;
+
+  const qDiv = document.createElement('div');
+  qDiv.className = 'dd-followup-q';
+  qDiv.textContent = 'D: ' + question;
+  const aDiv = document.createElement('div');
+  aDiv.innerHTML = loadingHtml('Caricamento informazioni: approfondimento in corso');
+  ddPanelTextEl.appendChild(qDiv);
+  ddPanelTextEl.appendChild(aDiv);
+  animateDots(aDiv);
+  aDiv.scrollIntoView({ behavior:'smooth', block:'nearest' });
+
+  const useWiki = document.getElementById('wikiToggle')?.checked || false;
+
+  let wikiData = null;
+  if(useWiki){
+    wikiData = await fetchWikipediaText(elementName, place.lat, place.lon, [], question);
+  }
+
+  const previousText = ddStripHeader(ddGetStoredText(entryId));
+  const prompt = buildFollowUpPrompt(place, elementName, previousText, question, wikiData);
+
+  try{
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`,
+      { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] }) }
+    );
+    if(!resp.ok || !resp.body){
+      const errText = await resp.text().catch(()=> '');
+      throw new Error(`Richiesta non riuscita (${resp.status}). ${errText.slice(0,200)}`);
+    }
+
+    let raw = '';
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+    while(true){
+      const { value, done } = await reader.read();
+      if(done) break;
+      buf += decoder.decode(value, { stream:true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data:')) continue;
+        const jsonStr = line.slice(5).trim();
+        if(!jsonStr || jsonStr === '[DONE]') continue;
+        try{
+          const obj = JSON.parse(jsonStr);
+          const chunk = obj?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if(chunk){
+            raw += chunk;
+            const shown = raw.replace(/^\s+/, '');
+            const html = ddFormatText(shown);
+            aDiv.innerHTML = html || loadingHtml('Caricamento informazioni: approfondimento in corso');
+          }
+        }catch(e){}
+      }
+    }
+
+    const clean = raw.replace(/^\s+/, '');
+    if(!clean){
+      aDiv.innerHTML = '<div class="panel-error">Non sono riuscito a generare una risposta a questa domanda.</div>';
+    }else{
+      aDiv.innerHTML = ddFormatText(clean);
+      const newSection = `\n\n— Domanda: ${question} —\n\n${clean}`;
+      ddAppendToEntry(entryId, newSection);
+    }
+  }catch(err){
+    aDiv.innerHTML = `<div class="panel-error">Non sono riuscito a generare l'approfondimento.<br>${escapeHtml(err.message)}</div>`;
+  }finally{
+    ddPanelFollowUpBtn.disabled = false;
+    ddPanelFollowUpBtn.textContent = '➕ Approfondisci con una nuova domanda';
+    ddPanelFollowUpInput.disabled = false;
+    ddPanelFollowUpInput.value = '';
+    ddPanelFollowUpInput.focus();
+  }
+}
+
+ddPanelFollowUpBtn.addEventListener('click', () => goDeepDiveFollowUp());
+ddPanelFollowUpInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){ e.preventDefault(); goDeepDiveFollowUp(); }
+});
+
 function haversineDistance(lat1, lon1, lat2, lon2) {
   if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return Infinity;
   const R = 6371;
