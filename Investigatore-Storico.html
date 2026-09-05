@@ -1,0 +1,3605 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Investigatore Storico Multi-Fonte</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --bg: #f5f5f0;
+            --bg2: #ffffff;
+            --text: #1e1e1e;
+            --text2: #3d3d3d;
+            --border: #d0d0d0;
+            --primary: #1a73e8;
+            --primary-hover: #1557b0;
+            --success: #2b8a3e;
+            --success-hover: #1e6d30;
+            --warning: #f59f00;
+            --warning-hover: #e67700;
+            --danger: #d33;
+            --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: 0.25s ease;
+        }
+        body.dark {
+            --bg: #121212;
+            --bg2: #1e1e1e;
+            --text: #e8e8e8;
+            --text2: #b0b0b0;
+            --border: #333;
+            --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+            --primary: #4dabf7;
+            --primary-hover: #74c0fc;
+            --success: #51cf66;
+            --success-hover: #69db7c;
+            --warning: #ffd43b;
+            --warning-hover: #ffec99;
+            --danger: #f06595;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            transition: background var(--transition), color var(--transition);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        .logo h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .logo small {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--text2);
+            margin-top: 2px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--bg2);
+            color: var(--text);
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+            box-shadow: var(--card-shadow);
+            text-decoration: none;
+            font-family: inherit;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+            border-color: var(--success);
+        }
+        .btn-success:hover {
+            background: var(--success-hover);
+            border-color: var(--success-hover);
+        }
+        .btn-warning {
+            background: var(--warning);
+            color: #1e1e1e;
+            border-color: var(--warning);
+        }
+        .btn-warning:hover {
+            background: var(--warning-hover);
+            border-color: var(--warning-hover);
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+            border-color: #c0392b;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            transform: none !important;
+        }
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 0.7rem;
+        }
+
+        /* ===== MODALE ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: var(--bg2);
+            color: var(--text);
+            border-radius: var(--radius);
+            max-width: 580px;
+            width: 100%;
+            padding: 30px 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalIn 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal h2 {
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal p.sub {
+            font-size: 0.9rem;
+            color: var(--text2);
+            margin-bottom: 22px;
+        }
+        .modal label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 16px;
+            margin-bottom: 4px;
+        }
+        .modal input[type="text"],
+        .modal input[type="password"],
+        .modal select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border var(--transition);
+        }
+        .modal input:focus,
+        .modal select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+        }
+        .modal .field-hint {
+            font-size: 0.75rem;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+        .modal .field-hint a {
+            color: var(--primary);
+        }
+        .modal .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .modal .status-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-left: 6px;
+        }
+        .badge-ok { background: var(--success); color: #fff; }
+        .badge-missing { background: var(--danger); color: #fff; }
+
+        /* ===== RICERCA ===== */
+        .search-section {
+            background: var(--bg2);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 28px;
+            border: 1px solid var(--border);
+        }
+        .search-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-row input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border var(--transition);
+        }
+        .search-row input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+        }
+        .search-row .btn {
+            padding: 12px 28px;
+            font-size: 1rem;
+        }
+        .search-hint {
+            font-size: 0.75rem;
+            color: var(--text2);
+            margin-top: 10px;
+        }
+
+        /* ===== CHECKBOX FONTI ===== */
+        .sources-toggle {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 22px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+        .sources-toggle label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .sources-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* ===== LIBRI TROVATI ===== */
+        .results-section {
+            display: none;
+            margin-top: 24px;
+        }
+        .results-section.active {
+            display: block;
+        }
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin: 16px 0 20px;
+        }
+        .book-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            box-shadow: var(--card-shadow);
+            transition: all var(--transition);
+        }
+        .book-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+        .book-card .title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .book-card .author {
+            font-size: 0.85rem;
+            color: var(--text2);
+        }
+        .book-card .meta {
+            font-size: 0.75rem;
+            color: var(--text2);
+            margin: 2px 0 6px;
+        }
+        .book-card .badge-pdf {
+            background: var(--success);
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        .book-card .badge-no {
+            background: #888;
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        .book-card .badge-source-full {
+            background: var(--primary);
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-left: 4px;
+        }
+        .book-card .badge-source-link {
+            background: transparent;
+            color: var(--text2);
+            border: 1px solid var(--border);
+            font-size: 0.65rem;
+            padding: 1px 9px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-left: 4px;
+        }
+        .book-card .manual-only-note {
+            font-size: 0.72rem;
+            color: var(--text2);
+            font-style: italic;
+            margin-top: 4px;
+        }
+        .book-card .badge-match {
+            background: var(--warning);
+            color: #1e1e1e;
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-left: 4px;
+        }
+        .book-card .snippet {
+            font-size: 0.75rem;
+            color: var(--text2);
+            margin-top: 6px;
+            max-height: 50px;
+            overflow: hidden;
+            font-style: italic;
+        }
+        .book-card .actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .book-card .actions .btn {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+        }
+
+        /* ===== PANNELLO DI GENERAZIONE (micro-pacchetti) ===== */
+        .generation-panel {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            margin: 16px 0;
+            box-shadow: var(--card-shadow);
+        }
+        .generation-panel .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .generation-panel .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 10px 0 12px;
+        }
+        .generation-panel .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        .generation-panel .gen-stats {
+            font-size: 0.75rem;
+            color: var(--text2);
+            margin-bottom: 8px;
+        }
+        .generation-panel .gen-log {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+            border-top: 1px solid var(--border);
+            padding-top: 6px;
+        }
+        .generation-panel .log-entry {
+            padding: 3px 0;
+            font-size: 0.78rem;
+            border-bottom: 1px dashed var(--border);
+            display: flex;
+            gap: 6px;
+            align-items: baseline;
+            word-break: break-word;
+        }
+        .generation-panel .log-entry:last-child {
+            border-bottom: none;
+        }
+        .generation-panel .log-entry .log-time {
+            font-size: 0.65rem;
+            color: var(--text2);
+            flex-shrink: 0;
+            font-family: monospace;
+        }
+        .generation-panel .log-entry.log-error {
+            color: var(--danger);
+        }
+        .generation-panel .log-entry.log-success {
+            color: var(--success);
+        }
+        .generation-panel .log-entry.log-warn {
+            color: #b8860b;
+        }
+        body.dark .generation-panel .log-entry.log-warn {
+            color: var(--warning);
+        }
+        .generation-panel .log-entry.log-wait {
+            color: var(--warning);
+            font-style: italic;
+        }
+        .generation-panel .log-entry.log-info {
+            color: var(--text2);
+        }
+
+        /* ===== RISULTATO GEMINI ===== */
+        .gemini-result {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            margin-top: 20px;
+            box-shadow: var(--card-shadow);
+            display: none;
+        }
+        .gemini-result.active {
+            display: block;
+            animation: modalIn 0.4s ease;
+        }
+        .gemini-result h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+        .gemini-result .content {
+            white-space: pre-wrap;
+            line-height: 1.7;
+            font-size: 0.95rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .gemini-result .actions {
+            margin-top: 18px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== LOADING ===== */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 0;
+            color: var(--text2);
+            font-weight: 500;
+        }
+        .progress-wrap {
+            padding: 10px 0 16px;
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text2);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            background: var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 20px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* ===== STATO ===== */
+        .status-msg {
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            margin: 10px 0;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .status-msg.info {
+            background: #e7f3ff;
+            color: #1a3d7c;
+            border-left: 4px solid var(--primary);
+        }
+        .status-msg.warn {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        .status-msg.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid var(--danger);
+        }
+        .status-msg.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid var(--success);
+        }
+        body.dark .status-msg.info { background: #1a2a4a; color: #8bb8f0; }
+        body.dark .status-msg.warn { background: #3d3200; color: #ffd966; }
+        body.dark .status-msg.error { background: #4a1a1a; color: #f08a8a; }
+        body.dark .status-msg.success { background: #1a3d1a; color: #8bc98b; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .logo h1 { font-size: 1.2rem; }
+            .modal { padding: 16px; }
+            .search-row input[type="text"] { min-width: 120px; }
+            .books-grid { grid-template-columns: 1fr; }
+            .header-actions .btn span { display: none; }
+            .book-card .actions .btn { font-size: 0.6rem; padding: 2px 6px; }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+    <div class="container" id="app">
+
+        <!-- ===== HEADER ===== -->
+        <header>
+            <div class="logo">
+                <h1>🔍 Investigatore Storico</h1>
+                <small>Ricerca libri antichi su luoghi e scavi archeologici</small>
+            </div>
+            <div class="header-actions">
+                <button class="btn" id="btnApiConfig">🔑 API</button>
+                <button class="btn" id="btnTheme">🌓</button>
+            </div>
+        </header>
+
+        <!-- ===== SEZIONE RICERCA ===== -->
+        <section class="search-section">
+            <div class="search-row">
+                <input type="text" id="searchInput" placeholder="Inserisci la località, con eventuale provincia o stato" />
+                <button class="btn btn-primary" id="btnSearch">🔎 Cerca</button>
+            </div>
+            <div class="search-hint">💡 <strong>CONSIGLIO:</strong> aggiungi SEMPRE un'indicazione tra parentesi per disambiguare (es. "Nome del luogo (Provincia)", "Nome del luogo (Stato)", anche un numero di dipartimento per la Francia) per escludere i risultati fuori tema: filtra le ricerche a metadati, NON rompe le ricerche full-text e NON appare mai nel minilibro generato. Wikipedia viene consultata sia in italiano che in inglese, quindi funziona anche per luoghi non italiani.</div>
+            <div class="sources-toggle">
+                <label><input type="checkbox" checked data-source="googlebooks" /> Google Books</label>
+                <label><input type="checkbox" checked data-source="openlibrary" /> Open Library</label>
+                <label><input type="checkbox" checked data-source="wikisource" /> Wikisource</label>
+                <label><input type="checkbox" checked data-source="wikipedia" /> Wikipedia</label>
+                <label><input type="checkbox" checked data-source="gutenberg" /> Project Gutenberg</label>
+                <label><input type="checkbox" checked data-source="archive" /> Internet Archive</label>
+                <label><input type="checkbox" checked data-source="archive_fulltext" /> 🎯 Internet Archive (ricerca dentro il testo)</label>
+                <label><input type="checkbox" data-source="gutenberg_fulltext" /> 🎯 Gutenberg (ricerca dentro il testo)</label>
+            </div>
+            <div class="search-hint" style="margin-top:6px;">🧭 <strong>Approfondimento automatico:</strong> durante la generazione, un modello leggero (Gemma) individua chiese, castelli, battaglie e personaggi citati nei libri, e cerca automaticamente un approfondimento su Wikipedia per ciascuno, senza consumare la quota dei modelli usati per scrivere i capitoli.
+                <label style="margin-left:8px;"><input type="checkbox" id="chkWikiEnrich" checked /> Attivo</label>
+            </div>
+        </section>
+
+        <!-- ===== AREA STATUS ===== -->
+        <div id="statusArea"></div>
+        <div id="progressArea"></div>
+        <div id="generationPanelArea"></div>
+
+        <!-- ===== LIBRI TROVATI ===== -->
+        <section class="results-section" id="resultsSection">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
+                <h2 id="resultsCount" style="font-size:1.2rem;">📚 Libri trovati (0)</h2>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                    <label style="display:flex;align-items:center;gap:5px;font-size:0.8rem;font-weight:500;color:var(--text2);cursor:pointer;">
+                        <input type="checkbox" id="chkOnlyMatches" />
+                        🎯 Solo libri con citazioni dirette
+                    </label>
+                    <button class="btn btn-success" id="btnAnalyze" disabled>📖 Genera Minilibro</button>
+                    <button class="btn" id="btnClearResults">🗑️</button>
+                </div>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text2);margin-top:-4px;">🎯 = ricerca dentro il testo integrale del libro. Con "Solo libri con citazioni dirette" attivo, i libri che NON citano il luogo nel testo vengono esclusi dalla generazione (restano comunque visibili qui e scaricabili).</div>
+            <div id="booksContainer" class="books-grid"></div>
+        </section>
+
+        <!-- ===== RISULTATO GEMINI ===== -->
+        <section class="gemini-result" id="geminiResult">
+            <h3>📖 Minilibro generato</h3>
+            <div class="content" id="geminiContent"></div>
+            <div class="actions">
+                <button class="btn" id="btnCopyResult">📋 Copia</button>
+                <button class="btn" id="btnDownloadTxt">📥 TXT</button>
+                <button class="btn btn-warning" id="btnDownloadPdf">📕 PDF (anche parziale)</button>
+                <button class="btn btn-danger" id="btnCloseResult">✕</button>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ===== MODALE API ===== -->
+    <div class="modal-overlay" id="apiModal">
+        <div class="modal">
+            <h2>🔑 API Keys</h2>
+            <p class="sub">Salvate solo nel tuo browser (localStorage).</p>
+
+            <label>🤖 Gemini Key <span id="geminiStatus" class="status-badge badge-missing">Mancante</span></label>
+            <input type="password" id="geminiKey" placeholder="Inserisci API Key" />
+            <div class="field-hint">Da <a href="https://ai.google.dev/" target="_blank">Google AI Studio</a> (gratis)</div>
+
+            <label>🧠 Modello principale:</label>
+            <select id="geminiModel">
+                <option value="gemini-3.6-flash">⭐ Gemini 3.6 Flash</option>
+                <option value="gemini-3.7-flash">Gemini 3.7 Flash</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                <option value="gemini-3.5-flash">Gemini 3.5 Flash</option>
+                <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash Lite</option>
+                <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite</option>
+            </select>
+            <div class="field-hint">Se la quota giornaliera finisce O il modello dà errori ripetuti, il sistema scende automaticamente a: <strong>modello scelto → 3.5 Flash Lite → 3.1 Flash Lite</strong>. Gli errori temporanei del server (503 ecc.) vengono ritentati, e a fine coda c'è un secondo passaggio di recupero sui pezzi falliti.</div>
+
+            <label>📚 Google Books Key <span id="gbStatus" class="status-badge badge-missing">Opzionale</span></label>
+            <input type="password" id="gbKey" placeholder="Opzionale" />
+            <div class="field-hint">Da <a href="https://console.cloud.google.com/apis/" target="_blank">Google Cloud</a></div>
+
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="btnSaveApi">💾 Salva</button>
+                <button class="btn" id="btnClearApi">🗑️</button>
+                <button class="btn" id="btnCloseModal">✕</button>
+            </div>
+            <div id="apiStatus" style="margin-top:12px;font-size:0.85rem;color:var(--text2);"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        (function() {
+            'use strict';
+
+            // =========================================================
+            // 1. DOM REFS
+            // =========================================================
+            const $ = (sel) => document.querySelector(sel);
+            const $$ = (sel) => document.querySelectorAll(sel);
+
+            const searchInput = $('#searchInput');
+            const btnSearch = $('#btnSearch');
+            const btnApiConfig = $('#btnApiConfig');
+            const btnTheme = $('#btnTheme');
+            const statusArea = $('#statusArea');
+            const progressArea = $('#progressArea');
+            const generationPanelArea = $('#generationPanelArea');
+            const resultsSection = $('#resultsSection');
+            const booksContainer = $('#booksContainer');
+            const resultsCount = $('#resultsCount');
+            const btnAnalyze = $('#btnAnalyze');
+            const chkWikiEnrich = $('#chkWikiEnrich');
+            const btnClearResults = $('#btnClearResults');
+            const chkOnlyMatches = $('#chkOnlyMatches');
+            const geminiResult = $('#geminiResult');
+            const geminiContent = $('#geminiContent');
+            const btnCopyResult = $('#btnCopyResult');
+            const btnDownloadTxt = $('#btnDownloadTxt');
+            const btnDownloadPdf = $('#btnDownloadPdf');
+            const btnCloseResult = $('#btnCloseResult');
+
+            const apiModal = $('#apiModal');
+            const geminiKey = $('#geminiKey');
+            const gbKey = $('#gbKey');
+            const geminiModel = $('#geminiModel');
+            const geminiStatus = $('#geminiStatus');
+            const gbStatus = $('#gbStatus');
+            const btnSaveApi = $('#btnSaveApi');
+            const btnClearApi = $('#btnClearApi');
+            const btnCloseModal = $('#btnCloseModal');
+            const apiStatus = $('#apiStatus');
+
+            const sourceCheckboxes = $$('[data-source]');
+
+            const SESSION_KEY = 'libro_generazione_v5';
+
+            // Numero di libri per ogni chiamata Gemini (micro-pacchetto)
+
+            // Catena di fallback dei modelli
+            const FALLBACK_LITE_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
+
+            // =========================================================
+            // 2. STATO
+            // =========================================================
+            let state = {
+                geminiKey: '',
+                gbKey: '',
+                geminiModel: 'gemini-3.6-flash',
+                books: [],
+                geminiResponse: '',
+
+                placeName: '',
+                placeProvince: '',
+
+                modelChain: [],
+                activeModel: '',
+
+                pieces: [],
+                totalPieces: 0,
+                genRunning: false,
+                genCancelled: false,
+                genLogs: [],
+
+                currentQuery: '',
+                lastQuery: '',
+                genId: 0,
+
+                stats: {
+                    booksScanned: 0,
+                    booksWithMatches: 0,
+                    totalExcerptsFound: 0,
+                    piecesGenerated: 0,
+                    currentPiece: 0,
+                }
+            };
+
+            // =========================================================
+            // 3. UTILITY
+            // =========================================================
+            function getActiveSources() {
+                const active = [];
+                sourceCheckboxes.forEach(cb => {
+                    if (cb.checked) active.push(cb.dataset.source);
+                });
+                return active;
+            }
+
+            function statusMsg(text, type = 'info') {
+                const div = document.createElement('div');
+                div.className = `status-msg ${type}`;
+                div.textContent = text;
+                statusArea.innerHTML = '';
+                statusArea.appendChild(div);
+            }
+
+            function clearStatus() {
+                statusArea.innerHTML = '';
+            }
+
+            function showLoading(text) {
+                const div = document.createElement('div');
+                div.className = 'loading-text';
+                div.innerHTML = `<span class="spinner"></span> ${escapeHtml(text)}`;
+                statusArea.innerHTML = '';
+                statusArea.appendChild(div);
+            }
+
+            function hideLoading() {
+                const el = statusArea.querySelector('.loading-text');
+                if (el) el.remove();
+            }
+
+            function showProgress(percent, label) {
+                const p = Math.max(0, Math.min(100, Math.round(percent)));
+                progressArea.innerHTML = `
+                    <div class="progress-wrap">
+                        <div class="progress-label"><span>${escapeHtml(label || '')}</span><span>${p}%</span></div>
+                        <div class="progress-track"><div class="progress-fill" style="width:${p}%"></div></div>
+                    </div>
+                `;
+            }
+
+            function updateProgress(percent, label) {
+                const fill = progressArea.querySelector('.progress-fill');
+                const labelEl = progressArea.querySelector('.progress-label span:first-child');
+                const pctEl = progressArea.querySelector('.progress-label span:last-child');
+                const p = Math.max(0, Math.min(100, Math.round(percent)));
+                if (fill) fill.style.width = p + '%';
+                if (labelEl && label !== undefined) labelEl.textContent = label;
+                if (pctEl) pctEl.textContent = p + '%';
+            }
+
+            function hideProgress() {
+                progressArea.innerHTML = '';
+            }
+
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            // ---- Capitalizza correttamente il nome del luogo, sempre (prima scattava solo con la provincia) ----
+            // Gestisce le preposizioni italiane tipiche nei toponimi composti (es. "Albese con Cassano",
+            // "Cassano d'Adda", "Castiglione delle Stiviere"), che devono restare minuscole se non sono
+            // la prima parola, e gli apostrofi (es. "d'Adda" -> non "D'adda").
+            function capitalizePlaceName(name) {
+                if (!name) return name;
+                // Preposizioni/particelle da lasciare minuscole se non sono la prima parola: sia
+                // italiane (con, di, della...) sia straniere comuni nei toponimi (de, van, von, of...),
+                // così il nome resta corretto anche per luoghi non italiani (es. "Rio de Janeiro").
+                const lowerWords = new Set([
+                    'di', 'del', 'dei', 'degli', 'delle', 'della', 'dell', 'd',
+                    'con', 'e', 'a', 'al', 'ai', 'agli', 'alle', 'alla',
+                    'sul', 'sui', 'sulla', 'in', 'da', 'su', 'le', 'il', 'lo', 'la', 'i', 'gli',
+                    'de', 'du', 'des', 'van', 'von', 'der', 'den', 'het', 'and', 'of', 'the', 'les', 'y'
+                ]);
+                return name.trim().split(/\s+/).map((word, idx) => {
+                    const apostropheMatch = word.match(/^([a-zA-Z]+)'(.*)$/);
+                    if (apostropheMatch) {
+                        const prefix = apostropheMatch[1].toLowerCase();
+                        const rest = apostropheMatch[2];
+                        const restCap = rest ? rest.charAt(0).toUpperCase() + rest.slice(1).toLowerCase() : rest;
+                        return prefix + "'" + restCap;
+                    }
+                    const lower = word.toLowerCase();
+                    if (idx > 0 && lowerWords.has(lower)) return lower;
+                    return lower.charAt(0).toUpperCase() + lower.slice(1);
+                }).join(' ');
+            }
+
+            // ---- Estrae nome del luogo e disambiguazione (provincia/stato/dipartimento) ----
+            // Il campo tra parentesi ora accetta QUALSIASI indicazione, non solo sigle italiane a 2
+            // lettere: un numero di dipartimento francese ("60"), il nome di uno stato estero
+            // ("Francia"), una sigla italiana ("CO") sono tutti validi. Se sembra proprio una sigla
+            // italiana a 2 lettere la normalizziamo in maiuscolo come prima; altrimenti la lasciamo
+            // scritta così com'è, così funziona anche per la ricerca di luoghi fuori dall'Italia.
+            function extractPlaceParts(rawQuery) {
+                const q = (rawQuery || '').trim();
+                const m = q.match(/^(.*?)\s*[\(\[]\s*([^\(\)\[\]]{1,40})\s*[\)\]]\s*$/);
+                if (m && m[1].trim() && m[2].trim()) {
+                    const disamb = m[2].trim();
+                    const province = /^[A-Za-z]{2}$/.test(disamb) ? disamb.toUpperCase() : disamb;
+                    return { name: capitalizePlaceName(m[1].trim()), province };
+                }
+                return { name: capitalizePlaceName(q), province: '' };
+            }
+
+            function buildDescriptiveFilename(query, ext) {
+                const place = (query || 'luogo')
+                    .trim()
+                    .replace(/[^a-zA-Z0-9À-ÿ\s-]/g, '')
+                    .replace(/\s+/g, '_');
+                const today = new Date();
+                const dateStr = today.toISOString().slice(0, 10);
+                return `Storia_di_${place}_${dateStr}.${ext}`;
+            }
+
+            function saveApiKeys(gKey, gbKeyVal, model) {
+                try {
+                    if (gKey) localStorage.setItem('gemini_key', gKey);
+                    else localStorage.removeItem('gemini_key');
+                    if (gbKeyVal) localStorage.setItem('gb_key', gbKeyVal);
+                    else localStorage.removeItem('gb_key');
+                    if (model) localStorage.setItem('gemini_model', model);
+                    else localStorage.removeItem('gemini_model');
+                    return true;
+                } catch (e) { return false; }
+            }
+
+            function loadApiKeys() {
+                try {
+                    const g = localStorage.getItem('gemini_key') || '';
+                    const gb = localStorage.getItem('gb_key') || '';
+                    const m = localStorage.getItem('gemini_model') || 'gemini-3.6-flash';
+                    return { geminiKey: g, gbKey: gb, geminiModel: m };
+                } catch (e) { return { geminiKey: '', gbKey: '', geminiModel: 'gemini-3.6-flash' }; }
+            }
+
+            function updateApiBadges() {
+                const keys = loadApiKeys();
+                if (keys.geminiKey && keys.geminiKey.length > 10) {
+                    geminiStatus.textContent = '✅ Configurata';
+                    geminiStatus.className = 'status-badge badge-ok';
+                } else {
+                    geminiStatus.textContent = '❌ Mancante';
+                    geminiStatus.className = 'status-badge badge-missing';
+                }
+                if (keys.gbKey && keys.gbKey.length > 5) {
+                    gbStatus.textContent = '✅ Configurata';
+                    gbStatus.className = 'status-badge badge-ok';
+                } else {
+                    gbStatus.textContent = '⏭️ Opzionale';
+                    gbStatus.className = 'status-badge badge-missing';
+                }
+                geminiKey.value = keys.geminiKey || '';
+                gbKey.value = keys.gbKey || '';
+                geminiModel.value = keys.geminiModel || 'gemini-3.6-flash';
+                state.geminiKey = keys.geminiKey || '';
+                state.gbKey = keys.gbKey || '';
+                state.geminiModel = keys.geminiModel || 'gemini-3.6-flash';
+            }
+
+            function toggleTheme() {
+                document.body.classList.toggle('dark');
+                localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+            }
+
+            function loadTheme() {
+                const t = localStorage.getItem('theme');
+                if (t === 'dark') document.body.classList.add('dark');
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            function escapeRegex(str) {
+                return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            // =========================================================
+            // 4. CATENA DI FALLBACK DEI MODELLI
+            // =========================================================
+            function buildModelChain(primary) {
+                const chain = [primary].concat(FALLBACK_LITE_MODELS);
+                return chain.filter((m, i) => chain.indexOf(m) === i);
+            }
+
+            function nextFallbackModel() {
+                const idx = state.modelChain.indexOf(state.activeModel);
+                if (idx === -1 || idx + 1 >= state.modelChain.length) return null;
+                return state.modelChain[idx + 1];
+            }
+
+            // =========================================================
+            // 5. SANITIZZAZIONE DEL TESTO GENERATO
+            // =========================================================
+            function sanitizePieceText(raw, placeName, province) {
+                let text = raw || '';
+
+                // 1. Taglia tutto ciò che sta PRIMA del primo titolo Markdown "# "
+                const firstTitle = text.search(/^#\s/m);
+                if (firstTitle > 0) {
+                    text = text.substring(firstTitle);
+                }
+
+                // 2. Rimuovi righe meta residue
+                text = text.split('\n').filter(line => {
+                    if (/\b(PASSED|FAILED)\b/i.test(line)) return false;
+                    if (/^\s*=?\s*\d+\s*words?\b/i.test(line)) return false;
+                    if (/Range requirement/i.test(line)) return false;
+                    if (/^\s*[*-]\s*\w+.*(PASSED|FAILED)/i.test(line)) return false;
+                    return true;
+                }).join('\n');
+
+                // 3. Rimuovi la sigla provinciale dopo il nome del luogo
+                if (placeName && province) {
+                    const re = new RegExp(escapeRegex(placeName) + '\\s*[\\(\\[]\\s*' + escapeRegex(province) + '\\s*[\\)\\]]', 'gi');
+                    text = text.replace(re, placeName);
+                }
+
+                // 4. Estrae ed elimina dal testo visibile eventuali marcatori di discrepanza tra fonti
+                // (es. [[DISCREPANZA: il decreto è datato variamente al 3 o al 10 agosto 1928]]),
+                // così non restano nel racconto ma possono essere raccolti a parte per il lettore.
+                const discrepancies = [];
+                text = text.replace(/\[\[DISCREPANZA:\s*([^\]]+)\]\]/gi, (match, desc) => {
+                    const d = desc.trim();
+                    if (d) discrepancies.push(d);
+                    return '';
+                });
+
+                return { text: text.trim(), discrepancies };
+            }
+
+            // =========================================================
+            // 6. RICERCA LIBRI
+            // =========================================================
+            async function searchAllSources(name, province) {
+                const active = getActiveSources();
+                if (active.length === 0) {
+                    statusMsg('Seleziona almeno una fonte.', 'warn');
+                    return [];
+                }
+
+                const metaQuery = province ? `${name} ${province}` : name;
+                const allBooks = [];
+                const promises = [];
+
+                if (active.includes('googlebooks')) {
+                    promises.push(searchGoogleBooks(metaQuery).then(b => { allBooks.push(...b); }));
+                }
+                if (active.includes('openlibrary')) {
+                    promises.push(searchOpenLibrary(metaQuery).then(b => { allBooks.push(...b); }));
+                }
+                if (active.includes('wikisource')) {
+                    promises.push(searchWikisource(metaQuery).then(b => { allBooks.push(...b); }));
+                }
+                if (active.includes('wikipedia')) {
+                    logLine(`🔎 Ricerca su Wikipedia in italiano e in inglese per "${name}"...`, 'info');
+                    promises.push(searchWikipediaPlaceLang(metaQuery, 'it', name).then(b => { allBooks.push(...b); }));
+                    // Wikipedia in inglese si attiva sempre insieme all'italiana, senza bisogno di una
+                    // spunta separata: copre molto meglio i luoghi non italiani (dove la voce italiana
+                    // è spesso povera o assente), e per i comuni italiani semplicemente non trova nulla
+                    // di più della voce italiana già usata, senza fare danni.
+                    promises.push(searchWikipediaPlaceLang(metaQuery, 'en', name).then(b => { allBooks.push(...b); }));
+                }
+                if (active.includes('gutenberg')) {
+                    promises.push(searchGutenberg(metaQuery).then(b => { allBooks.push(...b); }));
+                }
+                if (active.includes('archive')) {
+                    promises.push(searchArchive(metaQuery).then(b => { allBooks.push(...b); }));
+                }
+                if (active.includes('archive_fulltext')) {
+                    promises.push(
+                        searchArchiveFullText(name, (msg) => showLoading(msg)).then(b => { allBooks.push(...b); })
+                    );
+                }
+                if (active.includes('gutenberg_fulltext')) {
+                    promises.push(
+                        searchGutenbergFullText(name, (msg) => showLoading(msg)).then(b => { allBooks.push(...b); })
+                    );
+                }
+
+                showLoading('Ricerca in corso su ' + active.length + ' fonti...');
+                try {
+                    await Promise.allSettled(promises);
+                } catch (e) {}
+                hideLoading();
+
+                const seen = new Set();
+                const unique = allBooks.filter(b => {
+                    const key = (b.title || '').toLowerCase().trim() + '|' + (b.identifier || b.link || '');
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+
+                return unique;
+            }
+
+            async function searchGoogleBooks(query) {
+                const key = state.gbKey || '';
+                let url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=20&orderBy=relevance`;
+                if (key) url += `&key=${key}`;
+
+                try {
+                    const resp = await fetch(url);
+                    if (!resp.ok) return [];
+                    const data = await resp.json();
+                    if (!data.items) return [];
+
+                    const results = [];
+                    for (const item of data.items) {
+                        const info = item.volumeInfo || {};
+                        const access = item.accessInfo || {};
+                        const title = info.title || 'Senza titolo';
+                        const author = (info.authors || ['Autore sconosciuto']).join(', ');
+                        const year = info.publishedDate ? info.publishedDate.substring(0, 4) : '?';
+                        const pdfAvail = access.pdf && access.pdf.isAvailable === true;
+                        const pdfUrl = pdfAvail ? (access.pdf.downloadLink || '') : '';
+                        const link = info.canonicalVolumeLink || info.infoLink || '';
+
+                        let snippet = '';
+                        if (item.searchInfo && item.searchInfo.textSnippet) {
+                            snippet = item.searchInfo.textSnippet;
+                        }
+
+                        const thumbnail = (info.imageLinks && info.imageLinks.thumbnail) ?
+                            info.imageLinks.thumbnail.replace('http://', 'https://') : '';
+
+                        results.push({
+                            title: title,
+                            author: author,
+                            year: year,
+                            source: 'Google Books',
+                            pdfUrl: pdfUrl,
+                            link: link,
+                            text: snippet || '',
+                            hasFullText: pdfAvail,
+                            identifier: item.id || '',
+                            coverUrl: thumbnail,
+                        });
+                    }
+                    return results;
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            async function searchOpenLibrary(query) {
+                const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=10&fields=key,title,author_name,first_publish_year,has_fulltext,cover_i,ia`;
+                try {
+                    const resp = await fetch(url);
+                    if (!resp.ok) return [];
+                    const data = await resp.json();
+                    if (!data.docs) return [];
+
+                    const results = [];
+                    for (const doc of data.docs) {
+                        const title = doc.title || 'Senza titolo';
+                        const author = (doc.author_name || ['Autore sconosciuto']).join(', ');
+                        const year = doc.first_publish_year || '?';
+                        const hasFull = doc.has_fulltext === true;
+                        const link = `https://openlibrary.org${doc.key || ''}`;
+                        const iaId = doc.ia && doc.ia.length > 0 ? doc.ia[0] : '';
+
+                        results.push({
+                            title: title,
+                            author: author,
+                            year: String(year),
+                            source: 'Open Library',
+                            pdfUrl: '',
+                            link: link,
+                            text: '',
+                            hasFullText: hasFull,
+                            identifier: iaId || doc.key || '',
+                        });
+                    }
+                    return results;
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            async function searchWikisource(query) {
+                const url = `https://it.wikisource.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=10`;
+                try {
+                    const resp = await fetch(url);
+                    if (!resp.ok) return [];
+                    const data = await resp.json();
+                    if (!data.query || !data.query.search) return [];
+
+                    const results = [];
+                    for (const item of data.query.search) {
+                        const title = item.title || 'Senza titolo';
+                        const link = `https://it.wikisource.org/wiki/${encodeURIComponent(title)}`;
+                        const snippet = item.snippet ? item.snippet.replace(/<[^>]*>/g, '') : '';
+
+                        results.push({
+                            title: title,
+                            author: 'Wikisource',
+                            year: '?',
+                            source: 'Wikisource',
+                            pdfUrl: '',
+                            link: link,
+                            text: snippet || '',
+                            hasFullText: true,
+                            identifier: title,
+                        });
+                    }
+                    return results;
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            // ---- Ricerca Wikipedia multilingua ----
+            // "it" per l'italiano (default), "en" per l'inglese: attivata automaticamente insieme
+            // all'italiano per ogni ricerca, senza bisogno di una spunta separata. L'inglese copre
+            // molto meglio i luoghi non italiani, dove la voce italiana è spesso povera o assente.
+            async function searchWikipediaLang(query, lang) {
+                const domain = lang === 'en' ? 'en.wikipedia.org' : 'it.wikipedia.org';
+                const sourceLabel = lang === 'en' ? 'Wikipedia (EN)' : 'Wikipedia';
+                const url = `https://${domain}/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=5`;
+                try {
+                    const resp = await fetch(url);
+                    if (!resp.ok) return [];
+                    const data = await resp.json();
+                    if (!data.query || !data.query.search) return [];
+
+                    const results = [];
+                    for (const item of data.query.search) {
+                        const title = item.title || 'Senza titolo';
+                        const link = `https://${domain}/wiki/${encodeURIComponent(title)}`;
+                        const snippet = item.snippet ? item.snippet.replace(/<[^>]*>/g, '') : '';
+
+                        results.push({
+                            title: title,
+                            author: sourceLabel,
+                            year: '?',
+                            source: sourceLabel,
+                            pdfUrl: '',
+                            link: link,
+                            text: snippet || '',
+                            hasFullText: true,
+                            identifier: title,
+                            wikiLang: lang,
+                        });
+                    }
+                    return results;
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            async function searchWikipedia(query) {
+                return searchWikipediaLang(query, 'it');
+            }
+
+            // ---- Verifica se un estratto Wikipedia descrive davvero un luogo geografico ----
+            // Nomi come "Monaco" (anche un pittore, un religioso, un cognome) o "Gorgonzola" (anche
+            // un formaggio) corrispondono a più voci Wikipedia diverse. La sola ricerca testuale non
+            // basta a scartare gli omonimi non pertinenti: qui si controlla il CONTENUTO dell'estratto.
+            function looksLikeAPlaceDescription(extract) {
+                if (!extract) return false;
+                const head = extract.slice(0, 500).toLowerCase();
+                // NOTA TECNICA: nessun "\b" prima delle lettere accentate (è, à, ecc.) — in JavaScript
+                // \b riconosce solo i caratteri ASCII come "di parola", quindi \b davanti a una lettera
+                // accentata non trova mai un confine valido e il pattern non scatterebbe mai (bug
+                // scoperto e corretto dopo che i filtri erano rimasti silenziosamente inattivi).
+                return /è un comune\b/.test(head) || /è una città\b/.test(head) ||
+                    /è un paese\b/.test(head) || /è una frazione\b/.test(head) ||
+                    /è un principato\b/.test(head) || /è uno stato\b/.test(head) ||
+                    /\bcomune italiano\b/.test(head) ||
+                    /\bis a (town|city|village|municipality|commune|principality|country|hamlet|suburb|borough|district)\b/.test(head) ||
+                    /\bcapital of\b/.test(head) || /\bprovincia di\b/.test(head);
+            }
+
+            // ---- Ricerca Wikipedia mirata a trovare IL LUOGO, non un'entità omonima qualsiasi ----
+            // Usata solo per la ricerca del luogo stesso (non per l'arricchimento entità, dove i
+            // risultati possono legittimamente essere persone, chiese, ecc.). Tiene sempre il
+            // risultato con titolo identico al nome cercato (quasi certamente quello giusto); per
+            // tutti gli altri, verifica che descrivano davvero un luogo prima di accettarli.
+            async function searchWikipediaPlaceLang(query, lang, placeName) {
+                const results = await searchWikipediaLang(query, lang);
+                const filtered = [];
+                let discardedHomonyms = 0;
+
+                for (const r of results) {
+                    if (r.title.toLowerCase() === (placeName || '').toLowerCase()) {
+                        filtered.push(r);
+                        continue;
+                    }
+                    try {
+                        const extract = await fetchWikipediaExtractLang(r.identifier, lang);
+                        if (looksLikeAPlaceDescription(extract)) {
+                            filtered.push(r);
+                        } else {
+                            discardedHomonyms++;
+                        }
+                    } catch (e) { discardedHomonyms++; }
+                }
+
+                if (discardedHomonyms > 0) {
+                    logLine(`ℹ️ Wikipedia${lang === 'en' ? ' (EN)' : ''}: scartati ${discardedHomonyms} risultati omonimi che non descrivono un luogo (es. persone, oggetti con lo stesso nome).`, 'info');
+                }
+
+                return filtered;
+            }
+
+            // Recupera l'estratto testuale completo (in chiaro, senza HTML) di una voce Wikipedia,
+            // nella lingua indicata. Usata sia per la voce sul luogo stesso, sia per gli
+            // approfondimenti mirati sulle entità individuate da Gemma dentro i pezzi.
+            async function fetchWikipediaExtractLang(title, lang) {
+                const domain = lang === 'en' ? 'en.wikipedia.org' : 'it.wikipedia.org';
+                try {
+                    const url = `https://${domain}/w/api.php?action=query&prop=extracts&explaintext=1&titles=${encodeURIComponent(title)}&format=json&origin=*`;
+                    const resp = await fetch(url);
+                    if (!resp.ok) return null;
+                    const data = await resp.json();
+                    const pages = data.query && data.query.pages;
+                    const page = pages ? Object.values(pages)[0] : null;
+                    if (page && page.extract && !page.missing) return page.extract;
+                    return null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            async function fetchWikipediaExtract(title) {
+                return fetchWikipediaExtractLang(title, 'it');
+            }
+
+            async function searchGutenberg(query) {
+                const url = `https://gutendex.com/books/?search=${encodeURIComponent(query)}&languages=it,en&limit=10`;
+                try {
+                    const resp = await fetch(url);
+                    if (!resp.ok) return [];
+                    const data = await resp.json();
+                    if (!data.results) return [];
+
+                    const results = [];
+                    for (const item of data.results) {
+                        const title = item.title || 'Senza titolo';
+                        const author = (item.authors || []).map(a => a.name || '').join(', ') || 'Autore sconosciuto';
+                        const year = item.authors && item.authors[0] && item.authors[0].birth_year ? String(item.authors[0].birth_year) : '?';
+                        const link = item.gutenberg_id ? `https://www.gutenberg.org/ebooks/${item.gutenberg_id}` : '';
+
+                        let snippet = '';
+                        if (item.summaries && item.summaries.length > 0) {
+                            snippet = item.summaries[0].replace(/<[^>]*>/g, '');
+                        }
+
+                        let pdfUrl = '';
+                        if (item.formats && item.formats['application/pdf']) {
+                            pdfUrl = item.formats['application/pdf'];
+                        }
+
+                        results.push({
+                            title: title,
+                            author: author,
+                            year: year,
+                            source: 'Project Gutenberg',
+                            pdfUrl: pdfUrl,
+                            hasRealPdf: !!pdfUrl,
+                            link: link,
+                            text: snippet || '',
+                            hasFullText: true,
+                            identifier: String(item.gutenberg_id || ''),
+                        });
+                    }
+                    return results;
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            async function searchArchive(query) {
+                const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl%5B%5D=identifier&fl%5B%5D=title&fl%5B%5D=creator&fl%5B%5D=year&fl%5B%5D=description&fl%5B%5D=downloads&rows=15&page=1&output=json`;
+                try {
+                    const resp = await fetch(url);
+                    if (!resp.ok) return [];
+                    const data = await resp.json();
+                    if (!data.response || !data.response.docs) return [];
+
+                    const results = [];
+                    for (const doc of data.response.docs) {
+                        const identifier = doc.identifier || '';
+                        const title = doc.title || 'Senza titolo';
+                        const creator = doc.creator || 'Autore sconosciuto';
+                        const year = doc.year || '?';
+                        const description = doc.description || '';
+
+                        const baseUrl = `https://archive.org/details/${identifier}`;
+                        const txtUrl = `https://archive.org/download/${identifier}/${identifier}_djvu.txt`;
+                        const pdfUrl = `https://archive.org/download/${identifier}/${identifier}.pdf`;
+
+                        results.push({
+                            title: title,
+                            author: creator,
+                            year: String(year),
+                            source: 'Internet Archive',
+                            pdfUrl: pdfUrl,
+                            txtUrl: txtUrl,
+                            hasRealPdf: true,
+                            link: baseUrl,
+                            text: description || '',
+                            hasFullText: true,
+                            identifier: identifier,
+                        });
+                    }
+                    return results;
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            async function getArchiveMetadata(identifier) {
+                try {
+                    const resp = await fetch(`https://archive.org/metadata/${identifier}`);
+                    if (!resp.ok) return null;
+                    return await resp.json();
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function pickArchiveFile(meta, extsPriority) {
+                if (!meta || !Array.isArray(meta.files)) return null;
+                for (const ext of extsPriority) {
+                    const f = meta.files.find(f => f.name && f.name.toLowerCase().endsWith(ext));
+                    if (f) return f.name;
+                }
+                return null;
+            }
+
+            async function searchInsideItem(identifier, query) {
+                try {
+                    const meta = await getArchiveMetadata(identifier);
+                    if (!meta || !meta.server || !meta.dir) return null;
+                    if (meta.metadata && meta.metadata['access-restricted-item'] === 'true') return null;
+
+                    const insideUrl = `https://${meta.server}/fulltext/inside.php?item_id=${encodeURIComponent(identifier)}&doc=${encodeURIComponent(identifier)}&path=${encodeURIComponent(meta.dir)}&q=${encodeURIComponent(query)}`;
+
+                    const resp = await fetch(insideUrl);
+                    if (!resp.ok) return null;
+                    const data = await resp.json();
+                    if (!data.matches || data.matches.length === 0) return null;
+
+                    const snippets = data.matches
+                        .map(m => (m.text || m.par && m.par[0] && m.par[0].t || '').replace(/\{\{\{|\}\}\}/g, '').trim())
+                        .filter(s => s.length > 0)
+                        .slice(0, 8);
+
+                    if (snippets.length === 0) return null;
+                    return { matchCount: data.matches.length, snippets };
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            async function searchArchiveFullText(query, onStatus) {
+                const poolUrl = `https://archive.org/advancedsearch.php?q=` +
+                    encodeURIComponent(`(${query}) AND mediatype:texts AND access-restricted-item:false`) +
+                    `&fl%5B%5D=identifier&fl%5B%5D=title&fl%5B%5D=creator&fl%5B%5D=year` +
+                    `&sort%5B%5D=downloads+desc&rows=40&page=1&output=json`;
+
+                let docs = [];
+                try {
+                    const resp = await fetch(poolUrl);
+                    if (!resp.ok) return [];
+                    const data = await resp.json();
+                    docs = (data.response && data.response.docs) || [];
+                } catch (e) {
+                    return [];
+                }
+
+                const results = [];
+                let skippedCount = 0;
+                const BATCH = 6;
+
+                for (let i = 0; i < docs.length; i += BATCH) {
+                    const batch = docs.slice(i, i + BATCH);
+                    if (onStatus) onStatus(`🎯 Archive full-text: verifica libro ${Math.min(i + BATCH, docs.length)} di ${docs.length}...`);
+
+                    await Promise.all(batch.map(async (doc) => {
+                        const identifier = doc.identifier || '';
+                        if (!identifier) return;
+
+                        const hit = await searchInsideItem(identifier, query);
+                        if (!hit || hit.matchCount === 0) { skippedCount++; return; }
+
+                        const creator = Array.isArray(doc.creator) ? doc.creator.join(', ') : (doc.creator || 'Autore sconosciuto');
+                        const title = Array.isArray(doc.title) ? doc.title[0] : (doc.title || 'Senza titolo');
+
+                        results.push({
+                            title: title,
+                            author: creator,
+                            year: String(doc.year || '?'),
+                            source: 'Internet Archive (full-text)',
+                            pdfUrl: `https://archive.org/download/${identifier}/${identifier}.pdf`,
+                            txtUrl: `https://archive.org/download/${identifier}/${identifier}_djvu.txt`,
+                            hasRealPdf: true,
+                            link: `https://archive.org/details/${identifier}`,
+                            text: hit.snippets.slice(0, 5).join(' … '),
+                            fullTextMatches: hit.snippets,
+                            matchCount: hit.matchCount,
+                            hasFullText: true,
+                            identifier: identifier,
+                        });
+                    }));
+                }
+
+                if (skippedCount > 0) {
+                    statusMsg(
+                        `ℹ️ Ricerca full-text Archive.org: ${skippedCount} libri del pool non citano "${query}" nel testo o non sono verificabili (restrizioni d'accesso/CORS del sito sorgente, non un errore dell'app).`,
+                        'info'
+                    );
+                }
+
+                return results;
+            }
+
+            async function searchGutenbergFullText(query, onStatus) {
+                let candidates = [];
+                try {
+                    const resp = await fetch(`https://gutendex.com/books/?search=${encodeURIComponent(query)}&languages=it,en,fr,la`);
+                    if (!resp.ok) return [];
+                    const data = await resp.json();
+                    candidates = (data.results || []).slice(0, 15);
+                } catch (e) {
+                    return [];
+                }
+
+                const results = [];
+                const BATCH = 4;
+
+                for (let i = 0; i < candidates.length; i += BATCH) {
+                    const batch = candidates.slice(i, i + BATCH);
+                    if (onStatus) onStatus(`🎯 Gutenberg full-text: verifica libro ${Math.min(i + BATCH, candidates.length)} di ${candidates.length}...`);
+
+                    await Promise.all(batch.map(async (item) => {
+                        const formats = item.formats || {};
+                        const txtUrl = formats['text/plain; charset=utf-8'] || formats['text/plain'] || '';
+                        if (!txtUrl) return;
+
+                        try {
+                            const resp = await fetch(txtUrl);
+                            if (!resp.ok) return;
+                            const fullText = await resp.text();
+                            const { excerpts, matches } = extractRelevantExcerpts(fullText, query, {
+                                contextChars: 1200, maxExcerpts: 8, maxTotalChars: 10000
+                            });
+                            if (matches === 0) return;
+
+                            const title = item.title || 'Senza titolo';
+                            const author = (item.authors && item.authors.length) ? item.authors.map(a => a.name).join(', ') : 'Autore sconosciuto';
+                            const pdfUrl = formats['application/pdf'] || '';
+
+                            results.push({
+                                title: title,
+                                author: author,
+                                year: '?',
+                                source: 'Project Gutenberg (full-text)',
+                                pdfUrl: pdfUrl,
+                                hasRealPdf: !!pdfUrl,
+                                link: `https://www.gutenberg.org/ebooks/${item.id}`,
+                                text: excerpts.split('\n\n---\n\n').slice(0, 3).join(' … '),
+                                fullTextMatches: excerpts.split('\n\n---\n\n'),
+                                matchCount: matches,
+                                hasFullText: true,
+                                identifier: String(item.id),
+                            });
+                        } catch (e) {}
+                    }));
+                }
+
+                return results;
+            }
+
+            // ---- Verifica se un'occorrenza di una parola è scritta con la maiuscola nel TESTO ORIGINALE ----
+            // Soluzione generale (non un elenco di casi speciali) al problema dei nomi di luogo che
+            // coincidono con una parola comune: "Monaco" è anche un monaco/religioso, "Gorgonzola" è
+            // anche un formaggio. Il nome del luogo, normalizzato da capitalizePlaceName, è SEMPRE
+            // scritto con la maiuscola; un'occorrenza minuscola nel testo originale è quindi quasi
+            // certamente la parola comune, non il luogo, e va scartata invece di essere contata come
+            // una vera citazione.
+            function isCapitalizedOccurrence(originalText, index) {
+                const ch = originalText.charAt(index);
+                return ch.length > 0 && ch === ch.toUpperCase() && ch !== ch.toLowerCase();
+            }
+
+            // Cerca "wordLower" dentro "text" (case-insensitive) ma richiede che almeno una delle
+            // occorrenze trovate sia scritta con la maiuscola nel testo originale: usata per non
+            // confondere il nome del luogo con la parola comune omonima (es. "gorgonzola" il
+            // formaggio, scritto minuscolo, contro "Gorgonzola" il paese, sempre maiuscolo).
+            function containsCapitalizedWord(text, wordLower) {
+                const textLower = text.toLowerCase();
+                let idx = textLower.indexOf(wordLower);
+                while (idx !== -1) {
+                    if (isCapitalizedOccurrence(text, idx)) return true;
+                    idx = textLower.indexOf(wordLower, idx + 1);
+                }
+                return false;
+            }
+
+            function extractRelevantExcerpts(fullText, query, opts) {
+                opts = opts || {};
+                const contextChars = opts.contextChars || 1400;
+                const maxExcerpts = opts.maxExcerpts || 10;
+                const maxTotalChars = opts.maxTotalChars || 12000;
+
+                if (!fullText || !query) return { excerpts: '', matches: 0 };
+
+                const normText = stripDiacritics(fullText.toLowerCase());
+                const normQuery = stripDiacritics(query.toLowerCase()).trim();
+                if (!normQuery) return { excerpts: '', matches: 0 };
+
+                const pieces = [];
+                let searchFrom = 0;
+                let totalChars = 0;
+                let matches = 0;
+                let skippedCommonNoun = 0;
+
+                while (pieces.length < maxExcerpts && totalChars < maxTotalChars) {
+                    const idx = normText.indexOf(normQuery, searchFrom);
+                    if (idx === -1) break;
+
+                    // Scarta le occorrenze minuscole nel testo originale: quasi certamente la parola
+                    // comune omonima (es. "un monaco", "il gorgonzola"), non il nome proprio del luogo.
+                    if (!isCapitalizedOccurrence(fullText, idx)) {
+                        skippedCommonNoun++;
+                        searchFrom = idx + normQuery.length;
+                        continue;
+                    }
+
+                    matches++;
+                    const start = Math.max(0, idx - contextChars);
+                    const end = Math.min(fullText.length, idx + normQuery.length + contextChars);
+                    const excerpt = fullText.substring(start, end).trim();
+                    const posPct = Math.round((idx / fullText.length) * 100);
+
+                    pieces.push(`[...circa al ${posPct}% del libro...]\n${excerpt}`);
+                    totalChars += excerpt.length;
+                    searchFrom = idx + normQuery.length + contextChars;
+                }
+
+                let extraNote = '';
+                if (matches >= maxExcerpts) {
+                    const stillThere = normText.indexOf(normQuery, searchFrom) !== -1;
+                    if (stillThere) extraNote = `\n[...il luogo è citato anche in altri punti del libro, non riportati per limiti di spazio...]`;
+                }
+
+                return { excerpts: pieces.join('\n\n---\n\n') + extraNote, matches: matches, skippedCommonNoun: skippedCommonNoun };
+            }
+
+            function stripDiacritics(str) {
+                return String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            }
+
+            function estimateTokens(str) {
+                return Math.ceil((str || '').length / 4);
+            }
+
+            async function fetchArchiveText(identifier) {
+                try {
+                    const meta = await getArchiveMetadata(identifier);
+                    if (meta && meta.metadata && meta.metadata['access-restricted-item'] === 'true') return null;
+                    const realName = pickArchiveFile(meta, ['_djvu.txt', '.txt']);
+                    const txtUrl = realName ?
+                        `https://archive.org/download/${identifier}/${encodeURIComponent(realName)}` :
+                        `https://archive.org/download/${identifier}/${identifier}_djvu.txt`;
+                    const resp = await fetch(txtUrl);
+                    if (resp.ok) {
+                        return await resp.text();
+                    }
+                    return null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            async function fetchArchivePdf(identifier) {
+                try {
+                    const meta = await getArchiveMetadata(identifier);
+                    if (meta && meta.metadata && meta.metadata['access-restricted-item'] === 'true') return null;
+                    const realName = pickArchiveFile(meta, ['.pdf']);
+                    const pdfUrl = realName ?
+                        `https://archive.org/download/${identifier}/${encodeURIComponent(realName)}` :
+                        `https://archive.org/download/${identifier}/${identifier}.pdf`;
+                    const resp = await fetch(pdfUrl);
+                    if (resp.ok) {
+                        return await resp.blob();
+                    }
+                    return null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            // =========================================================
+            // 7. FUNZIONI DI DOWNLOAD UI
+            // =========================================================
+            window.downloadTxt = async function(identifier, title, source) {
+                statusMsg(`📥 Scaricando TXT: "${title}"...`, 'info');
+                try {
+                    let text = null;
+
+                    if (source === 'Internet Archive' || source === 'Internet Archive (full-text)') {
+                        if (identifier) text = await fetchArchiveText(identifier);
+                    } else if (source === 'Wikisource' && identifier) {
+                        try {
+                            const url = `https://it.wikisource.org/w/api.php?action=query&prop=extracts&exlimit=1&titles=${encodeURIComponent(identifier)}&format=json&origin=*`;
+                            const resp = await fetch(url);
+                            const data = await resp.json();
+                            const pages = data.query.pages;
+                            const page = Object.values(pages)[0];
+                            if (page && page.extract) {
+                                text = page.extract.replace(/<[^>]*>/g, '');
+                            }
+                        } catch (e) {}
+                    } else if ((source === 'Wikipedia' || source === 'Wikipedia (EN)') && identifier) {
+                        text = await fetchWikipediaExtractLang(identifier, source === 'Wikipedia (EN)' ? 'en' : 'it');
+                    } else if ((source === 'Project Gutenberg' || source === 'Project Gutenberg (full-text)') && identifier) {
+                        try {
+                            const url = `https://www.gutenberg.org/cache/epub/${identifier}/pg${identifier}.txt`;
+                            const resp = await fetch(url);
+                            if (resp.ok) text = await resp.text();
+                        } catch (e) {}
+                    } else if (source === 'Google Books') {
+                        const book = state.books.find(b => b.identifier === identifier);
+                        if (book && book.text) {
+                            text = book.text;
+                        }
+                    }
+
+                    if (text) {
+                        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${title.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        URL.revokeObjectURL(url);
+                        statusMsg(`✅ TXT scaricato: "${title}"`, 'success');
+                        setTimeout(() => clearStatus(), 3000);
+                    } else {
+                        statusMsg(`⚠️ Testo non disponibile per "${title}"`, 'warn');
+                    }
+                } catch (e) {
+                    statusMsg(`❌ Errore: ${e.message}`, 'error');
+                }
+            };
+
+            window.downloadPdf = async function(identifier, title, source, pdfUrl) {
+                statusMsg(`📥 Scaricando PDF: "${title}"...`, 'info');
+                let corsSuspected = false;
+                try {
+                    let blob = null;
+
+                    if (source === 'Internet Archive' || source === 'Internet Archive (full-text)') {
+                        if (identifier) blob = await fetchArchivePdf(identifier);
+                    } else if ((source === 'Project Gutenberg' || source === 'Project Gutenberg (full-text)') && pdfUrl) {
+                        const resp = await fetch(pdfUrl);
+                        if (resp.ok) blob = await resp.blob();
+                    } else if (source === 'Open Library' && identifier) {
+                        blob = await fetchArchivePdf(identifier);
+                    }
+
+                    if (blob) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        URL.revokeObjectURL(url);
+                        statusMsg(`✅ PDF scaricato: "${title}"`, 'success');
+                        setTimeout(() => clearStatus(), 3000);
+                        return;
+                    }
+                } catch (e) {
+                    corsSuspected = (e instanceof TypeError);
+                }
+
+                const book = state.books.find(b => b.identifier === identifier || b.title === title);
+                if (book && book.link) {
+                    window.open(book.link, '_blank');
+                    if (corsSuspected) {
+                        statusMsg(`⚠️ Download diretto bloccato dal sito sorgente (limite del sito, non un errore dell'app). Ho aperto la pagina di "${title}": da lì puoi scaricare il PDF manualmente.`, 'warn');
+                    } else {
+                        statusMsg(`🔗 PDF non disponibile per il download diretto: ho aperto la pagina di "${title}".`, 'info');
+                    }
+                    setTimeout(() => clearStatus(), 5000);
+                } else {
+                    statusMsg(`⚠️ PDF non disponibile per "${title}".`, 'warn');
+                }
+            };
+
+            // Apre una finestra di stampa separata per Wikisource: ha il proprio <style> incorporato
+            // (secondo blocco <style> del file, distinto da quello principale nell'<head>) perché
+            // è HTML iniettato in un document.write su una window a parte, non nella pagina principale.
+            window.printWikisource = function(title, identifier) {
+                try {
+                    const url = `https://it.wikisource.org/w/index.php?title=${encodeURIComponent(identifier)}&action=raw`;
+                    fetch(url)
+                        .then(res => res.text())
+                        .then(text => {
+                            const html = `
+                                <html><head><meta charset="UTF-8"><title>${title}</title>
+                                <style>
+                                    body{font-family:serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.8;}
+                                    h1{text-align:center;font-size:1.8em;}
+                                    hr{margin:20px 0;}
+                                    pre{white-space:pre-wrap;font-family:serif;font-size:1em;}
+                                    @media print{body{margin:20px;}}
+                                </style>
+                                </head>
+                                <body>
+                                    <h1>${title}</h1>
+                                    <hr>
+                                    <pre>${text}</pre>
+                                    <hr>
+                                    <p style="text-align:center;font-size:0.8em;color:#888;">Fonte: Wikisource</p>
+                                </body></html>
+                            `;
+                            const win = window.open('', '_blank');
+                            win.document.write(html);
+                            win.document.close();
+                            win.focus();
+                            setTimeout(() => { win.print(); }, 500);
+                        })
+                        .catch(e => {
+                            statusMsg(`❌ Errore: ${e.message}`, 'error');
+                        });
+                } catch (e) {
+                    statusMsg(`❌ Errore: ${e.message}`, 'error');
+                }
+            };
+
+            // =========================================================
+            // 8. GEMINI: CHIAMATA DI BASE E PARSING ERRORI
+            // =========================================================
+            const REQUEST_TIMEOUT_MS = 40000; // oltre questo tempo, la richiesta viene abortita e ritentata
+
+            async function callGemini(promptText) {
+                const model = state.activeModel || state.geminiModel || 'gemini-3.6-flash';
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+
+                const requestBody = {
+                    contents: [{ parts: [{ text: promptText }] }],
+                    generationConfig: {
+                        temperature: 0.35,
+                        maxOutputTokens: 4000,
+                    }
+                };
+
+                // ---- Timeout + Stop immediato ----
+                // Il controller viene registrato in state.activeAbortController così che il pulsante
+                // "Stop" possa interrompere anche una richiesta di rete già in corso, non solo il ciclo
+                // tra un tentativo e l'altro. Un secondo timer aborta comunque la richiesta se il server
+                // non risponde entro REQUEST_TIMEOUT_MS, evitando che resti appesa per minuti.
+                const controller = new AbortController();
+                state.activeAbortController = controller;
+                const timeoutId = setTimeout(() => controller.abort('timeout'), REQUEST_TIMEOUT_MS);
+
+                let resp;
+                try {
+                    resp = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-goog-api-key': state.geminiKey,
+                        },
+                        body: JSON.stringify(requestBody),
+                        signal: controller.signal,
+                    });
+                } catch (fetchErr) {
+                    clearTimeout(timeoutId);
+                    state.activeAbortController = null;
+
+                    if (state.genCancelled) {
+                        const stopErr = new Error('Generazione interrotta dall\'utente.');
+                        stopErr.status = 0;
+                        stopErr.userCancelled = true;
+                        throw stopErr;
+                    }
+
+                    // AbortError per timeout (non per stop utente): lo trattiamo come un errore
+                    // temporaneo di rete/server, così processPiece lo ritenta automaticamente.
+                    const timeoutErr = new Error('Nessuna risposta da Gemini entro il timeout (' + (REQUEST_TIMEOUT_MS / 1000) + 's): la richiesta è stata interrotta.');
+                    timeoutErr.status = 0;
+                    timeoutErr.isTimeout = true;
+                    throw timeoutErr;
+                }
+
+                clearTimeout(timeoutId);
+                state.activeAbortController = null;
+
+                if (!resp.ok) {
+                    const errText = await resp.text();
+                    const err = new Error(`Gemini API error: ${resp.status}`);
+                    err.status = resp.status;
+                    err.raw = errText;
+                    err.retryDelaySeconds = resp.status === 429 ? parseRetryDelaySeconds(errText) : null;
+
+                    if (resp.status === 429) {
+                        const qi = parseQuotaInfo(errText);
+                        err.isDailyQuota = qi.isDaily;
+                        err.quotaHint = qi.hint;
+                        err.resetTime = qi.resetTime;
+                    }
+
+                    throw err;
+                }
+
+                const data = await resp.json();
+                const candidate = data.candidates && data.candidates[0];
+                const text = (candidate && candidate.content && candidate.content.parts &&
+                    candidate.content.parts.map(p => p.text || '').join('')) || '';
+
+                return { text };
+            }
+
+            function parseQuotaInfo(errText) {
+                const info = { isDaily: false, retryDelaySeconds: null, quotaId: '', hint: '', resetTime: null };
+                if (!errText) return info;
+
+                const m = errText.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/);
+                if (m) info.retryDelaySeconds = Math.ceil(parseFloat(m[1]));
+
+                const q = errText.match(/"quotaId"\s*:\s*"([^"]+)"/);
+                if (q) info.quotaId = q[1];
+
+                if (/PerDay/i.test(errText) || /per\s+day/i.test(errText) || /PerProjectPerDay/i.test(errText)) {
+                    info.isDaily = true;
+                }
+
+                const r = errText.match(/"resetTime"\s*:\s*"([^"]+)"/);
+                if (r) info.resetTime = r[1];
+
+                if (info.quotaId) info.hint = info.quotaId;
+                return info;
+            }
+
+            function parseRetryDelaySeconds(errText) {
+                if (!errText) return null;
+                const m = errText.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/);
+                if (m) return Math.ceil(parseFloat(m[1]));
+                return null;
+            }
+
+            // =========================================================
+            // 9. MOTORE A MICRO-PACCHETTI (PEZZI CONTINUI)
+            // =========================================================
+            // ---- Riconosce se un risultato Wikipedia è la voce dedicata al luogo stesso ----
+            // (e non, ad esempio, una frazione o un'entità con nome simile trovata dalla ricerca)
+            function isMainWikipediaPage(title, placeName) {
+                if (!title || !placeName) return false;
+                const norm = s => s.toLowerCase().trim().replace(/\s+/g, ' ');
+                return norm(title) === norm(placeName);
+            }
+
+            // ---- Recupera i link interni di una voce Wikipedia (namespace principale) ----
+            async function fetchWikipediaLinks(title, lang) {
+                const domain = lang === 'en' ? 'en.wikipedia.org' : 'it.wikipedia.org';
+                try {
+                    const url = `https://${domain}/w/api.php?action=query&prop=links&pllimit=500&plnamespace=0&titles=${encodeURIComponent(title)}&format=json&origin=*`;
+                    const resp = await fetch(url);
+                    if (!resp.ok) return [];
+                    const data = await resp.json();
+                    const pages = data.query && data.query.pages;
+                    const page = pages ? Object.values(pages)[0] : null;
+                    if (!page || !page.links) return [];
+                    return page.links.map(l => l.title);
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            // ---- Utility condivise per confrontare testo e parole distintive ----
+            // Usate sia per filtrare le pagine Wikipedia collegate pertinenti, sia per decidere quali
+            // fonti sono state davvero usate nel testo generato (bibliografia finale).
+            const ITALIAN_STOPWORDS = new Set([
+                'di', 'del', 'della', 'dello', 'dei', 'degli', 'delle', 'e', 'a', 'al', 'ai',
+                'da', 'in', 'il', 'lo', 'la', 'i', 'gli', 'le', 'un', 'una', 'con', 'per',
+                'su', 'tra', 'fra', 'che', 'come'
+            ]);
+            function significantWords(s) {
+                return (s || '').toLowerCase().split(/\s+/).filter(w => w.length > 3 && !ITALIAN_STOPWORDS.has(w));
+            }
+
+            // Termini troppo generici per valere un approfondimento a parte (anni secchi, concetti
+            // amministrativi/geografici comuni a qualunque comune, unità di misura, ecc.): senza
+            // questo filtro, seguire tutti i link di una pagina Wikipedia riempirebbe il libro di
+            // paragrafi enciclopedici generici che non aggiungono nulla alla storia del luogo.
+            const GENERIC_WIKI_LINK_BLOCKLIST = new Set([
+                'comune', 'lombardia', 'italia', 'lingua italiana', 'fuso orario', 'ora legale',
+                'ora legale europea', 'codice di avviamento postale', 'prefisso telefonico', 'istat',
+                'regione (italia)', 'stato', 'unione europea', 'coordinate geografiche', 'wikidata',
+                'sindaco', 'chilometro', 'abitante', 'densità di popolazione', 'metro', 'ettaro',
+                'centro abitato', 'frazione (geografia)', 'gonfalone', 'stemma', 'araldica civica',
+                'al naturale', 'altitudine', 'area', 'alfabeto fonetico internazionale',
+                'classificazione sismica in italia', 'popolazione', 'demografia', 'clima',
+                'diocesi', 'arcidiocesi di milano', 'rito ambrosiano', 'codice catastale'
+            ]);
+
+            function looksLikeRelevantWikiLink(title, placeName) {
+                const t = title.trim();
+                if (t.length < 3) return false;
+                if (/^\d{1,4}$/.test(t)) return false; // anno secco (es. "1901")
+                if (/secolo$/i.test(t)) return false;
+                if (/^comuni\b/i.test(t)) return false; // elenchi tipo "Comuni d'Italia (A)", "Comuni della Brianza"
+                if (/^elenco\b/i.test(t)) return false;
+                if (/^agenzia\b/i.test(t)) return false; // enti/agenzie statali citate solo come fonte normativa
+                if (t.toLowerCase().startsWith('provincia di')) return false;
+                if (t.toLowerCase() === (placeName || '').toLowerCase()) return false;
+                if (GENERIC_WIKI_LINK_BLOCKLIST.has(t.toLowerCase())) return false;
+                return true;
+            }
+
+            // ---- Segue i link interni pertinenti trovati nella pagina Wikipedia del luogo ----
+            // Persone, monumenti, infrastrutture con nome proprio citati come collegamenti: spesso
+            // contengono dettagli concreti che l'articolo principale menziona solo di sfuggita.
+            //
+            // IMPORTANTE: l'API di Wikipedia restituisce i link in ordine alfabetico. Prendere
+            // semplicemente "i primi N che passano il filtro" riempiva i risultati solo di voci con
+            // l'iniziale A (concetti generici come "Altitudine", "Area", comuni limitrofi come
+            // "Albavilla") senza mai arrivare a nomi come "Fabio Casartelli" o "Villa Pontiggia" più
+            // avanti nell'alfabeto. Ora si continua a scorrere l'intera lista finché non si
+            // raggiunge un numero sufficiente di pagine DAVVERO utili.
+            //
+            // Il controllo decisivo (più robusto del semplice pattern "è un comune italiano", che
+            // non intercettava tutte le formulazioni usate da Wikipedia) è: la pagina collegata deve
+            // nominare davvero il luogo cercato. Una voce enciclopedica generica come "Banda musicale"
+            // o "Bachicoltura", o la pagina di un comune vicino citato solo per analogia geografica,
+            // quasi mai include il nome del NOSTRO paese nel proprio testo — quindi si scartano,
+            // mentre una voce come "Fabio Casartelli" (che tipicamente apre con "nato a...") lo supera.
+            async function fetchRelatedWikipediaPages(mainTitle, placeName, lang) {
+                lang = lang || 'it';
+                const links = await fetchWikipediaLinks(mainTitle, lang);
+                const candidates = links.filter(l => looksLikeRelevantWikiLink(l, placeName));
+
+                const MAX_GOOD_RESULTS = 30;        // pagine collegate davvero utili da raccogliere
+                const MAX_CANDIDATES_TO_CHECK = 120; // tetto di sicurezza sul numero di pagine controllate in totale
+
+                const results = [];
+                let checked = 0;
+                let skippedOffTopic = 0;
+                const placeSigWords = significantWords(placeName);
+
+                for (const linkTitle of candidates) {
+                    if (results.length >= MAX_GOOD_RESULTS || checked >= MAX_CANDIDATES_TO_CHECK) break;
+                    checked++;
+
+                    try {
+                        const extract = await fetchWikipediaExtractLang(linkTitle, lang);
+                        if (!extract || extract.trim().length < 200) continue; // pagina troppo breve/stub
+
+                        // Rete di sicurezza aggiuntiva: scarta esplicitamente le pagine di ALTRI comuni/
+                        // luoghi, sia in italiano che in inglese (per la ricerca su en.wikipedia.org),
+                        // con più formulazioni possibili e una finestra di testo più ampia.
+                        // (Niente "\b" prima delle lettere accentate: in JavaScript non funziona, vedi nota in looksLikeAPlaceDescription)
+                        const head = extract.slice(0, 600).toLowerCase();
+                        const isAnotherPlacePage = /è un comune\b/.test(head) ||
+                            /\bcomune italiano\b/.test(head) ||
+                            /\bfrazione del comune di\b/.test(head) ||
+                            /sono comuni\b/.test(head) ||
+                            /\bis a (town|city|village|municipality|commune|hamlet|suburb)\b/.test(head) ||
+                            /\bis a commune in\b/.test(head);
+                        if (isAnotherPlacePage) { skippedOffTopic++; continue; }
+
+                        // Esclusione simmetrica per l'altro tipo di ambiguità: nomi di luogo che
+                        // coincidono con un prodotto/alimento tutelato (es. "Gorgonzola" il formaggio),
+                        // dove la maiuscola non basta a distinguere perché anche il nome commerciale
+                        // del prodotto si scrive maiuscolo. Si scarta la pagina se si presenta
+                        // esplicitamente come un cibo, una muffa o un microrganismo, non come un luogo.
+                        const isFoodOrProductPage = /è un formaggio\b/.test(head) ||
+                            /è un tipo di formaggio\b/.test(head) ||
+                            /è una muffa\b/.test(head) || /è un fungo\b/.test(head) ||
+                            /è una specie (di|fungina)\b/.test(head) || /è un genere di funghi\b/.test(head) ||
+                            /\bis a (cheese|type of cheese|variety of cheese|mold|mould|fungus|species of fungus)\b/.test(head);
+                        if (isFoodOrProductPage) { skippedOffTopic++; continue; }
+
+                        // Controllo decisivo: la pagina deve nominare davvero il nostro luogo, con la
+                        // parola scritta MAIUSCOLA come nome proprio (almeno metà delle parole
+                        // distintive) — non basta che la parola compaia in minuscolo come sostantivo
+                        // comune omonimo (es. una pagina sul formaggio "gorgonzola" contiene sempre la
+                        // parola, ma quasi mai la scrive con la maiuscola come nome del paese).
+                        const matchedCount = placeSigWords.filter(w => containsCapitalizedWord(extract, w)).length;
+                        const mentionsPlace = placeSigWords.length === 0 || (matchedCount / placeSigWords.length) >= 0.5;
+                        if (!mentionsPlace) { skippedOffTopic++; continue; }
+
+                        const domain = lang === 'en' ? 'en.wikipedia.org' : 'it.wikipedia.org';
+                        results.push({
+                            title: linkTitle,
+                            extract: extract.slice(0, 4000),
+                            url: `https://${domain}/wiki/${encodeURIComponent(linkTitle)}`
+                        });
+                    } catch (e) { /* pagina collegata non disponibile, si passa alla successiva */ }
+                }
+
+                if (skippedOffTopic > 0) {
+                    logLine(`ℹ️ Pagine Wikipedia${lang === 'en' ? ' (EN)' : ''} collegate scartate perché non citano "${placeName}" o sono un altro luogo (${skippedOffTopic} su ${checked} controllate).`, 'info');
+                }
+
+                return results;
+            }
+
+            async function buildBookBlocks(books, query, onProgress) {
+                const total = books.length;
+                const bookBlocks = [];
+                let booksWithMatches = 0;
+                let totalExcerpts = 0;
+
+                for (let i = 0; i < total; i++) {
+                    const b = books[i];
+                    const pct = Math.round((i / total) * 100);
+                    if (onProgress) onProgress(pct, `Scansione libro ${i + 1} di ${total}: "${b.title}"`);
+
+                    let header = `\n\n--- LIBRO: "${b.title}" (${b.author}, ${b.year}) ---\n`;
+                    header += `Fonte: ${b.source}\n`;
+                    if (b.link) header += `Link: ${b.link}\n`;
+
+                    let excerptList = [];
+                    let noteLine = '';
+                    let hasMatch = false;
+
+                    if (b.fullTextMatches && b.fullTextMatches.length > 0) {
+                        hasMatch = true;
+                        booksWithMatches++;
+                        totalExcerpts += b.fullTextMatches.length;
+                        noteLine = `\nPASSAGGI CHE CITANO DIRETTAMENTE "${query}" (${b.matchCount || b.fullTextMatches.length} occorrenza/e totali nel libro):\n`;
+                        excerptList = b.fullTextMatches.map((s, j) => `[passaggio ${j + 1}] …${s}…`);
+                    } else {
+                        let handled = false;
+                        const isWikipediaSource = b.source === 'Wikipedia' || b.source === 'Wikipedia (EN)';
+                        const wikiLang = b.wikiLang || (b.source === 'Wikipedia (EN)' ? 'en' : 'it');
+                        const isMainPage = isWikipediaSource && isMainWikipediaPage(b.identifier, query);
+
+                        try {
+                            let fullText = null;
+
+                            if (b.source === 'Internet Archive' && b.identifier) {
+                                fullText = await fetchArchiveText(b.identifier);
+                            } else if (b.source === 'Project Gutenberg' && b.identifier) {
+                                const resp = await fetch(`https://www.gutenberg.org/cache/epub/${b.identifier}/pg${b.identifier}.txt`);
+                                if (resp.ok) fullText = await resp.text();
+                            } else if (b.source === 'Wikisource' && b.identifier) {
+                                const url = `https://it.wikisource.org/w/api.php?action=query&prop=extracts&exlimit=1&titles=${encodeURIComponent(b.identifier)}&format=json&origin=*`;
+                                const resp = await fetch(url);
+                                const data = await resp.json();
+                                const pages = data.query && data.query.pages;
+                                const page = pages ? Object.values(pages)[0] : null;
+                                if (page && page.extract) fullText = page.extract.replace(/<[^>]*>/g, '');
+                            } else if (isWikipediaSource && b.identifier) {
+                                fullText = await fetchWikipediaExtractLang(b.identifier, wikiLang);
+                            }
+
+                            if (fullText && isMainPage) {
+                                // La voce Wikipedia dedicata al luogo si legge per intero, senza
+                                // filtrare per occorrenze del nome: essendo l'intera pagina già
+                                // incentrata sul luogo, quel filtro tagliava fuori paragrafi validi
+                                // (es. "il paese", "la comunità") che non ripetono il nome per esteso.
+                                hasMatch = true;
+                                booksWithMatches++;
+                                const CHUNK_SIZE = 3000;
+                                const capped = fullText.slice(0, 20000);
+                                const chunks = [];
+                                for (let c = 0; c < capped.length; c += CHUNK_SIZE) {
+                                    chunks.push(capped.slice(c, c + CHUNK_SIZE));
+                                }
+                                totalExcerpts += chunks.length;
+                                noteLine = `\nTESTO INTEGRALE della voce Wikipedia${wikiLang === 'en' ? ' in inglese' : ''} dedicata al luogo (letto per intero, non filtrato per occorrenze del nome):\n`;
+                                excerptList = chunks;
+                                handled = true;
+
+                                // Segue i link interni pertinenti della voce principale: persone,
+                                // monumenti, infrastrutture con nome proprio spesso citati solo di
+                                // sfuggita nell'articolo principale ma approfonditi nella loro pagina.
+                                if (onProgress) onProgress(pct, `Wikipedia${wikiLang === 'en' ? ' (EN)' : ''}: lettura pagine collegate a "${b.title}"...`);
+                                const related = await fetchRelatedWikipediaPages(b.identifier, query, wikiLang);
+                                const relatedSourceLabel = wikiLang === 'en' ? 'Wikipedia (EN, pagina collegata)' : 'Wikipedia (pagina collegata)';
+                                for (const rel of related) {
+                                    bookBlocks.push({
+                                        header: `\n\n--- LIBRO: "${rel.title}" (${relatedSourceLabel}) ---\nFonte: ${relatedSourceLabel}\nLink: ${rel.url}\n`,
+                                        noteLine: `\nTESTO della voce Wikipedia collegata (trovata tra i link della pagina principale del luogo):\n`,
+                                        excerptList: [rel.extract],
+                                        hasMatch: true,
+                                        title: rel.title,
+                                        author: relatedSourceLabel,
+                                        source: relatedSourceLabel,
+                                        link: rel.url
+                                    });
+                                    booksWithMatches++;
+                                    totalExcerpts++;
+                                }
+                            } else if (fullText) {
+                                const { excerpts, matches } = extractRelevantExcerpts(fullText, query);
+                                if (matches > 0) {
+                                    hasMatch = true;
+                                    booksWithMatches++;
+                                    totalExcerpts += matches;
+                                    noteLine = `\nESTRATTI DAL TESTO COMPLETO che citano "${query}" (${matches} occorrenza/e trovate):\n`;
+                                    excerptList = excerpts.split('\n\n---\n\n');
+                                } else {
+                                    noteLine = `\n(Testo completo scansionato: nessuna menzione diretta di "${query}" trovata)\n`;
+                                }
+                                handled = true;
+                            }
+                        } catch (e) {}
+
+                        if (!handled && b.text && typeof b.text === 'string' && b.text.length > 0) {
+                            noteLine = `Anteprima/descrizione disponibile (fonte senza testo completo scaricabile): ${b.text}\n`;
+                        }
+                    }
+
+                    bookBlocks.push({ header, noteLine, excerptList, hasMatch, title: b.title, author: b.author, source: b.source, link: b.link });
+                }
+
+                state.stats.booksScanned = total;
+                state.stats.booksWithMatches = booksWithMatches;
+                state.stats.totalExcerptsFound = totalExcerpts;
+
+                return { bookBlocks, booksWithMatches };
+            }
+
+            function estimateBlockTokens(block) {
+                return estimateTokens(block.header + block.noteLine + block.excerptList.join('\n\n---\n\n'));
+            }
+
+            // ---- Raggruppa i libri nei pezzi in base al materiale disponibile, non a un numero fisso ----
+            // Prima si raggruppavano sempre 2 libri per pezzo, anche quando entrambi avevano pochissimo
+            // materiale reale: il risultato erano molti capitoli quasi vuoti, gonfiati a forza fino a
+            // 300-500 parole e quindi ripetitivi. Ora i libri "poveri" (pochi estratti/snippet brevi)
+            // vengono accorpati tra loro finché non si accumula materiale sufficiente per un capitolo
+            // sostanzioso, mentre un libro già ricco di suo può bastare da solo per un pezzo.
+            function buildPieces(bookBlocks) {
+                const withMatches = bookBlocks.filter(b => b.hasMatch);
+                const withoutMatches = bookBlocks.filter(b => !b.hasMatch);
+                const ordered = withMatches.concat(withoutMatches);
+
+                const MIN_PIECE_TOKENS = 1400; // materiale minimo prima di chiudere un pezzo
+                const MAX_BOOKS_PER_PIECE = 5;  // tetto di sicurezza, anche se il materiale resta scarso
+
+                function makePiece(idx, group) {
+                    return {
+                        index: idx,
+                        bookTitles: group.map(b => b.title),
+                        bookBlocks: group,
+                        excerptCount: group.reduce((acc, b) => acc + b.excerptList.length, 0),
+                        status: 'pending',
+                        text: '',
+                        error: null
+                    };
+                }
+
+                const pieces = [];
+                let currentGroup = [];
+                let currentTokens = 0;
+
+                for (const block of ordered) {
+                    currentGroup.push(block);
+                    currentTokens += estimateBlockTokens(block);
+
+                    if (currentTokens >= MIN_PIECE_TOKENS || currentGroup.length >= MAX_BOOKS_PER_PIECE) {
+                        pieces.push(makePiece(pieces.length, currentGroup));
+                        currentGroup = [];
+                        currentTokens = 0;
+                    }
+                }
+                if (currentGroup.length > 0) {
+                    pieces.push(makePiece(pieces.length, currentGroup));
+                }
+
+                return pieces;
+            }
+
+            function trimPieceIfNeeded(piece, maxTokens) {
+                const p = JSON.parse(JSON.stringify(piece));
+                function totalTokens() {
+                    return estimateTokens(p.bookBlocks.map(bl => bl.header + bl.noteLine + bl.excerptList.join('\n\n---\n\n')).join(''));
+                }
+                while (totalTokens() > maxTokens) {
+                    let target = null;
+                    for (const bl of p.bookBlocks) {
+                        if (bl.excerptList.length > 1) {
+                            if (!target || bl.excerptList.length > target.excerptList.length) target = bl;
+                        }
+                    }
+                    if (!target) break;
+                    target.excerptList.pop();
+                }
+                return p;
+            }
+
+            function buildPiecePrompt(query, booksText, previousTitles, previousTerms, previousFacts, pieceIdx, totalPieces) {
+                const provNote = state.placeProvince ?
+                    `\nNOTA SUL NOME: la sigla "${state.placeProvince}" tra parentesi era stata usata nella ricerca SOLO per distinguere questo luogo da eventuali omonimi di altre province. NON scrivere MAI la sigla provinciale nel testo: il luogo va sempre chiamato semplicemente "${query}".` : '';
+
+                const termsNote = previousTerms ?
+                    `\nNOMI PROPRI, DATE E DETTAGLI GIÀ CITATI NEI PEZZI PRECEDENTI (per evitare di ripeterli identici, a meno che questo pezzo non aggiunga informazioni realmente nuove su di essi): ${previousTerms}\n` : '';
+
+                const factsNote = previousFacts ?
+                    `\nFRASI CON NUMERI/DATE GIÀ SCRITTE NEI PEZZI PRECEDENTI (usale per verificare la coerenza: se il materiale di questo pezzo riporta un numero o una data diversa per lo STESSO fatto, segui l'istruzione 12 qui sotto):\n${previousFacts}\n` : '';
+
+                return `
+Sei un assistente esperto in storia e archeologia. Stai scrivendo UN PEZZO di un minilibro dedicato al luogo "${query}" (pezzo ${pieceIdx + 1} di ${totalPieces}), basato su estratti da libri antichi (fine 1800 - inizio 1900).${provNote}
+
+ ${previousTitles ? `ARGOMENTI GIÀ TRATTATI NEI PEZZI PRECEDENTI (per coerenza e per non ripeterti):\n${previousTitles}\n` : ''}${termsNote}${factsNote}
+MATERIALE PER QUESTO PEZZO (estratti dai libri seguenti):
+ ${booksText}
+
+ISTRUZIONI:
+1. La risposta deve contenere ESCLUSIVAMENTE il testo del pezzo. NON scrivere alcun commento sul tuo lavoro, autovalutazioni, checklist, conteggi di parole o note tecniche: niente deve precedere o seguire il testo del pezzo, ad eccezione dell'eventuale marcatore di discrepanza descritto al punto 12.
+2. Inizia con un titolo di sezione in stile Markdown su una riga che comincia con "# " (es. "# ${query} negli atti del '400").
+3. Scrivi da 300 a 500 parole (fino a 800 se il materiale fornito, inclusi gli eventuali APPROFONDIMENTI WIKIPEDIA, è particolarmente ricco di dettagli concreti: in tal caso è meglio includere tutto per esteso piuttosto che tagliare informazioni vere): sviluppa in modo discorsivo e dettagliato i temi emersi da QUESTI estratti, contestualizzando ogni fatto (periodo storico, persone/istituzioni coinvolte, rilevanza per la storia del luogo). Non ripetere argomenti, persone o dati già citati nei pezzi precedenti (vedi elenco sopra), a meno che tu non abbia informazioni realmente nuove su di essi.
+4. NON citare la fonte dopo ogni singola frase: le fonti verranno elencate automaticamente in un capitolo finale a parte. Scrivi il racconto in modo fluido e continuo, senza interromperlo con "(fonte: ...)" a ripetizione. Se proprio serve attribuire un dato controverso o sorprendente, puoi nominare la fonte UNA SOLA VOLTA per paragrafo, non per frase.
+5. Se un estratto parla chiaramente di un luogo omonimo diverso (altro paese, persona, opera con lo stesso nome), IGNORALO COMPLETAMENTE: non includerlo e non scrivere alcuna nota a riguardo. Parla solo ed esclusivamente del luogo "${query}".
+6. NON usare elenchi puntati: scrivi paragrafi discorsivi come in un libro di storia locale.
+7. Se il materiale disponibile è scarso o di carattere solo bibliografico, NON ripetere ad ogni pezzo la stessa premessa ("le fonti sono frammentarie/amministrative..."): dillo con pragmatismo UNA sola volta all'inizio del pezzo se necessario, poi fondi le informazioni di tutti i libri di questo pezzo in un racconto unico e continuo (non un paragrafo separato per ogni libro). NON inventare fatti specifici, date, personaggi o eventi non presenti negli estratti: se un dato è minimo (una semplice menzione in un elenco, una data, un nome), intrecialo comunque nel racconto invece di scartarlo, così anche le informazioni piccole contribuiscono al quadro complessivo.
+8. Scrivi interamente in italiano: nessuna parola straniera. Termina il pezzo con una frase COMPLETA, mai troncata a metà.
+9. Usa ** per il grassetto su nomi propri, date e titoli di opere importanti.
+10. Se nel materiale è presente una sezione "APPROFONDIMENTI WIKIPEDIA": NON trattarla come un blocco separato da riassumere a parte, e NON limitarti a un breve accenno. Sfrutta OGNI dettaglio tecnico, storico, artistico, aneddotico o curioso presente nell'estratto (date precise, misure, nomi di autori/architetti/registi, stile architettonico, materiali, eventi collegati, curiosità), intrecciandolo nel racconto nel punto in cui parli di quell'entità (es. quando nomini una chiesa citata in un libro, descrivila con tutti i dettagli trovati su Wikipedia: epoca di costruzione, elementi architettonici, opere conservate, restauri, aneddoti). Se per la stessa entità sono forniti estratti da più voci Wikipedia diverse, fondili in un'unica descrizione ricca e coerente. Non citare la fonte ad ogni frase (vedi punto 4). Non perdere nessun dettaglio rilevante presente nel materiale fornito, né dai libri né da Wikipedia: più informazioni concrete e specifiche riesci a includere, meglio è.
+11. Se il materiale di questo pezzo riporta un numero o una data DIVERSA da quanto già scritto nei pezzi precedenti (vedi "FRASI CON NUMERI/DATE GIÀ SCRITTE" sopra) per lo STESSO identico fatto/evento (es. lo stesso decreto, la stessa fondazione), NON sceglierne una a caso presentandola come certa nel racconto: scrivi nel testo una breve nota che segnala la divergenza (es. "le fonti divergono lievemente sulla data esatta, indicata variamente al... o al...").
+12. Se al punto 11 hai davvero rilevato una discrepanza, aggiungi ANCHE, su una riga a parte SUBITO DOPO la fine del racconto (mai in mezzo al testo), un marcatore in questo formato esatto: [[DISCREPANZA: descrizione breve del fatto e dei due valori discordanti]]. Usa questo marcatore SOLO se hai rilevato una vera discrepanza numerica/di data rispetto all'elenco fornito sopra; se non ce ne sono, non scrivere alcun marcatore.
+
+RISPOSTA (solo il testo del pezzo ${pieceIdx + 1} di ${totalPieces}):
+`;
+            }
+
+            // ---- Salvataggio / ripresa sessione (sessionStorage) ----
+            function saveGenerationSession() {
+                try {
+                    sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+                        query: state.currentQuery,
+                        placeName: state.placeName,
+                        placeProvince: state.placeProvince,
+                        pieces: state.pieces,
+                        totalPieces: state.totalPieces,
+                        stats: state.stats,
+                        mentionedTerms: state.mentionedTerms || [],
+                        usedBookSources: state.usedBookSources || [],
+                        wikiSourcesUsed: state.wikiSourcesUsed || [],
+                        factSnippets: state.factSnippets || [],
+                        discrepanciesFound: state.discrepanciesFound || [],
+                        timestamp: Date.now()
+                    }));
+                } catch (e) {}
+            }
+
+            function loadGenerationSession() {
+                try {
+                    const raw = sessionStorage.getItem(SESSION_KEY);
+                    if (!raw) return null;
+                    return JSON.parse(raw);
+                } catch (e) { return null; }
+            }
+
+            function clearGenerationSession() {
+                try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+            }
+
+            function discardGeneration(opts) {
+                opts = opts || {};
+                state.genId++;
+                state.genCancelled = true;
+                state.genRunning = false;
+                state.pieces = [];
+                state.totalPieces = 0;
+                state.genLogs = [];
+                state.stats = { booksScanned: 0, booksWithMatches: 0, totalExcerptsFound: 0, piecesGenerated: 0, currentPiece: 0 };
+                state.dailyExhaustedModels = new Set(); // nuova generazione: nessun modello è ancora noto come esaurito
+                state.mentionedTerms = []; // nuova generazione: nessun nome/dato ancora citato
+                state.usedBookSources = []; // nuova generazione: bibliografia finale azzerata
+                state.wikiSourcesUsed = []; // nuova generazione: voci Wikipedia consultate azzerate
+                state.factSnippets = []; // nuova generazione: nessun fatto numerico ancora registrato
+                state.discrepanciesFound = []; // nuova generazione: nessuna discrepanza ancora rilevata
+                state.workingEntityModel = null; // nuova generazione: si riparte dalla cima della catena entità
+                clearGenerationSession();
+                renderGenerationPanel();
+                if (!opts.keepResult) {
+                    geminiResult.classList.remove('active');
+                    geminiContent.textContent = '';
+                    state.geminiResponse = '';
+                }
+            }
+
+            function logLine(msg, type) {
+                type = type || 'info';
+                state.genLogs.push({ msg, type, time: new Date().toLocaleTimeString('it-IT') });
+                if (state.genLogs.length > 300) state.genLogs.shift();
+                renderGenerationPanel();
+            }
+
+            function renderGenerationPanel() {
+                if (!state.pieces || state.pieces.length === 0) {
+                    generationPanelArea.innerHTML = '';
+                    return;
+                }
+
+                const doneCount = state.pieces.filter(p => p.status === 'completato').length;
+                const total = state.pieces.length;
+                const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+
+                let excerptProgress = 0;
+                if (state.stats.totalExcerptsFound > 0) {
+                    const doneExcerpts = state.pieces
+                        .filter(p => p.status === 'completato')
+                        .reduce((acc, p) => acc + (p.excerptCount || 0), 0);
+                    excerptProgress = Math.round((doneExcerpts / state.stats.totalExcerptsFound) * 100);
+                }
+
+                const hasPending = state.pieces.some(p => p.status !== 'completato');
+
+                let html = `<div class="generation-panel">
+                    <div class="progress-header">
+                        <strong>📖 Minilibro: ${doneCount} di ${total} pezzi generati</strong>
+                        <span style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                            <span style="font-size:0.8rem;color:var(--text2);">${pct}% pezzi • ${excerptProgress}% estratti</span>
+                            ${state.genRunning ? `<button class="btn btn-danger btn-sm" id="btnStopGen">⏹ Stop</button>` : ''}
+                            ${!state.genRunning && hasPending ? `<button class="btn btn-primary btn-sm" id="btnResumeGen">▶️ Riprendi</button>` : ''}
+                            <button class="btn btn-sm" id="btnDeleteGen">🗑️ Cancella generazione</button>
+                        </span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width:${pct}%"></div>
+                    </div>
+                    <div class="gen-stats">
+                        🧠 Modello in uso: <strong>${escapeHtml(state.activeModel || state.geminiModel || '')}</strong>
+                        • 🔍 ${state.stats.booksScanned} libri scansionati • ${state.stats.booksWithMatches} con corrispondenze • ${state.stats.totalExcerptsFound} estratti trovati
+                        ${state.genRunning ? ` • Pezzo corrente: ${state.stats.currentPiece + 1}/${total} <span id="pieceElapsedTimer"></span>` : ''}
+                    </div>
+                    <ul class="gen-log" id="genLogList">`;
+
+                for (const l of state.genLogs) {
+                    html += `<li class="log-entry log-${l.type}"><span class="log-time">${l.time}</span><span>${escapeHtml(l.msg)}</span></li>`;
+                }
+
+                html += `</ul></div>`;
+                generationPanelArea.innerHTML = html;
+
+                const logList = document.getElementById('genLogList');
+                if (logList) logList.scrollTop = logList.scrollHeight;
+
+                const btnStop = document.getElementById('btnStopGen');
+                if (btnStop) {
+                    btnStop.addEventListener('click', function() {
+                        state.genCancelled = true;
+                        // Aborta subito anche una richiesta di rete già in corso: senza questo,
+                        // "Riprendi" restava disabilitato finché la richiesta appesa non finiva da sola.
+                        if (state.activeAbortController) {
+                            state.activeAbortController.abort('user-stop');
+                        }
+                        logLine('⏹ Generazione interrotta dall\'utente. I pezzi già generati restano disponibili: puoi scaricarli o premere "Riprendi".', 'warn');
+                    });
+                }
+                const btnResume = document.getElementById('btnResumeGen');
+                if (btnResume) {
+                    btnResume.addEventListener('click', function() {
+                        resumeGeneration();
+                    });
+                }
+                const btnDelete = document.getElementById('btnDeleteGen');
+                if (btnDelete) {
+                    btnDelete.addEventListener('click', function() {
+                        discardGeneration();
+                        clearStatus();
+                        statusMsg('🗑️ Generazione eliminata. Puoi impostare le opzioni desiderate e premere di nuovo "Genera Minilibro".', 'info');
+                        btnAnalyze.disabled = state.books.length === 0;
+                        setTimeout(() => clearStatus(), 4000);
+                    });
+                }
+            }
+
+            // ---- Costruisce il capitolo finale "Fonti", generato dal codice (non da Gemini) ----
+            // Elenca tutti i libri con corrispondenze reali e le pagine Wikipedia consultate, invece
+            // di lasciare che la prosa venga interrotta da una citazione ad ogni frase.
+            function buildSourcesChapter() {
+                const books = state.usedBookSources || [];
+                const wikiPages = state.wikiSourcesUsed || [];
+                const discrepancies = state.discrepanciesFound || [];
+
+                if (books.length === 0 && wikiPages.length === 0 && discrepancies.length === 0) return '';
+
+                let out = '\n\n---\n\n# Fonti consultate\n\n';
+
+                if (books.length > 0) {
+                    out += 'Libri e pubblicazioni:\n\n';
+                    for (const b of books) {
+                        out += `* ${b.title}`;
+                        if (b.author && b.author !== 'Autore sconosciuto') out += `, ${b.author}`;
+                        if (b.source) out += ` (${b.source})`;
+                        out += '\n';
+                    }
+                    out += '\n';
+                }
+
+                if (wikiPages.length > 0) {
+                    out += 'Voci Wikipedia consultate per approfondimenti:\n\n';
+                    for (const w of wikiPages) {
+                        out += `* ${w.title}\n`;
+                    }
+                    out += '\n';
+                }
+
+                // Discrepanze tra fonti rilevate durante la generazione (es. lo stesso decreto con
+                // numero o data diversi in due fonti): elencate qui, a fine libro, invece di restare
+                // disperse nel racconto o passare inosservate.
+                if (discrepancies.length > 0) {
+                    out += '⚠️ Discrepanze rilevate tra le fonti:\n\n';
+                    for (const d of discrepancies) {
+                        out += `* ${d}\n`;
+                    }
+                }
+
+                return out;
+            }
+
+            function renderAccumulatedResult() {
+                const donePieces = state.pieces.filter(p => p.text);
+                if (donePieces.length === 0) return;
+
+                const combined = donePieces.map(p => p.text).join('\n\n---\n\n') + buildSourcesChapter();
+                geminiContent.textContent = combined;
+                state.geminiResponse = combined;
+                geminiResult.classList.add('active');
+            }
+
+            // Estrae dal testo di un pezzo le frasi che contengono numeri/date rilevanti (decreti, anni,
+            // cifre), da passare ai pezzi successivi così possono accorgersi se un fatto già scritto
+            // viene ripetuto altrove con un numero diverso, invece di inventarne silenziosamente una terza versione.
+            function extractFactSnippets(text) {
+                const sentences = text.split(/(?<=[.!?])\s+/);
+                const facts = [];
+                for (const s of sentences) {
+                    const clean = s.trim();
+                    if (clean.length > 15 && clean.length < 220 && /\d{3,4}/.test(clean)) {
+                        facts.push(clean);
+                    }
+                }
+                return facts;
+            }
+
+            function applyPieceSuccess(i, rawText) {
+                const { text: clean, discrepancies } = sanitizePieceText(rawText, state.placeName, state.placeProvince);
+                const titleMatch = clean.match(/^#\s*(.+)$/m);
+                state.pieces[i].title = titleMatch ? titleMatch[1].trim() : `Sezione ${i + 1}`;
+                state.pieces[i].text = clean;
+                state.pieces[i].status = 'completato';
+                delete state.pieces[i].error;
+                state.stats.piecesGenerated++;
+
+                // Discrepanze tra fonti segnalate da Gemini per questo pezzo: verranno elencate a fine
+                // libro insieme alle fonti, invece di restare disperse nel racconto o passare inosservate.
+                if (discrepancies.length > 0) {
+                    if (!state.discrepanciesFound) state.discrepanciesFound = [];
+                    for (const d of discrepancies) {
+                        if (!state.discrepanciesFound.includes(d)) state.discrepanciesFound.push(d);
+                    }
+                    logLine(`⚠️ Pezzo ${i + 1}: rilevata una discrepanza tra fonti su un dato numerico/data (verrà segnalata a fine libro).`, 'warn');
+                }
+
+                // Tracciamento delle fonti bibliografiche/enciclopediche effettivamente usate in questo
+                // pezzo, per costruire l'elenco finale "Fonti" a fine libro (generato dal codice, non
+                // da Gemini, per essere sempre accurato e non intasare la prosa di citazioni ripetute).
+                if (!state.usedBookSources) state.usedBookSources = [];
+                for (const bl of (state.pieces[i].bookBlocks || [])) {
+                    if (!bl.hasMatch) continue;
+                    const key = (bl.title || '') + '|' + (bl.source || '');
+                    if (!state.usedBookSources.some(s => s.key === key)) {
+                        state.usedBookSources.push({
+                            key, title: bl.title, author: bl.author, source: bl.source, link: bl.link
+                        });
+                    }
+                }
+
+                // Wikipedia: aggiunge alla bibliografia SOLO le voci il cui contenuto risulta davvero
+                // usato nel testo, scartando gli agganci sbagliati che Gemini ha correttamente
+                // ignorato (es. un omonimo non pertinente). Il controllo precedente si basava solo
+                // sulla PRIMA parola di entità/titolo: parole comuni come "Comunità" comparivano
+                // ovunque nel testo generando falsi positivi (es. "Comunità montana della Maiella e
+                // del Morrone", in Abruzzo, segnalata come "usata" solo perché conteneva "Comunità").
+                // Ora si richiede che almeno metà delle parole distintive (non articoli/preposizioni)
+                // di entità+titolo compaiano davvero nel testo.
+                if (!state.wikiSourcesUsed) state.wikiSourcesUsed = [];
+                for (const f of (state.pieces[i].wikiFindings || [])) {
+                    const sigWords = [...new Set([...significantWords(f.entity), ...significantWords(f.title)])];
+                    const matchedCount = sigWords.filter(w => containsCapitalizedWord(clean, w)).length;
+                    const looksUsed = sigWords.length > 0 && (matchedCount / sigWords.length) >= 0.5;
+                    if (looksUsed && !state.wikiSourcesUsed.some(w => w.title === f.title)) {
+                        state.wikiSourcesUsed.push({ title: f.title, url: f.url });
+                    }
+                }
+
+                // Raccoglie i nomi propri/date già citati (i termini in **grassetto**), da passare ai
+                // pezzi successivi insieme ai titoli: riduce le piccole ripetizioni tra capitoli non
+                // consecutivi (es. la stessa persona citata identica in due pezzi diversi).
+                if (!state.mentionedTerms) state.mentionedTerms = [];
+                const boldMatches = clean.match(/\*\*([^*]+)\*\*/g) || [];
+                for (const m of boldMatches) {
+                    const term = m.replace(/\*\*/g, '').trim();
+                    if (term && !state.mentionedTerms.includes(term)) {
+                        state.mentionedTerms.push(term);
+                    }
+                }
+
+                // Raccoglie le frasi con numeri/date già scritte, da passare ai pezzi successivi così
+                // possono accorgersi di eventuali discrepanze invece di inventare una terza versione.
+                if (!state.factSnippets) state.factSnippets = [];
+                for (const f of extractFactSnippets(clean)) {
+                    if (!state.factSnippets.includes(f)) state.factSnippets.push(f);
+                }
+                if (state.factSnippets.length > 120) {
+                    state.factSnippets = state.factSnippets.slice(-120); // tetto di sicurezza sulla dimensione
+                }
+
+                saveGenerationSession();
+                renderGenerationPanel();
+                renderAccumulatedResult();
+            }
+
+            async function countdownWait(seconds, pieceIdx) {
+                let remaining = Math.min(Math.max(1, Math.round(seconds)), 30);
+                const stepPct = state.pieces && state.pieces.length ?
+                    Math.round((pieceIdx / state.pieces.length) * 100) : 0;
+                logLine(`⏳ [${stepPct}%] Attesa ${remaining}s prima del retry del pezzo ${pieceIdx + 1}...`, 'wait');
+                for (let s = remaining; s > 0; s--) {
+                    if (state.genCancelled) return;
+                    await sleep(1000);
+                }
+            }
+
+            // =========================================================
+            // ELABORAZIONE DI UN SINGOLO PEZZO (con retry robusto)
+            // =========================================================
+            // ---- Sceglie il modello migliore disponibile a inizio pezzo ----
+            // Un downgrade per errori 503 (server temporaneamente sovraccarico) è transitorio e
+            // NON deve restare permanente per tutta la generazione: ad ogni nuovo pezzo si riparte
+            // dal modello più in alto della catena, saltando solo quelli con quota GIORNALIERA
+            // realmente esaurita in questa sessione (quella sì non si libera da sola in pochi minuti).
+            function resetToBestAvailableModel() {
+                if (!state.modelChain || state.modelChain.length === 0) return;
+                if (!state.dailyExhaustedModels) state.dailyExhaustedModels = new Set();
+
+                const best = state.modelChain.find(m => !state.dailyExhaustedModels.has(m));
+                const chosen = best || state.modelChain[state.modelChain.length - 1];
+
+                if (chosen !== state.activeModel) {
+                    logLine(`🔝 Nuovo pezzo: riparto dal modello migliore disponibile (${chosen}) invece di restare sul downgrade del pezzo precedente.`, 'info');
+                }
+                state.activeModel = chosen;
+            }
+
+            // ---- Estrazione entità con Gemma (quota separata da Gemini, non tocca la catena di scrittura) ----
+            // Legge il materiale grezzo di un pezzo e individua chiese, castelli, ville, battaglie,
+            // eventi datati e personaggi citati per nome, così da poterli approfondire su Wikipedia
+            // PRIMA di scrivere il capitolo. Se fallisce per qualsiasi motivo, ritorna [] senza mai
+            // bloccare la generazione: è un arricchimento opzionale, non un passaggio critico.
+            // Catena di modelli "leggeri" per l'estrazione entità, provati in ordine finché uno risponde.
+            // Il primo che funziona per il tuo account viene ricordato (state.workingEntityModel), così
+            // dalla seconda volta si va dritti su quello invece di riprovare ogni volta tutta la catena.
+            // "gemma-4-31b-it" è stato rimosso: nei test falliva sempre (probabile blocco di rete/CORS
+            // specifico per quel modello), mentre "gemma-4-26b-a4b-it" funziona regolarmente.
+            const ENTITY_MODEL_CHAIN = ['gemma-4-26b-a4b-it', 'gemini-3.1-flash-lite'];
+
+            async function callModelForEntities(model, prompt) {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort('timeout'), 20000);
+
+                try {
+                    const resp = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': state.geminiKey },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }],
+                            generationConfig: { temperature: 0.1, maxOutputTokens: 800 }
+                        }),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+
+                    if (!resp.ok) {
+                        const errText = await resp.text().catch(() => '');
+                        return { ok: false, reason: `HTTP ${resp.status} - ${errText.slice(0, 150)}` };
+                    }
+
+                    const data = await resp.json();
+                    let raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                    if (!raw) return { ok: false, reason: 'risposta vuota (nessun candidate)' };
+
+                    // Alcuni modelli (Gemma 4) includono il ragionamento dentro <thought>...</thought>:
+                    // va rimosso prima di cercare l'array JSON, altrimenti l'estrazione fallisce.
+                    raw = raw.replace(/<thought>[\s\S]*?<\/thought>/gi, '');
+                    const jsonMatch = raw.match(/\[[\s\S]*\]/);
+                    if (!jsonMatch) return { ok: false, reason: 'nessun array JSON trovato nella risposta' };
+
+                    let arr;
+                    try {
+                        arr = JSON.parse(jsonMatch[0]);
+                    } catch (parseErr) {
+                        return { ok: false, reason: 'JSON non valido: ' + parseErr.message };
+                    }
+                    if (!Array.isArray(arr)) return { ok: false, reason: 'la risposta non è un array' };
+
+                    return { ok: true, entities: arr.filter(x => typeof x === 'string' && x.trim().length > 2).slice(0, 8) };
+                } catch (e) {
+                    clearTimeout(timeoutId);
+                    const detail = (e && (e.message || e.name)) ? (e.name ? e.name + ': ' + (e.message || '') : e.message) : 'errore sconosciuto (probabile blocco di rete/CORS)';
+                    return { ok: false, reason: detail };
+                }
+            }
+
+            async function callGemmaExtractEntities(placeName, rawBooksText) {
+                if (!state.geminiKey) return [];
+
+                const prompt = `Leggi il seguente materiale storico su "${placeName}" e individua OGNI nome proprio specifico e ricercabile su Wikipedia, di qualunque categoria, ad esempio: chiese, cappelle votive, castelli, corti rurali, ville, monumenti, siti archeologici, scavi e ritrovamenti, montagne, laghi o corsi d'acqua con nome proprio, opere e lavori pubblici, campagne o contrade con nome proprio, battaglie o eventi storici datati, personaggi storici o sportivi citati per nome e cognome, associazioni o istituzioni con nome proprio. Sii ESAUSTIVO: elenca tutto ciò che potrebbe avere una voce Wikipedia dedicata, anche se sembra un dettaglio minore. NON includere il nome del luogo stesso "${placeName}". Rispondi ESCLUSIVAMENTE con un array JSON di stringhe, senza commenti né backtick né tag di ragionamento né altro testo. Se non trovi nulla di specifico, rispondi con [].
+
+TESTO:
+${rawBooksText.slice(0, 8000)}`;
+
+                // Se un modello ha già funzionato in questa sessione, si prova prima quello.
+                const chain = state.workingEntityModel ?
+                    [state.workingEntityModel, ...ENTITY_MODEL_CHAIN.filter(m => m !== state.workingEntityModel)] :
+                    ENTITY_MODEL_CHAIN;
+
+                for (const model of chain) {
+                    const result = await callModelForEntities(model, prompt);
+                    if (result.ok) {
+                        if (state.workingEntityModel !== model) {
+                            state.workingEntityModel = model;
+                            logLine(`✅ Modello "${model}" funzionante per l'arricchimento entità: verrà usato per i prossimi pezzi.`, 'success');
+                        }
+                        return result.entities;
+                    }
+                    logLine(`⚠️ Modello "${model}" non disponibile per l'arricchimento (${result.reason}): provo il successivo.`, 'warn');
+                }
+
+                logLine(`⚠️ Nessun modello della catena di arricchimento ha risposto: si prosegue senza per questo pezzo.`, 'warn');
+                return [];
+            }
+
+            // ---- Cerca su Wikipedia un approfondimento per ogni entità individuata da Gemma ----
+            // Prova prima "entità + nome del luogo" per disambiguare (stesso principio anti-omonimi
+            // già usato per il luogo stesso), poi ripiega sulla sola entità se non trova nulla.
+            // Per ogni entità prende le prime pagine pertinenti trovate (non solo la prima in assoluto),
+            // così se l'argomento è trattato su più voci Wikipedia diverse i dettagli si sommano invece
+            // di fermarsi al primo risultato. Gli estratti sono ampi (non più tagliati a poche righe),
+            // con un tetto complessivo di sicurezza per non far esplodere il budget di token del pezzo.
+            async function enrichPieceWithWikipedia(placeName, entities) {
+                const findings = [];
+                const seenTitles = new Set();
+                const MAX_EXTRACT_CHARS = 8000;    // per singola voce: sufficiente per quasi tutte le voci Wikipedia
+                const MAX_TOTAL_WIKI_CHARS = 35000; // tetto complessivo per tutte le entità di un pezzo (~9000 token, ampio margine sul budget di 60000 token/pezzo)
+                let totalChars = 0;
+
+                for (const entity of entities) {
+                    if (totalChars >= MAX_TOTAL_WIKI_CHARS) break;
+
+                    try {
+                        // Cerca prima in italiano, poi in inglese se non trova nulla: copre molto
+                        // meglio le entità legate a luoghi non italiani (persone, monumenti, eventi).
+                        let results = await searchWikipediaLang(`${entity} ${placeName}`, 'it');
+                        if (results.length === 0) results = await searchWikipediaLang(entity, 'it');
+                        if (results.length === 0) results = await searchWikipediaLang(`${entity} ${placeName}`, 'en');
+                        if (results.length === 0) results = await searchWikipediaLang(entity, 'en');
+                        if (results.length === 0) continue;
+
+                        // Prende fino a 2 pagine pertinenti per entità, non solo la prima: un argomento
+                        // può essere trattato sia in una voce dedicata sia menzionato con dettagli
+                        // aggiuntivi in un'altra pagina correlata.
+                        const candidates = results.slice(0, 2);
+
+                        for (const cand of candidates) {
+                            if (totalChars >= MAX_TOTAL_WIKI_CHARS) break;
+                            if (seenTitles.has(cand.title)) continue; // stessa pagina già presa per un'altra entità
+
+                            const extract = await fetchWikipediaExtractLang(cand.identifier, cand.wikiLang || 'it');
+                            if (!extract || extract.trim().length < 150) continue; // pagina troppo breve/stub: si scarta
+
+                            seenTitles.add(cand.title);
+                            const trimmed = extract.slice(0, MAX_EXTRACT_CHARS);
+                            totalChars += trimmed.length;
+
+                            findings.push({
+                                entity: entity,
+                                title: cand.title,
+                                extract: trimmed,
+                                url: cand.link
+                            });
+                        }
+                    } catch (e) { /* entità non trovata su Wikipedia, si passa alla successiva */ }
+                }
+                return findings;
+            }
+
+            async function processPiece(i, myGenId) {
+                const piece = state.pieces[i];
+                state.stats.currentPiece = i;
+                resetToBestAvailableModel();
+
+                // ---- Arricchimento Wikipedia via Gemma (opzionale, quota separata) ----
+                let wikiFindings = [];
+                if (state.useWikiEnrich && state.geminiKey) {
+                    const rawText = piece.bookBlocks
+                        .map(bl => bl.header + bl.noteLine + bl.excerptList.join('\n\n---\n\n')).join('');
+                    const entities = await callGemmaExtractEntities(state.placeName, rawText);
+                    if (entities.length > 0) {
+                        logLine(`🧭 Entità individuate da Gemma per il pezzo ${i + 1}: ${entities.join(', ')}. Ricerca su Wikipedia...`, 'info');
+                        wikiFindings = await enrichPieceWithWikipedia(state.placeName, entities);
+                        if (wikiFindings.length > 0) {
+                            logLine(`✅ Trovati ${wikiFindings.length} approfondimenti Wikipedia per il pezzo ${i + 1} (verranno citati in bibliografia solo se Gemini li userà davvero nel testo).`, 'success');
+                        }
+                    }
+                }
+                // Il tracciamento in bibliografia avviene DOPO la scrittura del pezzo (in applyPieceSuccess),
+                // verificando che l'entità sia stata realmente usata nel racconto: una ricerca Wikipedia
+                // può agganciare per errore un omonimo non pertinente (es. una persona con lo stesso
+                // cognome), che Gemini scarta giustamente ma che non deve comunque finire in bibliografia.
+                piece.wikiFindings = wikiFindings;
+
+                const safePiece = trimPieceIfNeeded(piece, 60000);
+                let booksTextForPiece = safePiece.bookBlocks
+                    .map(bl => bl.header + bl.noteLine + bl.excerptList.join('\n\n---\n\n')).join('');
+
+                if (wikiFindings.length > 0) {
+                    booksTextForPiece += '\n\n--- APPROFONDIMENTI WIKIPEDIA (trovati automaticamente per le entità citate nei libri, da fondere col resto senza perdere nessun dettaglio) ---\n' +
+                        wikiFindings.map(f =>
+                            `\n[${f.entity}] Fonte: Wikipedia - "${f.title}" (${f.url})\n${f.extract}`
+                        ).join('\n');
+                }
+
+                const previousTitles = state.pieces.slice(0, i)
+                    .filter(p => p.title)
+                    .map((p, idx) => `- ${p.title}`)
+                    .join('\n');
+                // Termini già citati (nomi propri, date, opere) nei pezzi precedenti: cap a 80 per non
+                // gonfiare il prompt, tenendo i più recenti che sono i più rilevanti per la coerenza.
+                const previousTerms = (state.mentionedTerms || []).slice(-80).join(', ');
+                // Frasi con numeri/date già scritte nei pezzi precedenti (per pieno testo, non solo nomi):
+                // servono a far notare a Gemini eventuali discrepanze invece di inventarne una terza versione.
+                const previousFacts = (state.factSnippets || []).slice(-40).join('\n').slice(0, 6000);
+                const prompt = buildPiecePrompt(state.currentQuery, booksTextForPiece, previousTitles, previousTerms, previousFacts, i, state.pieces.length);
+
+                const MAX_BACKOFF = 30;
+                const BASE_BACKOFF = 5;
+                const MAX_ATTEMPTS = 20;
+
+                let backoff = BASE_BACKOFF;
+                let attempts = 0;
+                let serverErrStreak = 0;
+
+                while (!state.genCancelled && state.genId === myGenId && piece.status !== 'completato') {
+                    attempts++;
+                    if (attempts > MAX_ATTEMPTS) {
+                        piece.status = 'errore (troppi tentativi)';
+                        piece.error = 'Oltre 20 tentativi falliti.';
+                        saveGenerationSession();
+                        renderGenerationPanel();
+                        logLine(`❌ Pezzo ${i + 1}: troppi tentativi falliti, passo al successivo.`, 'error');
+                        break;
+                    }
+
+                    try {
+                        // Percentuale del singolo passo (oltre a quella generale in alto), così si vede
+                        // sempre un avanzamento anche mentre si attende la risposta di un pezzo lungo.
+                        const stepPctStart = Math.round((i / state.pieces.length) * 100);
+                        logLine(`🤖 [${stepPctStart}%] Generazione pezzo ${i + 1}/${state.pieces.length} (${piece.bookTitles.length} libro/i, ${piece.excerptCount} estratti) [${state.activeModel || state.geminiModel}]...`, 'info');
+
+                        // Timer "in corso da Ns": aggiorna un piccolo span in-place ogni secondo,
+                        // senza ridisegnare tutto il pannello, così si vede che l'app sta ancora
+                        // lavorando anche durante un'attesa lunga della risposta di Gemini.
+                        const pieceStartTime = Date.now();
+                        const elapsedTimerId = setInterval(() => {
+                            const el = document.getElementById('pieceElapsedTimer');
+                            if (el) {
+                                const secs = Math.floor((Date.now() - pieceStartTime) / 1000);
+                                el.textContent = `⏱️ in corso da ${secs}s`;
+                            }
+                        }, 1000);
+
+                        let text;
+                        try {
+                            const result = await callGemini(prompt);
+                            text = result.text;
+                        } finally {
+                            clearInterval(elapsedTimerId);
+                            const el = document.getElementById('pieceElapsedTimer');
+                            if (el) el.textContent = '';
+                        }
+
+                        if (state.genId !== myGenId) return;
+                        applyPieceSuccess(i, text);
+                        const stepPctDone = Math.round(((i + 1) / state.pieces.length) * 100);
+                        logLine(`✅ [${stepPctDone}%] Pezzo ${i + 1} completato: "${state.pieces[i].title}"`, 'success');
+
+                        if (i < state.pieces.length - 1 && !state.genCancelled && state.genId === myGenId) {
+                            await sleep(2000);
+                        }
+                    } catch (e) {
+                        if (state.genId !== myGenId) return;
+
+                        // ---- STOP UTENTE: uscita immediata e pulita, nessun retry/countdown inutile ----
+                        if (e.userCancelled) {
+                            logLine(`⏹ Pezzo ${i + 1} interrotto dall'utente durante la richiesta in corso.`, 'warn');
+                            break;
+                        }
+
+                        // ---- TIMEOUT (nessuna risposta entro il limite): log dedicato, poi retry come errore transitorio ----
+                        if (e.isTimeout) {
+                            serverErrStreak++;
+                            logLine(`⏱️ Nessuna risposta da Gemini per il pezzo ${i + 1} entro ${REQUEST_TIMEOUT_MS / 1000}s: richiesta interrotta, riprovo.`, 'warn');
+                            await countdownWait(Math.min(5 + serverErrStreak * 3, MAX_BACKOFF), i);
+                            continue;
+                        }
+
+                        // ---- QUOTA GIORNALIERA: passa al modello successivo della catena ----
+                        if (e.status === 429 && e.isDailyQuota) {
+                            if (!state.dailyExhaustedModels) state.dailyExhaustedModels = new Set();
+                            state.dailyExhaustedModels.add(state.activeModel); // quota reale esaurita: da evitare anche nei prossimi pezzi
+
+                            const nextModel = nextFallbackModel();
+                            if (nextModel) {
+                                const previousModel = state.activeModel;
+                                state.activeModel = nextModel;
+                                serverErrStreak = 0;
+                                logLine(`⚠️ Quota giornaliera esaurita per ${previousModel}${e.quotaHint ? ' (' + e.quotaHint + ')' : ''}: passo automaticamente a ${nextModel} (quota giornaliera più alta) e riprovo lo stesso pezzo.`, 'warn');
+                                attempts--; // il cambio di modello non conta come tentativo fallito
+                                continue;
+                            }
+                            const resetMsg = e.resetTime ? ` (reset previsto per ${e.resetTime})` : '';
+                            piece.status = '🚫 QUOTA GIORNALIERA ESAURITA (tutti i modelli)';
+                            piece.error = `Le quote giornaliere di tutti i modelli della catena sono terminate${resetMsg}. Attendi il reset o inserisci una nuova API Key.`;
+                            saveGenerationSession();
+                            renderGenerationPanel();
+                            logLine(`🚫 Quota giornaliera esaurita su TUTTI i modelli della catena${resetMsg}. Pezzo ${i + 1} rimandato: verrà ritentato nel passaggio di recupero o con "Riprendi".`, 'error');
+                            break; // esce dal while, il pezzo resta da completare
+                        }
+
+                        // ---- QUOTA MINUTO: attesa breve (max 30s) e retry ----
+                        if (e.status === 429) {
+                            serverErrStreak = 0;
+                            let waitS = e.retryDelaySeconds || backoff;
+                            if (waitS > MAX_BACKOFF) {
+                                logLine(`ℹ️ Gemini chiedeva ${waitS}s di attesa: limitato a ${MAX_BACKOFF}s.`, 'warn');
+                                waitS = MAX_BACKOFF;
+                            }
+                            await countdownWait(waitS, i);
+                            backoff = Math.min(Math.round(backoff * 1.3), MAX_BACKOFF);
+                            continue;
+                        }
+
+                        // ---- ERRORI TEMPORANEI DEL SERVER (5xx, 503, rete): RETRY, NON ABBANDONO ----
+                        if (e.status >= 500 || !e.status) {
+                            serverErrStreak++;
+                            logLine(`⚠️ Errore temporaneo del server (${e.status || 'rete'}) sul pezzo ${i + 1} [${state.activeModel}] (tentativo ${serverErrStreak}): lo riprovo tra qualche secondo.`, 'warn');
+
+                            // Se lo stesso modello fallisce 2 volte di fila, proviamo il modello successivo
+                            // (prima erano 3 tentativi: si perdeva troppo tempo su un modello che non risponde mai)
+                            if (serverErrStreak >= 2) {
+                                const nextModel = nextFallbackModel();
+                                if (nextModel) {
+                                    const previousModel = state.activeModel;
+                                    state.activeModel = nextModel;
+                                    serverErrStreak = 0;
+                                    logLine(`🪜 ${previousModel} continua a dare errori server: passo a ${nextModel} e riprovo.`, 'warn');
+                                    continue;
+                                }
+                            }
+
+                            await countdownWait(Math.min(5 + serverErrStreak * 3, MAX_BACKOFF), i);
+                            continue;
+                        }
+
+                        // ---- ALTRI ERRORI (400 ecc.): segna il pezzo come errore e prosegui ----
+                        piece.status = 'errore';
+                        piece.error = e.message;
+                        saveGenerationSession();
+                        renderGenerationPanel();
+                        logLine(`❌ Errore pezzo ${i + 1}: ${e.message} (verrà ritentato nel passaggio di recupero)`, 'error');
+                        break;
+                    }
+                }
+            }
+
+            // ---- Coda di generazione dei pezzi, con SECONDO PASSAGGIO DI RECUPERO ----
+            async function runPieceQueue(startIndex, myGenId) {
+                state.genRunning = true;
+                state.genCancelled = false;
+                renderGenerationPanel();
+
+                // --- PRIMO PASSAGGIO: tutti i pezzi in ordine ---
+                for (let i = (startIndex || 0); i < state.pieces.length; i++) {
+                    if (state.genCancelled || state.genId !== myGenId) break;
+                    const piece = state.pieces[i];
+                    if (piece.status === 'completato') continue;
+                    await processPiece(i, myGenId);
+                }
+
+                if (state.genId !== myGenId) return;
+
+                // --- SECONDO PASSAGGIO: recupero dei pezzi falliti ---
+                const failedIdx = state.pieces
+                    .filter(p => p.status !== 'completato')
+                    .map(p => p.index);
+
+                if (failedIdx.length > 0 && !state.genCancelled && state.genId === myGenId) {
+                    logLine(`🔄 Passaggio di recupero: ritento ${failedIdx.length} pezzo/i fallito/i (errore 1: ${failedIdx.map(x => x + 1).join(', ')})...`, 'info');
+                    for (const idx of failedIdx) {
+                        if (state.genCancelled || state.genId !== myGenId) break;
+                        if (state.pieces[idx].status === 'completato') continue;
+                        await processPiece(idx, myGenId);
+                    }
+                }
+
+                if (state.genId !== myGenId) return;
+
+                state.genRunning = false;
+                saveGenerationSession();
+                renderGenerationPanel();
+
+                if (!state.genCancelled) {
+                    const allDone = state.pieces.every(p => p.status === 'completato');
+                    if (allDone) {
+                        logLine('🎉 Minilibro completato! Puoi scaricarlo in TXT o PDF.', 'success');
+                        statusMsg('✅ Minilibro completato! Puoi scaricarlo in TXT o PDF.', 'success');
+                        clearGenerationSession();
+                    } else {
+                        statusMsg('⚠️ Alcuni pezzi sono rimasti incompleti anche dopo il recupero. Puoi scaricare quanto generato, oppure premere "Riprendi" (riprenderanno da dove erano rimasti).', 'warn');
+                    }
+                }
+            }
+
+            function resumeGeneration() {
+                const incomplete = state.pieces.findIndex(p => p.status !== 'completato');
+                if (incomplete === -1) {
+                    statusMsg('Tutti i pezzi sono già completati.', 'info');
+                    setTimeout(() => clearStatus(), 2500);
+                    return;
+                }
+                if (!state.geminiKey) {
+                    statusMsg('Inserisci prima la tua API Key di Gemini nella sezione 🔑 API.', 'warn');
+                    apiModal.classList.add('active');
+                    return;
+                }
+                state.modelChain = buildModelChain(state.geminiModel);
+                state.activeModel = state.geminiModel;
+
+                state.genId++;
+                const myGenId = state.genId;
+                logLine('▶️ Ripresa della generazione...', 'info');
+                runPieceQueue(incomplete, myGenId);
+            }
+
+            function checkResumableGeneration() {
+                try { sessionStorage.removeItem('minilibro_queue_v1'); sessionStorage.removeItem('libro_generazione_v3'); sessionStorage.removeItem('libro_generazione_v4'); } catch (e) {}
+
+                const saved = loadGenerationSession();
+                if (!saved || !saved.pieces || saved.pieces.length === 0) return;
+                const doneCount = saved.pieces.filter(p => p.status === 'completato').length;
+                if (doneCount >= saved.pieces.length) { clearGenerationSession(); return; }
+
+                const banner = document.createElement('div');
+                banner.className = 'status-msg warn';
+                banner.innerHTML = `📖 C'è una generazione incompleta per "<strong>${escapeHtml(saved.query)}</strong>" (${doneCount} di ${saved.pieces.length} pezzi già pronti).
+                    <button class="btn btn-sm btn-primary" id="btnResumeGenBanner" style="margin-left:8px;">▶️ Riprendi</button>
+                    <button class="btn btn-sm btn-danger" id="btnDiscardGenBanner" style="margin-left:4px;">🗑️ Elimina</button>`;
+                statusArea.innerHTML = '';
+                statusArea.appendChild(banner);
+
+                document.getElementById('btnResumeGenBanner').addEventListener('click', function() {
+                    state.genId++;
+                    state.pieces = saved.pieces;
+                    state.totalPieces = saved.pieces.length;
+                    state.currentQuery = saved.query;
+                    state.lastQuery = saved.query;
+                    state.placeName = saved.placeName || saved.query;
+                    state.placeProvince = saved.placeProvince || '';
+                    if (saved.stats) state.stats = saved.stats;
+                    state.mentionedTerms = saved.mentionedTerms || [];
+                    state.usedBookSources = saved.usedBookSources || [];
+                    state.wikiSourcesUsed = saved.wikiSourcesUsed || [];
+                    state.factSnippets = saved.factSnippets || [];
+                    state.discrepanciesFound = saved.discrepanciesFound || [];
+                    searchInput.value = saved.query;
+                    clearStatus();
+                    renderAccumulatedResult();
+                    resumeGeneration();
+                });
+                document.getElementById('btnDiscardGenBanner').addEventListener('click', function() {
+                    discardGeneration();
+                    clearStatus();
+                    statusMsg('🗑️ Generazione precedente eliminata. Puoi impostare le opzioni desiderate e cercare di nuovo.', 'info');
+                    setTimeout(() => clearStatus(), 4000);
+                });
+            }
+
+            // =========================================================
+            // 10. RENDERING LIBRI
+            // =========================================================
+            function renderBooks(books) {
+                booksContainer.innerHTML = '';
+                resultsCount.textContent = `📚 Libri trovati (${books.length})`;
+
+                if (books.length === 0) {
+                    resultsSection.classList.remove('active');
+                    btnAnalyze.disabled = true;
+                    return;
+                }
+
+                resultsSection.classList.add('active');
+                btnAnalyze.disabled = false;
+
+                books.forEach(b => {
+                    const card = document.createElement('div');
+                    card.className = 'book-card';
+
+                    const hasPdf = b.pdfUrl || b.hasRealPdf;
+                    const pdfBadge = hasPdf ?
+                        `<span class="badge-pdf">PDF</span>` :
+                        `<span class="badge-no">No PDF</span>`;
+
+                    const fullBadge = b.hasFullText ?
+                        `<span class="badge-source-full">Testo integr.</span>` :
+                        `<span class="badge-source-link">Solo metadati</span>`;
+
+                    const matchBadge = (b.matchCount && b.matchCount > 0) ?
+                        `<span class="badge-match">🎯 ${b.matchCount} citazioni nel testo</span>` : '';
+
+                    let actionsHtml = '';
+                    if (b.identifier) {
+                        actionsHtml += `<button class="btn btn-sm" onclick="downloadTxt('${escapeHtml(b.identifier)}', '${escapeHtml(b.title)}', '${escapeHtml(b.source)}')">TXT</button>`;
+                    }
+                    actionsHtml += `<button class="btn btn-sm" onclick="downloadPdf('${escapeHtml(b.identifier || '')}', '${escapeHtml(b.title)}', '${escapeHtml(b.source)}', '${escapeHtml(b.pdfUrl || '')}')">PDF</button>`;
+
+                    if (b.source === 'Wikisource' && b.identifier) {
+                        actionsHtml += `<button class="btn btn-sm" onclick="printWikisource('${escapeHtml(b.title)}', '${escapeHtml(b.identifier)}')">🖨️ Stampa</button>`;
+                    }
+                    if (b.link) {
+                        actionsHtml += `<a class="btn btn-sm" href="${b.link}" target="_blank">🔗 Apri</a>`;
+                    }
+
+                    let snippetHtml = '';
+                    if (b.text) {
+                        snippetHtml = `<div class="snippet">${escapeHtml(b.text)}</div>`;
+                    } else if (b.fullTextMatches && b.fullTextMatches.length > 0) {
+                        snippetHtml = `<div class="snippet">${escapeHtml(b.fullTextMatches[0])}</div>`;
+                    }
+
+                    // Dicitura onesta: i libri senza testo integrale accessibile (es. Google Books,
+                    // solo anteprima/metadati) non entrano nella generazione del minilibro con Gemini,
+                    // restano solo consultabili manualmente tramite il link.
+                    const manualOnlyNote = !b.hasFullText ?
+                        `<div class="manual-only-note">ℹ️ Solo consultazione manuale: non entra nell'analisi di Gemini (nessun testo integrale accessibile).</div>` : '';
+
+                    card.innerHTML = `
+                        <div class="title">${escapeHtml(b.title)} ${pdfBadge} ${fullBadge} ${matchBadge}</div>
+                        <div class="author">${escapeHtml(b.author)} (${escapeHtml(b.year)})</div>
+                        <div class="meta">Fonte: ${escapeHtml(b.source)}</div>
+                        ${snippetHtml}
+                        ${manualOnlyNote}
+                        <div class="actions">${actionsHtml}</div>
+                    `;
+
+                    booksContainer.appendChild(card);
+                });
+            }
+
+            // =========================================================
+            // 11. RENDERING MARKDOWN -> PDF (titoli, grassetto, separatori)
+            // =========================================================
+            function renderMarkdownToPdf(doc, text, layout) {
+                const { margin, pageWidth, pageHeight, usableWidth } = layout;
+                const baseSize = 11;
+                const lineHeight = 5.8;
+                let y = layout.startY || margin;
+
+                function ensureSpace(neededHeight) {
+                    if (y + neededHeight > pageHeight - margin) {
+                        doc.addPage();
+                        y = margin;
+                    }
+                }
+
+                function writeRichParagraph(rawLine, opts) {
+                    opts = opts || {};
+                    const indent = opts.indent || 0;
+                    const bulletPrefix = opts.bulletPrefix || '';
+                    const startX = margin + indent;
+                    const maxW = usableWidth - indent;
+
+                    const rawTokens = rawLine.split(/(\*\*[^*]+\*\*)/g).filter(t => t.length > 0);
+                    const words = [];
+                    for (const tok of rawTokens) {
+                        const isBold = /^\*\*[^*]+\*\*$/.test(tok);
+                        const clean = isBold ? tok.slice(2, -2) : tok;
+                        const clean2 = clean.replace(/^\*([^*]+)\*$/, '$1');
+                        for (const w of clean2.split(/(\s+)/)) {
+                            if (w.length > 0) words.push({ text: w, bold: isBold });
+                        }
+                    }
+
+                    doc.setFontSize(baseSize);
+                    ensureSpace(lineHeight);
+
+                    let curX = startX;
+                    if (bulletPrefix) {
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(bulletPrefix, margin, y);
+                    }
+
+                    for (const w of words) {
+                        if (/^\s+$/.test(w.text)) {
+                            doc.setFont('helvetica', 'normal');
+                            curX += doc.getTextWidth(' ');
+                            continue;
+                        }
+                        doc.setFont('helvetica', w.bold ? 'bold' : 'normal');
+                        const wWidth = doc.getTextWidth(w.text);
+                        if (curX + wWidth > margin + indent + maxW) {
+                            y += lineHeight;
+                            ensureSpace(lineHeight);
+                            curX = startX;
+                        }
+                        doc.text(w.text, curX, y);
+                        curX += wWidth;
+                    }
+                    y += lineHeight;
+                }
+
+                const lines = text.split('\n');
+
+                for (let raw of lines) {
+                    const line = raw.trim();
+
+                    if (line === '') {
+                        y += lineHeight * 0.5;
+                        continue;
+                    }
+
+                    if (/^-{3,}\s*$/.test(line)) {
+                        y += lineHeight * 0.3;
+                        ensureSpace(lineHeight);
+                        doc.setDrawColor(180, 180, 180);
+                        doc.line(margin, y, pageWidth - margin, y);
+                        y += lineHeight * 0.6;
+                        continue;
+                    }
+
+                    const headerMatch = line.match(/^(#{1,4})\s+(.*)$/);
+                    if (headerMatch) {
+                        const level = headerMatch[1].length;
+                        const content = headerMatch[2].replace(/\*\*/g, '');
+                        const sizeByLevel = { 1: 16, 2: 14, 3: 12.5, 4: 11.5 };
+                        y += lineHeight * 0.5;
+                        ensureSpace(lineHeight * 1.6);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(sizeByLevel[level] || 12);
+                        const wrapped = doc.splitTextToSize(content, usableWidth);
+                        for (const wline of wrapped) {
+                            ensureSpace(lineHeight * 1.3);
+                            doc.text(wline, margin, y);
+                            y += lineHeight * 1.3;
+                        }
+                        doc.setFontSize(baseSize);
+                        y += lineHeight * 0.3;
+                        continue;
+                    }
+
+                    const bulletMatch = line.match(/^[\*\-]\s+(.*)$/);
+                    if (bulletMatch) {
+                        writeRichParagraph(bulletMatch[1], { indent: 6, bulletPrefix: '•' });
+                        continue;
+                    }
+
+                    writeRichParagraph(line, {});
+                    y += lineHeight * 0.25;
+                }
+            }
+
+            // =========================================================
+            // 12. EVENT LISTENERS & INIZIALIZZAZIONE
+            // =========================================================
+            btnSearch.addEventListener('click', async () => {
+                const rawQuery = searchInput.value.trim();
+                if (!rawQuery) {
+                    statusMsg('Inserisci un luogo o argomento di ricerca.', 'warn');
+                    return;
+                }
+
+                if (state.genRunning) {
+                    if (!confirm('È già in corso una generazione. Vuoi interromperla e cercare di nuovo?')) {
+                        return;
+                    }
+                    discardGeneration();
+                }
+
+                const parts = extractPlaceParts(rawQuery);
+                state.placeName = parts.name;
+                state.placeProvince = parts.province;
+                state.currentQuery = parts.name;
+
+                clearStatus();
+                hideProgress();
+
+                const books = await searchAllSources(parts.name, parts.province);
+                state.books = books;
+                renderBooks(books);
+
+                if (books.length === 0) {
+                    statusMsg(`Nessun libro trovato per "${parts.name}". Prova a modificare i termini di ricerca o a selezionare più fonti (attiva le fonti 🎯 per cercare dentro il testo).`, 'warn');
+                } else {
+                    const noProvHint = !parts.province ? ' 💡 Suggerimento: aggiungi la sigla della provincia o dello stato tra parentesi (es. "' + parts.name + ' (Provincia)") per ridurre i risultati fuori tema.' : '';
+                    statusMsg(`Trovati ${books.length} libri.${noProvHint} Fai clic su "Genera Minilibro" per iniziare.`, 'success');
+                }
+            });
+
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') btnSearch.click();
+            });
+
+            btnAnalyze.addEventListener('click', async () => {
+                if (!state.geminiKey) {
+                    statusMsg('Inserisci prima la tua API Key di Gemini nella sezione 🔑 API.', 'warn');
+                    apiModal.classList.add('active');
+                    return;
+                }
+
+                if (state.books.length === 0) {
+                    statusMsg('Nessun libro da analizzare. Esegui prima una ricerca.', 'warn');
+                    return;
+                }
+
+                if (!state.currentQuery) state.currentQuery = searchInput.value.trim();
+                if (!state.placeName) {
+                    const parts = extractPlaceParts(state.currentQuery);
+                    state.placeName = parts.name;
+                    state.placeProvince = parts.province;
+                }
+
+                discardGeneration();
+                state.genId++;
+                const myGenId = state.genId;
+
+                state.modelChain = buildModelChain(state.geminiModel);
+                state.activeModel = state.geminiModel;
+                state.useWikiEnrich = !!(chkWikiEnrich && chkWikiEnrich.checked);
+
+                showProgress(0, 'Inizio analisi e scansione estratti...');
+
+                try {
+                    const { bookBlocks } = await buildBookBlocks(state.books, state.placeName, (pct, msg) => {
+                        showProgress(pct, msg);
+                    });
+
+                    hideProgress();
+
+                    if (bookBlocks.length === 0) {
+                        statusMsg('Non è stato possibile estrarre contenuto dai libri trovati.', 'warn');
+                        return;
+                    }
+
+                    // ---- FILTRO: solo libri con citazioni dirette (se richiesto e se ce ne sono) ----
+                    let blocksForGeneration = bookBlocks;
+                    if (chkOnlyMatches.checked && state.stats.booksWithMatches > 0) {
+                        const before = bookBlocks.length;
+                        blocksForGeneration = bookBlocks.filter(b => b.hasMatch);
+                        logLine(`🎯 Filtro attivo: ${before - blocksForGeneration.length} libri senza citazioni dirette esclusi dalla generazione (restano visibili e scaricabili nella lista).`, 'info');
+                    }
+
+                    if (state.stats.totalExcerptsFound === 0 && chkOnlyMatches.checked) {
+                        const proceed = confirm(
+                            '⚠️ ATTENZIONE: nessun libro contiene citazioni dirette di "' + state.placeName + '" nel testo (0 estratti).\n\n' +
+                            'Con "Solo libri con citazioni dirette" attivo NON rimarrebbe nessun libro da generare.\n\n' +
+                            'Suggerimenti:\n' +
+                            '- cerca il nome del luogo con la sigla della provincia o dello stato (es. "' + state.placeName + ' (Provincia)")\n' +
+                            '- verifica che le fonti 🎯 siano attive\n\n' +
+                            'Vuoi comunque procedere usando TUTTI i libri (risultato generico)?'
+                        );
+                        if (!proceed) {
+                            statusMsg('Generazione annullata. Prova a raffinare la ricerca per trovare estratti diretti.', 'info');
+                            return;
+                        }
+                        blocksForGeneration = bookBlocks;
+                    }
+
+                    const pieces = buildPieces(blocksForGeneration);
+
+                    if (pieces.length === 0) {
+                        statusMsg('Nessun libro da generare dopo il filtro. Disattiva "Solo libri con citazioni dirette" o raffina la ricerca.', 'warn');
+                        return;
+                    }
+
+                    state.pieces = pieces;
+                    state.totalPieces = pieces.length;
+                    state.genLogs = state.genLogs.slice(-6); // conserva gli ultimi log del filtro
+                    logLine(`📚 ${state.stats.booksScanned} libri scansionati, ${state.stats.booksWithMatches} con citazioni dirette di "${state.placeName}", ${state.stats.totalExcerptsFound} estratti raccolti.`, 'info');
+                    logLine(`🧩 Suddivisi in ${pieces.length} pezzi (raggruppati in base al materiale disponibile, non a un numero fisso di libri). Avvio generazione con ${state.activeModel}...`, 'info');
+                    logLine(`🪜 Catena di fallback modelli: ${state.modelChain.join(' → ')}`, 'info');
+                    renderGenerationPanel();
+
+                    runPieceQueue(0, myGenId);
+
+                } catch (e) {
+                    hideProgress();
+                    statusMsg(`❌ Errore durante la preparazione: ${e.message}`, 'error');
+                }
+            });
+
+            btnClearResults.addEventListener('click', () => {
+                if (state.genRunning) {
+                    if (!confirm('È in corso una generazione. Vuoi annullarla e pulire i risultati?')) return;
+                }
+                discardGeneration();
+                state.books = [];
+                renderBooks([]);
+                clearStatus();
+                hideProgress();
+            });
+
+            btnCopyResult.addEventListener('click', () => {
+                if (!state.geminiResponse) return;
+                navigator.clipboard.writeText(state.geminiResponse).then(() => {
+                    statusMsg('📋 Testo copiato negli appunti!', 'success');
+                    setTimeout(() => clearStatus(), 3000);
+                }).catch(e => {
+                    statusMsg(`❌ Errore durante la copia: ${e.message}`, 'error');
+                });
+            });
+
+            btnDownloadTxt.addEventListener('click', () => {
+                if (!state.geminiResponse) return;
+                const fileName = buildDescriptiveFilename(state.placeName || state.currentQuery || 'ricerca', 'txt');
+                const blob = new Blob([state.geminiResponse], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+                statusMsg(`📥 "${fileName}" scaricato (anche se parziale).`, 'success');
+                setTimeout(() => clearStatus(), 3000);
+            });
+
+            btnDownloadPdf.addEventListener('click', () => {
+                if (!state.geminiResponse) return;
+                const { jsPDF } = window.jspdf;
+                if (!jsPDF) {
+                    statusMsg('❌ Libreria jsPDF non disponibile.', 'error');
+                    return;
+                }
+
+                try {
+                    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+                    const fileName = buildDescriptiveFilename(state.placeName || state.currentQuery || 'ricerca', 'pdf');
+
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    const margin = 18;
+                    const usableWidth = pageWidth - margin * 2;
+                    const placeTitle = state.placeName || state.currentQuery || 'Ricerca storica';
+
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(20);
+                    const titleLines = doc.splitTextToSize(`Storia di ${placeTitle}`, usableWidth);
+                    doc.text(titleLines, pageWidth / 2, 60, { align: 'center' });
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(11);
+                    doc.text('Descrizione storica generata da fonti bibliografiche', pageWidth / 2, 75, { align: 'center' });
+                    doc.setFontSize(9);
+                    doc.text(new Date().toLocaleDateString('it-IT'), pageWidth / 2, 83, { align: 'center' });
+
+                    doc.addPage();
+                    renderMarkdownToPdf(doc, state.geminiResponse, {
+                        margin, pageWidth, pageHeight, usableWidth, startY: margin
+                    });
+
+                    doc.save(fileName);
+                    statusMsg(`✅ "${fileName}" generato e scaricato (anche se parziale).`, 'success');
+                    setTimeout(() => clearStatus(), 3000);
+                } catch (e) {
+                    statusMsg(`❌ Errore durante la creazione del PDF: ${e.message}`, 'error');
+                }
+            });
+
+            btnCloseResult.addEventListener('click', () => {
+                geminiResult.classList.remove('active');
+            });
+
+            // ===== GESTIONE MODALE API E TEMA =====
+            btnApiConfig.addEventListener('click', () => {
+                updateApiBadges();
+                apiModal.classList.add('active');
+            });
+
+            btnCloseModal.addEventListener('click', () => {
+                apiModal.classList.remove('active');
+                updateApiBadges();
+            });
+
+            btnSaveApi.addEventListener('click', () => {
+                const gKey = geminiKey.value.trim();
+                const gBKey = gbKey.value.trim();
+                const model = geminiModel.value;
+
+                if (gKey && gKey.length < 15) {
+                    apiStatus.textContent = '⚠️ Chiave troppo corta.';
+                    apiStatus.style.color = '#d33';
+                    return;
+                }
+
+                saveApiKeys(gKey, gBKey, model);
+                updateApiBadges();
+                apiStatus.textContent = '✅ Impostazioni salvate correttamente!';
+                apiStatus.style.color = '#2b8a3e';
+                setTimeout(() => {
+                    apiStatus.textContent = '';
+                    apiModal.classList.remove('active');
+                }, 1200);
+            });
+
+            btnClearApi.addEventListener('click', () => {
+                if (!confirm('Cancellare tutte le chiavi?')) return;
+                saveApiKeys('', '', 'gemini-3.6-flash');
+                state.geminiKey = '';
+                state.gbKey = '';
+                state.geminiModel = 'gemini-3.6-flash';
+                updateApiBadges();
+                apiStatus.textContent = '🗑️ Chiavi rimosse.';
+                apiStatus.style.color = '#d33';
+                setTimeout(() => { apiStatus.textContent = ''; }, 1500);
+            });
+
+            apiModal.addEventListener('click', function(e) {
+                if (e.target === apiModal) {
+                    apiModal.classList.remove('active');
+                    updateApiBadges();
+                }
+            });
+
+            btnTheme.addEventListener('click', toggleTheme);
+
+            // ===== INIZIALIZZAZIONE ALL'AVVIO =====
+            function init() {
+                loadTheme();
+                updateApiBadges();
+                checkResumableGeneration();
+                statusMsg('🏠 Pronto! Cerca un luogo (preferibilmente con la sigla della provincia o dello stato).', 'info');
+                setTimeout(() => clearStatus(), 5000);
+            }
+
+            init();
+
+        })();
+    </script>
+</body>
+</html>
