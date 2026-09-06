@@ -1,0 +1,2676 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fai Da Te Per Tutti</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Palette ispirata al template "Handyman Services": bianco, navy scuro, giallo acceso */
+  --navy: #1c1f26;
+  --navy-light: #2a2e38;
+  --accent: #ffc934;
+  --accent-dark: #e6b429;
+  --success: #2f9e6b;
+  --warning: #e07a1f;
+  --danger: #d9534f;
+  --light: #f1f1ef;
+  --bg: #f7f7f5;
+  --card-bg: #ffffff;
+  --card-border: #e7e6e2;
+  --text: #1c1f26;
+  --text-muted: #6b6b6b;
+
+  /* alias per compatibilità con guide.css/print.css esistenti */
+  --primary: var(--navy);
+  --secondary: var(--accent);
+  --secondary-dark: var(--accent-dark);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: var(--text);
+  line-height: 1.6;
+
+  /* Sfondo fisso della pagina: l'immagine non scorre col contenuto (fixed),
+     copre tutto lo schermo senza ripetersi. Le caselle/card sopra restano
+     con i loro colori invariati (var(--card-bg) ecc), cambia solo lo sfondo
+     dietro a tutto. */
+  background-color: var(--bg);
+  background-image: url('https://images.unsplash.com/photo-1583591900414-7031eb309cb6?q=80&w=1635&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4 { font-family: 'Poppins', 'Inter', sans-serif; letter-spacing: 0; }
+
+.hidden { display: none !important; }
+
+/* HEADER: banda navy scura come nel template di riferimento */
+.main-header {
+  background: var(--navy);
+  color: #fff;
+  padding: 1.1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo { display: flex; align-items: center; gap: 0.6rem; }
+.logo-icon { font-size: 1.6rem; }
+.logo-text { display: flex; flex-direction: column; }
+.logo-text h1 { font-size: 1.2rem; font-weight: 700; color: #fff; line-height: 1.2; }
+.logo-tagline { font-size: 0.72rem; color: rgba(255,255,255,0.6); }
+.header-actions { display: flex; gap: 0.6rem; }
+.header-actions button {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: all 0.15s ease;
+}
+.header-actions button:hover { background: var(--accent); border-color: var(--accent); color: var(--navy); font-weight: 600; }
+
+.help-round-btn {
+  width: 38px; height: 38px;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  background: #ec1c24 !important;
+  border-color: #ec1c24 !important;
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.help-round-btn:hover { background: #c8151c !important; border-color: #c8151c !important; color: #fff !important; }
+
+/* HERO: sezione chiara, barra di ricerca centrale leggermente sopra il centro */
+.hero {
+  text-align: center;
+  padding: 3.5rem 1.5rem 3rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(247,247,245,0.92) 100%);
+  border-bottom: 1px solid var(--card-border);
+}
+.hero h2 { font-size: 2.1rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--navy); }
+.hero p { color: var(--text-muted); }
+#search-container {
+  max-width: 800px;
+  margin: 1.8rem auto 0;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 1.6rem;
+  box-shadow: 0 8px 24px rgba(28,31,38,0.06);
+}
+#queryInput {
+  width: 100%;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--card-border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.98rem;
+  resize: vertical;
+  min-height: 90px;
+}
+#queryInput:focus { outline: none; border-color: var(--accent); }
+#searchBtn {
+  margin-top: 1rem;
+  padding: 0.85rem 2rem;
+  background: var(--accent);
+  color: var(--navy);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+#searchBtn:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+/* DETAILS TOGGLE */
+.link-btn {
+  display: block;
+  background: none;
+  border: none;
+  color: var(--navy);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin: 0.8rem auto 0.8rem;
+  padding: 0;
+  font-family: inherit;
+  text-align: center;
+}
+.details-box {
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 1.1rem;
+  margin-top: 0.8rem;
+  text-align: left;
+}
+.details-field { margin-bottom: 0.7rem; }
+.details-field label { display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+.details-field input {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--text);
+}
+.details-field input:focus { outline: none; border-color: var(--accent); }
+.details-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem; }
+
+/* ALLEGA FOTO */
+.photo-attach-label {
+  display: block;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--navy);
+  cursor: pointer;
+  margin-bottom: 0.6rem;
+  padding: 0.5rem;
+  border: 1px dashed var(--card-border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.photo-attach-label:hover { border-color: var(--accent-dark); }
+.photo-attach-input { display: none; }
+.photo-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.photo-preview-item {
+  position: relative;
+  width: 64px; height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+}
+.photo-preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-preview-remove {
+  position: absolute;
+  top: 2px; right: 2px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 18px; height: 18px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* CATEGORIE: riga orizzontale di blocchetti, pannello lavori si apre sotto */
+.categories-section { max-width: 1300px; margin: 2.5rem auto; padding: 0 1.5rem; }
+.categories-section h3 {
+   display: block;
+  width: fit-content;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  background: linear-gradient(180deg, #3f424b 0%, #34373e 100%);
+  border: 1px solid var(--card-border);
+  padding: 0.6rem 1.4rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(28,31,38,0.06);
+  margin: 0 auto 1rem;
+}
+
+.categories-tabs-row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.9rem;
+  background: linear-gradient(180deg, #3f424b 0%, #34373e 100%);
+  border-radius: 14px;
+  overflow-x: auto;
+  /* In futuro: qui potremo mettere una texture di sfondo a tema fai-da-te */
+}
+.category-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  text-align: left;
+  white-space: nowrap;
+  flex-shrink: 1;
+  transition: all 0.15s ease;
+}
+.category-tab:hover { background: #111214; color: #fff; }
+.category-tab.active {
+  background: #111214;
+  border-bottom-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+.category-tab-icon {
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid var(--accent);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* Pannello lavori: si apre sotto la riga categorie, stessa dimensione di prima */
+.jobs-panel {
+  margin-top: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(28,31,38,0.05);
+  padding: 1.3rem 1.5rem;
+}
+.jobs-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+.jobs-panel-header h4 { font-size: 1rem; font-weight: 600; color: var(--navy); }
+.jobs-panel-close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+}
+.jobs-panel-close:hover { color: var(--text); }
+.jobs-ul {
+  list-style: none;
+  max-height: 420px;
+  overflow-y: auto;
+  border-top: 1px solid var(--card-border);
+}
+.jobs-ul li { border-bottom: 1px solid var(--card-border); }
+.job-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.75rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text);
+  font-family: inherit;
+  position: relative;
+  padding-left: 1.4rem;
+  transition: background 0.12s ease;
+}
+.job-item::before { content: "→"; position: absolute; left: 0.2rem; color: var(--accent-dark); }
+.job-item:hover { background: var(--light); }
+.job-item.active { background: var(--light); font-weight: 600; color: var(--navy); }
+
+/* RESULTS */
+#results-container { max-width: 1300px; margin: 2rem auto; padding: 0 1.5rem; }
+#loading { margin-top: 1.2rem; text-align: center; }
+.loader {
+  border: 3px solid var(--light);
+  border-top: 3px solid var(--accent);
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  animation: spin 0.9s linear infinite;
+  margin: 0 auto 0.6rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* FOOTER */
+.main-footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(28,31,38,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal-box {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--card-border);
+  padding: 1.6rem;
+  border-radius: 14px;
+  width: 90%; max-width: 420px;
+}
+.modal-box h3 { font-weight: 700; margin-bottom: 0.4rem; color: var(--navy); }
+
+/* FINESTRA GUIDA ALL'USO: più grande e scorrevole rispetto al modale API key */
+.help-modal-box {
+  max-width: 640px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  text-align: left;
+}
+.modal-close-x {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0.3rem;
+}
+.modal-close-x:hover { color: var(--text); }
+.help-intro { color: var(--text-muted); margin-bottom: 1rem; }
+.help-content h4 { color: var(--navy); font-size: 1rem; margin-top: 1.3rem; margin-bottom: 0.5rem; }
+.help-content p { margin-bottom: 0.6rem; }
+.help-steps { margin-left: 1.2rem; margin-bottom: 0.6rem; }
+.help-steps li { margin-bottom: 0.6rem; }
+.help-substeps { margin-left: 1.2rem; margin-top: 0.5rem; }
+.help-substeps li { margin-bottom: 0.4rem; font-size: 0.93rem; color: var(--text-muted); }
+.help-link {
+  display: inline-block;
+  margin-top: 0.3rem;
+  color: #fff;
+  background: var(--accent-dark);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+}
+.help-link:hover { background: var(--navy); }
+.help-closing {
+  margin-top: 1.2rem;
+  padding: 1rem;
+  background: var(--light);
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* DISCLAIMER API KEY MANCANTE */
+.api-disclaimer {
+  max-width: 800px;
+  margin: 1rem auto 0;
+  padding: 0.9rem 1.2rem;
+  background: #fff3cd;
+  color: #5c4813;
+  border: 1px solid #f4d778;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  text-align: center;
+}
+.disclaimer-link {
+  background: none;
+  border: none;
+  color: #5c4813;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0;
+}
+.modal-note { font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0 1rem; }
+#apiKeyInput {
+  width: 100%; padding: 0.7rem 0.85rem; border: 1px solid var(--card-border); border-radius: 8px;
+  background: var(--bg); color: var(--text); font-family: inherit;
+}
+#apiKeyInput:focus { outline: none; border-color: var(--accent); }
+.modal-actions { display: flex; gap: 0.5rem; margin-top: 1.1rem; }
+.modal-actions button {
+  flex: 1; padding: 0.65rem; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 700;
+  background: var(--accent); color: var(--navy);
+}
+.modal-actions button.secondary { background: var(--light); color: var(--text); font-weight: 500; }
+.modal-status { margin-top: 0.9rem; font-size: 0.85rem; color: var(--text-muted); }
+
+/* Responsive: su schermi molto stretti i blocchetti si scalano un po' */
+@media (max-width: 700px) {
+  .category-tab { flex-direction: column; gap: 0.3rem; padding: 0.6rem 0.8rem; font-size: 0.8rem; }
+  .categories-tabs-row { gap: 0.5rem; }
+}
+
+.guide-card {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(28,31,38,0.06);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  scroll-margin-top: 24px;
+}
+.guide-card h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.7rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.guide-card ul, .guide-card ol { margin-left: 0; margin-top: 0.4rem; list-style: none; }
+
+.guide-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.guide-header h2 { font-size: 1.6rem; font-weight: 700; color: var(--navy); }
+.guide-meta { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.4rem; }
+.muted { color: var(--text-muted); font-size: 0.85rem; }
+
+.guide-difficulty { padding: 0.35rem 0.9rem; border-radius: 20px; font-size: 0.78rem; font-weight: 700; color: #fff; white-space: nowrap; }
+.difficolta-facile { background: var(--success); }
+.difficolta-media { background: var(--warning); }
+.difficolta-difficile { background: var(--danger); }
+
+/* LAYOUT A DUE COLONNE: sinistra riferimento (attrezzi/materiali/avvisi),
+   destra scorrevole con i passaggi della guida in stile card */
+.guide-columns {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+.guide-col-left, .guide-col-right { display: flex; flex-direction: column; }
+.guide-col-left h3:first-child { margin-top: 0; }
+.guide-col-right h3 { margin-top: 0; }
+
+/* Attrezzi e materiali: altezza uguale a quella dei passaggi, scorrevole
+   se il contenuto è più lungo dello spazio disponibile. */
+.guide-col-left-scroll {
+  max-height: 860px;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+}
+
+@media (max-width: 800px) {
+  .guide-columns { grid-template-columns: 1fr; }
+  .guide-col-left-scroll { max-height: none; overflow: visible; }
+}
+
+/* Avvertenze + Consigli affiancati in orizzontale, sotto le due colonne */
+.guide-warnings-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+.warnings-col, .tips-col { min-width: 0; }
+@media (max-width: 800px) {
+  .guide-warnings-row { grid-template-columns: 1fr; }
+}
+
+/* ATTREZZI: card più basse e rettangolari, link immagini sempre in fondo */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.6rem;
+}
+.tool-item {
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 0.7rem 0.7rem 0.6rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 78px;
+  gap: 0.3rem;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+/* MATERIALI */
+.materials-list li { padding: 0.65rem 0; border-bottom: 1px solid var(--card-border); }
+.material-row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.material-price { color: var(--success); font-weight: 700; white-space: nowrap; }
+.price-note { color: var(--text-muted); font-weight: 400; font-size: 0.72rem; }
+
+/* PASSAGGI: colonna destra scorrevole, ogni passo come card con badge numerato */
+.steps-scroll {
+  flex: 1;
+  max-height: 860px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  margin-top: 0.6rem;
+}
+.step {
+  position: relative;
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem 1.1rem 3.6rem;
+  margin-bottom: 1rem;
+}
+.step::before {
+  content: counter(step-counter);
+  counter-increment: step-counter;
+  position: absolute;
+  left: 1rem;
+  top: 1.1rem;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--accent);
+}
+.steps-scroll { counter-reset: step-counter; }
+.step-number { font-weight: 700; color: var(--navy); display: block; margin-bottom: 0.3rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.02em; }
+.step-description { color: var(--text); }
+
+.image-search-link {
+  display: inline-block;
+  margin-top: 0.6rem;
+  font-size: 0.82rem;
+  color: var(--navy);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--navy);
+}
+.image-search-link:hover { color: var(--accent-dark); border-color: var(--accent-dark); }
+
+.tool-item i { color: var(--navy); margin-right: 0.3rem; }
+.tool-item .image-search-link {
+  margin-top: auto;
+  padding-top: 0.3rem;
+}
+
+/* AVVISI */
+.warning-box { background: #fff3cd; color: #5c4813; border-left: 4px solid var(--warning); padding: 0.9rem 1.1rem; border-radius: 10px; margin-top: 0.5rem; }
+.danger-box { background: #f8d7da; color: #58151c; border-left: 4px solid var(--danger); padding: 0.9rem 1.1rem; border-radius: 10px; margin-top: 0.8rem; }
+
+/* CONSIGLI */
+.tips-list li {
+  padding: 0.4rem 0 0.4rem 1.5rem;
+  position: relative;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  hyphens: auto;
+}
+.tips-list li::before { content: "💡"; position: absolute; left: 0; }
+
+/* RISPARMIO: banda navy full-width in stile "statistica", numeri in giallo */
+.savings-card {
+  margin-top: 0.6rem;
+  padding: 1.5rem;
+  border-radius: 14px;
+  background: var(--navy);
+  color: #fff;
+}
+.savings-detail { display: flex; gap: 2.5rem; margin-bottom: 0.9rem; }
+.savings-label { color: rgba(255,255,255,0.65); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.02em; background: none; padding: 0; }
+.savings-detail > div { font-size: 1.4rem; font-weight: 700; color: #fff; }
+.savings-amount { font-size: 1.7rem; font-weight: 700; color: var(--accent); margin-top: 0.3rem; }
+.error-card { border-left: 4px solid var(--danger); }
+
+.photo-warning-notice {
+  background: #eef2f7;
+  color: var(--text-muted);
+  border-left: 4px solid var(--text-muted);
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-top: 0.8rem;
+}
+
+/* FOLLOW-UP / APPROFONDIMENTI GENERALI */
+.followup-box { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.5rem; }
+.followup-box textarea {
+  padding: 0.8rem; border: 1px solid var(--card-border); border-radius: 10px; font-family: inherit; resize: vertical;
+  background: var(--bg); color: var(--text);
+}
+.followup-box textarea:focus { outline: none; border-color: var(--accent); }
+.followup-box button {
+  align-self: center;
+  padding: 0.65rem 1.3rem;
+  background: var(--accent);
+  color: var(--navy);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-family: inherit;
+}
+.followup-box button:disabled { opacity: 0.6; cursor: default; }
+
+.approfondimento-box {
+  background: var(--bg);
+  color: var(--text);
+  border-left: 4px solid var(--navy);
+  padding: 0.9rem 1.1rem;
+  border-radius: 10px;
+  margin-top: 0.9rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.approfondimento-domanda { font-weight: 700; margin-bottom: 0.4rem; }
+.approfondimento-risposta { white-space: pre-line; overflow-wrap: break-word; word-break: break-word; }
+
+.error-text { color: var(--danger); font-size: 0.9rem; }
+
+/* STEP: dettaglio approfondito */
+.step-actions { margin-top: 0.7rem; }
+.step-detail-btn {
+  background: none;
+  border: 1px solid var(--navy);
+  color: var(--navy);
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+.step-detail-btn:hover { background: var(--navy); color: #fff; }
+.step-detail-btn:disabled { opacity: 0.6; cursor: default; }
+.step-detail-box:empty { margin: 0; }
+.step-detail-content {
+  margin-top: 0.7rem;
+  padding: 0.8rem 1rem;
+  background: #fff;
+  color: var(--text);
+  border: 1px dashed var(--accent-dark);
+  border-radius: 10px;
+  white-space: pre-line;
+  font-size: 0.92rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* STEP: mini domanda specifica */
+.step-mini-question {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+.step-mini-question input {
+  flex: 1;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.85rem;
+}
+.step-mini-question input:focus { outline: none; border-color: var(--accent); }
+.step-mini-question button {
+  padding: 0.55rem 1rem;
+  background: var(--success);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: inherit;
+}
+.step-mini-question button:disabled { opacity: 0.6; cursor: default; }
+.step-qa-box:empty { margin: 0; }
+.step-qa-item {
+  margin-top: 0.7rem;
+  padding: 0.8rem 1rem;
+  background: #fff;
+  color: var(--text);
+  border-left: 3px solid var(--success);
+  border-radius: 8px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.step-qa-domanda { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.9rem; }
+.step-qa-risposta { font-size: 0.9rem; white-space: pre-line; overflow-wrap: break-word; word-break: break-word; }
+
+/* PRINT / EXPORT PDF: nasconde tutto tranne la guida generata */
+
+.print-only { display: none; }
+.export-pdf-btn {
+  display: block;
+  margin: 1.8rem auto 0;
+  padding: 0.75rem 1.5rem;
+  background: #ec1c24;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+.export-pdf-btn:hover { background: #c8151c; }
+
+@media print {
+  body * { visibility: hidden; }
+  #guidaEsportabile, #guidaEsportabile * { visibility: visible; }
+  #guidaEsportabile {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white !important;
+    color: #1c1f26 !important;
+    box-shadow: none;
+  }
+  .guide-columns { grid-template-columns: 1fr !important; }
+  .steps-scroll, .guide-col-left-scroll { max-height: none !important; overflow: visible !important; }
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  .step-detail-content, .step-qa-item { border: none !important; background: none !important; padding: 0.3rem 0 !important; }
+  .savings-card { background: #f0f0f0 !important; color: #1c1f26 !important; }
+  .savings-detail > div, .savings-amount { color: #1c1f26 !important; }
+  .savings-label { background: none !important; color: #555 !important; }
+}
+
+</style>
+</head>
+<body>
+<div id="app">
+<header class="main-header">
+  <div class="logo">
+    <span class="logo-icon">🛠️</span>
+    <div class="logo-text">
+      <h1>Fai Da Te Per Tutti</h1>
+      <span class="logo-tagline">Semplice, autonomo, conveniente.</span>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button id="apiKeyBtn" title="Imposta la tua API Key">🔑 API Key</button>
+    <button id="helpBtn" class="help-round-btn" title="Guida all'uso del programma">?</button>
+  </div>
+</header>
+
+<section class="hero">
+  <h2>Descrivi il lavoretto che devi fare</h2>
+  <p>Scegli un lavoro dalla lista qui sotto, oppure descrivilo con parole tue.</p>
+  <div id="search-container">
+    <textarea id="queryInput" rows="3"
+      placeholder="Es: come riparare un rubinetto che perde"></textarea>
+
+    <button id="toggleDetailsBtn" class="link-btn" type="button">+ Aggiungi dettagli (materiale o elettrodomestico che hai già)</button>
+
+    <label for="fotoInput" class="photo-attach-label">
+      📷 Allega una o più foto (facoltativo) — es: la parete, il mobile o l'oggetto su cui devi lavorare
+    </label>
+    <input type="file" id="fotoInput" accept="image/*" multiple class="photo-attach-input">
+    <div id="fotoPreviewList" class="photo-preview-list"></div>
+
+    <div id="detailsBox" class="details-box hidden">
+      <div class="details-field">
+        <label>Materiale che hai già (marca/modello)</label>
+        <input type="text" id="materialeInput" placeholder="Es: spina Bticino Living, cavo 3x1.5mm">
+      </div>
+      <div class="details-field">
+        <label>Elettrodomestico o oggetto da collegare/installare (marca/modello)</label>
+        <input type="text" id="elettrodomesticoInput" placeholder="Es: lavatrice Samsung WW70, forno Whirlpool">
+      </div>
+      <p class="details-note">Campi facoltativi: se li compili, la guida sarà più precisa e specifica per quello che hai.</p>
+      <p class="details-note">Puoi indicare più elementi separandoli con la virgola, es: "presa Bticino Living, interruttore Vimar Plana" — il programma li riconoscerà come materiali/elettrodomestici distinti.</p>
+    </div>
+
+    <button id="searchBtn">🔍 Crea Guida</button>
+
+    <div id="loading" class="hidden">
+      <div class="loader"></div>
+      <p>Sto generando la tua guida, un attimo...</p>
+    </div>
+  </div>
+
+  <p id="apiKeyDisclaimer" class="api-disclaimer hidden">
+    ⚠️ Per funzionare, il programma ha bisogno di una chiave API gratuita di Gemini.
+    <button id="disclaimerHelpLink" class="disclaimer-link" type="button">Non sai come crearla? Leggi la guida</button>
+    oppure clicca su "🔑 API Key" in alto per inserirla se ce l'hai già.
+  </p>
+</section>
+
+<section class="categories-section">
+  <h3>Sfoglia per categoria o lasciati ispirare da nuove idee da provare</h3>
+
+  <div id="categoriesTabs" class="categories-tabs-row">
+    <!-- popolato via JS da categories-data.js: un blocchetto per categoria -->
+  </div>
+
+  <div id="jobsListContainer" class="jobs-panel hidden">
+    <div class="jobs-panel-header">
+      <h4 id="jobsListTitle">Lavori disponibili</h4>
+      <button id="jobsPanelClose" class="jobs-panel-close" title="Chiudi">✕</button>
+    </div>
+    <div id="jobsList" class="jobs-list"></div>
+  </div>
+</section>
+
+<section id="results-container">
+  <div id="guide-result" class="hidden"></div>
+</section>
+
+<footer class="main-footer">
+  <p>Fai da Te - Risparmio · progetto personale, nessun dato inviato a server terzi oltre all'API scelta.</p>
+</footer>
+
+<div id="apiModalOverlay" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>🔑 La tua API Key</h3>
+    <p class="modal-note">
+      Viene salvata solo nel tuo browser (localStorage), non viene mai inviata
+      a nessun server nostro. Serve solo per chiamare direttamente l'API da qui.
+    </p>
+    <input type="password" id="apiKeyInput" placeholder="Incolla qui la tua API key">
+    <div class="modal-actions">
+      <button id="apiKeySave">Salva</button>
+      <button id="apiKeyClear" class="secondary">Rimuovi</button>
+      <button id="apiKeyClose" class="secondary">Chiudi</button>
+    </div>
+    <p id="apiKeyStatus" class="modal-status"></p>
+  </div>
+</div>
+
+<div id="helpModalOverlay" class="modal-overlay hidden">
+  <div class="modal-box help-modal-box">
+    <button id="helpModalClose" class="modal-close-x" aria-label="Chiudi">✕</button>
+
+    <h3>👋 Benvenuto! Iniziare è più facile di quanto pensi</h3>
+    <p class="help-intro">
+      Non preoccuparti se non hai mai usato niente di simile: questa guida ti accompagna passo passo,
+      con parole semplici. In pochi minuti sarai pronto a usare il programma senza problemi.
+    </p>
+
+    <div class="help-content">
+
+      <h4>1. Perché serve una "chiave API"?</h4>
+      <p>
+        Questo programma usa un'intelligenza artificiale (si chiama <strong>Gemini</strong>, ed è di Google)
+        per scrivere le guide ai tuoi lavori. Per farla funzionare serve una specie di "codice personale"
+        gratuito, chiamato <strong>chiave API</strong>: è come una password che permette al programma
+        di parlare con l'intelligenza artificiale a tuo nome. Si crea gratis in meno di due minuti,
+        e resta salvata solo sul tuo computer/telefono — non la vede nessun altro.
+      </p>
+
+      <h4>2. Come creare la tua chiave gratuita</h4>
+      <ol class="help-steps">
+        <li>Clicca su questo link, si aprirà il sito ufficiale di Google:
+          <br><a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="help-link">
+            👉 aistudio.google.com/apikey
+          </a>
+        </li>
+        <li>Accedi con un tuo account Google (la stessa email di Gmail, se ne hai una). Se non hai un account Google, il sito ti guida a crearne uno gratis.</li>
+        <li>Se è la prima volta che usi questo sito, potrebbe chiederti di accettare i termini di utilizzo: clicca "Accetto" o "Continua".</li>
+        <li>Cerca il bottone <strong>"Create API key"</strong> (o "Crea chiave API") in alto e cliccalo. Se non lo vedi subito, guarda anche in basso a sinistra nel menu: a volte c'è una piccola icona a forma di chiave 🔑 che porta alla stessa pagina.</li>
+        <li>
+          A questo punto Google potrebbe chiederti di scegliere o creare un <strong>"progetto" (project)</strong>.
+          Non spaventarti: non è niente di tecnico, è solo un'etichetta per organizzare le chiavi.
+          <ul class="help-substeps">
+            <li>Se ti propone già un progetto (spesso si chiama "My Project" o simile), va benissimo: selezionalo e vai avanti.</li>
+            <li>Se invece devi crearne uno nuovo, clicca su "Crea nuovo progetto" (o "Create project"), scrivi un nome qualsiasi (es. "Fai da te" o anche solo il tuo nome) e conferma.</li>
+            <li>Non serve inserire una carta di credito né attivare fatturazione: la chiave gratuita funziona comunque.</li>
+          </ul>
+        </li>
+        <li>Clicca infine sul bottone <strong>"Create key"</strong> (o "Crea chiave") per generarla davvero.</li>
+        <li>Comparirà una lunga sequenza di lettere e numeri: quella è la tua chiave. Cliccaci sopra o sull'iconcina di copia accanto per copiarla subito, prima di chiudere la pagina.</li>
+      </ol>
+
+      <h4>3. Come inserirla nel programma</h4>
+      <ol class="help-steps">
+        <li>Torna su questa pagina e clicca sul bottone <strong>"🔑 API Key"</strong> in alto.</li>
+        <li>Incolla la chiave che hai copiato nella casella che si apre.</li>
+        <li>Clicca "Salva". Fatto! Non dovrai più rifarlo, resta salvata per le prossime volte.</li>
+      </ol>
+
+      <h4>4. Come si usa il programma, passo passo</h4>
+      <ol class="help-steps">
+        <li><strong>Scegli un lavoro:</strong> clicca uno dei blocchetti categoria (es. "Idraulica") per aprire l'elenco dei lavori di quel tipo, poi clicca quello che ti interessa. Non sai cosa fare? Sfoglia le categorie anche solo per curiosità: sono piene di idee, anche insolite, da cui prendere spunto. Per chiudere l'elenco, clicca di nuovo sulla categoria aperta oppure sulla crocetta ✕. Oppure, se preferisci, scrivi tu stesso cosa vuoi fare nella barra centrale.</li>
+        <li><strong>Hai già del materiale?</strong> Se vuoi, apri "+ Aggiungi dettagli" e scrivi marca/modello di ciò che hai già: la guida sarà ancora più precisa. Se hai più cose da indicare, separale con una virgola (es. "presa Bticino Living, cavo 3x1.5mm") e il programma le riconoscerà una per una.</li>
+        <li><strong>Hai una foto?</strong> Sopra la barra di ricerca trovi "📷 Allega una o più foto": puoi caricare una o più immagini di ciò su cui devi lavorare (una parete, un mobile, una presa, una pianta...). Scrivi comunque anche una breve descrizione di cosa vuoi fare: più informazioni dai, più la guida sarà precisa e su misura per la tua situazione reale.</li>
+        <li><strong>Clicca "Crea Guida":</strong> in pochi secondi comparirà una guida completa con attrezzi, materiali (con prezzo indicativo e link per vedere immagini del prodotto), passaggi spiegati uno per uno, avvertenze e quanto risparmi.</li>
+        <li><strong>Non capisci un passaggio o un termine?</strong> Ogni passo ha un bottone "Spiegami in dettaglio" e una casella per fare domande specifiche (es. "cos'è una scatola di derivazione?"). Non c'è nessuna domanda sciocca: chiedi tutto quello che ti serve.</li>
+        <li><strong>Hai un imprevisto durante il lavoro?</strong> In fondo alla guida c'è uno spazio apposito: scrivi il problema che hai incontrato (un attrezzo che non hai, un muro particolare, ecc.) e riceverai una soluzione su misura.</li>
+        <li><strong>Vuoi portartela dietro?</strong> Una volta letta la guida, aggiunti gli approfondimenti che ti servivano e adattato tutto a eventuali problemi o imprevisti incontrati, puoi salvare tutto così com'è: il bottone rosso "Esporta guida in PDF" ti permette di salvarla in un file da tenere anche offline mentre lavori, oppure di stamparla su carta.</li>
+      </ol>
+
+      <p class="help-closing">
+        Non c'è nulla di complicato: né nell'usare questo programma, né nei lavoretti che stai per affrontare.
+        Vai con calma, un passo alla volta, e chiedi pure ogni approfondimento di cui hai bisogno. 💪
+      </p>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+window.__CATEGORIES__ = {
+  "idraulica": {
+    "label": "Idraulica",
+    "icon": "🚰",
+    "safetyLevel": "media",
+    "prezziMedi": { "default": 90 }
+  },
+  "elettricita": {
+    "label": "Elettricità",
+    "icon": "🔌",
+    "safetyLevel": "alta",
+    "prezziMedi": { "default": 70 }
+  },
+  "falegnameria": {
+    "label": "Falegnameria",
+    "icon": "🪚",
+    "safetyLevel": "bassa",
+    "prezziMedi": { "default": 90 }
+  },
+  "muratura": {
+    "label": "Muratura / Imbiancatura",
+    "icon": "🎨",
+    "safetyLevel": "bassa",
+    "prezziMedi": { "default": 150 }
+  },
+  "mobili": {
+    "label": "Montaggio mobili",
+    "icon": "🛋️",
+    "safetyLevel": "bassa",
+    "prezziMedi": { "default": 80 }
+  },
+  "giardinaggio": {
+    "label": "Giardinaggio",
+    "icon": "🌱",
+    "safetyLevel": "bassa",
+    "prezziMedi": { "default": 60 }
+  },
+  "hobby": {
+    "label": "Hobby / Creativo",
+    "icon": "✂️",
+    "safetyLevel": "bassa",
+    "prezziMedi": { "default": 40 }
+  }
+}
+;
+window.__JOBS__ = {
+  "idraulica": [
+    "Riparare un rubinetto che perde",
+    "Sostituire una guarnizione del rubinetto",
+    "Sbloccare uno scarico intasato del lavandino",
+    "Sbloccare il WC intasato",
+    "Sostituire il sifone del lavandino",
+    "Cambiare la cartuccia del miscelatore",
+    "Sostituire il flessibile della doccia",
+    "Riparare una perdita da un tubo sotto il lavandino",
+    "Sostituire il galleggiante dello sciacquone",
+    "Installare un nuovo rubinetto della cucina",
+    "Sostituire il soffione della doccia",
+    "Eliminare cattivi odori dagli scarichi",
+    "Sostituire un tubo flessibile del gas",
+    "Regolare la pressione dell'acqua in casa",
+    "Sostituire una valvola di non ritorno",
+    "Installare un addolcitore d'acqua sotto lavello",
+    "Riparare una perdita dal termosifone",
+    "Spurgare l'aria dai termosifoni",
+    "Sostituire il pulsante dello sciacquone",
+    "Riparare una perdita alla base del WC",
+    "Sostituire un tubo corrugato flessibile",
+    "Installare un filtro anticalcare",
+    "Pulire il filtro dell'acqua in ingresso",
+    "Sostituire una guarnizione della lavatrice",
+    "Collegare lo scarico della lavastoviglie",
+    "Sostituire un raccordo che perde",
+    "Isolare un tubo dell'acqua dal gelo",
+    "Sostituire una valvola di sicurezza dello scaldabagno",
+    "Svuotare e pulire uno scaldabagno elettrico",
+    "Sostituire l'anodo di sacrificio dello scaldabagno",
+    "Installare un rubinetto a sfera di intercettazione",
+    "Sostituire un flessibile del WC",
+    "Riparare una cassetta di scarico incassata",
+    "Installare un rubinetto esterno da giardino",
+    "Installare un miscelatore termostatico per la doccia",
+    "Sostituire una colonna doccia completa",
+    "Installare uno scaldabagno istantaneo elettrico",
+    "Sostituire il gruppo di scarico di una vasca",
+    "Installare un piatto doccia con scarico a pavimento",
+    "Sostituire un tubo in PVC di scarico",
+    "Collegare un frigorifero con dispenser d'acqua",
+    "Installare un depuratore d'acqua sotto lavello",
+    "Sostituire una pompa di circolazione del riscaldamento",
+    "Bilanciare l'impianto di riscaldamento a più radiatori",
+    "Sostituire una valvola termostatica del radiatore",
+    "Installare un contatore d'acqua divisionale",
+    "Riparare una perdita in una tubazione esterna interrata",
+    "Installare un sistema di raccolta dell'acqua piovana",
+    "Collegare una lavastoviglie a incasso",
+    "Installare un addolcitore d'acqua centralizzato",
+    "Riparare una perdita in una giunzione filettata",
+    "Sostituire un tubo flessibile ad alta pressione",
+    "Installare un rubinetto a doppia via per lavatrice e lavastoviglie",
+    "Sostituire una pompa di sollevamento per acque reflue",
+    "Installare un sistema di irrigazione da esterno collegato alla rete idrica",
+    "Sostituire una guarnizione toroidale (O-ring) di un rubinetto",
+    "Installare un misuratore di portata sull'impianto",
+    "Sostituire un'elettrovalvola dell'impianto di irrigazione",
+    "Isolare termicamente le tubazioni del riscaldamento in cantina",
+    "Sostituire un sifone a bottiglia con uno a S",
+    "Installare un rompigetto anticalcare sui rubinetti",
+    "Sostituire una pompa sommersa da pozzo",
+    "Riparare una perdita su un collettore di distribuzione",
+    "Installare un vaso di espansione sull'impianto termico",
+    "Sostituire una valvola di sfiato automatica",
+    "Installare un manometro per monitorare la pressione dell'impianto",
+    "Riparare una crepa in una vasca in resina",
+    "Installare un bidet sospeso",
+    "Sostituire un WC tradizionale con uno sospeso",
+    "Installare un sistema di scarico a parete con cassetta incassata",
+    "Sostituire tutte le guarnizioni di un rubinetto vecchio",
+    "Installare un rubinetto filtrante per acqua da bere",
+    "Sostituire un tubo in rame con raccordi a pressare",
+    "Diagnosticare la causa di un calo di pressione in tutta la casa",
+    "Installare uno scambiatore di calore per un impianto misto",
+    "Sostituire una pompa di calore split (solo collegamento idraulico base)",
+    "Progettare la disposizione degli scarichi per un bagno nuovo",
+    "Collaudare un impianto idraulico dopo una ristrutturazione",
+    "Sostituire completamente i collegamenti idraulici di una cucina",
+    "Installare un sistema di osmosi inversa sotto lavello",
+    "Riparare un impianto misto caldo/freddo con perdita nascosta",
+    "Sostituire un tubo di scarico rotto sotto il pavimento",
+    "Installare un rubinetto a incasso da parete",
+    "Sostituire una guarnizione a labbro di un rubinetto moderno",
+    "Riparare un blocco idraulico del piano cottura a gas",
+    "Sostituire una colonna di scarico verticale condominiale (parte propria)",
+    "Installare un misuratore di consumo acqua smart",
+    "Sostituire una pompa booster per aumentare la pressione",
+    "Riparare un raccordo del contatore del gas che perde (solo segnalazione, non intervento diretto)",
+    "Installare un sifone salvaspazio per mobili bagno sospesi",
+    "Sostituire una vasca da bagno con doccia walk-in",
+    "Installare un sistema di ricircolo acqua calda sanitaria",
+    "Sostituire un tubo in multistrato con raccordi a pressare",
+    "Riparare un allacciamento idraulico esterno danneggiato dal gelo",
+    "Installare un depuratore d'acqua a osmosi con rubinetto dedicato",
+    "Sostituire un pozzetto di scarico intasato in giardino",
+    "Installare un impianto di scarico per una cucina esterna",
+    "Sostituire una guarnizione della caldaia a condensazione",
+    "Riparare una perdita nella serpentina di uno scambiatore",
+    "Installare un vaso di espansione sanitario",
+    "Sostituire un dispositivo anti-legionella su un boiler"
+  ],
+  "elettricita": [
+    "Sostituire una spina a un cavo",
+    "Sostituire un interruttore della luce",
+    "Sostituire una presa elettrica",
+    "Installare una plafoniera al soffitto",
+    "Sostituire una lampadina con attacco particolare",
+    "Aggiungere una presa USB a muro",
+    "Collegare un lampadario nuovo",
+    "Sostituire il cavo di un elettrodomestico",
+    "Installare un rilevatore di fumo",
+    "Installare una presa con interruttore",
+    "Collegare una lavatrice nuova alla rete elettrica",
+    "Installare un sensore di movimento per le luci",
+    "Sostituire un citofono",
+    "Aggiungere una ciabatta fissa a muro",
+    "Capire quale cavo serve per un elettrodomestico",
+    "Verificare se una presa è a norma",
+    "Sostituire un deviatore per accendere una luce da due punti",
+    "Installare un dimmer per regolare l'intensità della luce",
+    "Sostituire una presa Schuko con una presa italiana",
+    "Installare una presa esterna per il giardino",
+    "Collegare un condizionatore portatile alla rete elettrica",
+    "Sostituire il vetro di una plafoniera rotta",
+    "Installare strisce LED sotto i pensili della cucina",
+    "Verificare perché un interruttore differenziale scatta spesso",
+    "Sostituire una campanella del citofono",
+    "Installare una presa per la lavastoviglie",
+    "Collegare un forno elettrico da incasso",
+    "Sostituire un magnetotermico nel quadro elettrico",
+    "Installare un videocitofono al posto del citofono tradizionale",
+    "Sostituire un faretto da incasso a soffitto",
+    "Installare un ventilatore da soffitto con telecomando",
+    "Aggiungere una linea dedicata per il forno a microonde",
+    "Sostituire un salvavita (differenziale) nel quadro",
+    "Installare prese multiple in una parete attrezzata",
+    "Collegare un climatizzatore fisso (solo parte elettrica)",
+    "Sostituire un trasformatore per faretti a bassissima tensione",
+    "Installare un sistema di illuminazione smart con app",
+    "Aggiungere un punto luce in un ripostiglio",
+    "Sostituire una presa da incasso danneggiata",
+    "Installare una presa dedicata per la ricarica auto elettrica",
+    "Verificare il corretto collegamento a terra dell'impianto",
+    "Sostituire un quadro elettrico vecchio con uno a norma",
+    "Installare un contattore per l'irrigazione automatica",
+    "Aggiungere un punto luce esterno con sensore crepuscolare",
+    "Sostituire i cavi di un lampadario a più bracci",
+    "Installare un termostato smart per il riscaldamento",
+    "Collegare un allarme antifurto cablato",
+    "Sostituire una presa TV/antenna",
+    "Installare un punto di rete Ethernet a muro",
+    "Aggiungere una presa dati per il router",
+    "Sostituire l'impianto elettrico di una singola stanza",
+    "Installare un impianto di illuminazione a binario",
+    "Sostituire un fusibile in un impianto datato",
+    "Installare un rilevatore di gas metano",
+    "Collegare un piano cottura a induzione (solo parte elettrica)",
+    "Sostituire l'interruttore generale dell'impianto",
+    "Installare un sistema di prese comandate da telecomando",
+    "Aggiungere un differenziale dedicato per il bagno",
+    "Sostituire un cavo elettrico danneggiato sotto traccia",
+    "Installare un impianto fotovoltaico domestico (solo assistenza base)",
+    "Collegare una pompa di calore (solo parte elettrica)",
+    "Installare un caricabatterie da muro per dispositivi",
+    "Sostituire una scatola di derivazione danneggiata",
+    "Verificare un guasto intermittente su un circuito luci",
+    "Installare un impianto citofonico multi-appartamento",
+    "Sostituire cavi non a norma con cavi certificati",
+    "Aggiungere un punto presa in mansarda",
+    "Installare un sistema di domotica per tapparelle elettriche",
+    "Sostituire un motore per tapparella elettrica",
+    "Collegare un caricatore wireless da incasso nel mobile",
+    "Installare un impianto di allarme wireless",
+    "Sostituire il contatore con uno digitale (assistenza, non allaccio ufficiale)",
+    "Aggiungere una presa stagna per esterno",
+    "Installare un impianto di illuminazione da giardino a bassa tensione",
+    "Sostituire il cablaggio di un impianto stereo multi-stanza",
+    "Verificare e sistemare un impianto dopo un allagamento",
+    "Installare prese USB-C ad alta potenza per ricarica rapida",
+    "Progettare la disposizione punti luce per una ristrutturazione",
+    "Collaudare un impianto elettrico dopo lavori importanti",
+    "Sostituire completamente l'impianto elettrico di un piccolo appartamento",
+    "Installare un sistema di monitoraggio energetico domestico",
+    "Sostituire una presa industriale trifase (con cautela)",
+    "Installare un impianto di illuminazione per un giardino d'inverno",
+    "Sostituire un dimmer touch per LED",
+    "Collegare una pompa di calore aria-acqua (solo parte elettrica base)",
+    "Installare un sistema di videosorveglianza cablato",
+    "Sostituire un cavo coassiale per l'antenna TV",
+    "Installare un punto luce per un lampadario a soffitto alto",
+    "Sostituire una presa per forno a doppia potenza",
+    "Installare un impianto di ricarica per bici elettrica",
+    "Collegare un gruppo di continuità (UPS) per il computer",
+    "Sostituire un rilevatore di CO (monossido di carbonio)",
+    "Installare un sistema di controllo accessi con badge",
+    "Sostituire una plafoniera a LED con sensore di movimento integrato",
+    "Installare un quadro elettrico ausiliario per un garage",
+    "Sostituire una presa per la ricarica di attrezzi da giardino",
+    "Installare un contatore energetico per un impianto fotovoltaico",
+    "Collegare una centralina domotica per il controllo luci",
+    "Sostituire un interruttore crepuscolare per l'illuminazione esterna",
+    "Installare un sistema di illuminazione di emergenza",
+    "Sostituire completamente il cablaggio elettrico di una mansarda"
+  ],
+  "falegnameria": [
+    "Montare un mobile IKEA",
+    "Riparare una porta che gratta contro il pavimento",
+    "Sostituire una cerniera della porta",
+    "Regolare le ante di un armadio",
+    "Installare una mensola a muro",
+    "Riparare un cassetto che si inceppa",
+    "Sostituire una maniglia della porta",
+    "Montare una zanzariera",
+    "Riparare una sedia traballante",
+    "Costruire una semplice libreria",
+    "Sostituire la serratura di una porta interna",
+    "Livellare un mobile su pavimento irregolare",
+    "Riparare uno spigolo scheggiato del legno",
+    "Montare un'anta a battente",
+    "Fissare un quadro pesante a muro",
+    "Sostituire le guide di un cassetto",
+    "Riparare una tavola di legno spaccata",
+    "Montare una porta scorrevole",
+    "Sostituire il vetro di una porta interna",
+    "Costruire una pedana di legno per esterni",
+    "Verniciare una porta in legno",
+    "Sostituire i piedini di un mobile",
+    "Riparare una persiana in legno",
+    "Montare zoccolo battiscopa",
+    "Costruire una piccola cassapanca",
+    "Sostituire una tavola del parquet danneggiata",
+    "Levigare e riverniciare un pavimento in legno",
+    "Costruire una testiera per il letto",
+    "Montare un tavolo da giardino in legno",
+    "Riparare un telaio di finestra in legno",
+    "Sostituire i cardini di un cancello in legno",
+    "Costruire scaffali a muro su misura",
+    "Montare un'anta scorrevole per armadio a muro",
+    "Sostituire il piano di un tavolo danneggiato",
+    "Costruire una struttura per un letto matrimoniale",
+    "Riparare una scala in legno che scricchiola",
+    "Montare un rivestimento a doghe di legno su una parete",
+    "Costruire una cuccia da esterno per cani",
+    "Sostituire i profili di tenuta di una porta-finestra",
+    "Montare un controsoffitto in legno",
+    "Costruire un tavolo da esterno con panche",
+    "Riparare un telaio di porta danneggiato dall'umidità",
+    "Sostituire completamente una porta interna con telaio",
+    "Costruire una struttura a soppalco in legno",
+    "Montare pannelli acustici in legno su una parete",
+    "Riparare un mobile antico mantenendo la finitura originale",
+    "Costruire una recinzione in legno da giardino",
+    "Montare una veranda in legno prefabbricata",
+    "Sostituire un architrave in legno di una porta",
+    "Costruire una cabina armadio su misura",
+    "Realizzare intarsi decorativi su un mobile",
+    "Costruire scale interne in legno (progetto complesso)",
+    "Sostituire un architrave in legno danneggiato",
+    "Costruire una panca contenitore per l'ingresso",
+    "Montare un cancelletto di sicurezza per bambini",
+    "Riparare una gamba di tavolo spaccata",
+    "Costruire un porta-riviste da parete",
+    "Sostituire i binari di una tenda scorrevole",
+    "Montare un'anta a soffietto per armadio",
+    "Costruire una mensola galleggiante nascosta",
+    "Riparare un tavolo con incastri allentati",
+    "Costruire un porta-scarpe da ingresso",
+    "Sostituire il piano di una scrivania",
+    "Montare un separè in legno per ambienti",
+    "Costruire una struttura per amaca da giardino",
+    "Riparare i gradini di una scala in legno",
+    "Costruire un tavolino da salotto su misura",
+    "Montare pannelli decorativi 3D in legno",
+    "Sostituire le doghe di una rete a doghe rotta",
+    "Costruire una struttura per vasca da bagno in legno",
+    "Riparare una finestra con telaio deformato",
+    "Costruire un porta-biciclette da parete",
+    "Montare un rivestimento in legno per una scala",
+    "Costruire una struttura per un dondolo da giardino",
+    "Riparare i cassetti di una cucina in muratura",
+    "Costruire un tavolo da lavoro per garage",
+    "Montare un armadio a ponte sopra il letto",
+    "Costruire una struttura per zanzariera plissettata",
+    "Riparare i cardini di un'anta pesante",
+    "Costruire un porta-attrezzi da parete per garage",
+    "Montare un pavimento in legno sopraelevato per esterno",
+    "Costruire una porta a soffietto su misura",
+    "Sostituire il piano di lavoro di una cucina in legno",
+    "Riparare un infisso in legno con marcescenza localizzata",
+    "Costruire una struttura per un letto a baldacchino",
+    "Montare boiserie decorativa su una parete",
+    "Sostituire le assi di un pavimento in legno esterno (decking)",
+    "Costruire un porticato in legno lamellare",
+    "Riparare una scala a chiocciola in legno",
+    "Costruire un mobile su misura per un angolo irregolare",
+    "Montare una copertura in legno per un pozzo decorativo",
+    "Sostituire un davanzale in legno deteriorato",
+    "Costruire una struttura per altalena da giardino",
+    "Riparare i gradini esterni in legno di una veranda",
+    "Costruire un rivestimento a cassettoni per un soffitto",
+    "Montare un sistema di ante a scomparsa per una cabina armadio",
+    "Sostituire completamente un pavimento in legno massello",
+    "Costruire una recinzione decorativa con intagli",
+    "Riparare una struttura portante di una tettoia in legno",
+    "Costruire un tavolo da lavoro pieghevole per garage",
+    "Montare un rivestimento in legno per una vasca da bagno freestanding"
+  ],
+  "muratura": [
+    "Tinteggiare una stanza",
+    "Riparare una crepa nel muro",
+    "Stuccare un buco nel muro dopo aver tolto un chiodo",
+    "Applicare la carta da parati",
+    "Rifare la fuga delle piastrelle del bagno",
+    "Sostituire una piastrella rotta",
+    "Tinteggiare un soffitto",
+    "Applicare pittura antimuffa in bagno",
+    "Sigillare le fessure attorno agli infissi",
+    "Verniciare un termosifone",
+    "Applicare silicone attorno al lavandino o vasca",
+    "Riparare l'intonaco scrostato",
+    "Dipingere una parete con effetto decorativo semplice",
+    "Rimuovere la muffa dal muro",
+    "Fissare un tassello a muro forato",
+    "Livellare un pavimento con autolivellante",
+    "Sostituire una piastrella scheggiata",
+    "Rasare una parete prima di dipingere",
+    "Applicare una guaina impermeabilizzante",
+    "Sigillare le fughe di un balcone",
+    "Posare piastrelle in un bagno di piccole dimensioni",
+    "Realizzare una parete divisoria in cartongesso",
+    "Isolare una parete esterna con pannelli termici",
+    "Rifare l'intonaco di una stanza intera",
+    "Costruire un controsoffitto in cartongesso",
+    "Realizzare una nicchia decorativa in cartongesso",
+    "Posare un pavimento in laminato flottante",
+    "Impermeabilizzare un terrazzo",
+    "Rifare la pavimentazione esterna con autobloccanti",
+    "Costruire un piccolo muretto divisorio in giardino",
+    "Realizzare una parete in mattoni a vista decorativa",
+    "Applicare rivestimento a cappotto termico esterno",
+    "Sistemare crepe strutturali (valutazione e primo intervento)",
+    "Realizzare una scala esterna in cemento",
+    "Costruire un barbecue in muratura",
+    "Ristrutturare completamente un bagno (progetto generale)",
+    "Realizzare una vasca da giardino in cemento",
+    "Costruire un piccolo forno a legna in muratura",
+    "Rifare il massetto di un pavimento",
+    "Realizzare una tettoia in muratura per l'auto",
+    "Realizzare una nicchia per la TV nel muro",
+    "Sostituire il pavimento del bagno con piastrelle nuove",
+    "Costruire un gradino d'ingresso in cemento",
+    "Realizzare un rivestimento in pietra per una parete",
+    "Sistemare una grondaia distaccata dal muro",
+    "Impermeabilizzare una cantina umida",
+    "Costruire un'aiuola perimetrale in mattoni",
+    "Realizzare una parete divisoria in blocchi di cemento",
+    "Sostituire il rivestimento esterno di un balcone",
+    "Costruire una base in cemento per un gazebo",
+    "Riparare un cornicione esterno danneggiato",
+    "Realizzare un pavimento in resina per garage",
+    "Costruire una vasca per pesci in muratura da giardino",
+    "Sistemare le fughe di un pavimento esterno",
+    "Realizzare un rivestimento a intonaco decorativo veneziano",
+    "Costruire un piccolo ripostiglio esterno in muratura",
+    "Riparare crepe da assestamento in una parete portante (valutazione)",
+    "Realizzare una canna fumaria in muratura",
+    "Costruire una recinzione in blocchi e intonaco",
+    "Ristrutturare un pavimento storico in cotto",
+    "Realizzare un camino decorativo in muratura",
+    "Costruire un pozzo decorativo da giardino",
+    "Sistemare l'intonaco di una facciata esterna",
+    "Realizzare gradini esterni in pietra naturale",
+    "Costruire un muretto a secco decorativo",
+    "Riparare una grondaia in cemento danneggiata",
+    "Realizzare una base in cemento per un capanno",
+    "Sostituire il pavimento di un balcone",
+    "Costruire un caminetto esterno decorativo",
+    "Riparare un tratto di marciapiede in cemento",
+    "Realizzare un rivestimento in klinker per una facciata",
+    "Costruire una fontana decorativa in muratura",
+    "Sistemare l'intonaco interno dopo un'infiltrazione",
+    "Realizzare una scala esterna in pietra",
+    "Costruire un piccolo edificio accessorio in giardino",
+    "Riparare una copertura in tegole danneggiata",
+    "Realizzare l'isolamento a cappotto di un'intera facciata",
+    "Costruire una piscina interrata (progetto complesso)",
+    "Ristrutturare completamente una cucina in muratura",
+    "Realizzare fondamenta per una piccola struttura",
+    "Costruire una piscina interrata rivestita in mosaico",
+    "Realizzare una copertura in tegole fotovoltaiche",
+    "Costruire una veranda in muratura con vetrate",
+    "Ristrutturare completamente una facciata condominiale (parte propria)",
+    "Realizzare una scala interna in cemento armato",
+    "Costruire un garage interrato",
+    "Realizzare un sistema di drenaggio perimetrale per fondazioni",
+    "Costruire una cantina interrata per vini",
+    "Realizzare un pavimento industriale in resina per garage",
+    "Costruire un muro di contenimento per un terreno in pendenza",
+    "Realizzare un tetto verde (giardino pensile)",
+    "Costruire una piscina naturale biologica",
+    "Ristrutturare un sottotetto trasformandolo in mansarda abitabile",
+    "Realizzare un impianto di riscaldamento a pavimento",
+    "Costruire una casetta da giardino in muratura completa",
+    "Realizzare un sistema di isolamento acustico tra piani",
+    "Costruire un ampliamento in muratura di una stanza esistente",
+    "Realizzare una cisterna interrata per l'acqua piovana",
+    "Costruire una scala esterna antincendio in cemento",
+    "Ristrutturare completamente un bagno con nuova disposizione sanitari"
+  ],
+  "mobili": [
+    "Montare un armadio componibile",
+    "Montare una scrivania",
+    "Montare una libreria",
+    "Montare un letto con rete a doghe",
+    "Montare una cabina armadio componibile",
+    "Montare una cucina componibile base",
+    "Montare uno scaffale da garage",
+    "Fissare una TV a muro con staffa",
+    "Montare una scarpiera",
+    "Montare una cassettiera",
+    "Montare un mobiletto porta-TV",
+    "Montare una specchiera da bagno",
+    "Montare un letto a soppalco",
+    "Montare una cuccia per animali componibile",
+    "Montare un tavolo allungabile",
+    "Montare una cucina componibile completa con elettrodomestici",
+    "Montare un armadio a muro su misura",
+    "Assemblare una scrivania ergonomica regolabile in altezza",
+    "Montare un letto contenitore",
+    "Montare una parete attrezzata componibile",
+    "Assemblare mobili per un intero soggiorno",
+    "Montare un mobile bagno sospeso con lavabo",
+    "Montare una cabina armadio con luci integrate",
+    "Assemblare una cucina componibile ad angolo",
+    "Montare un sistema di scaffalature modulari da magazzino",
+    "Montare una consolle da ingresso",
+    "Montare un letto a castello",
+    "Montare un mobile porta-scarpe con panca",
+    "Montare una libreria a giorno componibile",
+    "Montare un mobile bar componibile",
+    "Montare un guardaroba estraibile",
+    "Montare un mobile lavanderia componibile",
+    "Montare un espositore componibile per negozio",
+    "Montare una scrivania ad angolo per ufficio",
+    "Montare un armadio con ante a specchio",
+    "Montare un letto imbottito con contenitore",
+    "Montare una cucina componibile lineare grande",
+    "Montare un mobile TV sospeso a parete",
+    "Montare un vano guardaroba walk-in completo",
+    "Montare arredi componibili per un ufficio intero",
+    "Montare un mobile bagno doppio lavabo",
+    "Montare una cabina armadio a L componibile",
+    "Montare un sistema di mensole modulari per negozio",
+    "Montare una cucina componibile con isola centrale",
+    "Montare un intero arredamento camera da letto",
+    "Montare un mobile porta-stampante per ufficio",
+    "Montare una cassapanca portaoggetti",
+    "Montare un mobile per la lavanderia con cesti estraibili",
+    "Montare uno scaffale industriale per magazzino",
+    "Montare un mobile ingresso con appendiabiti integrato",
+    "Montare un letto trasformabile a scomparsa (letto a muro)",
+    "Montare arredi per una cameretta bambini completa",
+    "Montare un mobile porta-attrezzature audio/video",
+    "Montare un sistema di ante scorrevoli per armadio a muro",
+    "Montare arredi componibili per una mansarda",
+    "Montare un bancone bar componibile per casa",
+    "Montare un intero salotto componibile ad angolo",
+    "Montare un mobile contenitore multiuso per garage",
+    "Montare arredi per uno studio/ufficio in casa completo",
+    "Montare una cabina armadio ad angolo su misura",
+    "Montare un mobile porta-TV con vano cavi nascosti",
+    "Montare arredi per un negozio con espositori a muro",
+    "Montare un mobile bagno con doppio cassettone",
+    "Montare una parete libreria a tutta altezza",
+    "Montare un intero set camera da letto matrimoniale",
+    "Montare un mobile porta-vini a muro",
+    "Montare un set di comodini abbinati al letto",
+    "Montare un mobile lavabo con specchio integrato",
+    "Montare arredi per un angolo studio compatto",
+    "Montare uno scaffale a scala decorativo",
+    "Montare un mobile porta-scarpe verticale salvaspazio",
+    "Montare un armadio blindato o corazzato",
+    "Montare arredi per un bar/tavola calda componibili",
+    "Montare un intero arredo cucina con isola e penisola",
+    "Montare arredi modulari per una palestra domestica",
+    "Montare un mobile contenitore sottoscala su misura",
+    "Montare un sistema letto-armadio salvaspazio (letto Murphy)",
+    "Montare arredi per una reception di un piccolo studio",
+    "Montare un guardaroba a vista con struttura in metallo e legno",
+    "Montare un intero arredamento per un monolocale",
+    "Montare un mobile porta-attrezzi da officina componibile",
+    "Montare una cabina armadio a isola centrale",
+    "Montare un intero negozio con scaffalature a muro e isola",
+    "Montare una cucina componibile con dispensa a colonna",
+    "Montare un ufficio open space con postazioni modulari",
+    "Montare un mobile bar da giardino componibile",
+    "Montare un letto matrimoniale con testiera imbottita su misura",
+    "Montare un intero showroom espositivo componibile",
+    "Montare una palestra domestica con arredi modulari",
+    "Montare un mobile da studio fotografico componibile",
+    "Montare un intero salone di bellezza con postazioni componibili",
+    "Montare una cabina prova componibile per un negozio",
+    "Montare un intero magazzino con scaffalature industriali",
+    "Montare arredi componibili per una sala conferenze",
+    "Montare un mobile bar completo con cantinetta vino integrata",
+    "Montare un mobile porta-scarpe estraibile salvaspazio",
+    "Montare una parete divisoria con libreria integrata",
+    "Montare un ripostiglio componibile in mansarda",
+    "Montare un mobile bagno con lavabo doppio e specchi retroilluminati",
+    "Montare un intero atelier di sartoria con arredi su misura"
+  ],
+  "giardinaggio": [
+    "Piantare un prato da zero",
+    "Potare una siepe",
+    "Installare un impianto di irrigazione goccia a goccia",
+    "Costruire una piccola aiuola rialzata",
+    "Trattare le piante da malattie fungine comuni",
+    "Installare un impianto di illuminazione da giardino a basso voltaggio",
+    "Rinvasare una pianta",
+    "Costruire un compostaggio fai-da-te",
+    "Installare una grondaia per la raccolta acqua piovana",
+    "Montare un gazebo da giardino",
+    "Costruire un orto rialzato",
+    "Installare una rete paravento",
+    "Piantare siepi da confine",
+    "Trattare il prato dalle erbacce",
+    "Installare un timer per l'irrigazione automatica",
+    "Costruire un piccolo laghetto da giardino",
+    "Installare un sistema di irrigazione a pioggia per il prato",
+    "Costruire una serra da giardino",
+    "Realizzare un vialetto in ghiaia o pietra",
+    "Costruire una pergola in legno per rampicanti",
+    "Installare pannelli solari da giardino per illuminazione",
+    "Progettare e realizzare un giardino roccioso",
+    "Costruire una recinzione perimetrale completa",
+    "Installare un sistema di irrigazione automatico con centralina",
+    "Realizzare un impianto di drenaggio per un giardino allagato",
+    "Piantare alberi da frutto in giardino",
+    "Costruire un pergolato metallico con base in cemento",
+    "Realizzare un prato sintetico da giardino",
+    "Installare fioriere autoirriganti da balcone",
+    "Costruire una casetta da attrezzi in giardino",
+    "Realizzare un percorso pedonale in pietra naturale",
+    "Installare una centralina di irrigazione smart",
+    "Costruire un muretto per aiuola rialzata in pietra",
+    "Realizzare un giardino verticale su parete",
+    "Installare un impianto di illuminazione a energia solare",
+    "Costruire una piscina fuori terra con base",
+    "Realizzare un sistema di compostaggio a due vasche",
+    "Piantare una siepe da frutto per confine",
+    "Costruire una voliera da giardino",
+    "Realizzare un impianto di irrigazione interrato completo",
+    "Installare grondaie e pluviali su una tettoia da giardino",
+    "Costruire un pollaio da giardino",
+    "Realizzare terrazzamenti su un giardino in pendenza",
+    "Installare un sistema di illuminazione decorativa per alberi",
+    "Costruire una zona barbecue attrezzata in giardino",
+    "Realizzare un orto sinergico rialzato",
+    "Costruire una capanna in legno per attrezzi da giardino",
+    "Installare un sistema anti-zanzare da giardino",
+    "Realizzare un prato in rotoli (zolle pronte)",
+    "Costruire una struttura per orto verticale idroponico",
+    "Installare reti ombreggianti per il giardino",
+    "Realizzare bordure decorative con pietre naturali",
+    "Costruire un ricovero invernale per piante delicate",
+    "Installare un sistema di nebulizzazione per terrazza",
+    "Realizzare un giardino roccioso con piante grasse",
+    "Costruire una serra fredda per semenzai",
+    "Installare grondaie decorative in rame per il giardino",
+    "Realizzare un percorso illuminato nel giardino",
+    "Costruire un piccolo ponte decorativo su un laghetto",
+    "Installare un sistema di raccolta e filtraggio acqua per irrigazione",
+    "Realizzare una staccionata decorativa in legno",
+    "Costruire fioriere sospese per balcone",
+    "Installare tende a vela ombreggianti da giardino",
+    "Realizzare un sentiero in traversine di legno",
+    "Costruire una struttura per orto rialzato con copertura",
+    "Installare un sistema di compostaggio con vermi (vermicompostaggio)",
+    "Realizzare una zona relax con amache e pergolato",
+    "Costruire fioriere in muratura per il terrazzo",
+    "Installare grondaie con filtro foglie per il giardino",
+    "Realizzare un giardino a basso consumo d'acqua (xeriscaping)",
+    "Costruire una tettoia leggera per l'orto",
+    "Installare un impianto di irrigazione a subirrigazione",
+    "Realizzare bordure in legno per i vialetti del giardino",
+    "Costruire una struttura per rampicanti sul balcone",
+    "Installare protezioni invernali per l'impianto di irrigazione",
+    "Realizzare un giardino zen in miniatura",
+    "Costruire una casetta per insetti impollinatori",
+    "Installare un impianto di irrigazione a energia solare",
+    "Realizzare un orto pensile sul tetto",
+    "Costruire una vasca idroponica per ortaggi",
+    "Realizzare un giardino mediterraneo a bassa manutenzione",
+    "Costruire una serra riscaldata per coltivazioni invernali",
+    "Realizzare un impianto di fitodepurazione per acque grigie",
+    "Costruire una piscina naturale con filtrazione biologica",
+    "Realizzare un giardino sensoriale per non vedenti",
+    "Costruire una struttura per orticoltura verticale su balcone",
+    "Realizzare un frutteto con impianto di irrigazione dedicato",
+    "Costruire una zona pic-nic attrezzata in giardino",
+    "Realizzare un giardino d'inverno vetrato",
+    "Costruire un sistema di raccolta e riciclo dell'acqua da irrigazione",
+    "Realizzare un labirinto vegetale decorativo",
+    "Costruire una voliera da giardino di grandi dimensioni",
+    "Realizzare un giardino roccioso alpino con piante specifiche",
+    "Costruire un sistema di illuminazione paesaggistica avanzato",
+    "Realizzare un orto didattico per bambini",
+    "Realizzare un vigneto domestico con struttura a pergola",
+    "Costruire un impianto di apicoltura da giardino",
+    "Realizzare un giardino tropicale in serra riscaldata",
+    "Costruire una zona relax con vasca idromassaggio da esterno",
+    "Realizzare un giardino commestibile con erbe aromatiche e ortaggi misti"
+  ],
+  "hobby": [
+    "Creare un gioiello con la resina epossidica",
+    "Restaurare una sedia in legno vintage",
+    "Cucire un semplice cuscino",
+    "Costruire una cornice per foto fai-da-te",
+    "Dipingere un mobile con la tecnica shabby chic",
+    "Creare candele artigianali",
+    "Fare un terrario in vetro",
+    "Creare un porta-chiavi da parete",
+    "Rilegare un piccolo quaderno a mano",
+    "Costruire una mangiatoia per uccellini",
+    "Realizzare un decoupage su legno",
+    "Creare un quadro con pittura acrilica fluida",
+    "Costruire una casetta per uccelli in legno",
+    "Cucire una borsa di stoffa semplice",
+    "Creare un mosaico decorativo",
+    "Realizzare gioielli in filo di rame e perline",
+    "Costruire un piccolo presepe in legno",
+    "Creare saponi artigianali naturali",
+    "Realizzare un album fotografico scrapbooking",
+    "Costruire un modellino in legno di una barca",
+    "Creare bigiotteria con resina e fiori secchi",
+    "Restaurare completamente un vecchio baule",
+    "Costruire un diorama dettagliato",
+    "Realizzare un intaglio artistico su legno",
+    "Creare una collezione di mobili in miniatura",
+    "Creare bracciali con nodi macramè",
+    "Costruire un acquario tematico decorato",
+    "Realizzare un quadro con tecnica pirografia su legno",
+    "Creare accessori in feltro cucito a mano",
+    "Costruire un piccolo robot con kit elettronico",
+    "Realizzare stampe artigianali con linoleografia",
+    "Creare gioielli con la tecnica del wire wrapping",
+    "Costruire un plastico ferroviario in miniatura",
+    "Realizzare ceramiche dipinte a mano",
+    "Creare un erbario decorativo da parete",
+    "Costruire una libreria di modellini in scala",
+    "Realizzare candele scolpite artigianali",
+    "Creare bigiotteria con perline di vetro di Murano",
+    "Costruire una teca espositiva per collezioni",
+    "Realizzare un quadro botanico con fiori pressati",
+    "Creare un set di coltelli da cucina personalizzati",
+    "Costruire una piccola forgia per lavorazione metalli hobbistica",
+    "Realizzare intagli su sapone decorativo",
+    "Creare un diorama storico dettagliato",
+    "Costruire un modellino di aereo radiocomandato",
+    "Realizzare stampe artigianali con la tecnica del monotipo",
+    "Costruire un piccolo tornio per lavorare il legno hobbistico",
+    "Creare gioielli con la tecnica della cera persa",
+    "Realizzare un presepe artistico dettagliato",
+    "Costruire un modellino di casa in miniatura completo",
+    "Creare tappeti intrecciati a mano",
+    "Realizzare quadri con la tecnica del pointillisme",
+    "Costruire una collezione di soldatini dipinti a mano",
+    "Creare gioielli in argento con tecniche base di oreficeria",
+    "Realizzare un plastico di un paesaggio storico",
+    "Costruire strumenti musicali semplici fai-da-te",
+    "Creare bigiotteria ispirata a stili etnici",
+    "Realizzare sculture in filo di ferro",
+    "Costruire scenografie in miniatura per fotografia",
+    "Creare una collezione di ceramiche raku",
+    "Creare accessori in pelle cuciti a mano",
+    "Realizzare un quadro con la tecnica del collage",
+    "Costruire una piccola pressa per fiori essiccati",
+    "Creare gioielli in filo di alluminio colorato",
+    "Realizzare un libro pop-up artigianale",
+    "Costruire un modellino di veliero in scala",
+    "Creare decorazioni natalizie artigianali",
+    "Realizzare un mosaico in vetro colorato per finestra",
+    "Costruire una collezione di aquiloni decorativi",
+    "Creare bigiotteria con tecnica quilling (carta arrotolata)",
+    "Realizzare sculture in das o pasta di sale",
+    "Costruire un piccolo carillon musicale",
+    "Creare tele dipinte con la tecnica dello spray painting",
+    "Realizzare bomboniere artigianali personalizzate",
+    "Costruire un espositore da collezione per action figure",
+    "Creare una collezione di orologi da polso artigianali",
+    "Realizzare un dipinto murale decorativo",
+    "Costruire un plastico di un circuito automobilistico",
+    "Creare gioielli con smalti a fuoco su rame",
+    "Realizzare una collezione di burattini fatti a mano",
+    "Creare gioielli con tecniche di smaltatura a caldo avanzate",
+    "Realizzare un plastico ferroviario in scala con paesaggio completo",
+    "Costruire una collezione di modellini navali storici",
+    "Creare tessuti stampati a mano con tecnica batik",
+    "Realizzare una collezione di maschere artigianali",
+    "Costruire un teatrino di burattini completo",
+    "Creare gioielli in titanio anodizzato colorato",
+    "Realizzare un erbario scientifico con classificazione botanica",
+    "Costruire una collezione di strumenti musicali etnici",
+    "Creare opere in vetro soffiato hobbistico",
+    "Realizzare una collezione di miniature storiche in scala",
+    "Costruire un plastico di una città in miniatura",
+    "Creare gioielli con tecnica di filigrana",
+    "Realizzare una collezione di ceramiche invetriate",
+    "Costruire strumenti di precisione in legno e metallo",
+    "Creare una collezione di orologi da taschino restaurati",
+    "Realizzare sculture in metallo con saldatura ad arco hobbistica",
+    "Costruire un planetario in miniatura funzionante",
+    "Creare tessuti ricamati con tecniche tradizionali",
+    "Realizzare una collezione completa di modellismo statico militare"
+  ]
+};
+// scripts/api-key.js
+// Tutta la gestione della chiave: resta SEMPRE e SOLO nel browser dell'utente.
+
+const API_KEY_STORAGE_KEY = 'faidate_api_key';
+
+function getApiKey() {
+  return localStorage.getItem(API_KEY_STORAGE_KEY) || '';
+}
+
+function setApiKey(key) {
+  localStorage.setItem(API_KEY_STORAGE_KEY, key);
+}
+
+function clearApiKey() {
+  localStorage.removeItem(API_KEY_STORAGE_KEY);
+}
+
+function initApiKeyUI() {
+  const btn = document.getElementById('apiKeyBtn');
+  const overlay = document.getElementById('apiModalOverlay');
+  const input = document.getElementById('apiKeyInput');
+  const status = document.getElementById('apiKeyStatus');
+
+  if (!btn || !overlay) return; // componenti non ancora pronti
+
+  function refreshStatus() {
+    status.textContent = getApiKey()
+      ? '✅ Chiave salvata in questo browser.'
+      : '⚠️ Nessuna chiave salvata.';
+  }
+
+  function refreshDisclaimer() {
+    const disclaimer = document.getElementById('apiKeyDisclaimer');
+    if (!disclaimer) return;
+    disclaimer.classList.toggle('hidden', !!getApiKey());
+  }
+
+  // Controllo iniziale all'avvio: se la chiave c'è già, il disclaimer resta nascosto.
+  refreshDisclaimer();
+
+  btn.addEventListener('click', () => {
+    input.value = getApiKey();
+    overlay.classList.remove('hidden');
+    refreshStatus();
+  });
+
+  document.getElementById('apiKeyClose').addEventListener('click', () => {
+    overlay.classList.add('hidden');
+  });
+
+  document.getElementById('apiKeySave').addEventListener('click', () => {
+    setApiKey(input.value.trim());
+    refreshStatus();
+    refreshDisclaimer();
+  });
+
+  document.getElementById('apiKeyClear').addEventListener('click', () => {
+    clearApiKey();
+    input.value = '';
+    refreshStatus();
+    refreshDisclaimer();
+  });
+}
+
+// I componenti vengono iniettati in modo asincrono dal loader,
+// quindi aspettiamo l'evento invece di DOMContentLoaded.
+document.addEventListener('components:ready', initApiKeyUI);
+
+
+// scripts/help-guide.js
+// Gestisce apertura/chiusura della finestra "Guida all'uso del programma",
+// richiamabile sia dal bottone rosso nell'header sia dal disclaimer sotto
+// la barra di ricerca quando manca la chiave API.
+
+function apriGuidaAiuto() {
+  const overlay = document.getElementById('helpModalOverlay');
+  if (overlay) overlay.classList.remove('hidden');
+}
+
+function chiudiGuidaAiuto() {
+  const overlay = document.getElementById('helpModalOverlay');
+  if (overlay) overlay.classList.add('hidden');
+}
+
+function initHelpGuide() {
+  const helpBtn = document.getElementById('helpBtn');
+  const closeBtn = document.getElementById('helpModalClose');
+  const overlay = document.getElementById('helpModalOverlay');
+  const disclaimerLink = document.getElementById('disclaimerHelpLink');
+
+  if (helpBtn) helpBtn.addEventListener('click', apriGuidaAiuto);
+  if (closeBtn) closeBtn.addEventListener('click', chiudiGuidaAiuto);
+  if (disclaimerLink) disclaimerLink.addEventListener('click', apriGuidaAiuto);
+
+  // Clic fuori dal riquadro chiude la finestra
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) chiudiGuidaAiuto();
+    });
+  }
+}
+
+document.addEventListener('components:ready', initHelpGuide);
+
+
+// scripts/categories-data.js
+// Carica data/categories.json e data/jobs.json, disegna le linguette
+// categoria a sinistra e il pannello lavori a destra.
+
+let CATEGORIES = {};
+let JOBS = {};
+
+// Colore accento per categoria: solo estetico, non tocca la logica dei dati.
+const ACCENTI_CATEGORIA = {
+  idraulica: '#4fd1ff',
+  elettricita: '#f4c430',
+  falegnameria: '#c98a4b',
+  muratura: '#e07a5f',
+  mobili: '#9b8cf2',
+  giardinaggio: '#6fbf73',
+  hobby: '#ff8fb1'
+};
+
+async function loadCategories() {
+  CATEGORIES = window.__CATEGORIES__;
+  JOBS = window.__JOBS__;
+  renderCategories();
+}
+
+function renderCategories() {
+  const tabs = document.getElementById('categoriesTabs');
+  if (!tabs) return;
+
+  tabs.innerHTML = Object.entries(CATEGORIES).map(([key, cat]) => `
+    <button class="category-tab" data-category="${key}" style="--accent:${ACCENTI_CATEGORIA[key] || ''}">
+      <span class="category-tab-icon">${cat.icon}</span>
+      <span class="category-tab-label">${cat.label}</span>
+    </button>
+  `).join('');
+
+  tabs.querySelectorAll('.category-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const giaAttiva = btn.classList.contains('active');
+      if (giaAttiva) {
+        chiudiPannelloCategorie();
+      } else {
+        selezionaCategoria(btn.dataset.category);
+      }
+    });
+  });
+}
+
+function selezionaCategoria(key) {
+  document.querySelectorAll('.category-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.category === key);
+  });
+
+  const container = document.getElementById('jobsListContainer');
+  const title = document.getElementById('jobsListTitle');
+  const list = document.getElementById('jobsList');
+  const lavori = JOBS[key] || [];
+
+  title.textContent = `Lavori di ${CATEGORIES[key]?.label || key}`;
+  list.innerHTML = lavori.length
+    ? `<ul class="jobs-ul">${lavori.map(l => `
+        <li><button class="job-item" data-job="${encodeURIComponent(l)}">${l}</button></li>
+      `).join('')}</ul>`
+    : '<p class="muted">Nessun lavoro precaricato per questa categoria.</p>';
+
+  list.querySelectorAll('.job-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const testo = decodeURIComponent(btn.dataset.job);
+      const input = document.getElementById('queryInput');
+      input.value = testo;
+      input.dataset.category = key;
+      list.querySelectorAll('.job-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('search-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+
+  container.classList.remove('hidden');
+}
+
+function chiudiPannelloCategorie() {
+  document.getElementById('jobsListContainer').classList.add('hidden');
+  document.querySelectorAll('.category-tab').forEach(b => b.classList.remove('active'));
+}
+
+document.addEventListener('components:ready', () => {
+  const closeBtn = document.getElementById('jobsPanelClose');
+  if (closeBtn) closeBtn.addEventListener('click', chiudiPannelloCategorie);
+});
+
+document.addEventListener('components:ready', loadCategories);
+
+
+// scripts/gemini-api.js
+// Chiamata reale all'API Gemini. La chiave resta nel browser (localStorage),
+// letta con getApiKey() da api-key.js. Chiediamo a Gemini di rispondere
+// direttamente in JSON, cosi non serve fare parsing fragile di testo libero.
+
+const MODELLI_TESTO = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
+
+// Modelli dedicati all'analisi delle foto, con quota separata da quella dei
+// modelli testuali sopra (verificati dalla dashboard quote dell'account).
+// Sono 4 a scalare (non solo 2) perché la quota giornaliera di ciascuno è
+// più bassa: così abbiamo più tentativi complessivi disponibili al giorno
+// prima che l'analisi foto smetta di funzionare del tutto.
+const MODELLI_VISIONE = ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.8-flash'];
+
+function urlPerModello(modello) {
+  return `https://generativelanguage.googleapis.com/v1beta/models/${modello}:generateContent`;
+}
+
+// Un errore fa scattare il tentativo automatico col modello di riserva se:
+// - 429/503: quota esaurita o sovraccarico temporaneo
+// - 404: il modello non esiste più/è stato rinominato da Google (capitato
+//   già una volta con questo progetto) — meglio provare la riserva che
+//   bloccare subito l'utente.
+function erroreDaSovraccaricoOQuota(status, corpoErrore) {
+  if (status === 429 || status === 503 || status === 404) return true;
+  const testo = (corpoErrore || '').toLowerCase();
+  return testo.includes('resource_exhausted') || testo.includes('quota') || testo.includes('overloaded') || testo.includes('not found');
+}
+
+// Esegue la chiamata HTTP a Gemini con un modello specifico.
+// Ritorna { ok, status, data, corpoErroreGrezzo }.
+async function eseguiChiamataGemini(modello, key, body) {
+  const response = await fetch(`${urlPerModello(modello)}?key=${encodeURIComponent(key)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    const corpoErroreGrezzo = await response.text().catch(() => '');
+    return { ok: false, status: response.status, corpoErroreGrezzo };
+  }
+
+  const data = await response.json();
+  return { ok: true, status: response.status, data };
+}
+
+// Prova ogni modello della lista in ordine. Se uno risponde con quota
+// esaurita, sovraccarico, o non trovato (404, capitato in passato con
+// rinominazioni di Google), passa automaticamente al successivo della
+// lista. Per qualunque altro tipo di errore (es. chiave sbagliata) si
+// ferma subito, senza provare gli altri modelli. Se TUTTI i modelli della
+// lista falliscono per quota/sovraccarico, lancia un errore speciale
+// riconoscibile (vedi ERRORE_QUOTA_ESAURITA_TUTTI).
+const ERRORE_QUOTA_ESAURITA_TUTTI = 'QUOTA_ESAURITA_TUTTI_I_MODELLI';
+
+async function chiamaGeminiConRiservaGenerico(modelli, body) {
+  const key = getApiKey();
+  if (!key) {
+    throw new Error('Nessuna API key impostata. Clicca su "API Key" in alto.');
+  }
+
+  let ultimoErroreDiQuota = null;
+
+  for (let i = 0; i < modelli.length; i++) {
+    const tentativo = await eseguiChiamataGemini(modelli[i], key, body);
+    if (tentativo.ok) return tentativo.data;
+
+    if (erroreDaSovraccaricoOQuota(tentativo.status, tentativo.corpoErroreGrezzo)) {
+      ultimoErroreDiQuota = tentativo;
+      continue; // prova il prossimo modello della lista
+    }
+
+    // Errore di altro tipo (es. chiave non valida): ci fermiamo subito.
+    throw new Error(`Errore dall'API (${tentativo.status}). Controlla che la chiave sia corretta. ${tentativo.corpoErroreGrezzo.slice(0, 200)}`);
+  }
+
+  // Tutti i modelli hanno fallito per quota/sovraccarico.
+  const err = new Error(ERRORE_QUOTA_ESAURITA_TUTTI);
+  err.dettaglio = ultimoErroreDiQuota;
+  throw err;
+}
+
+// Wrapper per le chiamate di generazione guida/approfondimenti (testo).
+function chiamaGeminiConRiserva(body) {
+  return chiamaGeminiConRiservaGenerico(MODELLI_TESTO, body);
+}
+
+// Wrapper per le chiamate di analisi foto (modelli separati, quota separata).
+function chiamaGeminiVisioneConRiserva(body) {
+  return chiamaGeminiConRiservaGenerico(MODELLI_VISIONE, body);
+}
+
+function contestoDettagli(dettagli) {
+  if (!dettagli) return '';
+  const righe = [];
+  if (dettagli.materiale) righe.push(`Materiale/i che l'utente ha già (marca/modello) — se sono elencati più elementi separati da virgola, trattali come materiali distinti: ${dettagli.materiale}.`);
+  if (dettagli.elettrodomestico) righe.push(`Elettrodomestico/i o oggetto/i da collegare o installare (marca/modello) — se sono elencati più elementi separati da virgola, trattali come oggetti distinti: ${dettagli.elettrodomestico}.`);
+  if (righe.length === 0) return '';
+  return `\nDETTAGLI FORNITI DALL'UTENTE (usali per personalizzare la guida, es. tipo di cavo, sezione, attacchi specifici; se un campo contiene più valori separati da virgola, considerali singolarmente uno per uno):\n${righe.join('\n')}\n`;
+}
+
+function costruisciPrompt(domanda, categoria, dettagli, descrizioneFoto) {
+  const contestoCategoria = categoria && CATEGORIES[categoria]
+    ? `La categoria scelta dall'utente è: ${CATEGORIES[categoria].label}. Considerala come contesto principale.`
+    : 'L\'utente non ha scelto una categoria specifica: deducila tu dal contenuto della domanda.';
+
+  const contestoFoto = descrizioneFoto
+    ? `\nDESCRIZIONE DI UNA FOTO ALLEGATA DALL'UTENTE (analizzata separatamente, usala come contesto reale per personalizzare la guida):\n${descrizioneFoto}\n`
+    : '';
+
+  return `Sei un esperto di fai-da-te e riparazioni domestiche con 30 anni di esperienza.
+${contestoCategoria}
+
+DOMANDA DELL'UTENTE: "${domanda}"
+${contestoDettagli(dettagli)}${contestoFoto}
+Rispondi SOLO con un oggetto JSON valido (nessun testo prima o dopo, nessun blocco markdown \`\`\`), con esattamente questa struttura:
+
+{
+  "titolo": "string",
+  "categoria": "string (una tra: idraulica, elettricita, falegnameria, muratura, mobili, giardinaggio, hobby, generico)",
+  "difficolta": "Facile" | "Media" | "Difficile",
+  "tempoStimato": "string, es. '30 minuti'",
+  "attrezzi": ["string", "..."],
+  "materiali": [ { "nome": "string", "prezzoIndicativo": "string, es. '€5' o '€3-6'" } ],
+  "passaggi": [ { "titolo": "string breve", "descrizione": "string dettagliata", "terminiRicercaImmagine": "string breve in italiano o inglese, 2-5 parole, per trovare una foto di riferimento di questa azione specifica" } ],
+  "avvertenzeSicurezza": ["string", "..."],
+  "lavoroSconsigliato": boolean,
+  "motivoSeSconsigliato": "string o stringa vuota",
+  "consigli": ["string", "..."],
+  "costoProfessionista": numero (solo euro, senza simbolo),
+  "costoFaiDaTe": numero (solo euro, senza simbolo, somma dei materiali)
+}
+
+Regole:
+- Se sono forniti dettagli su materiale già posseduto o elettrodomestico da collegare, usa quelle informazioni per personalizzare attrezzi, materiali (es. sezione cavo corretta, tipo di attacco) e passaggi, invece di restare generico.
+- Se è presente una descrizione di una foto allegata, usala attivamente per personalizzare la guida (es. suggerire il trattamento giusto in base allo stato reale della parete, il colore più adatto, se una soluzione incassata o esterna è più indicata, ecc), e menziona esplicitamente cosa hai notato nella foto quando è rilevante per un passaggio.
+- Se il lavoro richiede competenze pericolose o abilitazioni professionali (es. impianto gas, lavori su quadro elettrico non protetti, strutture portanti), imposta "lavoroSconsigliato": true e spiega il motivo, ma compila comunque gli altri campi con informazioni generali e di sicurezza.
+- I passaggi devono essere concreti e in ordine logico, minimo 3 passaggi.
+- Le avvertenze di sicurezza sono obbligatorie, minimo 1.
+- I prezzi sono stime realistiche per l'Italia.
+- Il campo "terminiRicercaImmagine" deve essere una query concreta e visiva (es. "sostituzione guarnizione rubinetto cucina", non parole vaghe), utile per trovare una foto di riferimento reale su un motore di ricerca immagini.
+- Non inserire mai link o URL a negozi/prodotti: non conosci prodotti realmente in vendita, qualsiasi link inventeresti sarebbe falso o rotto.
+- Non aggiungere testo fuori dal JSON.`;
+}
+
+async function chiamataGeminiJson(prompt) {
+  const data = await chiamaGeminiConRiserva({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: {
+      temperature: 0.6,
+      response_mime_type: 'application/json'
+    }
+  });
+
+  const testoGrezzo = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!testoGrezzo) {
+    throw new Error('Risposta dell\'AI vuota o in formato inatteso.');
+  }
+  return testoGrezzo;
+}
+
+async function chiamaAI(domanda, categoria, dettagli, immagini) {
+  let descrizioneFoto = '';
+  let avvisoFoto = null;
+
+  if (immagini && immagini.length > 0) {
+    const risultatoFoto = await chiamaAnalisiFoto(immagini, domanda);
+    descrizioneFoto = risultatoFoto.descrizione;
+    avvisoFoto = risultatoFoto.avviso;
+  }
+
+  const prompt = costruisciPrompt(domanda, categoria, dettagli, descrizioneFoto);
+  const testoGrezzo = await chiamataGeminiJson(prompt);
+
+  let guida;
+  try {
+    guida = JSON.parse(testoGrezzo);
+  } catch (e) {
+    throw new Error('Non sono riuscito a leggere la risposta dell\'AI come JSON valido. Riprova.');
+  }
+
+  const guidaArricchita = arricchisciConRisparmio(guida);
+  guidaArricchita.avvisoFoto = avvisoFoto;
+  return guidaArricchita;
+}
+
+// Analizza una o più foto allegate dall'utente con un modello di visione
+// separato da quelli usati per generare la guida (quota indipendente).
+// Ritorna una descrizione testuale semplice, poi usata come contesto extra
+// nel prompt che genera la guida vera e propria.
+// Analizza le foto con i modelli di visione a scalare. Non lancia mai un
+// errore che blocca tutto: se l'analisi fallisce (quota esaurita su tutti
+// i modelli, o qualunque altro problema), restituisce un avviso e la guida
+// verrà comunque generata normalmente, come se non ci fossero foto.
+async function chiamaAnalisiFoto(immagini, domanda) {
+  const parti = immagini.slice(0, 4).map(img => ({
+    inline_data: { mime_type: img.mimeType, data: img.base64 }
+  }));
+
+  const promptAnalisi = `Guarda attentamente la/le foto allegate. L'utente vuole fare questo lavoro: "${domanda}".
+Descrivi in modo semplice e concreto ciò che vedi nella foto, in relazione a questo lavoro: materiali visibili, colori, stato attuale (usurato, nuovo, danneggiato, con muffa, con crepe, ecc.), dimensioni indicative se deducibili, e qualunque dettaglio utile per consigliare la soluzione migliore.
+Non inventare dettagli che non vedi. Se la foto non è chiara o non è pertinente al lavoro descritto, dillo onestamente.
+Rispondi in italiano, testo semplice senza markdown, massimo 150 parole.`;
+
+  try {
+    const data = await chiamaGeminiVisioneConRiserva({
+      contents: [{ parts: [...parti, { text: promptAnalisi }] }],
+      generationConfig: { temperature: 0.4 }
+    });
+
+    const testo = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    return { descrizione: testo ? testo.trim() : '', avviso: null };
+  } catch (e) {
+    const avviso = e.message === ERRORE_QUOTA_ESAURITA_TUTTI
+      ? 'L\'analizzatore di foto ha esaurito la quota giornaliera disponibile: la guida è stata generata senza usare le foto allegate.'
+      : 'Non è stato possibile analizzare le foto in questo momento: la guida è stata generata senza usare le foto allegate.';
+    return { descrizione: '', avviso };
+  }
+}
+
+// Se l'AI non fornisce costi coerenti, usiamo i prezzi medi di categoria
+// come fallback (vedi data/categories.json).
+function arricchisciConRisparmio(guida) {
+  const cat = CATEGORIES[guida.categoria] || CATEGORIES['generico'] || null;
+  const fallbackProfessionista = cat?.prezziMedi?.default ?? 100;
+
+  const costoProfessionista = Number.isFinite(guida.costoProfessionista)
+    ? guida.costoProfessionista
+    : fallbackProfessionista;
+
+  const costoFaiDaTe = Number.isFinite(guida.costoFaiDaTe)
+    ? guida.costoFaiDaTe
+    : Math.round(costoProfessionista * 0.25);
+
+  const risparmio = Math.max(costoProfessionista - costoFaiDaTe, 0);
+  const percentuale = costoProfessionista > 0
+    ? Math.round((risparmio / costoProfessionista) * 100)
+    : 0;
+
+  return {
+    ...guida,
+    costoProfessionista,
+    costoFaiDaTe,
+    risparmio,
+    percentualeRisparmio: percentuale
+  };
+}
+
+// Funzione comune per chiamate che vogliono testo semplice (non JSON).
+async function chiamaTestoLibero(prompt) {
+  const data = await chiamaGeminiConRiserva({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.6 }
+  });
+
+  const testo = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!testo) throw new Error('Risposta vuota dall\'AI.');
+  return testo.trim();
+}
+
+// Approfondimento: manda alla AI la domanda originale + la guida gia'
+// generata come contesto, cosi' la risposta resta pertinente. Qui la
+// risposta e' testo semplice, non serve JSON strutturato.
+async function chiamaApprofondimento(contesto, domandaFollowup) {
+  const { domanda, dettagli, guida } = contesto;
+
+  const prompt = `Sei lo stesso esperto di fai-da-te che ha già scritto questa guida.
+
+DOMANDA ORIGINALE DELL'UTENTE: "${domanda}"
+${contestoDettagli(dettagli)}
+GUIDA GIA' FORNITA (titolo): "${guida.titolo}"
+Materiali già indicati: ${(guida.materiali || []).map(m => m.nome).join(', ') || 'nessuno'}
+Passaggi già indicati: ${(guida.passaggi || []).map(p => p.titolo || p.descrizione).join(' | ') || 'nessuno'}
+
+NUOVA RICHIESTA DELL'UTENTE: "${domandaFollowup}"
+
+Questa richiesta può essere: (a) un'altra domanda di approfondimento generale, oppure (b) la segnalazione di un problema o intoppo concreto incontrato durante il lavoro (es. non ha un attrezzo specifico, il muro è di un materiale particolare, ha trovato qualcosa di diverso dal previsto, ecc).
+
+Se è un problema/intoppo concreto: proponi un adattamento pratico del procedimento, come una mini guida alternativa numerata passo-passo (1, 2, 3...) tenendo conto del problema segnalato, restando concreto e sicuro.
+Se è una domanda generica di approfondimento: rispondi in modo diretto e pratico.
+
+Rispondi in italiano, massimo 200 parole, senza ripetere tutta la guida originale da capo. Rispondi solo testo semplice, senza JSON, senza markdown e senza inserire link o URL: non conosci prodotti reali in vendita, quindi non inventare link a negozi (puoi usare numeri tipo "1." "2." per elenchi).`;
+
+  return chiamaTestoLibero(prompt);
+}
+
+// Spiega in dettaglio un singolo passo, in modo ordinato e comprensibile
+// anche per chi non ha esperienza, senza lasciare nulla al caso.
+async function chiamaDettaglioPasso(contesto, indicePasso) {
+  const { domanda, dettagli, guida } = contesto;
+  const passo = guida.passaggi?.[indicePasso];
+  if (!passo) throw new Error('Passo non trovato.');
+
+  const prompt = `Sei un esperto di fai-da-te che sta aiutando un principiante totale.
+
+LAVORO COMPLESSIVO: "${domanda}" (guida: "${guida.titolo}")
+${contestoDettagli(dettagli)}
+PASSO DA APPROFONDIRE: "${passo.titolo || ''}" — ${passo.descrizione}
+
+Spiega questo singolo passo in modo molto più dettagliato, come se lo spiegassi a chi non ha mai fatto nulla di simile in vita sua. Struttura la spiegazione in sotto-passaggi numerati piccoli e concreti (es. "1. Prendi in mano...", "2. Posiziona...", ecc), senza dare per scontato nulla: menziona come tenere in mano gli attrezzi se rilevante, in che verso girare/spingere, come capire se stai facendo bene, ed eventuali segnali di errore da notare.
+
+Rispondi in italiano, testo semplice senza markdown e senza inserire link o URL, massimo 220 parole, ma completo e ordinato (usa numeri "1." "2." "3." per i sotto-passaggi).`;
+
+  return chiamaTestoLibero(prompt);
+}
+
+// Risponde a una domanda specifica su un termine/azione citato in un passo
+// (es. "cos'è una scatola di derivazione?"), in modo breve e mirato.
+async function chiamaDomandaSpecificaPasso(contesto, indicePasso, domandaSpecifica) {
+  const { domanda, guida } = contesto;
+  const passo = guida.passaggi?.[indicePasso];
+
+  const prompt = `Sei un esperto di fai-da-te. L'utente sta seguendo questa guida: "${guida.titolo}" (lavoro: "${domanda}").
+${passo ? `Si trova al passo: "${passo.titolo || ''}" — ${passo.descrizione}` : ''}
+
+L'utente ha questo dubbio specifico su un termine, oggetto o azione citato: "${domandaSpecifica}"
+
+Rispondi in modo semplice e diretto, come spiegheresti a qualcuno senza esperienza, in italiano, massimo 80 parole, senza markdown e senza inserire link o URL.`;
+
+  return chiamaTestoLibero(prompt);
+}
+
+
+// scripts/main.js
+// Orchestrazione: collega bottone ricerca -> chiamata AI -> render guida,
+// piu' toggle dei dettagli opzionali e box di approfondimento.
+
+let ultimaGuidaContesto = null; // usato per gli approfondimenti in contesto
+let fotoAllegate = []; // array di { file, base64, mimeType }
+
+function initSearch() {
+  const btn = document.getElementById('searchBtn');
+  const input = document.getElementById('queryInput');
+  const toggleBtn = document.getElementById('toggleDetailsBtn');
+  const detailsBox = document.getElementById('detailsBox');
+  const fotoInput = document.getElementById('fotoInput');
+
+  if (toggleBtn && detailsBox) {
+    toggleBtn.addEventListener('click', () => {
+      detailsBox.classList.toggle('hidden');
+    });
+  }
+
+  if (fotoInput) {
+    fotoInput.addEventListener('change', async (e) => {
+      const nuoviFile = Array.from(e.target.files || []);
+      for (const file of nuoviFile) {
+        const base64 = await leggiFileComeBase64(file);
+        fotoAllegate.push({ file, base64, mimeType: file.type });
+      }
+      renderAnteprimaFoto();
+      fotoInput.value = ''; // permette di riselezionare lo stesso file in futuro
+    });
+  }
+
+  if (!btn || !input) return;
+
+  btn.addEventListener('click', async () => {
+    const domanda = input.value.trim();
+    if (!domanda) {
+      alert('Descrivi cosa vuoi fare.');
+      return;
+    }
+    const categoria = input.dataset.category || null;
+    const dettagli = {
+      materiale: document.getElementById('materialeInput')?.value.trim() || '',
+      elettrodomestico: document.getElementById('elettrodomesticoInput')?.value.trim() || ''
+    };
+    const immagini = fotoAllegate.map(f => ({ base64: f.base64, mimeType: f.mimeType }));
+    await eseguiRicerca(domanda, categoria, dettagli, immagini);
+  });
+}
+
+function leggiFileComeBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      // reader.result è tipo "data:image/png;base64,AAAA..." — teniamo solo la parte dopo la virgola
+      const base64 = reader.result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderAnteprimaFoto() {
+  const container = document.getElementById('fotoPreviewList');
+  if (!container) return;
+
+  container.innerHTML = fotoAllegate.map((f, i) => `
+    <div class="photo-preview-item">
+      <img src="data:${f.mimeType};base64,${f.base64}" alt="Foto allegata">
+      <button class="photo-preview-remove" data-index="${i}" title="Rimuovi">✕</button>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.photo-preview-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      fotoAllegate.splice(Number(btn.dataset.index), 1);
+      renderAnteprimaFoto();
+    });
+  });
+}
+
+async function eseguiRicerca(domanda, categoria, dettagli, immagini) {
+  const loading = document.getElementById('loading');
+  const result = document.getElementById('guide-result');
+
+  loading.classList.remove('hidden');
+  result.classList.add('hidden');
+  result.innerHTML = '';
+
+  try {
+    const guida = await chiamaAI(domanda, categoria, dettagli, immagini);
+    ultimaGuidaContesto = { domanda, categoria, dettagli, guida };
+    renderGuida(guida);
+  } catch (err) {
+    result.innerHTML = `<div class="guide-card error-card">
+      <p>❌ ${escapeHtml(err.message)}</p>
+    </div>`;
+    result.classList.remove('hidden');
+  } finally {
+    loading.classList.add('hidden');
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+
+function iconaCategoria(chiave) {
+  return CATEGORIES[chiave]?.icon || '🔧';
+}
+
+function classeDifficolta(d) {
+  const v = (d || '').toLowerCase();
+  if (v.includes('facile')) return 'difficolta-facile';
+  if (v.includes('difficile')) return 'difficolta-difficile';
+  return 'difficolta-media';
+}
+
+// Mappa parola chiave -> icona. Cerca la prima corrispondenza nel nome.
+// Icone Font Awesome per gli attrezzi (solo icone, niente emoji: più coerenti
+// su ogni sistema operativo/dispositivo). Ogni valore è il nome dell'icona
+// senza il prefisso "fa-solid fa-".
+const ICONE_ATTREZZI = [
+  ['cacciavite', 'screwdriver'],
+  ['trapano', 'screwdriver-wrench'],
+  ['avvitatore', 'screwdriver-wrench'],
+  ['martello', 'hammer'],
+  ['mazzuolo', 'hammer'],
+  ['chiave inglese', 'wrench'],
+  ['chiave a brugola', 'wrench'],
+  ['chiave', 'wrench'],
+  ['pinza', 'wrench'],
+  ['tenaglia', 'wrench'],
+  ['tronchese', 'scissors'],
+  ['forbici', 'scissors'],
+  ['cutter', 'scissors'],
+  ['taglierino', 'scissors'],
+  ['sega', 'toolbox'],
+  ['seghetto', 'toolbox'],
+  ['livella', 'ruler-combined'],
+  ['squadra', 'ruler-combined'],
+  ['metro', 'ruler'],
+  ['spatola', 'trowel'],
+  ['cazzuola', 'trowel'],
+  ['frattazzo', 'trowel'],
+  ['guanti', 'mitten'],
+  ['occhiali', 'glasses'],
+  ['mascherina', 'head-side-mask'],
+  ['casco', 'hard-hat'],
+  ['scala', 'toolbox'],
+  ['pennello', 'paint-roller'],
+  ['rullo', 'paint-roller'],
+  ['torcia', 'lightbulb'],
+  ['multimetro', 'gauge'],
+  ['tester', 'gauge'],
+  ['saldatore', 'fire'],
+  ['smerigliatrice', 'screwdriver-wrench'],
+  ['carriola', 'toolbox'],
+  ['secchio', 'toolbox'],
+  ['nastro isolante', 'ruler'],
+  ['nastro teflon', 'ruler'],
+  ['etichettatore', 'tag'],
+];
+
+function iconaPerNome(nome) {
+  const n = (nome || '').toLowerCase();
+  for (const [parola, icona] of ICONE_ATTREZZI) {
+    if (n.includes(parola)) return icona;
+  }
+  return 'toolbox';
+}
+
+// Costruisce un link di ricerca immagini di Google per un termine dato.
+function linkRicercaImmagini(query) {
+  const q = encodeURIComponent(query);
+  return `https://www.google.com/search?tbm=isch&q=${q}`;
+}
+
+function renderGuida(g) {
+  const result = document.getElementById('guide-result');
+
+  const bannerSconsigliato = g.lavoroSconsigliato ? `
+    <div class="danger-box">
+      <strong>⚠️ Lavoro sconsigliato al fai-da-te</strong>
+      <p>${escapeHtml(g.motivoSeSconsigliato || 'Richiede competenze professionali specifiche.')}</p>
+    </div>
+  ` : '';
+
+  const avvisoFotoHtml = g.avvisoFoto ? `
+    <div class="photo-warning-notice no-print">📷 ${escapeHtml(g.avvisoFoto)}</div>
+  ` : '';
+
+  const attrezziHtml = (g.attrezzi || []).map(a => `
+    <div class="tool-item">
+      <div><i class="fa-solid fa-${iconaPerNome(a)}"></i> ${escapeHtml(a)}</div>
+      <a class="image-search-link no-print" href="${linkRicercaImmagini(a)}" target="_blank" rel="noopener">Vedi immagini</a>
+    </div>
+  `).join('') || '<p class="muted">Nessun attrezzo specifico richiesto.</p>';
+
+  const materialiHtml = (g.materiali || []).map(m => `
+    <li>
+      <div class="material-row">
+        <span>${escapeHtml(m.nome)}</span>
+        <span class="material-price">${escapeHtml(m.prezzoIndicativo || '')} <span class="price-note">(indicativo)</span></span>
+      </div>
+      <a class="image-search-link no-print" href="${linkRicercaImmagini(m.nome)}" target="_blank" rel="noopener">Vedi immagini prodotto</a>
+    </li>
+  `).join('') || '<li class="muted">Nessun materiale specifico richiesto.</li>';
+
+  const passaggiHtml = (g.passaggi || []).map((p, i) => {
+    const query = p.terminiRicercaImmagine || p.titolo || p.descrizione || g.titolo;
+    return `
+    <div class="step" data-step-index="${i}">
+      <span class="step-number">Passo ${i + 1}${p.titolo ? ' · ' + escapeHtml(p.titolo) : ''}</span>
+      <p class="step-description">${escapeHtml(p.descrizione || p)}</p>
+
+      <div id="stepDetailBox-${i}" class="step-detail-box"></div>
+
+      <div class="step-actions no-print">
+        <button class="step-detail-btn" data-step="${i}">🔍 Spiegami in dettaglio questo passo</button>
+      </div>
+
+      <div class="step-mini-question no-print">
+        <input type="text" id="stepQuestionInput-${i}" placeholder="Hai un dubbio su un termine o un'azione qui? Es: cos'è una scatola di derivazione?">
+        <button class="step-question-btn" data-step="${i}">Chiedi</button>
+      </div>
+      <div id="stepQABox-${i}" class="step-qa-box"></div>
+
+      <a class="image-search-link no-print" href="${linkRicercaImmagini(query)}" target="_blank" rel="noopener">Vedi immagini di riferimento</a>
+    </div>
+  `;
+  }).join('');
+
+  const avvertenzeHtml = (g.avvertenzeSicurezza || []).map(a => `<div>⚠️ ${escapeHtml(a)}</div>`).join('');
+
+  const consigliHtml = (g.consigli || []).map(c => `<li>${escapeHtml(c)}</li>`).join('');
+
+  result.innerHTML = `
+    <div class="guide-card" id="guidaEsportabile">
+      <div class="guide-header no-print">
+        <h2>${escapeHtml(g.titolo || 'Guida')}</h2>
+        <span class="guide-difficulty ${classeDifficolta(g.difficolta)}">${escapeHtml(g.difficolta || 'Media')}</span>
+      </div>
+      <h2 class="print-only">${escapeHtml(g.titolo || 'Guida')} — Difficoltà: ${escapeHtml(g.difficolta || 'Media')}</h2>
+      <p class="guide-meta">⏱️ ${escapeHtml(g.tempoStimato || 'Non specificato')} · 📂 ${escapeHtml(CATEGORIES[g.categoria]?.label || g.categoria || 'Generico')}</p>
+
+      ${bannerSconsigliato}
+      ${avvisoFotoHtml}
+
+      <div class="guide-columns">
+        <div class="guide-col-left">
+          <div class="guide-col-left-scroll">
+            <h3>🔧 Attrezzi necessari</h3>
+            <div class="tools-grid">${attrezziHtml}</div>
+
+            <h3>📦 Materiali necessari</h3>
+            <ul class="materials-list">${materialiHtml}</ul>
+          </div>
+        </div>
+
+        <div class="guide-col-right">
+          <h3>📋 Procedimento passo passo</h3>
+          <div class="steps-scroll">${passaggiHtml}</div>
+        </div>
+      </div>
+
+      <div class="guide-warnings-row">
+        <div class="warnings-col">
+          <h3>⚠️ Avvertenze di sicurezza</h3>
+          <div class="warning-box">${avvertenzeHtml}</div>
+        </div>
+        ${consigliHtml ? `
+        <div class="tips-col">
+          <h3>💡 Consigli utili</h3>
+          <ul class="tips-list">${consigliHtml}</ul>
+        </div>` : ''}
+      </div>
+
+      <h3>💰 Quanto risparmi</h3>
+      <div class="savings-card">
+        <div class="savings-detail">
+          <div><span class="savings-label">Costo professionista</span><br>€${g.costoProfessionista}</div>
+          <div><span class="savings-label">Costo fai-da-te</span><br>€${g.costoFaiDaTe}</div>
+        </div>
+        <div class="savings-amount">Risparmio: €${g.risparmio} (${g.percentualeRisparmio}%)</div>
+      </div>
+
+      <div id="approfondimentiContainer"></div>
+
+      <h3 class="no-print">🔎 Approfondimenti e imprevisti sul lavoro</h3>
+      <p class="muted no-print">Usa questo spazio per domande di approfondimento generali, ma anche per segnalare problemi o imprevisti concreti durante il lavoro (non hai un attrezzo specifico, il muro è di un materiale particolare, hai trovato qualcosa di diverso dal previsto, ecc): l'AI ti proporrà una mini guida alternativa passo-passo adattata alla tua situazione.</p>
+      <div class="followup-box no-print">
+        <textarea id="followupInput" rows="2" placeholder="Scrivi qui la tua domanda di approfondimento... (Invio per inviare)"></textarea>
+        <button id="followupBtn">Chiedi approfondimento</button>
+      </div>
+
+      <button id="exportPdfBtn" class="export-pdf-btn no-print">📄 Esporta guida in PDF</button>
+    </div>
+  `;
+  result.classList.remove('hidden');
+  setTimeout(() => {
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 80);
+
+  initStepControls();
+
+  document.getElementById('followupBtn').addEventListener('click', gestisciApprofondimento);
+  document.getElementById('followupInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      gestisciApprofondimento();
+    }
+  });
+  document.getElementById('exportPdfBtn').addEventListener('click', () => {
+    window.print();
+  });
+}
+
+async function gestisciApprofondimento() {
+  const input = document.getElementById('followupInput');
+  const domandaFollowup = input.value.trim();
+  if (!domandaFollowup) return;
+  if (!ultimaGuidaContesto) return;
+
+  const btn = document.getElementById('followupBtn');
+  const container = document.getElementById('approfondimentiContainer');
+
+  btn.disabled = true;
+  btn.textContent = 'Sto pensando...';
+
+  try {
+    const risposta = await chiamaApprofondimento(ultimaGuidaContesto, domandaFollowup);
+    const blocco = document.createElement('div');
+    blocco.className = 'approfondimento-box';
+    blocco.innerHTML = `
+      <p class="approfondimento-domanda">❓ ${escapeHtml(domandaFollowup)}</p>
+      <p class="approfondimento-risposta">${escapeHtml(risposta)}</p>
+    `;
+    container.appendChild(blocco);
+    input.value = '';
+  } catch (err) {
+    alert('Errore nell\'approfondimento: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Chiedi approfondimento';
+  }
+}
+
+document.addEventListener('components:ready', initSearch);
+
+function initStepControls() {
+  document.querySelectorAll('.step-detail-btn').forEach(btn => {
+    btn.addEventListener('click', () => gestisciDettaglioPasso(Number(btn.dataset.step), btn));
+  });
+
+  document.querySelectorAll('.step-question-btn').forEach(btn => {
+    const idx = Number(btn.dataset.step);
+    btn.addEventListener('click', () => gestisciDomandaSpecificaPasso(idx, btn));
+
+    const input = document.getElementById(`stepQuestionInput-${idx}`);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        gestisciDomandaSpecificaPasso(idx, btn);
+      }
+    });
+  });
+}
+
+async function gestisciDettaglioPasso(indice, btn) {
+  if (!ultimaGuidaContesto) return;
+  const box = document.getElementById(`stepDetailBox-${indice}`);
+
+  btn.disabled = true;
+  btn.textContent = 'Sto scrivendo il dettaglio...';
+
+  try {
+    const testo = await chiamaDettaglioPasso(ultimaGuidaContesto, indice);
+    box.innerHTML += `<div class="step-detail-content">${escapeHtml(testo)}</div>`;
+    btn.style.display = 'none'; // evita di generare due volte lo stesso dettaglio
+  } catch (err) {
+    box.innerHTML += `<div class="step-detail-content error-text">❌ ${escapeHtml(err.message)}</div>`;
+    btn.disabled = false;
+    btn.textContent = '🔍 Spiegami in dettaglio questo passo';
+  }
+}
+
+async function gestisciDomandaSpecificaPasso(indice, btn) {
+  const input = document.getElementById(`stepQuestionInput-${indice}`);
+  const domanda = input.value.trim();
+  if (!domanda || !ultimaGuidaContesto) return;
+
+  const box = document.getElementById(`stepQABox-${indice}`);
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  try {
+    const risposta = await chiamaDomandaSpecificaPasso(ultimaGuidaContesto, indice, domanda);
+    box.innerHTML += `
+      <div class="step-qa-item">
+        <p class="step-qa-domanda">❓ ${escapeHtml(domanda)}</p>
+        <p class="step-qa-risposta">${escapeHtml(risposta)}</p>
+        <a class="image-search-link no-print" href="${linkRicercaImmagini(domanda)}" target="_blank" rel="noopener">Vedi immagini di riferimento</a>
+      </div>
+    `;
+    input.value = '';
+  } catch (err) {
+    box.innerHTML += `<p class="error-text">❌ ${escapeHtml(err.message)}</p>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Chiedi';
+  }
+}
+
+document.dispatchEvent(new Event('components:ready'));
+</script>
+</body>
+</html>
