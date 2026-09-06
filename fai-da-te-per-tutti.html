@@ -224,16 +224,16 @@ h1, h2, h3, h4 { font-family: 'Poppins', 'Inter', sans-serif; letter-spacing: 0;
 /* CATEGORIE: riga orizzontale di blocchetti, pannello lavori si apre sotto */
 .categories-section { max-width: 1300px; margin: 2.5rem auto; padding: 0 1.5rem; }
 .categories-section h3 {
-   display: block;
+  display: block;
   width: fit-content;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--navy);
   text-align: center;
-  background: linear-gradient(180deg, #3f424b 0%, #34373e 100%);
+  background: var(--card-bg);
   border: 1px solid var(--card-border);
   padding: 0.6rem 1.4rem;
-  border-radius: 10px;
+  border-radius: 999px;
   box-shadow: 0 4px 16px rgba(28,31,38,0.06);
   margin: 0 auto 1rem;
 }
@@ -417,6 +417,71 @@ h1, h2, h3, h4 { font-family: 'Poppins', 'Inter', sans-serif; letter-spacing: 0;
   border-radius: 10px;
   font-weight: 500;
 }
+
+/* FINESTRA CRONOLOGIA */
+.history-modal-box {
+  max-width: 640px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  text-align: left;
+}
+.history-bulk-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 0.6rem;
+  font-size: 0.88rem;
+}
+.history-select-all { display: flex; align-items: center; gap: 0.4rem; color: var(--text-muted); cursor: pointer; }
+.history-delete-selected-btn {
+  background: none;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+.history-delete-selected-btn:hover { background: var(--danger); color: #fff; }
+
+.history-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.7rem;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+}
+.history-item-checkbox { flex-shrink: 0; width: 16px; height: 16px; }
+.history-item-info { flex: 1; min-width: 0; }
+.history-item-title { font-weight: 600; color: var(--navy); font-size: 0.92rem; overflow-wrap: break-word; }
+.history-item-date { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; }
+.history-item-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+.history-open-btn {
+  background: var(--accent);
+  color: var(--navy);
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.82rem;
+  font-family: inherit;
+}
+.history-open-btn:hover { background: var(--accent-dark); }
+.history-delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.3rem;
+}
+.history-delete-btn:hover { opacity: 0.7; }
 
 /* DISCLAIMER API KEY MANCANTE */
 .api-disclaimer {
@@ -698,6 +763,51 @@ h1, h2, h3, h4 { font-family: 'Poppins', 'Inter', sans-serif; letter-spacing: 0;
 .step-detail-btn:hover { background: var(--navy); color: #fff; }
 .step-detail-btn:disabled { opacity: 0.6; cursor: default; }
 .step-detail-box:empty { margin: 0; }
+.step-detail-group-toggle {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  color: var(--navy);
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.88rem;
+  font-family: inherit;
+  margin-top: 0.6rem;
+}
+.step-detail-group-toggle:hover { border-color: var(--accent-dark); }
+.step-detail-group-content { margin-top: 0.4rem; }
+.step-detail-item { margin-top: 0.5rem; }
+.step-detail-item-toggle {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 1px dashed var(--card-border);
+  color: var(--navy);
+  padding: 0.4rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: inherit;
+}
+.step-detail-item-toggle:hover { border-color: var(--accent-dark); }
+.toggle-arrow { float: right; }
+.step-detail-item-content {
+  margin-top: 0.4rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px dashed var(--accent-dark);
+  border-radius: 10px;
+  white-space: pre-line;
+  font-size: 0.92rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
 .step-detail-content {
   margin-top: 0.7rem;
   padding: 0.8rem 1rem;
@@ -757,9 +867,16 @@ h1, h2, h3, h4 { font-family: 'Poppins', 'Inter', sans-serif; letter-spacing: 0;
 /* PRINT / EXPORT PDF: nasconde tutto tranne la guida generata */
 
 .print-only { display: none; }
+
+.guide-actions-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.8rem;
+  flex-wrap: wrap;
+}
+
 .export-pdf-btn {
-  display: block;
-  margin: 1.8rem auto 0;
   padding: 0.75rem 1.5rem;
   background: #ec1c24;
   color: #ffffff;
@@ -771,6 +888,19 @@ h1, h2, h3, h4 { font-family: 'Poppins', 'Inter', sans-serif; letter-spacing: 0;
   font-size: 0.95rem;
 }
 .export-pdf-btn:hover { background: #c8151c; }
+
+.save-history-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--navy);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+.save-history-btn:hover { background: #2a2e38; }
 
 @media print {
   body * { visibility: hidden; }
@@ -808,6 +938,7 @@ h1, h2, h3, h4 { font-family: 'Poppins', 'Inter', sans-serif; letter-spacing: 0;
   </div>
   <div class="header-actions">
     <button id="apiKeyBtn" title="Imposta la tua API Key">🔑 API Key</button>
+    <button id="historyBtn" title="Le tue guide salvate">🕒 Cronologia</button>
     <button id="helpBtn" class="help-round-btn" title="Guida all'uso del programma">?</button>
   </div>
 </header>
@@ -963,6 +1094,27 @@ h1, h2, h3, h4 { font-family: 'Poppins', 'Inter', sans-serif; letter-spacing: 0;
         Vai con calma, un passo alla volta, e chiedi pure ogni approfondimento di cui hai bisogno. 💪
       </p>
     </div>
+  </div>
+</div>
+
+<div id="historyModalOverlay" class="modal-overlay hidden">
+  <div class="modal-box history-modal-box">
+    <button id="historyModalClose" class="modal-close-x" aria-label="Chiudi">✕</button>
+    <h3>🕒 Le tue guide salvate</h3>
+    <p class="help-intro">
+      Qui trovi le guide che hai salvato, con tutti gli approfondimenti già fatti.
+      Se una guida non viene salvata, chiudendola viene persa.
+    </p>
+
+    <div id="historyBulkActions" class="history-bulk-actions hidden">
+      <label class="history-select-all">
+        <input type="checkbox" id="historySelectAll"> Seleziona tutte
+      </label>
+      <button id="historyDeleteSelected" class="history-delete-selected-btn">🗑️ Elimina selezionate</button>
+    </div>
+
+    <div id="historyList" class="history-list"></div>
+    <p id="historyEmptyMsg" class="muted hidden">Non hai ancora salvato nessuna guida.</p>
   </div>
 </div>
 
@@ -2066,6 +2218,8 @@ Rispondi SOLO con un oggetto JSON valido (nessun testo prima o dopo, nessun bloc
 Regole:
 - Se sono forniti dettagli su materiale già posseduto o elettrodomestico da collegare, usa quelle informazioni per personalizzare attrezzi, materiali (es. sezione cavo corretta, tipo di attacco) e passaggi, invece di restare generico.
 - Se è presente una descrizione di una foto allegata, usala attivamente per personalizzare la guida (es. suggerire il trattamento giusto in base allo stato reale della parete, il colore più adatto, se una soluzione incassata o esterna è più indicata, ecc), e menziona esplicitamente cosa hai notato nella foto quando è rilevante per un passaggio.
+- Dai sempre il giudizio più equilibrato e professionale possibile: né eccessivamente drastico (es. suggerire di demolire/rifare tutto quando basterebbe un intervento locale) né troppo permissivo (es. minimizzare un problema serio). Basati solo su ciò che è realmente visibile o dichiarato, senza esagerare né sottostimare.
+- Usa un linguaggio semplice e comprensibile anche a chi non ha mai fatto lavori manuali: se usi un termine tecnico, spiegalo brevemente tra parentesi la prima volta che lo usi.
 - Se il lavoro richiede competenze pericolose o abilitazioni professionali (es. impianto gas, lavori su quadro elettrico non protetti, strutture portanti), imposta "lavoroSconsigliato": true e spiega il motivo, ma compila comunque gli altri campi con informazioni generali e di sicurezza.
 - I passaggi devono essere concreti e in ordine logico, minimo 3 passaggi.
 - Le avvertenze di sicurezza sono obbligatorie, minimo 1.
@@ -2079,7 +2233,7 @@ async function chiamataGeminiJson(prompt) {
   const data = await chiamaGeminiConRiserva({
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: {
-      temperature: 0.6,
+      temperature: 0.3,
       response_mime_type: 'application/json'
     }
   });
@@ -2131,13 +2285,14 @@ async function chiamaAnalisiFoto(immagini, domanda) {
 
   const promptAnalisi = `Guarda attentamente la/le foto allegate. L'utente vuole fare questo lavoro: "${domanda}".
 Descrivi in modo semplice e concreto ciò che vedi nella foto, in relazione a questo lavoro: materiali visibili, colori, stato attuale (usurato, nuovo, danneggiato, con muffa, con crepe, ecc.), dimensioni indicative se deducibili, e qualunque dettaglio utile per consigliare la soluzione migliore.
+Se valuti la gravità di un problema (es. quanto è estesa una macchia di muffa, quanto è profonda una crepa), sii equilibrato e realistico basandoti solo su quello che vedi: non esagerare la gravità suggerendo interventi drastici se il problema appare limitato, e non minimizzare se appare esteso o serio. Dai sempre la stessa valutazione se la situazione mostrata è la stessa.
 Non inventare dettagli che non vedi. Se la foto non è chiara o non è pertinente al lavoro descritto, dillo onestamente.
 Rispondi in italiano, testo semplice senza markdown, massimo 150 parole.`;
 
   try {
     const data = await chiamaGeminiVisioneConRiserva({
       contents: [{ parts: [...parti, { text: promptAnalisi }] }],
-      generationConfig: { temperature: 0.4 }
+      generationConfig: { temperature: 0.2 }
     });
 
     const testo = data?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -2182,7 +2337,7 @@ function arricchisciConRisparmio(guida) {
 async function chiamaTestoLibero(prompt) {
   const data = await chiamaGeminiConRiserva({
     contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.6 }
+    generationConfig: { temperature: 0.35 }
   });
 
   const testo = data?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -2193,8 +2348,12 @@ async function chiamaTestoLibero(prompt) {
 // Approfondimento: manda alla AI la domanda originale + la guida gia'
 // generata come contesto, cosi' la risposta resta pertinente. Qui la
 // risposta e' testo semplice, non serve JSON strutturato.
-async function chiamaApprofondimento(contesto, domandaFollowup) {
+async function chiamaApprofondimento(contesto, domandaFollowup, descrizioneFoto) {
   const { domanda, dettagli, guida } = contesto;
+
+  const contestoFotoFollowup = descrizioneFoto
+    ? `\nDESCRIZIONE DI UNA FOTO ALLEGATA A QUESTA RICHIESTA (analizzata separatamente, usala come contesto reale):\n${descrizioneFoto}\n`
+    : '';
 
   const prompt = `Sei lo stesso esperto di fai-da-te che ha già scritto questa guida.
 
@@ -2205,11 +2364,12 @@ Materiali già indicati: ${(guida.materiali || []).map(m => m.nome).join(', ') |
 Passaggi già indicati: ${(guida.passaggi || []).map(p => p.titolo || p.descrizione).join(' | ') || 'nessuno'}
 
 NUOVA RICHIESTA DELL'UTENTE: "${domandaFollowup}"
-
+${contestoFotoFollowup}
 Questa richiesta può essere: (a) un'altra domanda di approfondimento generale, oppure (b) la segnalazione di un problema o intoppo concreto incontrato durante il lavoro (es. non ha un attrezzo specifico, il muro è di un materiale particolare, ha trovato qualcosa di diverso dal previsto, ecc).
 
-Se è un problema/intoppo concreto: proponi un adattamento pratico del procedimento, come una mini guida alternativa numerata passo-passo (1, 2, 3...) tenendo conto del problema segnalato, restando concreto e sicuro.
+Se è un problema/intoppo concreto: proponi un adattamento pratico del procedimento, come una mini guida alternativa numerata passo-passo (1, 2, 3...) tenendo conto del problema segnalato (e di quanto visto nella foto, se presente), restando concreto e sicuro.
 Se è una domanda generica di approfondimento: rispondi in modo diretto e pratico.
+Sii equilibrato e professionale: non esagerare la gravità del problema né minimizzarla, e usa un linguaggio semplice comprensibile anche a chi non ha esperienza, spiegando brevemente eventuali termini tecnici.
 
 Rispondi in italiano, massimo 200 parole, senza ripetere tutta la guida originale da capo. Rispondi solo testo semplice, senza JSON, senza markdown e senza inserire link o URL: non conosci prodotti reali in vendita, quindi non inventare link a negozi (puoi usare numeri tipo "1." "2." per elenchi).`;
 
@@ -2230,6 +2390,7 @@ ${contestoDettagli(dettagli)}
 PASSO DA APPROFONDIRE: "${passo.titolo || ''}" — ${passo.descrizione}
 
 Spiega questo singolo passo in modo molto più dettagliato, come se lo spiegassi a chi non ha mai fatto nulla di simile in vita sua. Struttura la spiegazione in sotto-passaggi numerati piccoli e concreti (es. "1. Prendi in mano...", "2. Posiziona...", ecc), senza dare per scontato nulla: menziona come tenere in mano gli attrezzi se rilevante, in che verso girare/spingere, come capire se stai facendo bene, ed eventuali segnali di errore da notare.
+Resta equilibrato e coerente con la guida originale, senza contraddirla o esagerare la difficoltà.
 
 Rispondi in italiano, testo semplice senza markdown e senza inserire link o URL, massimo 220 parole, ma completo e ordinato (usa numeri "1." "2." "3." per i sotto-passaggi).`;
 
@@ -2257,8 +2418,9 @@ Rispondi in modo semplice e diretto, come spiegheresti a qualcuno senza esperien
 // Orchestrazione: collega bottone ricerca -> chiamata AI -> render guida,
 // piu' toggle dei dettagli opzionali e box di approfondimento.
 
-let ultimaGuidaContesto = null; // usato per gli approfondimenti in contesto
-let fotoAllegate = []; // array di { file, base64, mimeType }
+let ultimaGuidaContesto = null; // usato per gli approfondimenti in contesto e per il salvataggio in cronologia
+let fotoAllegate = []; // array di { file, base64, mimeType } — foto della ricerca iniziale
+let fotoApprofondimento = []; // array di { file, base64, mimeType } — foto per gli approfondimenti generali
 
 function initSearch() {
   const btn = document.getElementById('searchBtn');
@@ -2335,6 +2497,25 @@ function renderAnteprimaFoto() {
   });
 }
 
+function renderAnteprimaFotoApprofondimento() {
+  const container = document.getElementById('fotoApprofondimentoPreviewList');
+  if (!container) return;
+
+  container.innerHTML = fotoApprofondimento.map((f, i) => `
+    <div class="photo-preview-item">
+      <img src="data:${f.mimeType};base64,${f.base64}" alt="Foto allegata">
+      <button class="photo-preview-remove" data-index="${i}" title="Rimuovi">✕</button>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.photo-preview-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      fotoApprofondimento.splice(Number(btn.dataset.index), 1);
+      renderAnteprimaFotoApprofondimento();
+    });
+  });
+}
+
 async function eseguiRicerca(domanda, categoria, dettagli, immagini) {
   const loading = document.getElementById('loading');
   const result = document.getElementById('guide-result');
@@ -2345,7 +2526,13 @@ async function eseguiRicerca(domanda, categoria, dettagli, immagini) {
 
   try {
     const guida = await chiamaAI(domanda, categoria, dettagli, immagini);
-    ultimaGuidaContesto = { domanda, categoria, dettagli, guida };
+    ultimaGuidaContesto = {
+      domanda, categoria, dettagli, guida,
+      stepDetails: {},   // { indice: testo }
+      stepQA: {},        // { indice: [{domanda, risposta}] }
+      approfondimenti: [], // [{domanda, risposta}]
+      historyId: null    // se salvata in cronologia, qui c'è l'id della voce (per sovrascrivere invece di duplicare)
+    };
     renderGuida(guida);
   } catch (err) {
     result.innerHTML = `<div class="guide-card error-card">
@@ -2549,10 +2736,20 @@ function renderGuida(g) {
       <p class="muted no-print">Usa questo spazio per domande di approfondimento generali, ma anche per segnalare problemi o imprevisti concreti durante il lavoro (non hai un attrezzo specifico, il muro è di un materiale particolare, hai trovato qualcosa di diverso dal previsto, ecc): l'AI ti proporrà una mini guida alternativa passo-passo adattata alla tua situazione.</p>
       <div class="followup-box no-print">
         <textarea id="followupInput" rows="2" placeholder="Scrivi qui la tua domanda di approfondimento... (Invio per inviare)"></textarea>
+
+        <label for="fotoApprofondimentoInput" class="photo-attach-label">
+          📷 Allega una o più foto (facoltativo) — es: il problema o l'imprevisto che hai trovato
+        </label>
+        <input type="file" id="fotoApprofondimentoInput" accept="image/*" multiple class="photo-attach-input">
+        <div id="fotoApprofondimentoPreviewList" class="photo-preview-list"></div>
+
         <button id="followupBtn">Chiedi approfondimento</button>
       </div>
 
-      <button id="exportPdfBtn" class="export-pdf-btn no-print">📄 Esporta guida in PDF</button>
+      <div class="guide-actions-row no-print">
+        <button id="saveHistoryBtn" class="save-history-btn">💾 Salva in cronologia</button>
+        <button id="exportPdfBtn" class="export-pdf-btn">📄 Esporta guida in PDF</button>
+      </div>
     </div>
   `;
   result.classList.remove('hidden');
@@ -2572,6 +2769,130 @@ function renderGuida(g) {
   document.getElementById('exportPdfBtn').addEventListener('click', () => {
     window.print();
   });
+
+  document.getElementById('saveHistoryBtn').addEventListener('click', salvaGuidaInCronologia);
+
+  const fotoApprofondimentoInput = document.getElementById('fotoApprofondimentoInput');
+  if (fotoApprofondimentoInput) {
+    fotoApprofondimentoInput.addEventListener('change', async (e) => {
+      const nuoviFile = Array.from(e.target.files || []);
+      for (const file of nuoviFile) {
+        const base64 = await leggiFileComeBase64(file);
+        fotoApprofondimento.push({ file, base64, mimeType: file.type });
+      }
+      renderAnteprimaFotoApprofondimento();
+      fotoApprofondimentoInput.value = '';
+    });
+  }
+}
+
+// Funzioni di inserimento nel DOM riutilizzabili: usate sia quando arriva
+// una risposta nuova dall'AI, sia quando si riapre una guida dalla
+// cronologia e bisogna re-inserire tutto quello che era stato salvato.
+// Genera il markup di un singolo elemento collassabile (dettaglio o
+// approfondimento). "aperto" true = mostrato subito espanso.
+function markupItemCollassabile(etichetta, numero, contenutoHtml, aperto) {
+  return `
+    <div class="step-detail-item">
+      <button class="step-detail-item-toggle" type="button">${etichetta} ${numero} <span class="toggle-arrow">${aperto ? '▲' : '▼'}</span></button>
+      <div class="step-detail-item-content${aperto ? '' : ' hidden'}">${contenutoHtml}</div>
+    </div>
+  `;
+}
+
+// Ridisegna l'intero box dei dettagli di un passo. Solo l'ultimo dettaglio
+// richiesto resta aperto, tutti i precedenti si chiudono automaticamente.
+// Se sono 2 o più, li raggruppa sotto un'unica linguetta a tendina.
+function aggiornaBoxDettagli(indice, scrollaSuUltimo) {
+  const box = document.getElementById(`stepDetailBox-${indice}`);
+  if (!box) return;
+  const elenco = ultimaGuidaContesto?.stepDetails?.[indice] || [];
+  const itemsHtml = elenco.map((testo, i) =>
+    markupItemCollassabile('Dettaglio', i + 1, escapeHtml(testo), i === elenco.length - 1)
+  ).join('');
+
+  if (elenco.length >= 2) {
+    box.innerHTML = `
+      <button class="step-detail-group-toggle" type="button">📂 Dettagli richiesti (${elenco.length}) <span class="toggle-arrow">▾</span></button>
+      <div class="step-detail-group-content">${itemsHtml}</div>
+    `;
+  } else {
+    box.innerHTML = itemsHtml;
+  }
+
+  collegaToggleDettagli(box);
+
+  if (scrollaSuUltimo) {
+    setTimeout(() => {
+      const ultimoItem = box.querySelector('.step-detail-item:last-child');
+      if (ultimoItem) ultimoItem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+}
+
+// Stessa logica di aggiornaBoxDettagli, ma per le domande/approfondimenti
+// specifici fatti sotto un passo (box separato, sempre sotto ai dettagli).
+function aggiornaBoxQA(indice, scrollaSuUltimo) {
+  const box = document.getElementById(`stepQABox-${indice}`);
+  if (!box) return;
+  const elenco = ultimaGuidaContesto?.stepQA?.[indice] || [];
+  const itemsHtml = elenco.map((qa, i) => {
+    const contenuto = `
+      <p class="step-qa-domanda">❓ ${escapeHtml(qa.domanda)}</p>
+      <p class="step-qa-risposta">${escapeHtml(qa.risposta)}</p>
+      <a class="image-search-link no-print" href="${linkRicercaImmagini(qa.domanda)}" target="_blank" rel="noopener">Vedi immagini di riferimento</a>
+    `;
+    return markupItemCollassabile('Approfondimento', i + 1, contenuto, i === elenco.length - 1);
+  }).join('');
+
+  if (elenco.length >= 2) {
+    box.innerHTML = `
+      <button class="step-detail-group-toggle" type="button">📂 Approfondimenti richiesti (${elenco.length}) <span class="toggle-arrow">▾</span></button>
+      <div class="step-detail-group-content">${itemsHtml}</div>
+    `;
+  } else {
+    box.innerHTML = itemsHtml;
+  }
+
+  collegaToggleDettagli(box);
+
+  if (scrollaSuUltimo) {
+    setTimeout(() => {
+      const ultimoItem = box.querySelector('.step-detail-item:last-child');
+      if (ultimoItem) ultimoItem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+}
+
+function collegaToggleDettagli(box) {
+  const groupToggle = box.querySelector('.step-detail-group-toggle');
+  if (groupToggle) {
+    groupToggle.addEventListener('click', () => {
+      const content = box.querySelector('.step-detail-group-content');
+      content.classList.toggle('hidden');
+      groupToggle.querySelector('.toggle-arrow').textContent = content.classList.contains('hidden') ? '▾' : '▴';
+    });
+  }
+  box.querySelectorAll('.step-detail-item-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const content = btn.nextElementSibling;
+      content.classList.toggle('hidden');
+      btn.querySelector('.toggle-arrow').textContent = content.classList.contains('hidden') ? '▼' : '▲';
+    });
+  });
+}
+
+
+function inserisciApprofondimentoDOM(domanda, risposta) {
+  const container = document.getElementById('approfondimentiContainer');
+  if (!container) return;
+  const blocco = document.createElement('div');
+  blocco.className = 'approfondimento-box';
+  blocco.innerHTML = `
+    <p class="approfondimento-domanda">❓ ${escapeHtml(domanda)}</p>
+    <p class="approfondimento-risposta">${escapeHtml(risposta)}</p>
+  `;
+  container.appendChild(blocco);
 }
 
 async function gestisciApprofondimento() {
@@ -2581,21 +2902,27 @@ async function gestisciApprofondimento() {
   if (!ultimaGuidaContesto) return;
 
   const btn = document.getElementById('followupBtn');
-  const container = document.getElementById('approfondimentiContainer');
 
   btn.disabled = true;
   btn.textContent = 'Sto pensando...';
 
   try {
-    const risposta = await chiamaApprofondimento(ultimaGuidaContesto, domandaFollowup);
-    const blocco = document.createElement('div');
-    blocco.className = 'approfondimento-box';
-    blocco.innerHTML = `
-      <p class="approfondimento-domanda">❓ ${escapeHtml(domandaFollowup)}</p>
-      <p class="approfondimento-risposta">${escapeHtml(risposta)}</p>
-    `;
-    container.appendChild(blocco);
+    let descrizioneFoto = '';
+    if (fotoApprofondimento.length > 0) {
+      const immagini = fotoApprofondimento.map(f => ({ base64: f.base64, mimeType: f.mimeType }));
+      const risultatoFoto = await chiamaAnalisiFoto(immagini, domandaFollowup);
+      descrizioneFoto = risultatoFoto.descrizione;
+      // Se l'analisi foto fallisce (quota esaurita ecc), continuiamo comunque
+      // senza foto: nessun errore bloccante per l'utente.
+    }
+
+    const risposta = await chiamaApprofondimento(ultimaGuidaContesto, domandaFollowup, descrizioneFoto);
+    inserisciApprofondimentoDOM(domandaFollowup, risposta);
+    ultimaGuidaContesto.approfondimenti.push({ domanda: domandaFollowup, risposta });
+
     input.value = '';
+    fotoApprofondimento = [];
+    renderAnteprimaFotoApprofondimento();
   } catch (err) {
     alert('Errore nell\'approfondimento: ' + err.message);
   } finally {
@@ -2627,19 +2954,22 @@ function initStepControls() {
 
 async function gestisciDettaglioPasso(indice, btn) {
   if (!ultimaGuidaContesto) return;
-  const box = document.getElementById(`stepDetailBox-${indice}`);
 
   btn.disabled = true;
   btn.textContent = 'Sto scrivendo il dettaglio...';
 
   try {
     const testo = await chiamaDettaglioPasso(ultimaGuidaContesto, indice);
-    box.innerHTML += `<div class="step-detail-content">${escapeHtml(testo)}</div>`;
-    btn.style.display = 'none'; // evita di generare due volte lo stesso dettaglio
+    if (!ultimaGuidaContesto.stepDetails[indice]) ultimaGuidaContesto.stepDetails[indice] = [];
+    ultimaGuidaContesto.stepDetails[indice].push(testo);
+    aggiornaBoxDettagli(indice, true);
+    btn.textContent = '🔍 Chiedi un altro dettaglio su questo passo';
   } catch (err) {
+    const box = document.getElementById(`stepDetailBox-${indice}`);
     box.innerHTML += `<div class="step-detail-content error-text">❌ ${escapeHtml(err.message)}</div>`;
-    btn.disabled = false;
     btn.textContent = '🔍 Spiegami in dettaglio questo passo';
+  } finally {
+    btn.disabled = false;
   }
 }
 
@@ -2654,13 +2984,9 @@ async function gestisciDomandaSpecificaPasso(indice, btn) {
 
   try {
     const risposta = await chiamaDomandaSpecificaPasso(ultimaGuidaContesto, indice, domanda);
-    box.innerHTML += `
-      <div class="step-qa-item">
-        <p class="step-qa-domanda">❓ ${escapeHtml(domanda)}</p>
-        <p class="step-qa-risposta">${escapeHtml(risposta)}</p>
-        <a class="image-search-link no-print" href="${linkRicercaImmagini(domanda)}" target="_blank" rel="noopener">Vedi immagini di riferimento</a>
-      </div>
-    `;
+    if (!ultimaGuidaContesto.stepQA[indice]) ultimaGuidaContesto.stepQA[indice] = [];
+    ultimaGuidaContesto.stepQA[indice].push({ domanda, risposta });
+    aggiornaBoxQA(indice, true);
     input.value = '';
   } catch (err) {
     box.innerHTML += `<p class="error-text">❌ ${escapeHtml(err.message)}</p>`;
@@ -2669,6 +2995,245 @@ async function gestisciDomandaSpecificaPasso(indice, btn) {
     btn.textContent = 'Chiedi';
   }
 }
+
+
+// scripts/history.js
+// Gestisce il salvataggio, l'elenco, l'apertura e l'eliminazione delle
+// guide in cronologia. Tutto salvato in localStorage, solo su questo
+// browser/dispositivo. Non salviamo le foto (solo le risposte testuali
+// che ne derivano), per non appesantire troppo lo spazio disponibile.
+
+const CRONOLOGIA_STORAGE_KEY = 'faidate_cronologia';
+const CRONOLOGIA_MAX_VOCI = 50; // limite di sicurezza per non riempire troppo lo spazio del browser
+
+function leggiCronologia() {
+  try {
+    const raw = localStorage.getItem(CRONOLOGIA_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.error('Errore leggendo la cronologia:', e);
+    return [];
+  }
+}
+
+function scriviCronologia(lista) {
+  try {
+    localStorage.setItem(CRONOLOGIA_STORAGE_KEY, JSON.stringify(lista));
+    return true;
+  } catch (e) {
+    console.error('Errore salvando la cronologia:', e);
+    return false;
+  }
+}
+
+function salvaGuidaInCronologia() {
+  if (!ultimaGuidaContesto) return;
+
+  const btn = document.getElementById('saveHistoryBtn');
+  let lista = leggiCronologia();
+
+  const datiVoce = {
+    domanda: ultimaGuidaContesto.domanda,
+    categoria: ultimaGuidaContesto.categoria,
+    dettagli: ultimaGuidaContesto.dettagli,
+    guida: ultimaGuidaContesto.guida,
+    stepDetails: ultimaGuidaContesto.stepDetails,
+    stepQA: ultimaGuidaContesto.stepQA,
+    approfondimenti: ultimaGuidaContesto.approfondimenti
+  };
+
+  let ok;
+
+  if (ultimaGuidaContesto.historyId) {
+    // Questa guida era già stata salvata in precedenza: sovrascriviamo la
+    // stessa voce invece di crearne una nuova, cosi' non si duplica.
+    const indiceEsistente = lista.findIndex(v => v.id === ultimaGuidaContesto.historyId);
+    if (indiceEsistente !== -1) {
+      lista[indiceEsistente] = {
+        ...lista[indiceEsistente],
+        ...datiVoce,
+        updatedAt: new Date().toISOString()
+      };
+      ok = scriviCronologia(lista);
+    } else {
+      // La voce originale non esiste più (es. eliminata manualmente): la ricreiamo come nuova.
+      ultimaGuidaContesto.historyId = null;
+    }
+  }
+
+  if (!ultimaGuidaContesto.historyId) {
+    const nuovoId = `g_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const voce = { id: nuovoId, createdAt: new Date().toISOString(), ...datiVoce };
+    lista.unshift(voce);
+    if (lista.length > CRONOLOGIA_MAX_VOCI) {
+      lista = lista.slice(0, CRONOLOGIA_MAX_VOCI);
+    }
+    ok = scriviCronologia(lista);
+    ultimaGuidaContesto.historyId = nuovoId; // i prossimi salvataggi in questa sessione sovrascriveranno questa voce
+  }
+
+  if (btn) {
+    btn.textContent = ok ? '✅ Salvata!' : '❌ Errore nel salvataggio';
+    setTimeout(() => {
+      btn.textContent = '💾 Salva in cronologia';
+    }, 1800);
+  }
+}
+
+// Le guide salvate prima di questo aggiornamento avevano un solo dettaglio
+// per passo (stringa singola). Le convertiamo in elenco (array) di un
+// elemento, così il resto del codice funziona in modo uniforme.
+function normalizzaStepDetails(stepDetails) {
+  const normalizzato = {};
+  Object.entries(stepDetails).forEach(([indice, valore]) => {
+    normalizzato[indice] = Array.isArray(valore) ? valore : [valore];
+  });
+  return normalizzato;
+}
+
+function formattaDataCronologia(isoDate) {
+  try {
+    const d = new Date(isoDate);
+    return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+      ' alle ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  } catch (e) {
+    return '';
+  }
+}
+
+function renderCronologiaLista() {
+  const listaEl = document.getElementById('historyList');
+  const emptyMsg = document.getElementById('historyEmptyMsg');
+  const bulkActions = document.getElementById('historyBulkActions');
+  if (!listaEl) return;
+
+  const lista = leggiCronologia();
+
+  if (lista.length === 0) {
+    listaEl.innerHTML = '';
+    emptyMsg.classList.remove('hidden');
+    bulkActions.classList.add('hidden');
+    return;
+  }
+
+  emptyMsg.classList.add('hidden');
+  bulkActions.classList.remove('hidden');
+
+  listaEl.innerHTML = lista.map(voce => `
+    <div class="history-item" data-id="${voce.id}">
+      <input type="checkbox" class="history-item-checkbox" data-id="${voce.id}">
+      <div class="history-item-info">
+        <div class="history-item-title">${iconaCategoria(voce.categoria)} ${escapeHtml(voce.guida?.titolo || voce.domanda)}</div>
+        <div class="history-item-date">${formattaDataCronologia(voce.createdAt)}</div>
+      </div>
+      <div class="history-item-actions">
+        <button class="history-open-btn" data-id="${voce.id}">Apri</button>
+        <button class="history-delete-btn" data-id="${voce.id}" title="Elimina">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+
+  listaEl.querySelectorAll('.history-open-btn').forEach(btn => {
+    btn.addEventListener('click', () => apriVoceCronologia(btn.dataset.id));
+  });
+  listaEl.querySelectorAll('.history-delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (confirm('Eliminare questa guida dalla cronologia?')) {
+        eliminaVoceCronologia(btn.dataset.id);
+      }
+    });
+  });
+}
+
+function eliminaVoceCronologia(id) {
+  const lista = leggiCronologia().filter(v => v.id !== id);
+  scriviCronologia(lista);
+  renderCronologiaLista();
+}
+
+function eliminaVociSelezionate() {
+  const selezionate = Array.from(document.querySelectorAll('.history-item-checkbox:checked')).map(c => c.dataset.id);
+  if (selezionate.length === 0) return;
+  if (!confirm(`Eliminare ${selezionate.length} guide selezionate dalla cronologia?`)) return;
+
+  const lista = leggiCronologia().filter(v => !selezionate.includes(v.id));
+  scriviCronologia(lista);
+  renderCronologiaLista();
+}
+
+// Riapre una guida salvata: ricostruisce tutta l'interfaccia come se fosse
+// appena stata generata, poi ripristina anche dettagli/domande/approfondimenti
+// già fatti in precedenza.
+function apriVoceCronologia(id) {
+  const voce = leggiCronologia().find(v => v.id === id);
+  if (!voce) return;
+
+  ultimaGuidaContesto = {
+    domanda: voce.domanda,
+    categoria: voce.categoria,
+    dettagli: voce.dettagli,
+    guida: voce.guida,
+    // Normalizziamo il vecchio formato (un dettaglio = stringa singola) al
+    // nuovo formato (elenco di dettagli), per compatibilità con le guide
+    // salvate prima di questo aggiornamento.
+    stepDetails: normalizzaStepDetails(voce.stepDetails || {}),
+    stepQA: voce.stepQA || {},
+    approfondimenti: voce.approfondimenti || [],
+    historyId: voce.id
+  };
+
+  renderGuida(voce.guida);
+
+  // Ripristina i dettagli dei singoli passi già richiesti in precedenza.
+  Object.keys(ultimaGuidaContesto.stepDetails).forEach(indice => {
+    aggiornaBoxDettagli(Number(indice));
+  });
+
+  // Ripristina le domande specifiche per passo già fatte in precedenza.
+  Object.keys(ultimaGuidaContesto.stepQA).forEach(indice => {
+    aggiornaBoxQA(Number(indice));
+  });
+
+  // Ripristina gli approfondimenti generali già fatti in precedenza.
+  ultimaGuidaContesto.approfondimenti.forEach(({ domanda, risposta }) => {
+    inserisciApprofondimentoDOM(domanda, risposta);
+  });
+
+  chiudiCronologia();
+}
+
+function apriCronologia() {
+  renderCronologiaLista();
+  document.getElementById('historyModalOverlay').classList.remove('hidden');
+}
+
+function chiudiCronologia() {
+  document.getElementById('historyModalOverlay').classList.add('hidden');
+}
+
+function initCronologia() {
+  const historyBtn = document.getElementById('historyBtn');
+  const closeBtn = document.getElementById('historyModalClose');
+  const overlay = document.getElementById('historyModalOverlay');
+  const selectAll = document.getElementById('historySelectAll');
+  const deleteSelectedBtn = document.getElementById('historyDeleteSelected');
+
+  if (historyBtn) historyBtn.addEventListener('click', apriCronologia);
+  if (closeBtn) closeBtn.addEventListener('click', chiudiCronologia);
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) chiudiCronologia();
+    });
+  }
+  if (selectAll) {
+    selectAll.addEventListener('change', () => {
+      document.querySelectorAll('.history-item-checkbox').forEach(c => { c.checked = selectAll.checked; });
+    });
+  }
+  if (deleteSelectedBtn) deleteSelectedBtn.addEventListener('click', eliminaVociSelezionate);
+}
+
+document.addEventListener('components:ready', initCronologia);
 
 document.dispatchEvent(new Event('components:ready'));
 </script>
