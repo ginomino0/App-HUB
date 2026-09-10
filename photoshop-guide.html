@@ -120,6 +120,15 @@ button:disabled {
   margin-top: 12px;
 }
 
+#attach-preview {
+  max-width: 180px;
+  max-height: 130px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  display: none;
+  margin: 8px 0 4px;
+}
+
 textarea#user-request {
   width: 100%;
   min-height: 70px;
@@ -271,6 +280,14 @@ dialog#apikey-dialog input {
     <section class="panel" id="chat-panel">
   <h2>2. Cosa vuoi fare o modificare</h2>
   <textarea id="user-request" placeholder="Es: Voglio schiarire il volto e sfocare lo sfondo mantenendo i capelli nitidi..."></textarea>
+
+  <div class="row" style="margin-top:8px;">
+    <button id="btn-attach-screenshot" type="button">📎 Allega screenshot del lavoro attuale</button>
+    <input type="file" id="screenshot-input" accept="image/*" hidden />
+    <span id="attach-status" class="status"></span>
+  </div>
+  <img id="attach-preview" alt="Anteprima screenshot allegato" />
+
   <div class="row" style="margin-top:10px;">
     <button id="btn-send" class="primary">Genera guida passo-passo</button>
     <span id="send-status" class="status"></span>
@@ -341,6 +358,7 @@ REGOLE DI RISPOSTA (da seguire sempre):
 4. Se la richiesta dell'utente è ambigua, fai la tua migliore assunzione ragionevole e procedi comunque con una guida completa, segnalando l'assunzione in una riga.
 5. Non uscire mai dal contesto di Photoshop 2024. Non parlare di altri software.
 6. Sii tecnico e diretto, evita frasi di cortesia superflue.
+7. Se in un messaggio l'utente allega un nuovo screenshot del proprio lavoro in Photoshop (oltre alla foto originale già vista), confrontalo con lo stato atteso in base ai passaggi dati finora: verifica se il risultato è coerente, segnala eventuali errori o discrepanze visibili, e correggi la guida di conseguenza prima di procedere con i passi successivi.
 `.trim();
 
 // Cronologia dei "contents" da inviare all'API (formato Gemini)
@@ -358,16 +376,16 @@ const GeminiChat = {
   },
 
   /**
-   * Invia un messaggio. Se è il primo turno e viene fornita un'immagine (base64 + mimeType),
-   * la allega SOLO in questo turno. Nei turni successivi la cronologia mantiene il riferimento
-   * senza re-inviare i byte dell'immagine.
+   * Invia un messaggio. Se viene fornita un'immagine (base64 + mimeType) in QUALSIASI turno,
+   * viene allegata a quel turno specifico (es. uno screenshot del lavoro in corso), senza
+   * cancellare la cronologia precedente: Gemini vedrà sia la foto originale che questo nuovo screenshot.
    */
   async sendMessage({ apiKey, text, imageBase64, imageMimeType }) {
     if (!apiKey) throw new Error("API key mancante");
 
     const parts = [];
 
-    if (imageBase64 && !imageAttached) {
+    if (imageBase64) {
       parts.push({
         inline_data: {
           mime_type: imageMimeType || "image/jpeg",
@@ -444,6 +462,10 @@ const UI = {
       previewImg: document.getElementById("preview-img"),
       uploadStatus: document.getElementById("upload-status"),
       userRequest: document.getElementById("user-request"),
+      btnAttachScreenshot: document.getElementById("btn-attach-screenshot"),
+      screenshotInput: document.getElementById("screenshot-input"),
+      attachPreview: document.getElementById("attach-preview"),
+      attachStatus: document.getElementById("attach-status"),
       btnSend: document.getElementById("btn-send"),
       sendStatus: document.getElementById("send-status"),
       chatLog: document.getElementById("chat-log"),
@@ -472,6 +494,20 @@ const UI = {
   clearPreview() {
     this.els.previewImg.src = "";
     this.els.previewImg.style.display = "none";
+  },
+
+  showAttachPreview(dataUrl, filename) {
+    this.els.attachPreview.src = dataUrl;
+    this.els.attachPreview.style.display = "block";
+    this.els.attachStatus.textContent = `Screenshot allegato: ${filename} (verrà inviato col prossimo messaggio)`;
+    this.els.attachStatus.className = "status ok";
+  },
+
+  clearAttachPreview() {
+    this.els.attachPreview.src = "";
+    this.els.attachPreview.style.display = "none";
+    this.els.attachStatus.textContent = "";
+    this.els.attachStatus.className = "status";
   },
 
   setUploadStatus(msg, isError = false) {
@@ -505,7 +541,7 @@ const UI = {
     return html;
   },
 
-  appendMessage(role, text) {
+  appendMessage(role, text, note = null) {
     const div = document.createElement("div");
     div.className = `msg ${role}`;
     if (role === "model") {
@@ -517,7 +553,15 @@ const UI = {
       body.innerHTML = this.formatModelText(text);
       div.appendChild(body);
     } else {
-      div.textContent = text;
+      if (note) {
+        const noteEl = document.createElement("div");
+        noteEl.className = "badge";
+        noteEl.textContent = note;
+        div.appendChild(noteEl);
+      }
+      const body = document.createElement("div");
+      body.textContent = text;
+      div.appendChild(body);
     }
     this.els.chatLog.appendChild(div);
     this.els.chatLog.scrollTop = this.els.chatLog.scrollHeight;
@@ -534,6 +578,7 @@ const UI = {
 // app.js — punto di ingresso: carica i componenti HTML (fetch) e collega la logica
 
 let currentImage = { base64: null, mimeType: null };
+let attachedScreenshot = { base64: null, mimeType: null };
 
 async function loadComponent(targetSelector, path) {
   const res = await fetch(path);
@@ -572,6 +617,19 @@ function handleFile(file) {
     .catch((err) => UI.setUploadStatus(err.message, true));
 }
 
+function handleAttachScreenshot(file) {
+  if (!file || !file.type.startsWith("image/")) {
+    UI.setSendStatus("Seleziona un'immagine valida per lo screenshot.", true);
+    return;
+  }
+  fileToBase64(file)
+    .then(({ base64, dataUrl }) => {
+      attachedScreenshot = { base64, mimeType: file.type };
+      UI.showAttachPreview(dataUrl, file.name);
+    })
+    .catch((err) => UI.setSendStatus(err.message, true));
+}
+
 async function handleSend() {
   const apiKey = Storage.getApiKey();
   if (!apiKey) {
@@ -589,15 +647,21 @@ async function handleSend() {
     return;
   }
 
-  UI.appendMessage("user", text);
+  UI.appendMessage("user", text, attachedScreenshot.base64 ? "📎 screenshot allegato" : null);
   UI.setSending(true);
+
+  const imageToSend = attachedScreenshot.base64
+    ? attachedScreenshot
+    : !GeminiChat.hasImage()
+    ? currentImage
+    : { base64: null, mimeType: null };
 
   try {
     const { text: responseText, truncated } = await GeminiChat.sendMessage({
       apiKey,
       text,
-      imageBase64: currentImage.base64,
-      imageMimeType: currentImage.mimeType,
+      imageBase64: imageToSend.base64,
+      imageMimeType: imageToSend.mimeType,
     });
     UI.appendMessage("model", responseText);
     UI.setSendStatus(
@@ -605,6 +669,8 @@ async function handleSend() {
       truncated
     );
     UI.els.userRequest.value = "";
+    attachedScreenshot = { base64: null, mimeType: null };
+    UI.clearAttachPreview();
 
     const history = Storage.loadDisplayHistory();
     history.push({ role: "user", text });
@@ -648,6 +714,9 @@ function bindEvents() {
   els.dropzone.addEventListener("drop", (e) => handleFile(e.dataTransfer.files[0]));
 
   els.btnSend.addEventListener("click", handleSend);
+
+  els.btnAttachScreenshot.addEventListener("click", () => els.screenshotInput.click());
+  els.screenshotInput.addEventListener("change", (e) => handleAttachScreenshot(e.target.files[0]));
   els.userRequest.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleSend();
   });
@@ -655,8 +724,10 @@ function bindEvents() {
   els.btnReset.addEventListener("click", () => {
     if (!confirm("Iniziare un nuovo progetto? La cronologia attuale andrà persa.")) return;
     currentImage = { base64: null, mimeType: null };
+    attachedScreenshot = { base64: null, mimeType: null };
     GeminiChat.reset();
     UI.clearPreview();
+    UI.clearAttachPreview();
     UI.clearChatLog();
     UI.setUploadStatus("");
     Storage.clearDisplayHistory();
