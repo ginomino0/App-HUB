@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photoshop · Guida passo-passo con Gemini</title>
+  <style>
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel-2: #1e222b;
+  --border: #2a2f3a;
+  --text: #e8eaed;
+  --text-dim: #9aa0aa;
+  --accent: #6c8cff;
+  --accent-2: #31d0aa;
+  --danger: #ff6b6b;
+  --radius: 10px;
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+header.app-header h1 {
+  font-size: 18px;
+  margin: 0;
+}
+
+header.app-header .sub {
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 8px 14px;
+  font-size: 13px;
+  transition: background .15s, border-color .15s;
+}
+
+button:hover { border-color: var(--accent); }
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0d0f14;
+  font-weight: 600;
+}
+
+button.primary:hover { filter: brightness(1.08); }
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.panel h2 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-dim);
+  margin: 0 0 10px;
+}
+
+#dropzone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 30px;
+  text-align: center;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+#dropzone.dragover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+#preview-img {
+  max-width: 100%;
+  max-height: 320px;
+  border-radius: var(--radius);
+  display: none;
+  margin-top: 12px;
+}
+
+textarea#user-request {
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 10px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.msg {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  line-height: 1.5;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+.msg.user {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  align-self: flex-end;
+  max-width: 80%;
+}
+
+.msg.model {
+  background: linear-gradient(180deg, rgba(108,140,255,.08), rgba(108,140,255,.02));
+  border: 1px solid rgba(108,140,255,.25);
+}
+
+.msg.model h3, .msg.model h4 { margin-top: 0; }
+
+.msg .step {
+  border-left: 3px solid var(--accent-2);
+  padding-left: 10px;
+  margin: 8px 0;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-bottom: 6px;
+}
+
+.status {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.status.error { color: var(--danger); }
+.status.ok { color: var(--accent-2); }
+
+dialog#apikey-dialog {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--text);
+  padding: 20px;
+  width: 380px;
+  max-width: 90vw;
+}
+
+dialog#apikey-dialog::backdrop {
+  background: rgba(0,0,0,.6);
+}
+
+dialog#apikey-dialog input {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  margin: 10px 0;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin .7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+</style>
+</head>
+<body>
+  <header class="app-header">
+  <div>
+    <h1>Photoshop · Guida passo-passo con Gemini</h1>
+    <div class="sub">Carica una foto, descrivi cosa vuoi fare, ricevi la procedura esatta</div>
+  </div>
+  <div class="row">
+    <span id="api-status" class="status">API key non impostata</span>
+    <button id="btn-open-apikey">🔑 API Key</button>
+    <button id="btn-reset">↺ Nuovo progetto</button>
+  </div>
+</header>
+
+  <dialog id="apikey-dialog">
+  <h2 style="margin-top:0;font-size:15px;">Inserisci la tua Gemini API Key</h2>
+  <p class="status">La chiave resta solo nel tuo browser (localStorage), non viene inviata a nessun server se non a Google.</p>
+  <input type="password" id="apikey-input" placeholder="AIza..." autocomplete="off" />
+  <div class="row" style="justify-content:flex-end;">
+    <button id="btn-apikey-cancel">Annulla</button>
+    <button id="btn-apikey-save" class="primary">Salva</button>
+  </div>
+</dialog>
+
+
+  <main class="container">
+    <section class="panel" id="upload-panel">
+  <h2>1. Immagine di partenza</h2>
+  <div id="dropzone">
+    Trascina qui la foto, oppure clicca per selezionarla
+    <input type="file" id="file-input" accept="image/*" hidden />
+  </div>
+  <img id="preview-img" alt="Anteprima immagine caricata" />
+  <p class="status" id="upload-status"></p>
+</section>
+
+    <section class="panel" id="chat-panel">
+  <h2>2. Cosa vuoi fare o modificare</h2>
+  <textarea id="user-request" placeholder="Es: Voglio schiarire il volto e sfocare lo sfondo mantenendo i capelli nitidi..."></textarea>
+  <div class="row" style="margin-top:10px;">
+    <button id="btn-send" class="primary">Genera guida passo-passo</button>
+    <span id="send-status" class="status"></span>
+  </div>
+
+  <h2 style="margin-top:22px;">3. Cronologia guide</h2>
+  <div id="chat-log"></div>
+</section>
+
+  </main>
+
+<script>
+// storage.js — gestione persistenza locale (API key + cronologia testuale)
+
+const STORAGE_KEYS = {
+  API_KEY: "psguide_gemini_api_key",
+  CHAT_HISTORY: "psguide_chat_history_display", // solo per mostrare in UI dopo reload
+};
+
+const Storage = {
+  getApiKey() {
+    return localStorage.getItem(STORAGE_KEYS.API_KEY) || "";
+  },
+  setApiKey(key) {
+    localStorage.setItem(STORAGE_KEYS.API_KEY, key.trim());
+  },
+  clearApiKey() {
+    localStorage.removeItem(STORAGE_KEYS.API_KEY);
+  },
+  saveDisplayHistory(items) {
+    localStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(items));
+  },
+  loadDisplayHistory() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.CHAT_HISTORY)) || [];
+    } catch {
+      return [];
+    }
+  },
+  clearDisplayHistory() {
+    localStorage.removeItem(STORAGE_KEYS.CHAT_HISTORY);
+  },
+};
+
+</script>
+
+<script>
+// gemini.js — comunicazione con Gemini API (REST) + gestione cronologia chat
+
+const GEMINI_MODEL = "gemini-3.5-flash";
+const GEMINI_ENDPOINT = (model, key) =>
+  `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+
+const SYSTEM_INSTRUCTION = `
+Sei un assistente esperto di Adobe Photoshop 2024 (versione desktop, interfaccia in italiano quando possibile).
+Il tuo compito è guidare un utente passo-passo, in modo estremamente preciso e operativo, per modificare una fotografia che ti è stata mostrata.
+
+REGOLE DI RISPOSTA (da seguire sempre):
+1. Analizza l'immagine e la richiesta dell'utente, tenendo conto di TUTTI i livelli, maschere, selezioni o modifiche create nei passaggi precedenti di questa conversazione.
+2. Rispondi SEMPRE con una guida numerata (Passo 1, Passo 2, ...), ogni passo deve contenere:
+   - Il nome esatto del menu/comando/strumento da usare (es: "Livello > Nuovo livello di regolazione > Curve").
+   - La scorciatoia da tastiera quando esiste (es: Ctrl+J / Cmd+J).
+   - I valori numerici consigliati per slider, percentuali, raggio sfocatura, opacità, feather, ecc. (es: "Raggio: 8px, Opacità livello: 70%").
+   - Se crei o rinomini un livello, indicane il nome esatto da usare, così potrai ricordarlo nei passaggi successivi.
+3. Alla fine della risposta aggiungi sempre una sezione:
+   "### Stato attuale del progetto"
+   con un elenco puntato dei livelli/maschere/gruppi esistenti fino a questo punto e a cosa servono.
+4. Se la richiesta dell'utente è ambigua, fai la tua migliore assunzione ragionevole e procedi comunque con una guida completa, segnalando l'assunzione in una riga.
+5. Non uscire mai dal contesto di Photoshop 2024. Non parlare di altri software.
+6. Sii tecnico e diretto, evita frasi di cortesia superflue.
+`.trim();
+
+// Cronologia dei "contents" da inviare all'API (formato Gemini)
+let chatHistory = [];
+let imageAttached = false;
+
+const GeminiChat = {
+  reset() {
+    chatHistory = [];
+    imageAttached = false;
+  },
+
+  hasImage() {
+    return imageAttached;
+  },
+
+  /**
+   * Invia un messaggio. Se è il primo turno e viene fornita un'immagine (base64 + mimeType),
+   * la allega SOLO in questo turno. Nei turni successivi la cronologia mantiene il riferimento
+   * senza re-inviare i byte dell'immagine.
+   */
+  async sendMessage({ apiKey, text, imageBase64, imageMimeType }) {
+    if (!apiKey) throw new Error("API key mancante");
+
+    const parts = [];
+
+    if (imageBase64 && !imageAttached) {
+      parts.push({
+        inline_data: {
+          mime_type: imageMimeType || "image/jpeg",
+          data: imageBase64,
+        },
+      });
+      imageAttached = true;
+    }
+
+    parts.push({ text });
+
+    chatHistory.push({ role: "user", parts });
+
+    const body = {
+      system_instruction: {
+        parts: [{ text: SYSTEM_INSTRUCTION }],
+      },
+      contents: chatHistory,
+      generationConfig: {
+        temperature: 0.4,
+        maxOutputTokens: 8192,
+      },
+    };
+
+    const res = await fetch(GEMINI_ENDPOINT(GEMINI_MODEL, apiKey), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      // rimuove l'ultimo turno utente fallito dalla cronologia per non corromperla
+      chatHistory.pop();
+      throw new Error(`Errore API (${res.status}): ${errText}`);
+    }
+
+    const data = await res.json();
+    const candidate = data.candidates?.[0];
+    let modelText =
+      candidate?.content?.parts?.map((p) => p.text).filter(Boolean).join("\n") ||
+      "[Nessuna risposta testuale ricevuta]";
+
+    const truncated = candidate?.finishReason === "MAX_TOKENS";
+    if (truncated) {
+      modelText += "\n\n⚠️ RISPOSTA TRONCATA: il limite di lunghezza è stato raggiunto. Scrivi \"continua\" per ricevere il resto della guida.";
+    }
+
+    chatHistory.push({ role: "model", parts: [{ text: modelText }] });
+
+    return { text: modelText, truncated };
+  },
+};
+
+</script>
+
+<script>
+// ui.js — interazioni DOM: upload immagine, rendering messaggi, dialog API key
+
+const UI = {
+  els: {},
+
+  cacheEls() {
+    this.els = {
+      apiStatus: document.getElementById("api-status"),
+      btnOpenApikey: document.getElementById("btn-open-apikey"),
+      btnReset: document.getElementById("btn-reset"),
+      apikeyDialog: document.getElementById("apikey-dialog"),
+      apikeyInput: document.getElementById("apikey-input"),
+      btnApikeySave: document.getElementById("btn-apikey-save"),
+      btnApikeyCancel: document.getElementById("btn-apikey-cancel"),
+      dropzone: document.getElementById("dropzone"),
+      fileInput: document.getElementById("file-input"),
+      previewImg: document.getElementById("preview-img"),
+      uploadStatus: document.getElementById("upload-status"),
+      userRequest: document.getElementById("user-request"),
+      btnSend: document.getElementById("btn-send"),
+      sendStatus: document.getElementById("send-status"),
+      chatLog: document.getElementById("chat-log"),
+    };
+  },
+
+  setApiStatus(hasKey) {
+    this.els.apiStatus.textContent = hasKey ? "API key impostata ✓" : "API key non impostata";
+    this.els.apiStatus.className = "status" + (hasKey ? " ok" : "");
+  },
+
+  openApikeyDialog(currentKey) {
+    this.els.apikeyInput.value = currentKey || "";
+    this.els.apikeyDialog.showModal();
+  },
+
+  closeApikeyDialog() {
+    this.els.apikeyDialog.close();
+  },
+
+  showPreview(dataUrl) {
+    this.els.previewImg.src = dataUrl;
+    this.els.previewImg.style.display = "block";
+  },
+
+  clearPreview() {
+    this.els.previewImg.src = "";
+    this.els.previewImg.style.display = "none";
+  },
+
+  setUploadStatus(msg, isError = false) {
+    this.els.uploadStatus.textContent = msg;
+    this.els.uploadStatus.className = "status" + (isError ? " error" : "");
+  },
+
+  setSendStatus(msg, isError = false) {
+    this.els.sendStatus.innerHTML = msg;
+    this.els.sendStatus.className = "status" + (isError ? " error" : "");
+  },
+
+  setSending(isSending) {
+    this.els.btnSend.disabled = isSending;
+    if (isSending) {
+      this.setSendStatus('<span class="spinner"></span> Gemini sta analizzando...');
+    }
+  },
+
+  // Conversione basilare markdown-like (**bold**, ### titoli, righe numerate) in HTML sicuro
+  formatModelText(text) {
+    const escapeHtml = (s) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    let html = escapeHtml(text);
+    html = html.replace(/^### (.*)$/gm, "<h4>$1</h4>");
+    html = html.replace(/^## (.*)$/gm, "<h3>$1</h3>");
+    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/^(Passo \d+.*)$/gm, '<div class="step"><strong>$1</strong></div>');
+    html = html.replace(/\n/g, "<br>");
+    return html;
+  },
+
+  appendMessage(role, text) {
+    const div = document.createElement("div");
+    div.className = `msg ${role}`;
+    if (role === "model") {
+      const badge = document.createElement("div");
+      badge.className = "badge";
+      badge.textContent = "Gemini · guida Photoshop";
+      div.appendChild(badge);
+      const body = document.createElement("div");
+      body.innerHTML = this.formatModelText(text);
+      div.appendChild(body);
+    } else {
+      div.textContent = text;
+    }
+    this.els.chatLog.appendChild(div);
+    this.els.chatLog.scrollTop = this.els.chatLog.scrollHeight;
+  },
+
+  clearChatLog() {
+    this.els.chatLog.innerHTML = "";
+  },
+};
+
+</script>
+
+<script>
+// app.js — punto di ingresso: carica i componenti HTML (fetch) e collega la logica
+
+let currentImage = { base64: null, mimeType: null };
+
+async function loadComponent(targetSelector, path) {
+  const res = await fetch(path);
+  if (!res.ok) throw new Error(`Impossibile caricare componente: ${path}`);
+  const html = await res.text();
+  document.querySelector(targetSelector).innerHTML = html;
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result; // data:image/xxx;base64,AAAA
+      const base64 = result.split(",")[1];
+      resolve({ base64, dataUrl: result });
+    };
+    reader.onerror = () => reject(new Error("Lettura file fallita"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function handleFile(file) {
+  if (!file || !file.type.startsWith("image/")) {
+    UI.setUploadStatus("Seleziona un file immagine valido.", true);
+    return;
+  }
+  fileToBase64(file)
+    .then(({ base64, dataUrl }) => {
+      currentImage = { base64, mimeType: file.type };
+      UI.showPreview(dataUrl);
+      UI.setUploadStatus(`Immagine caricata: ${file.name}`);
+      GeminiChat.reset(); // nuova immagine => nuova conversazione
+      UI.clearChatLog();
+      Storage.clearDisplayHistory();
+    })
+    .catch((err) => UI.setUploadStatus(err.message, true));
+}
+
+async function handleSend() {
+  const apiKey = Storage.getApiKey();
+  if (!apiKey) {
+    UI.setSendStatus("Imposta prima la tua API key (pulsante in alto).", true);
+    UI.openApikeyDialog("");
+    return;
+  }
+  if (!currentImage.base64 && !GeminiChat.hasImage()) {
+    UI.setSendStatus("Carica prima una fotografia.", true);
+    return;
+  }
+  const text = UI.els.userRequest.value.trim();
+  if (!text) {
+    UI.setSendStatus("Scrivi cosa vuoi fare o modificare.", true);
+    return;
+  }
+
+  UI.appendMessage("user", text);
+  UI.setSending(true);
+
+  try {
+    const { text: responseText, truncated } = await GeminiChat.sendMessage({
+      apiKey,
+      text,
+      imageBase64: currentImage.base64,
+      imageMimeType: currentImage.mimeType,
+    });
+    UI.appendMessage("model", responseText);
+    UI.setSendStatus(
+      truncated ? "⚠️ Guida troncata: scrivi \"continua\" per il resto." : "",
+      truncated
+    );
+    UI.els.userRequest.value = "";
+
+    const history = Storage.loadDisplayHistory();
+    history.push({ role: "user", text });
+    history.push({ role: "model", text: responseText });
+    Storage.saveDisplayHistory(history);
+  } catch (err) {
+    UI.setSendStatus(err.message, true);
+  } finally {
+    UI.setSending(false);
+  }
+}
+
+function bindEvents() {
+  const { els } = UI;
+
+  els.btnOpenApikey.addEventListener("click", () => UI.openApikeyDialog(Storage.getApiKey()));
+  els.btnApikeyCancel.addEventListener("click", () => UI.closeApikeyDialog());
+  els.btnApikeySave.addEventListener("click", () => {
+    const key = els.apikeyInput.value.trim();
+    if (!key) return;
+    Storage.setApiKey(key);
+    UI.setApiStatus(true);
+    UI.closeApikeyDialog();
+  });
+
+  els.dropzone.addEventListener("click", () => els.fileInput.click());
+  els.fileInput.addEventListener("change", (e) => handleFile(e.target.files[0]));
+
+  ["dragenter", "dragover"].forEach((evt) =>
+    els.dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      els.dropzone.classList.add("dragover");
+    })
+  );
+  ["dragleave", "drop"].forEach((evt) =>
+    els.dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      els.dropzone.classList.remove("dragover");
+    })
+  );
+  els.dropzone.addEventListener("drop", (e) => handleFile(e.dataTransfer.files[0]));
+
+  els.btnSend.addEventListener("click", handleSend);
+  els.userRequest.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleSend();
+  });
+
+  els.btnReset.addEventListener("click", () => {
+    if (!confirm("Iniziare un nuovo progetto? La cronologia attuale andrà persa.")) return;
+    currentImage = { base64: null, mimeType: null };
+    GeminiChat.reset();
+    UI.clearPreview();
+    UI.clearChatLog();
+    UI.setUploadStatus("");
+    Storage.clearDisplayHistory();
+  });
+}
+
+function restoreDisplayHistory() {
+  const history = Storage.loadDisplayHistory();
+  history.forEach((item) => UI.appendMessage(item.role, item.text));
+}
+
+async function init() {
+  UI.cacheEls();
+  bindEvents();
+  UI.setApiStatus(!!Storage.getApiKey());
+  restoreDisplayHistory();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+</script>
+</body>
+</html>
