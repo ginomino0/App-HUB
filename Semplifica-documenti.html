@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chiarofilo — semplifica documenti legali e tecnici</title>
+<style>
+  :root {
+    --paper: #EFEAE0;
+    --paper-raised: #F8F4EA;
+    --paper-deep: #E7E1D2;
+    --ink: #1F2A24;
+    --ink-soft: #4A564E;
+    --ink-faint: #83907F;
+    --line: #C9C0AE;
+    --line-soft: #DAD2BF;
+    --blue: #2A4A6B;
+    --blue-deep: #1C3448;
+    --blue-soft: #DDE6ED;
+    --amber: #A9631B;
+    --amber-deep: #6B3B10;
+    --amber-soft: #F4E3D8;
+    --gray: #5B6660;
+    --gray-deep: #3A423D;
+    --gray-soft: #E4DECD;
+    --red: #A13A2E;
+    --red-deep: #7A2A20;
+    --red-soft: #F3DEDA;
+    --shadow-sm: 0 1px 3px rgba(31, 42, 36, 0.07);
+    --shadow-md: 0 8px 28px rgba(31, 42, 36, 0.10);
+    --radius-sm: 5px;
+    --radius-md: 8px;
+    --radius-lg: 14px;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: "Neue Haas Grotesk Text Pro", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 12% -8%, rgba(42, 74, 107, 0.05), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(169, 99, 27, 0.04), transparent 55%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--blue-soft); color: var(--blue-deep); }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 10px;
+    border: 2px solid var(--paper);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
+  a { color: var(--blue); }
+
+  header {
+    position: relative;
+    padding: 3.4rem 1.5rem 2.2rem;
+    max-width: 1150px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--line-soft);
+    text-align: center;
+  }
+
+  .header-top {
+    position: relative;
+    min-height: 2.3rem;
+  }
+
+  .mark {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--blue);
+    margin: 0 0 0.6rem;
+    letter-spacing: 0.01em;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.1rem, 4.2vw, 3rem);
+    font-weight: 400;
+    margin: 0 auto 0.9rem;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+    color: var(--ink);
+    max-width: 34ch;
+  }
+
+  header p {
+    max-width: 62ch;
+    margin: 0 auto 0.35rem;
+    color: var(--ink-soft);
+    font-size: 1.04rem;
+    line-height: 1.55;
+  }
+  header > p:nth-of-type(1) {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--ink);
+  }
+  header > p:nth-of-type(2) { margin-bottom: 0; }
+
+  main {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 2.8rem 1.5rem 4.5rem;
+  }
+
+  .controls {
+    display: flex;
+    gap: 0.9rem 1.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.4rem;
+    align-items: center;
+    padding: 0.9rem 1.1rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-md);
+  }
+
+  .controls > label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .reset-btn {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+  .reset-btn:hover { border-color: var(--amber); color: var(--amber-deep); background: var(--amber-soft); }
+
+  select, button {
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    padding: 0.55rem 0.9rem;
+    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+  }
+
+  select { cursor: pointer; }
+  select:hover { border-color: var(--ink-faint); }
+
+  textarea {
+    width: 100%;
+    min-height: 220px;
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--ink);
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 1.2rem 1.3rem;
+    resize: vertical;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  textarea::placeholder { color: var(--ink-faint); }
+
+  textarea:focus, select:focus-visible, button:focus-visible, input:focus-visible {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-soft);
+  }
+
+  .file-row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .file-btn {
+    background: var(--paper);
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  }
+  .file-btn:hover { background: var(--blue-soft); box-shadow: var(--shadow-sm); }
+  .file-btn:active { transform: translateY(1px); }
+  .file-status {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+
+  .mask-panel {
+    margin-top: 1.6rem;
+    padding: 1.5rem 1.6rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .mask-head h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.12rem;
+    margin: 0 0 0.35rem;
+    color: var(--ink);
+  }
+  .mask-head p {
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0 0 0.9rem;
+  }
+
+  .name-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+    align-items: center;
+  }
+  .name-row input {
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: #FFFFFF;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .name-row .real-name { flex: 1.3; }
+  .name-row .label-name { flex: 1; color: var(--blue); }
+  .name-row .remove-name {
+    background: transparent;
+    border: none;
+    color: var(--amber);
+    cursor: pointer;
+    font-size: 1.05rem;
+    line-height: 1;
+    padding: 0.4rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .name-row .remove-name:hover { color: var(--amber-deep); background: var(--amber-soft); }
+
+  .add-name-btn {
+    background: transparent;
+    border: 1px dashed var(--line);
+    color: var(--ink-soft);
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+  .add-name-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); }
+
+  .auto-list {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .auto-list ul { margin: 0; padding-left: 0; list-style: none; }
+  .auto-list li {
+    margin-bottom: 0.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+  .auto-list code {
+    background: var(--blue-soft);
+    color: var(--blue-deep);
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  #possibleNames ul { padding-left: 0; }
+  #possibleNames li {
+    padding: 0.3rem 0.1rem;
+    border-bottom: 1px dashed var(--line-soft);
+  }
+  #possibleNames li:last-child { border-bottom: none; }
+  #possibleNames li span {
+    font-family: var(--serif);
+    color: var(--ink);
+    font-size: 0.92rem;
+  }
+
+  .suggest-add-btn {
+    background: var(--paper);
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    font-family: var(--sans);
+    font-size: 0.76rem;
+    font-weight: 500;
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+  .suggest-add-btn:hover:not(:disabled) { background: var(--blue-soft); }
+  .suggest-add-btn:disabled {
+    background: var(--paper-deep);
+    border-color: var(--line);
+    color: var(--ink-faint);
+    cursor: default;
+  }
+
+  .preview-box {
+    display: none;
+    margin-top: 1.7rem;
+    padding: 1.6rem 1.7rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--blue);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+  }
+  .preview-box.visible { display: block; animation: reveal 0.25s ease; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .preview-text {
+    font-family: var(--serif);
+    font-size: 0.98rem;
+    line-height: 1.75;
+    white-space: pre-wrap;
+    max-height: 340px;
+    overflow-y: auto;
+    color: var(--ink);
+    padding-right: 0.6rem;
+  }
+  .preview-text mark {
+    background: var(--amber-soft);
+    color: var(--amber-deep);
+    padding: 0 0.15rem;
+    border-radius: 3px;
+  }
+
+  .preview-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1.1rem;
+    flex-wrap: wrap;
+  }
+
+  .select-btn {
+    background: var(--amber);
+    color: #FFF7EE;
+    border: none;
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 0.82rem;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  .select-btn:hover { background: var(--amber-deep); }
+  .select-btn:active { transform: translateY(1px); }
+
+  .select-hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+
+  .manual-list {
+    margin-top: 0.5rem;
+    font-size: 0.83rem;
+  }
+  .manual-list ul { margin: 0.5rem 0 0; padding-left: 0; list-style: none; }
+  .manual-list li {
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.4rem 0.6rem;
+    background: var(--paper);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-sm);
+  }
+  .manual-list code {
+    background: var(--amber-soft);
+    color: var(--amber-deep);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  .manual-list .remove-manual {
+    background: transparent;
+    border: none;
+    color: var(--amber);
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-left: auto;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .manual-list .remove-manual:hover { color: var(--amber-deep); background: var(--amber-soft); }
+
+  .run-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.3rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .run-btn {
+    background: var(--blue);
+    color: #F2EFE7;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  }
+  .run-btn:hover:not(:disabled) { background: var(--blue-deep); box-shadow: var(--shadow-md); }
+  .run-btn:active:not(:disabled) { transform: translateY(1px); }
+  .run-btn:disabled { background: #A9B3AC; box-shadow: none; cursor: not-allowed; }
+
+  .counter {
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .key-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: transparent;
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 0.82rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+  }
+  .key-btn:hover { background: var(--blue-soft); box-shadow: var(--shadow-sm); }
+
+  .key-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    margin: 0.9rem auto 0 !important;
+    width: fit-content;
+  }
+  .key-status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    flex-shrink: 0;
+  }
+  .key-status.set { color: var(--blue); }
+  .key-status.set::before { background: var(--blue); }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 42, 36, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.visible { display: flex; animation: fadeIn 0.15s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal-box {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 1.8rem 1.9rem;
+    max-width: 420px;
+    width: 90%;
+    animation: reveal 0.2s ease;
+  }
+  .modal-box h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.25rem;
+    margin: 0 0 0.65rem;
+    color: var(--ink);
+  }
+  .modal-box p {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin: 0 0 1rem;
+    line-height: 1.55;
+  }
+  .modal-box p a { color: var(--blue); }
+  .modal-box input {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--paper-raised);
+    margin-bottom: 1.1rem;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+  }
+  .modal-cancel {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .qa-panel {
+    margin-top: 2.4rem;
+    padding-top: 1.8rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .qa-input-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+  }
+  .qa-input-row input {
+    flex: 1;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--paper-raised);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  #qaHistory {
+    margin-bottom: 0.8rem;
+  }
+
+  .qa-pair {
+    margin-bottom: 1.7rem;
+    padding-left: 1.1rem;
+    border-left: 2px solid var(--line-soft);
+  }
+  .qa-question {
+    font-family: var(--sans);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--blue);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+  .qa-answer {
+    font-family: var(--serif);
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--ink);
+  }
+  .qa-answer p { margin: 0 0 0.6rem; }
+
+  .qa-loading {
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.9rem;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .qa-loading.visible { display: flex; }
+
+  .modal-cancel:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+
+  .result {
+    margin-top: 2.8rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line-soft);
+    display: none;
+  }
+
+  .result.visible { display: block; animation: reveal 0.3s ease; }
+
+  .result-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    padding-bottom: 0.7rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .result-head h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-style: italic;
+    font-size: 1.4rem;
+    margin: 0;
+    color: var(--blue);
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .copy-btn, .save-btn {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 0.8rem;
+    padding: 0.45rem 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+  .copy-btn { color: var(--ink-soft); }
+  .copy-btn:hover { border-color: var(--blue); color: var(--blue-deep); background: var(--blue-soft); }
+
+  .save-txt { border-color: var(--gray); color: var(--gray-deep); }
+  .save-txt:hover { border-color: var(--gray-deep); background: var(--gray-soft); color: var(--gray-deep); }
+
+  .save-pdf { border-color: var(--red); color: var(--red); }
+  .save-pdf:hover { border-color: var(--red-deep); background: var(--red-soft); color: var(--red-deep); }
+
+  .plain {
+    font-size: 1.06rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .plain p { margin: 0 0 1rem; }
+  .plain ul { margin: 0 0 1rem; padding-left: 1.3rem; }
+  .plain li { margin-bottom: 0.4rem; }
+
+  .flag {
+    margin-top: 2rem;
+    padding: 1.2rem 1.4rem;
+    background: var(--blue-soft);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-size: 0.93rem;
+  }
+  .flag h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.05rem;
+    margin: 0 0 0.6rem;
+    color: var(--blue-deep);
+  }
+  .flag ul { margin: 0; padding-left: 1.2rem; }
+  .flag li { margin-bottom: 0.4rem; line-height: 1.5; }
+
+  .error {
+    display: none;
+    margin-top: 1.3rem;
+    padding: 1rem 1.2rem;
+    background: var(--amber-soft);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--amber-deep);
+  }
+  .error.visible { display: block; animation: reveal 0.2s ease; }
+
+  .loading {
+    display: none;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 1.6rem;
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .loading.visible { display: flex; }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    animation: pulse 1.1s ease-in-out infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.15s; }
+  .dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.25; }
+    40% { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dot { animation: none; }
+    .preview-box.visible, .result.visible, .error.visible, .modal-overlay.visible, .modal-box {
+      animation: none;
+    }
+    html { scroll-behavior: auto; }
+  }
+
+  footer {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    border-top: 1px solid var(--line-soft);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--ink-faint);
+    text-align: center;
+  }
+  footer p {
+    max-width: 62ch;
+    margin: 0 auto 0.6rem;
+  }
+  footer p:last-child { margin-bottom: 0; }
+  .ai-disclaimer {
+    color: var(--amber-deep);
+  }
+
+  @media (max-width: 640px) {
+    header { padding: 4.4rem 1.4rem 1.8rem; }
+    main { padding: 2rem 1.4rem 3.5rem; }
+    footer { padding: 1.6rem 1.4rem 2.4rem; }
+    .key-btn { top: -0.2rem; }
+    .controls { flex-direction: column; align-items: stretch; }
+    .run-row { flex-direction: column; align-items: stretch; }
+    .run-row > div { justify-content: stretch; }
+    .run-btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <p class="mark">Chiarofilo</p>
+    <button class="key-btn" id="openKeyModal">Chiave API</button>
+  </div>
+  <h1>Incolla un testo complicato.<br>Ricevi quello che conta davvero.</h1>
+  <p>Contratti, condizioni d'uso, referti, clausole tecniche</p>
+  <p>Incolla il testo originale e ottieni una spiegazione in linguaggio semplice, con i punti a cui prestare attenzione.</p>
+  <p class="key-status" id="keyStatusText">Nessuna chiave impostata.</p>
+</header>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h3>Chiave API Gemini</h3>
+    <p>Serve una chiave gratuita, ottenibile su <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. Viene salvata solo in questo browser (localStorage), non su nessun server: resta impostata anche se chiudi la pagina, finché non cancelli i dati di navigazione o la rimuovi da qui lasciando il campo vuoto.</p>
+    <p style="margin-top:-0.6rem;">Lascia il campo vuoto e premi Salva per rimuoverla.</p>
+    <input type="password" id="apiKeyModalInput" placeholder="AIza...">
+    <div class="modal-actions">
+      <button class="modal-cancel" id="modalCancel">Annulla</button>
+      <button class="run-btn" id="modalSave">Salva</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="controls">
+    <label for="docType" style="font-size:0.85rem; color:var(--ink-soft);">Tipo di documento</label>
+    <select id="docType">
+      <option value="generico">Generico</option>
+      <option value="contratto">Contratto</option>
+      <option value="termini">Termini di servizio / privacy</option>
+      <option value="referto">Referto medico</option>
+      <option value="tecnico">Documentazione tecnica</option>
+    </select>
+    <button type="button" class="reset-btn" id="resetBtn">↺ Nuovo documento</button>
+  </div>
+
+  <div class="file-row">
+    <label for="fileInput" class="file-btn">Carica file (.txt, .pdf)</label>
+    <input type="file" id="fileInput" accept=".txt,.pdf" hidden>
+    <span class="file-status" id="fileStatus">Nessun file caricato — oppure incolla il testo sotto.</span>
+  </div>
+
+  <textarea id="input" placeholder="Incolla qui il testo da semplificare…"></textarea>
+
+  <div class="mask-panel">
+    <div class="mask-head">
+      <h3>Oscura i nomi prima di inviare</h3>
+      <p>Aggiungi una riga per ogni persona citata nel testo. Il nome reale non verrà mai inviato: al suo posto Gemini vedrà solo l'etichetta.</p>
+    </div>
+    <div id="nameRows"></div>
+    <button class="add-name-btn" id="addNameBtn">+ Aggiungi persona</button>
+
+    <div class="mask-head" style="margin-top:1.4rem;">
+      <h3>Possibili nomi (persone, enti o strutture)</h3>
+      <p>Parole capitalizzate individuate nel testo: possono essere nomi di persona, ma anche enti, società o strutture. Non oscurati automaticamente (troppo rischio di errori): controlla l'elenco e aggiungi con un clic solo quelli che vuoi davvero nascondere.</p>
+    </div>
+    <div id="possibleNames" class="auto-list">Nessun testo ancora analizzato.</div>
+
+    <div class="mask-head" style="margin-top:1.4rem;">
+      <h3>Rilevati automaticamente</h3>
+      <p>Email, telefoni, codici fiscali, IBAN e date vengono oscurati in automatico. Controlla l'elenco prima di procedere.</p>
+    </div>
+    <div id="autoDetected" class="auto-list">Nessun dato rilevato finché non incolli un testo.</div>
+
+    <button class="run-btn" id="previewBtn" style="margin-top:1rem;">Genera anteprima oscurata</button>
+  </div>
+
+  <div class="preview-box" id="previewBox">
+    <div class="mask-head">
+      <h3>Anteprima — questo è ciò che verrà inviato a Gemini</h3>
+      <p>Controlla che non restino dati riconoscibili. Se vedi ancora qualcosa di sensibile, selezionalo col mouse (una o più parole) e premi "Oscura selezione".</p>
+    </div>
+    <div class="preview-text" id="previewText"></div>
+    <div class="preview-actions">
+      <button class="select-btn" id="maskSelectionBtn">Oscura selezione</button>
+      <span class="select-hint">Seleziona il testo qui sopra prima di premere il pulsante.</span>
+    </div>
+
+    <div class="manual-list" id="autoMaskedList-wrap">
+      <p style="font-size:0.8rem; color:var(--ink-soft); margin:0.9rem 0 0;">Oscurati automaticamente — premi "lascia visibile" su ciò che vuoi far restare nel documento inviato:</p>
+      <div id="autoMaskedList"></div>
+    </div>
+
+    <div class="manual-list" id="manualList-wrap">
+      <p style="font-size:0.8rem; color:var(--ink-soft); margin:0.9rem 0 0;">Oscurati manualmente da te:</p>
+      <div id="manualList"></div>
+    </div>
+  </div>
+
+  <div class="run-row">
+    <span class="counter" id="counter">0 caratteri</span>
+    <div style="display:flex; gap:0.75rem; align-items:center;">
+      <button class="run-btn" id="runBtn" disabled>Semplifica (genera prima l'anteprima)</button>
+    </div>
+  </div>
+
+  <div class="error" id="errorBox"></div>
+
+  <div class="loading" id="loadingBox">
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span>Sto separando il senso dal gergo…</span>
+  </div>
+
+  <div class="result" id="resultBox">
+    <div class="result-head">
+      <h2>In parole semplici</h2>
+      <div class="result-actions">
+        <button class="copy-btn" id="copyBtn">Copia</button>
+        <button class="save-btn save-txt" id="saveTxtBtn">Salva TXT</button>
+        <button class="save-btn save-pdf" id="savePdfBtn">Salva PDF</button>
+      </div>
+    </div>
+    <div class="plain" id="plainOutput"></div>
+    <div class="flag" id="flagBox" style="display:none;">
+      <h3>Punti a cui prestare attenzione</h3>
+      <ul id="flagList"></ul>
+    </div>
+
+    <div class="qa-panel" id="qaPanel">
+      <div class="mask-head">
+        <h3>Fai una domanda sul documento</h3>
+        <p>Chiedi approfondimenti, chiedi di esaminare un passaggio specifico, un codice o una clausola. Se la risposta non è nel documento, l'assistente può cercarla sul web restando in tema (es. normativa generale) — te lo segnala sempre distinguendo cosa viene dal documento e cosa da fonti esterne. Nessun dato sensibile oscurato viene mai usato per le ricerche.</p>
+      </div>
+      <div id="qaHistory"></div>
+      <div class="qa-input-row">
+        <input type="text" id="qaInput" placeholder="Es. Cosa succede se non pago entro la scadenza?">
+        <button class="run-btn" id="qaAskBtn">Chiedi</button>
+      </div>
+      <div class="qa-loading" id="qaLoading">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span>Sto rileggendo il documento…</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>Nessun testo viene salvato: la richiesta va direttamente all'API di Gemini dal tuo browser. La chiave resta solo su questo dispositivo (salvata in locale nel browser).</p>
+  <p class="ai-disclaimer">L'intelligenza artificiale può commettere errori o non essere aggiornata alla situazione più recente. Verifica sempre le fonti, le normative e i consigli citati prima di prendere decisioni importanti.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  const input = document.getElementById('input');
+  const counter = document.getElementById('counter');
+  const runBtn = document.getElementById('runBtn');
+  const docType = document.getElementById('docType');
+  const errorBox = document.getElementById('errorBox');
+  const loadingBox = document.getElementById('loadingBox');
+  const resultBox = document.getElementById('resultBox');
+  const plainOutput = document.getElementById('plainOutput');
+  const flagBox = document.getElementById('flagBox');
+  const flagList = document.getElementById('flagList');
+  const copyBtn = document.getElementById('copyBtn');
+  const keyRow = document.getElementById('modalOverlay');
+  const apiKeyInput = document.getElementById('apiKeyModalInput');
+  const openKeyModal = document.getElementById('openKeyModal');
+  const modalCancel = document.getElementById('modalCancel');
+  const modalSave = document.getElementById('modalSave');
+  const keyStatusText = document.getElementById('keyStatusText');
+
+  let apiKey = '';
+  let maskedTextReady = '';
+  let activeMappings = [];
+  let manualTerms = [];
+  let activeAutoItems = [];
+
+  const nameRowsEl = document.getElementById('nameRows');
+  const addNameBtn = document.getElementById('addNameBtn');
+  const autoDetectedEl = document.getElementById('autoDetected');
+  const possibleNamesEl = document.getElementById('possibleNames');
+  const previewBtn = document.getElementById('previewBtn');
+  const previewBox = document.getElementById('previewBox');
+  const previewText = document.getElementById('previewText');
+  const maskSelectionBtn = document.getElementById('maskSelectionBtn');
+  const manualList = document.getElementById('manualList');
+  const autoMaskedListEl = document.getElementById('autoMaskedList');
+
+  const AUTO_PATTERNS = [
+    { label: 'CF', regex: /\b[A-Z]{6}\d{2}[A-EHLMPRST]\d{2}[A-Z]\d{3}[A-Z]\b/g, name: 'Codice fiscale' },
+    { label: 'PIVA', regex: /\b\d{11}\b/g, name: 'Partita IVA' },
+    { label: 'IBAN', regex: /\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b/g, name: 'IBAN' },
+    { label: 'EMAIL', regex: /\b[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}\b/g, name: 'Email' },
+    { label: 'TEL', regex: /\b(\+39\s?)?\d{2,4}[\s.-]?\d{6,8}\b/g, name: 'Telefono' },
+    { label: 'DATA', regex: /\b\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}\b/g, name: 'Data' }
+  ];
+
+  function addNameRow(real = '', label = '') {
+    const row = document.createElement('div');
+    row.className = 'name-row';
+    row.innerHTML = `
+      <input type="text" class="real-name" placeholder="Nome reale, es. Mario Rossi" value="${real}">
+      <input type="text" class="label-name" placeholder="Etichetta, es. Persona 1" value="${label}">
+      <button type="button" class="remove-name" title="Rimuovi">✕</button>
+    `;
+    row.querySelector('.remove-name').addEventListener('click', () => row.remove());
+    nameRowsEl.appendChild(row);
+  }
+
+  addNameBtn.addEventListener('click', () => addNameRow());
+  addNameRow(); // riga iniziale vuota
+
+  const fileInput = document.getElementById('fileInput');
+  const fileStatus = document.getElementById('fileStatus');
+
+  async function extractPdfText(file) {
+    const buffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+    let fullText = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map(it => it.str + (it.hasEOL ? '\n' : ' ')).join('');
+      fullText += pageText + '\n\n';
+    }
+    return fullText.trim();
+  }
+
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    fileStatus.textContent = `Leggo "${file.name}"…`;
+    errorBox.classList.remove('visible');
+
+    try {
+      const ext = file.name.split('.').pop().toLowerCase();
+      let text = '';
+
+      if (ext === 'txt') {
+        text = await file.text();
+      } else if (ext === 'pdf') {
+        text = await extractPdfText(file);
+      } else {
+        throw new Error('Formato non supportato. Usa .txt o .pdf.');
+      }
+
+      if (!text.trim()) {
+        throw new Error('Non ho trovato testo leggibile nel file (potrebbe essere un PDF scansionato/immagine).');
+      }
+
+      input.value = text;
+      input.dispatchEvent(new Event('input'));
+      fileStatus.textContent = `Caricato: "${file.name}" (${text.length} caratteri) — resta sul tuo dispositivo, la lettura avviene nel browser.`;
+    } catch (err) {
+      fileStatus.textContent = 'Nessun file caricato — oppure incolla il testo sotto.';
+      errorBox.textContent = `Non sono riuscito a leggere il file: ${err.message}`;
+      errorBox.classList.add('visible');
+    } finally {
+      fileInput.value = '';
+    }
+  });
+
+  function getNameMappings() {
+    return Array.from(nameRowsEl.querySelectorAll('.name-row'))
+      .map(row => ({
+        real: row.querySelector('.real-name').value.trim(),
+        label: row.querySelector('.label-name').value.trim()
+      }))
+      .filter(m => m.real && m.label);
+  }
+
+  function detectAutoMatches(text) {
+    const found = [];
+    AUTO_PATTERNS.forEach(p => {
+      const matches = text.match(p.regex);
+      if (matches) {
+        [...new Set(matches)].forEach(m => found.push({ type: p.name, value: m }));
+      }
+    });
+    return found;
+  }
+
+  const NAME_TERM_BLOCKLIST = new Set([
+    'Sito Internet', 'Area Personale', 'Carta dei Servizi', 'Brochure Prezzi', 'Servizio Utenti',
+    'Codice Civile', 'Codice del Consumo', 'Sintesi Contrattuale', 'Informativa Privacy',
+    'Condizioni Generali', 'Registro Imprese', 'Capitale sociale', 'Decreto Legislativo',
+    'Gazzetta Ufficiale', 'Autorità Giudiziaria', 'Camere di Commercio', 'Unione Europea',
+    'Servizio Clienti', 'Numero Verde', 'Partita Iva', 'Codice Fiscale', 'Trasparenza Tariffaria',
+    'Modulistica', 'Area Riservata'
+  ]);
+
+  function detectPossibleNames(text) {
+    const found = new Map();
+
+    const titleRe = /\b(?:Sig\.ra|Sig\.|Dott\.ssa|Dott\.|Avv\.|Rag\.|Ing\.)\s+([A-ZÀ-Ý][a-zà-ÿ']+(?:\s[A-ZÀ-Ý][a-zà-ÿ']+)?)/g;
+    let m;
+    while ((m = titleRe.exec(text)) !== null) {
+      found.set(m[0].trim(), (found.get(m[0].trim()) || 0) + 1);
+    }
+
+    const nameRe = /\b[A-ZÀ-Ý][a-zà-ÿ']{1,}(?:\s[A-ZÀ-Ý][a-zà-ÿ']{1,}){1,2}\b/g;
+    while ((m = nameRe.exec(text)) !== null) {
+      const val = m[0].trim();
+      if (NAME_TERM_BLOCKLIST.has(val)) continue;
+      found.set(val, (found.get(val) || 0) + 1);
+    }
+
+    const values = [...found.keys()];
+    // Rimuove le stringhe che sono già contenute in un'altra corrispondenza più lunga (evita doppioni tipo "Rossi" dentro "Sig. Mario Rossi")
+    return values
+      .filter(v => !values.some(other => other !== v && other.includes(v) && other.length > v.length))
+      .slice(0, 12);
+  }
+
+  function nextPersonaLabel() {
+    const used = Array.from(nameRowsEl.querySelectorAll('.label-name'))
+      .map(inp => inp.value.trim())
+      .filter(Boolean);
+    let n = 1;
+    while (used.includes(`Persona ${n}`)) n++;
+    return `Persona ${n}`;
+  }
+
+  function addSuggestedName(name, btn) {
+    // Se l'ultima riga è vuota, la riusa invece di aggiungerne una nuova
+    const rows = Array.from(nameRowsEl.querySelectorAll('.name-row'));
+    const lastRow = rows[rows.length - 1];
+    const lastReal = lastRow ? lastRow.querySelector('.real-name') : null;
+    const lastLabel = lastRow ? lastRow.querySelector('.label-name') : null;
+
+    if (lastRow && lastReal.value.trim() === '' && lastLabel.value.trim() === '') {
+      lastReal.value = name;
+      lastLabel.value = nextPersonaLabel();
+    } else {
+      addNameRow(name, nextPersonaLabel());
+    }
+
+    if (btn) {
+      btn.textContent = 'Aggiunto ✓';
+      btn.disabled = true;
+    }
+  }
+
+  function renderPossibleNames(names) {
+    if (!names.length) {
+      possibleNamesEl.textContent = 'Nessuna parola capitalizzata sospetta trovata — non significa che non ci siano nomi da oscurare: controlla comunque il testo a occhio.';
+      return;
+    }
+    const ul = document.createElement('ul');
+    names.forEach(name => {
+      const li = document.createElement('li');
+      const span = document.createElement('span');
+      span.textContent = name;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'suggest-add-btn';
+      btn.textContent = '+ aggiungi';
+      btn.addEventListener('click', () => addSuggestedName(name, btn));
+      li.appendChild(span);
+      li.appendChild(btn);
+      ul.appendChild(li);
+    });
+    possibleNamesEl.innerHTML = '';
+    possibleNamesEl.appendChild(ul);
+  }
+
+  function renderAutoDetected(matches) {
+    if (!matches.length) {
+      autoDetectedEl.textContent = 'Nessun dato con formato riconoscibile trovato nel testo.';
+      return;
+    }
+    const ul = document.createElement('ul');
+    matches.forEach(m => {
+      const li = document.createElement('li');
+      li.innerHTML = `${m.type}: <code>${m.value}</code>`;
+      ul.appendChild(li);
+    });
+    autoDetectedEl.innerHTML = '';
+    autoDetectedEl.appendChild(ul);
+  }
+
+  function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function buildMaskedText(text) {
+    let masked = text;
+    const mappings = getNameMappings();
+    const autoMatches = detectAutoMatches(text);
+    const autoMaskedItems = [];
+
+    // Oscura i nomi manuali (dal più lungo per evitare match parziali)
+    mappings
+      .sort((a, b) => b.real.length - a.real.length)
+      .forEach(m => {
+        const re = new RegExp(escapeRegex(m.real), 'gi');
+        masked = masked.replace(re, `[${m.label.toUpperCase()}]`);
+      });
+
+    // Oscura i pattern automatici, con etichetta numerata per tipo
+    const counters = {};
+    AUTO_PATTERNS.forEach(p => {
+      const seen = new Map();
+      masked = masked.replace(p.regex, (match) => {
+        if (!seen.has(match)) {
+          counters[p.label] = (counters[p.label] || 0) + 1;
+          const itemLabel = `${p.label}_${counters[p.label]}`;
+          seen.set(match, `[${itemLabel}]`);
+          autoMaskedItems.push({ type: p.name, value: match, label: itemLabel });
+        }
+        return seen.get(match);
+      });
+    });
+
+    return { masked, mappings, autoMatches, autoMaskedItems };
+  }
+
+  previewBtn.addEventListener('click', () => {
+    const text = input.value.trim();
+    if (!text) {
+      errorBox.textContent = 'Incolla prima un testo da oscurare e semplificare.';
+      errorBox.classList.add('visible');
+      return;
+    }
+    errorBox.classList.remove('visible');
+
+    const { masked, mappings, autoMaskedItems } = buildMaskedText(text);
+    maskedTextReady = masked;
+    activeAutoItems = autoMaskedItems;
+    activeMappings = [
+      ...mappings,
+      ...autoMaskedItems.map(a => ({ real: a.value, label: a.label }))
+    ];
+    manualTerms = [];
+    renderManualList();
+    renderAutoMaskedList();
+
+    previewText.textContent = masked;
+    previewBox.classList.add('visible');
+    runBtn.disabled = false;
+    runBtn.textContent = 'Semplifica';
+  });
+
+  function renderAutoMaskedList() {
+    if (!activeAutoItems.length) {
+      autoMaskedListEl.innerHTML = '';
+      return;
+    }
+    const ul = document.createElement('ul');
+    activeAutoItems.forEach((m, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `${m.type} <code>[${m.label}]</code> ← "${m.value}" <button type="button" class="remove-manual" data-index="${i}">lascia visibile</button>`;
+      ul.appendChild(li);
+    });
+    autoMaskedListEl.innerHTML = '';
+    autoMaskedListEl.appendChild(ul);
+
+    autoMaskedListEl.querySelectorAll('.remove-manual').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.index);
+        const m = activeAutoItems[idx];
+        maskedTextReady = maskedTextReady.split(`[${m.label}]`).join(m.value);
+        activeMappings = activeMappings.filter(a => a.label !== m.label);
+        activeAutoItems.splice(idx, 1);
+        previewText.textContent = maskedTextReady;
+        renderAutoMaskedList();
+      });
+    });
+  }
+
+  function renderManualList() {
+    if (!manualTerms.length) {
+      manualList.innerHTML = '';
+      return;
+    }
+    const ul = document.createElement('ul');
+    manualTerms.forEach((m, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<code>[${m.label}]</code> ← "${m.real}" <button type="button" class="remove-manual" data-index="${i}">annulla</button>`;
+      ul.appendChild(li);
+    });
+    manualList.innerHTML = '';
+    manualList.appendChild(ul);
+
+    manualList.querySelectorAll('.remove-manual').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.index);
+        const m = manualTerms[idx];
+        maskedTextReady = maskedTextReady.split(`[${m.label}]`).join(m.real);
+        activeMappings = activeMappings.filter(a => a.label !== m.label);
+        manualTerms.splice(idx, 1);
+        previewText.textContent = maskedTextReady;
+        renderManualList();
+      });
+    });
+  }
+
+  maskSelectionBtn.addEventListener('click', () => {
+    const selection = window.getSelection();
+    const selectedText = selection ? selection.toString().trim() : '';
+
+    if (!selectedText) {
+      errorBox.textContent = 'Seleziona prima una o più parole nel riquadro dell\'anteprima.';
+      errorBox.classList.add('visible');
+      return;
+    }
+    if (!maskedTextReady.includes(selectedText)) {
+      errorBox.textContent = 'La selezione non è stata trovata nell\'anteprima corrente. Riprova selezionando direttamente dal testo mostrato.';
+      errorBox.classList.add('visible');
+      return;
+    }
+    errorBox.classList.remove('visible');
+
+    const label = `MANUALE_${manualTerms.length + 1}`;
+    const re = new RegExp(escapeRegex(selectedText), 'gi');
+    const occurrences = (maskedTextReady.match(re) || []).length;
+
+    manualTerms.push({ real: selectedText, label });
+    activeMappings.push({ real: selectedText, label });
+
+    maskedTextReady = maskedTextReady.replace(re, `[${label}]`);
+    previewText.textContent = maskedTextReady;
+    renderManualList();
+    selection.removeAllRanges();
+
+    if (occurrences > 1) {
+      errorBox.textContent = `Oscurate ${occurrences} occorrenze di "${selectedText}" nel testo (anche con maiuscole/minuscole diverse). Controlla comunque l'anteprima: varianti con spazi, virgole attaccate o abbreviazioni diverse potrebbero non essere state trovate e vanno selezionate separatamente.`;
+      errorBox.classList.add('visible');
+    }
+  });
+
+  input.addEventListener('input', () => {
+    counter.textContent = `${input.value.length} caratteri`;
+    renderAutoDetected(detectAutoMatches(input.value));
+    renderPossibleNames(detectPossibleNames(input.value));
+    // Se il testo cambia dopo aver generato un'anteprima, la invalidiamo
+    if (previewBox.classList.contains('visible')) {
+      previewBox.classList.remove('visible');
+      runBtn.disabled = true;
+      runBtn.textContent = 'Semplifica (genera prima l\'anteprima)';
+    }
+  });
+
+  const STORAGE_KEY = 'chiarofilo_gemini_api_key';
+
+  const storedKey = (() => {
+    try { return localStorage.getItem(STORAGE_KEY) || ''; }
+    catch (e) { return ''; }
+  })();
+  if (storedKey) {
+    apiKey = storedKey;
+    keyStatusText.textContent = 'Chiave API caricata (salvata su questo dispositivo).';
+    keyStatusText.classList.add('set');
+  }
+
+  openKeyModal.addEventListener('click', () => {
+    apiKeyInput.value = apiKey;
+    keyRow.classList.add('visible');
+    apiKeyInput.focus();
+  });
+
+  modalCancel.addEventListener('click', () => {
+    keyRow.classList.remove('visible');
+  });
+
+  keyRow.addEventListener('click', (e) => {
+    if (e.target === keyRow) keyRow.classList.remove('visible');
+  });
+
+  modalSave.addEventListener('click', () => {
+    const val = apiKeyInput.value.trim();
+    if (val) {
+      apiKey = val;
+      keyStatusText.textContent = 'Chiave API impostata e salvata su questo dispositivo.';
+      keyStatusText.classList.add('set');
+      try { localStorage.setItem(STORAGE_KEY, apiKey); } catch (e) {}
+    } else {
+      apiKey = '';
+      keyStatusText.textContent = 'Nessuna chiave impostata.';
+      keyStatusText.classList.remove('set');
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    }
+    keyRow.classList.remove('visible');
+  });
+
+  const typeLabels = {
+    generico: 'un documento generico',
+    contratto: 'un contratto',
+    termini: "termini di servizio o un'informativa privacy",
+    referto: 'un referto medico',
+    tecnico: 'documentazione tecnica'
+  };
+
+  function buildPrompt(text, type) {
+    const len = text.length;
+    const depthGuidance = len > 12000
+      ? 'Il documento è lungo e articolato (probabilmente diviso in articoli, clausole o sezioni numerate). Copri TUTTI i punti sostanziali: non limitarti alle prime righe. Scrivi tra 6 e 10 paragrafi, uno per ciascun tema/articolo rilevante del documento (es. attivazione, costi, durata, recesso, sospensione, responsabilità, modifiche contrattuali, foro competente, ecc. — usa i temi realmente presenti nel testo, non questo elenco generico).'
+      : len > 4000
+      ? 'Il documento è di media lunghezza. Scrivi tra 4 e 6 paragrafi che coprano i punti sostanziali senza tralasciare nulla di rilevante.'
+      : 'Il documento è breve. Scrivi tra 2 e 4 paragrafi, ma comunque completi su tutto ciò che conta.';
+
+    return `Sei un assistente esperto che aiuta le persone comuni a capire documenti complessi (${typeLabels[type]}), spiegandoli con la stessa completezza con cui li spiegherebbe un consulente, ma in linguaggio semplice e senza gergo tecnico o legale.
+
+Rispondi SOLO con un oggetto JSON valido, senza testo prima o dopo, con questa struttura esatta:
+{
+  "spiegazione": ["paragrafo 1", "paragrafo 2", "..."],
+  "punti_attenzione": ["punto critico 1", "punto critico 2", "..."]
+}
+
+Regole per "spiegazione":
+- ${depthGuidance}
+- Ogni paragrafo deve trattare un tema diverso e aggiungere informazione nuova: NON ripetere concetti già detti in altri paragrafi con parole diverse.
+- Sii concreto: quando il documento specifica cifre, scadenze, percentuali, numeri di giorni o condizioni precise, riportali (in parole semplici, non serve il gergo, ma il dato numerico va mantenuto).
+- Segui l'ordine logico del documento originale (dall'inizio alla fine), così chi legge può orientarsi.
+- Non inventare nulla che non sia nel testo fornito.
+
+Regole per "punti_attenzione":
+- Da 3 a 8 elementi concreti (clausole rischiose, scadenze da rispettare, obblighi dell'utente, costi nascosti o extra, condizioni di recesso/sospensione, dati sensibili coinvolti). Più il documento è lungo, più punti puoi includere se sono realmente presenti.
+- Se un punto ha un numero o una scadenza specifica, includila.
+- Se non ce ne sono di rilevanti, restituisci un array vuoto.
+
+Altre regole:
+- Non aggiungere disclaimer, non ripetere il testo originale, non uscire dal formato JSON.
+- Il testo può contenere etichette tra parentesi quadre come [PERSONA 1], [EMAIL_1], [DATA_2]: sono segnaposto per dati oscurati. Mantienile ESATTAMENTE invariate, copiandole così come sono, ovunque compaiano nella tua risposta.
+
+Testo da analizzare:
+"""
+${text}
+"""`;
+  }
+
+  const PRIMARY_MODEL = 'gemini-3.5-flash-lite';
+  const FALLBACK_MODEL = 'gemini-3.1-flash-lite';
+
+  async function callGeminiRaw(prompt, useTools, model) {
+    const body = {
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 4096 }
+    };
+    if (useTools) {
+      body.tools = [{ google_search: {} }];
+    }
+
+    let res;
+    try {
+      res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        }
+      );
+    } catch (networkErr) {
+      const err = new Error('Impossibile connettersi a Gemini. Controlla la connessione internet.');
+      err.isNetworkError = true;
+      throw err;
+    }
+
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      const msg = errBody?.error?.message || `Errore API (${res.status})`;
+      const err = new Error(msg);
+      err.status = res.status;
+      throw err;
+    }
+
+    const data = await res.json();
+    const candidate = data?.candidates?.[0];
+    if (candidate?.finishReason === 'SAFETY' || candidate?.finishReason === 'RECITATION') {
+      throw new Error('La risposta è stata bloccata dai filtri di sicurezza di Gemini. Prova a riformulare o a oscurare più contenuto.');
+    }
+    if (candidate?.finishReason === 'MAX_TOKENS') {
+      throw new Error('La risposta è stata troncata perché troppo lunga per questo modello. Prova con un documento più corto.');
+    }
+    const parts = candidate?.content?.parts || [];
+    const text = parts.map(p => p.text || '').join('').trim();
+    if (!text) throw new Error('Risposta vuota da Gemini.');
+    return text;
+  }
+
+  async function geminiComplete(prompt, useTools) {
+    const models = [PRIMARY_MODEL, FALLBACK_MODEL];
+    let lastErr = null;
+
+    for (let i = 0; i < models.length; i++) {
+      const model = models[i];
+      const isLastModel = i === models.length - 1;
+      try {
+        if (useTools) {
+          try {
+            return await callGeminiRaw(prompt, true, model);
+          } catch (errTools) {
+            console.warn(`[${model}] ricerca web non disponibile, rispondo solo dal documento: ${errTools.message}`);
+            return await callGeminiRaw(prompt, false, model);
+          }
+        }
+        return await callGeminiRaw(prompt, false, model);
+      } catch (err) {
+        lastErr = err;
+        const recoverable = err.status === 429 || err.status >= 500 || err.isNetworkError;
+        if (!recoverable || isLastModel) throw err;
+        console.warn(`Passo al modello di riserva (${models[i + 1]}) per: ${err.message}`);
+      }
+    }
+    throw lastErr || new Error('Impossibile contattare Gemini.');
+  }
+
+  async function callGemini(prompt) {
+    const raw = await geminiComplete(prompt, false);
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    try {
+      return JSON.parse(cleaned);
+    } catch (e) {
+      throw new Error('Gemini ha risposto in un formato inatteso. Riprova tra qualche istante.');
+    }
+  }
+
+  function unmask(text) {
+    let result = text;
+    activeMappings.forEach(m => {
+      const re = new RegExp(escapeRegex(`[${m.label.toUpperCase()}]`), 'g');
+      result = result.replace(re, m.real);
+    });
+    return result;
+  }
+
+  function renderResult(parsed) {
+    plainOutput.innerHTML = '';
+    (parsed.spiegazione || []).forEach(p => {
+      const el = document.createElement('p');
+      el.textContent = unmask(p);
+      plainOutput.appendChild(el);
+    });
+
+    if (parsed.punti_attenzione && parsed.punti_attenzione.length) {
+      flagBox.style.display = 'block';
+      flagList.innerHTML = '';
+      parsed.punti_attenzione.forEach(p => {
+        const li = document.createElement('li');
+        li.textContent = unmask(p);
+        flagList.appendChild(li);
+      });
+    } else {
+      flagBox.style.display = 'none';
+    }
+
+    resultBox.classList.add('visible');
+  }
+
+  runBtn.addEventListener('click', async () => {
+    errorBox.classList.remove('visible');
+    const text = maskedTextReady;
+
+    if (!text) {
+      errorBox.textContent = 'Genera prima l\'anteprima oscurata.';
+      errorBox.classList.add('visible');
+      return;
+    }
+
+    if (!apiKey) {
+      keyRow.classList.add('visible');
+      errorBox.textContent = 'Serve una chiave API Gemini per continuare — inseriscila qui sopra.';
+      errorBox.classList.add('visible');
+      return;
+    }
+
+    runBtn.disabled = true;
+    loadingBox.classList.add('visible');
+    resultBox.classList.remove('visible');
+
+    try {
+      const prompt = buildPrompt(text, docType.value);
+      const parsed = await callGemini(prompt);
+      renderResult(parsed);
+      docContextForQA = text;
+      docTypeForQA = docType.value;
+      qaHistory = [];
+      qaHistoryEl.innerHTML = '';
+      qaInput.value = '';
+    } catch (err) {
+      errorBox.textContent = `Non sono riuscito a completare la richiesta: ${err.message}`;
+      errorBox.classList.add('visible');
+    } finally {
+      runBtn.disabled = false;
+      loadingBox.classList.remove('visible');
+    }
+  });
+
+  // --- Domande di approfondimento sul documento ---
+  let docContextForQA = '';
+  let docTypeForQA = 'generico';
+  let qaHistory = [];
+
+  const qaInput = document.getElementById('qaInput');
+  const qaAskBtn = document.getElementById('qaAskBtn');
+  const qaHistoryEl = document.getElementById('qaHistory');
+  const qaLoading = document.getElementById('qaLoading');
+
+  function buildQAPrompt(question) {
+    const historyText = qaHistory
+      .map((h, i) => `Domanda precedente ${i + 1}: ${h.question}\nRisposta precedente ${i + 1}: ${h.answerMasked}`)
+      .join('\n\n');
+
+    return `Sei un assistente che risponde a domande su un documento (${typeLabels[docTypeForQA] || 'un documento'}) fornito qui sotto.
+
+Documento (alcuni dati sono oscurati con etichette tra parentesi quadre come [PERSONA 1], [EMAIL_1], [MANUALE_1]: mantienile ESATTAMENTE invariate se le citi nella risposta, e non cercare mai su internet usando queste etichette o dati sensibili):
+"""
+${docContextForQA}
+"""
+
+${historyText ? `Conversazione precedente su questo documento:\n${historyText}\n\n` : ''}Nuova domanda dell'utente: ${question}
+
+Come rispondere:
+1. Se la risposta è contenuta nel documento, rispondi basandoti su quello, citando se utile il passaggio a cui ti riferisci.
+2. Se la risposta NON è nel documento ma è un'informazione pertinente allo stesso ambito (es. normativa generale applicabile, prassi standard del settore, cosa succede di norma in casi come questo), puoi usare la ricerca web per trovarla e integrarla nella risposta. In questo caso distingui chiaramente cosa dice il documento e cosa è invece informazione generale/esterna trovata in rete (es. "Il documento non specifica questo caso. In generale, secondo [fonte/normativa], ...").
+3. Resta sempre nell'ambito tematico del documento (se è un contratto, resta nell'ambito legale/contrattuale/di quel settore; se è un referto medico, resta in ambito medico; ecc.). Non divagare su argomenti non collegati.
+4. Se non trovi una risposta affidabile né nel documento né in rete, dillo onestamente invece di inventare.
+
+Rispondi in italiano, in modo diretto e chiaro, in linguaggio semplice ma completo. Rispondi SOLO con il testo della risposta, senza premesse, senza JSON, senza ripetere la domanda.`;
+  }
+
+  async function callGeminiPlainText(prompt) {
+    return await geminiComplete(prompt, true);
+  }
+
+  function renderQAPair(question, answerMasked) {
+    const answerReal = unmask(answerMasked);
+    const pair = document.createElement('div');
+    pair.className = 'qa-pair';
+
+    const qEl = document.createElement('div');
+    qEl.className = 'qa-question';
+    qEl.textContent = question;
+
+    const aEl = document.createElement('div');
+    aEl.className = 'qa-answer';
+    answerReal.split(/\n{2,}/).forEach(para => {
+      if (!para.trim()) return;
+      const p = document.createElement('p');
+      p.textContent = para.trim();
+      aEl.appendChild(p);
+    });
+
+    pair.appendChild(qEl);
+    pair.appendChild(aEl);
+    qaHistoryEl.appendChild(pair);
+    pair.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  async function askQuestion() {
+    const question = qaInput.value.trim();
+    if (!question) return;
+
+    if (!docContextForQA) {
+      errorBox.textContent = 'Genera prima la risposta semplificata: le domande si basano su quel documento.';
+      errorBox.classList.add('visible');
+      return;
+    }
+    if (!apiKey) {
+      keyRow.classList.add('visible');
+      errorBox.textContent = 'Serve una chiave API Gemini per continuare.';
+      errorBox.classList.add('visible');
+      return;
+    }
+
+    errorBox.classList.remove('visible');
+    qaAskBtn.disabled = true;
+    qaLoading.classList.add('visible');
+
+    try {
+      const prompt = buildQAPrompt(question);
+      const answerMasked = (await callGeminiPlainText(prompt)).trim();
+      qaHistory.push({ question, answerMasked });
+      renderQAPair(question, answerMasked);
+      qaInput.value = '';
+    } catch (err) {
+      errorBox.textContent = `Non sono riuscito a rispondere: ${err.message}`;
+      errorBox.classList.add('visible');
+    } finally {
+      qaAskBtn.disabled = false;
+      qaLoading.classList.remove('visible');
+      qaInput.focus();
+    }
+  }
+
+  qaAskBtn.addEventListener('click', askQuestion);
+  qaInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      askQuestion();
+    }
+  });
+
+  copyBtn.addEventListener('click', () => {
+    const text = plainOutput.innerText + (flagBox.style.display !== 'none' ? '\n\nPunti a cui prestare attenzione:\n' + flagList.innerText : '');
+    navigator.clipboard.writeText(text).then(() => {
+      copyBtn.textContent = 'Copiato';
+      setTimeout(() => { copyBtn.textContent = 'Copia'; }, 1500);
+    });
+  });
+
+  function getResultFullText() {
+    let text = 'CHIAROFILO — Spiegazione in parole semplici\n' + '='.repeat(44) + '\n\n';
+    text += plainOutput.innerText;
+    if (flagBox.style.display !== 'none') {
+      text += '\n\nPunti a cui prestare attenzione:\n' + flagList.innerText;
+    }
+    if (qaHistoryEl.children.length) {
+      text += '\n\n' + '='.repeat(44) + '\nDomande di approfondimento\n' + '='.repeat(44) + '\n';
+      Array.from(qaHistoryEl.children).forEach(pair => {
+        const q = pair.querySelector('.qa-question')?.innerText || '';
+        const a = pair.querySelector('.qa-answer')?.innerText || '';
+        text += `\nD: ${q}\nR: ${a}\n`;
+      });
+    }
+    text += '\n\n' + '-'.repeat(44) + '\nGenerato con Chiarofilo. L\'IA può commettere errori: verifica sempre le fonti prima di prendere decisioni importanti.';
+    return text;
+  }
+
+  const saveTxtBtn = document.getElementById('saveTxtBtn');
+  const savePdfBtn = document.getElementById('savePdfBtn');
+
+  saveTxtBtn.addEventListener('click', () => {
+    const blob = new Blob([getResultFullText()], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chiarofilo-spiegazione.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  savePdfBtn.addEventListener('click', () => {
+    const flagHtml = flagBox.style.display !== 'none'
+      ? `<h2>Punti a cui prestare attenzione</h2><ul>${Array.from(flagList.children).map(li => `<li>${li.textContent}</li>`).join('')}</ul>`
+      : '';
+    const qaHtml = qaHistoryEl.children.length
+      ? `<h2>Domande di approfondimento</h2>` + Array.from(qaHistoryEl.children).map(pair => {
+          const q = pair.querySelector('.qa-question')?.innerText || '';
+          const aHtml = pair.querySelector('.qa-answer')?.innerHTML || '';
+          return `<p class="q"><strong>D:</strong> ${q}</p><div class="a">${aHtml}</div>`;
+        }).join('')
+      : '';
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`<!DOCTYPE html>
+<html lang="it"><head><meta charset="UTF-8"><title>Chiarofilo — Spiegazione</title>
+<style>
+  body { font-family: Georgia, "Iowan Old Style", serif; color: #1F2A24; max-width: 700px; margin: 2.5rem auto; padding: 0 1.5rem; line-height: 1.6; }
+  h1 { font-size: 1.5rem; font-style: italic; color: #2A4A6B; border-bottom: 1px solid #C9C0AE; padding-bottom: 0.6rem; }
+  h2 { font-size: 1.1rem; color: #2A4A6B; margin-top: 2rem; }
+  .q { font-family: Arial, sans-serif; font-weight: bold; margin-top: 1rem; margin-bottom: 0.3rem; }
+  .a { margin-bottom: 1rem; }
+  ul { padding-left: 1.3rem; }
+  li { margin-bottom: 0.4rem; }
+  .disclaimer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #C9C0AE; font-size: 0.8rem; color: #6B3B10; font-family: Arial, sans-serif; }
+  @media print { body { margin: 1rem auto; } }
+</style></head>
+<body>
+  <h1>Chiarofilo — Spiegazione in parole semplici</h1>
+  ${plainOutput.innerHTML}
+  ${flagHtml}
+  ${qaHtml}
+  <p class="disclaimer">Generato con Chiarofilo tramite intelligenza artificiale (Gemini). L'IA può commettere errori o non essere aggiornata alla situazione più recente: verifica sempre fonti, normative e consigli citati prima di prendere decisioni importanti.</p>
+</body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 300);
+  });
+
+  const resetBtn = document.getElementById('resetBtn');
+
+  resetBtn.addEventListener('click', () => {
+    // Testo e file
+    input.value = '';
+    fileStatus.textContent = 'Nessun file caricato — oppure incolla il testo sotto.';
+    counter.textContent = '0 caratteri';
+    docType.value = 'generico';
+
+    // Nomi e oscuramento
+    nameRowsEl.innerHTML = '';
+    addNameRow();
+    autoDetectedEl.textContent = 'Nessun dato rilevato finché non incolli un testo.';
+    possibleNamesEl.textContent = 'Nessun testo ancora analizzato.';
+
+    // Anteprima
+    previewBox.classList.remove('visible');
+    previewText.textContent = '';
+    manualTerms = [];
+    activeAutoItems = [];
+    activeMappings = [];
+    maskedTextReady = '';
+    renderManualList();
+    renderAutoMaskedList();
+
+    // Risultato
+    resultBox.classList.remove('visible');
+    plainOutput.innerHTML = '';
+    flagList.innerHTML = '';
+    flagBox.style.display = 'none';
+
+    // Domande
+    qaHistory = [];
+    qaHistoryEl.innerHTML = '';
+    qaInput.value = '';
+    docContextForQA = '';
+    docTypeForQA = 'generico';
+
+    // Stato pulsanti
+    runBtn.disabled = true;
+    runBtn.textContent = 'Semplifica (genera prima l\'anteprima)';
+    errorBox.classList.remove('visible');
+
+    input.focus();
+  });
+</script>
+
+</body>
+</html>
