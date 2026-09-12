@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
 <title>Ortofoto Composer — Multi-provider</title>
 <style>
   :root{
@@ -305,7 +306,6 @@
           </div>
         </div>
 
-        <!-- Risoluzione: usata da Lombardia (metri/pixel diretti) -->
         <div class="field" id="fieldRes">
           <label>Risoluzione output</label>
           <select id="resSelect">
@@ -314,10 +314,9 @@
             <option value="1">Media — 1 m/pixel</option>
             <option value="2">Bassa — 2 m/pixel</option>
           </select>
-          <div class="hint" id="resHint">La risoluzione nativa del servizio varia per anno (fino a 20 cm/pixel per le ortofoto più recenti).</div>
+          <div class="hint" id="resHint">La risoluzione effettiva può essere limitata dal livello più fine disponibile nel servizio (in modalità cache viene allineata automaticamente e segnalata).</div>
         </div>
 
-        <!-- Zoom: usato da ESRI e OSM (schema a livelli, non metri diretti) -->
         <div class="field hidden" id="fieldZoom">
           <label>Livello di zoom</label>
           <select id="zoomSelect">
@@ -330,21 +329,26 @@
           <div class="hint" id="zoomHint">Il dettaglio reale dipende dalla copertura disponibile in quella zona: in aree rurali il livello 20 potrebbe non essere più nitido del 18.</div>
         </div>
 
-        <!-- Blocco specifico Lombardia -->
         <div class="field" id="fieldYear">
           <label>Anno ortofoto</label>
           <select id="yearSelect">
-            <option value="Ortofoto2021" selected>2021 — AGEA (20 cm)</option>
-            <option value="Ortofoto2018_2019">2018–2019 — AGEA (20 cm)</option>
+            <option value="Ortofoto2021" selected>2021 — AGEA (cache, auto-rilevata)</option>
+            <option value="Ortofoto2018_2019">2018–2019 — AGEA (cache, auto-rilevata)</option>
             <option value="ortofoto2015UTM32N">2015 — Consorzio TeA (20–45 cm)</option>
             <option value="ortofoto2012UTM">2012 — AGEA (50 cm)</option>
-            <option value="arcgis1|ortofoto2007utm">2007 — AGEA (50 cm)</option>
+            <option value="ortofoto2007UTM;ortofoto2007utm;ortofoto2007UTM_c;arcgis1|ortofoto2007UTM">2007 — AGEA (50 cm)</option>
             <option value="ortofoto2003">2003 (1 m)</option>
             <option value="ortofoto1975">1975 (b/n)</option>
             <option value="Lombardia_GAI_UTM_image">1954–1955 — volo GAI (b/n)</option>
           </select>
-          <div class="hint">Elenco ridotto agli anni verificati come funzionanti. Il volo GAI 1954-55 è in bianco/nero e a risoluzione inferiore (~70 cm/px) rispetto alle ortofoto moderne.</div>
+          <div class="hint">L'app rileva automaticamente la via funzionante: exportImage nel SR nativo, cache di tile nativa ArcGIS, layer del MapServer o WMS. Il 2021 resta bloccato dal server per restrizione di Referer/dominio (funziona solo dal sito ufficiale) — nessun fix client-side possibile. Il 2024 non è pubblicato via servizio: se in futuro Regione Lombardia lo espone, cattura l'URL dal viewer ufficiale e incollalo nel campo qui sotto.</div>
           <button class="btn btn-ghost btn-small" id="verifyBtn" style="margin-top:8px;">Verifica servizio</button>
+        </div>
+
+        <div class="field" id="fieldCustomSvc">
+          <label>Servizio personalizzato — URL REST (opzionale)</label>
+          <input type="text" id="customSvcInput" placeholder="https://www.cartografia.servizirl.it/arcgis2/rest/services/...">
+          <div class="hint">Se compilato, sostituisce il menu anno. Come ottenerlo (utile se in futuro Regione Lombardia pubblica il 2024): apri il viewer ufficiale del Geoportale con il layer attivo, F12 → scheda Rete, sposta/zooma la mappa, clicca su una richiesta "tile" o "exportImage" e copia l'URL completo qui. Funziona anche con URL di singole tile (la parte /tile/... viene ignorata).</div>
         </div>
 
         <div class="notice hidden" id="esriNotice">
@@ -423,10 +427,10 @@
   </div>
 
   <footer>
-    <strong>Geoportale Lombardia</strong>: servizio ImageServer pubblico di Regione Lombardia (ortofoto storiche AGEA/TeA/GAI). Uso soggetto alle condizioni pubblicate dal fornitore.<br>
-    <strong>ESRI World Imagery</strong>: servizio pubblico Esri (fonti Esri, Maxar, Earthstar Geographics e community). Copertura mondiale, gratuito senza chiave, ma senza garanzie di continuità dichiarate da Esri per usi intensivi.<br>
-    <strong>OpenStreetMap</strong>: dati e tile della community OSM, licenza ODbL — mappa vettoriale, non foto aerea.<br>
-    Funzionamento: l'area richiesta viene suddivisa in una griglia di riquadri; ciascun riquadro viene richiesto al server con le sue coordinate geografiche esatte e disegnato su un'unica tela nella posizione calcolata — non è coinvolto alcun riconoscimento visivo dei bordi.
+    <strong>Geoportale Lombardia</strong>: servizio ImageServer pubblico di Regione Lombardia (ortofoto storiche AGEA/TeA/GAI). Uso soggetto alle condizioni pubblicate dal fornitore. Alcuni servizi (2021, 2018–19) sono pubblicati come <em>cache di tile</em>: l'app li scarica nel loro schema a tile nativo, con la risoluzione del livello di cache più fine.<br>
+    <strong>ESRI World Imagery</strong>: servizio pubblico Esri (fonti Esri, Maxar, Earthstar Geographics e community).<br>
+    <strong>OpenStreetMap</strong>: dati e tile della community OSM, licenza ODbL.<br>
+    Funzionamento: l'area viene suddivisa in una griglia di riquadri/tile; ciascuno viene richiesto al server con le sue coordinate esatte e disegnato sulla tela nella posizione calcolata.
   </footer>
 
 </div>
@@ -445,18 +449,461 @@
 
   const ESRI_TILE_URL = 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile';
   const OSM_TILE_URL = 'https://tile.openstreetmap.org';
-  const XYZ_TILE_PX = 256; // dimensione standard tile Slippy Map (ESRI e OSM)
+  const XYZ_TILE_PX = 256;
 
   let currentProvider = 'lombardia';
 
-  // Alcuni anni storici del Geoportale Lombardia vivono su un'installazione ArcGIS diversa (arcgis1 invece di arcgis2).
-  // Il valore nel menu può quindi essere "nomeServizio" oppure "hostAlternativo|nomeServizio".
-  function resolveServiceUrl(rawValue){
-    if (rawValue.includes('|')){
-      const [host, name] = rawValue.split('|');
-      return { base: `https://www.cartografia.servizirl.it/${host}/rest/services/BaseMap`, name };
+  // Il valore nel menu può contenere più candidati separati da ";" (provati in ordine),
+  // ciascuno nella forma "nomeServizio" oppure "hostAlternativo|nomeServizio".
+  function resolveServiceCandidates(rawValue){
+    return rawValue.split(';').map(part => {
+      part = part.trim();
+      if (part.includes('|')){
+        const [host, name] = part.split('|');
+        return { host, base: `https://www.cartografia.servizirl.it/${host}/rest/services/BaseMap`, name };
+      }
+      return { host: 'arcgis2', base: LOMBARDIA_BASE, name: part };
+    });
+  }
+
+  // Accetta un URL REST completo incollato dall'utente (anche di una singola tile)
+  // e lo riduce a { base, name }: tutto ciò che sta dopo "/rest/services/" è il nome
+  // del servizio (eventualmente con sottocartelle).
+  function parseCustomServiceUrl(input){
+    const raw = (input || '').trim();
+    if (!raw) return null;
+    let u = raw.split('?')[0].replace(/\/+$/,'');
+    const lower = u.toLowerCase();
+    const idx = lower.lastIndexOf('/rest/services/');
+    if (idx === -1) return null;
+    const base = u.slice(0, idx + '/rest/services'.length);
+    let name = u.slice(idx + '/rest/services/'.length);
+    name = name.replace(/\/(ImageServer|MapServer|WMSServer)$/i, '')
+               .replace(/\/tile(\/\d+)*$/i, '')
+               .replace(/\/(exportImage|export)$/i, '');
+    if (!name) return null;
+    const hostMatch = u.match(/^https?:\/\/([^\/]+)/i);
+    return [{ base, name, host: hostMatch ? hostMatch[1] : 'arcgis2' }];
+  }
+
+  // ============================================================
+  // CONVERSIONI GEOGRAFICHE
+  // ============================================================
+  function lonLatToMercator(lon, lat){
+    const x = lon * Math.PI / 180 * EARTH_R;
+    const y = Math.log(Math.tan(Math.PI/4 + (lat * Math.PI/180)/2)) * EARTH_R;
+    return { x, y };
+  }
+
+  // UTM fuso 32N. EPSG:32632 (WGS84), 25832 (ETRS89) e 6708 (RDN2008) condividono
+  // la stessa griglia numerica a meno di ~1 metro: una sola funzione le copre tutte.
+  function lonLatToUTM32N(lon, lat){
+    const a = 6378137.0, f = 1/298.257223563, k0 = 0.9996;
+    const e2 = f*(2-f), ep2 = e2/(1-e2);
+    const phi = lat*Math.PI/180, lam = lon*Math.PI/180, lam0 = 9*Math.PI/180;
+    const N = a/Math.sqrt(1 - e2*Math.sin(phi)*Math.sin(phi));
+    const T = Math.tan(phi)*Math.tan(phi);
+    const C = ep2*Math.cos(phi)*Math.cos(phi);
+    const A = (lam - lam0)*Math.cos(phi);
+    const M = a*((1 - e2/4 - 3*e2*e2/64 - 5*Math.pow(e2,3)/256)*phi
+        - (3*e2/8 + 3*e2*e2/32 + 45*Math.pow(e2,3)/1024)*Math.sin(2*phi)
+        + (15*e2*e2/256 + 45*Math.pow(e2,3)/1024)*Math.sin(4*phi)
+        - (35*Math.pow(e2,3)/3072)*Math.sin(6*phi));
+    const x = 500000 + k0*N*(A + (1 - T + C)*Math.pow(A,3)/6
+        + (5 - 18*T + T*T + 72*C - 58*ep2)*Math.pow(A,5)/120);
+    const y = k0*(M + N*Math.tan(phi)*(A*A/2 + (5 - T + 9*C + 4*C*C)*Math.pow(A,4)/24
+        + (61 - 58*T + T*T + 600*C - 330*ep2)*Math.pow(A,6)/720));
+    return { x, y };
+  }
+
+  // Converte lat/lon nel sistema di riferimento di una cache ArcGIS (qualunque)
+  function lonLatToSR(lon, lat, wkid){
+    if (wkid === 4326) return { x: lon, y: lat };
+    if (wkid === 3857 || wkid === 102100 || wkid === 102113 || wkid === 900913) return lonLatToMercator(lon, lat);
+    return lonLatToUTM32N(lon, lat); // 32632 / 25832 / 6708 / altro UTM32N in metri
+  }
+
+  function lonLatToGlobalPixel(lon, lat, zoom){
+    const scale = XYZ_TILE_PX * Math.pow(2, zoom);
+    const x = (lon + 180) / 360 * scale;
+    const sinLat = Math.sin(lat * Math.PI / 180);
+    const y = (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale;
+    return { x, y };
+  }
+
+  function metersPerPixelAtZoom(lat, zoom){
+    return 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom);
+  }
+
+  function parseCenter(str){
+    const parts = str.split(',').map(s => parseFloat(s.trim()));
+    if (parts.length !== 2 || parts.some(isNaN)) return null;
+    const [lat, lon] = parts;
+    if (lat < -85 || lat > 85 || lon < -180 || lon > 180) return null;
+    return { lat, lon };
+  }
+
+  function setStatus(msg, kind){
+    statusText.textContent = msg;
+    statusLine.className = 'status-line' + (kind ? ' ' + kind : '');
+  }
+
+  // ============================================================
+  // UTILITY DI RETE / DIAGNOSTICA
+  // ============================================================
+  function fetchServiceJson(url){
+    return fetch(url).then(async resp => {
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const txt = await resp.text();
+      let json;
+      try { json = JSON.parse(txt); } catch(e){ throw new Error('risposta non JSON'); }
+      if (json && json.error) throw new Error('errore ArcGIS: ' + (json.error.message || JSON.stringify(json.error).slice(0,120)));
+      return json;
+    });
+  }
+
+  function describeArcgisError(txt){
+    if (!txt) return '';
+    try {
+      const j = JSON.parse(txt);
+      if (j && j.error) return 'errore ArcGIS ' + (j.error.code || '') + ': ' + (j.error.message || '');
+    } catch(e){}
+    return 'non-immagine (' + txt.replace(/\s+/g,' ').slice(0,90) + ')';
+  }
+
+  async function describeBadResponse(resp){
+    try { return describeArcgisError(await resp.text()); } catch(e){ return ''; }
+  }
+
+  function decodeImageBlob(blob){
+    if (window.createImageBitmap) return createImageBitmap(blob);
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('immagine non decodificabile'));
+      img.src = URL.createObjectURL(blob);
+    });
+  }
+
+  // Immagine "valida" ma tutta nera = nodata (SR sbagliato o zona fuori copertura)
+  function isBlankImage(img){
+    try {
+      const w = img.width || img.naturalWidth || 1;
+      const h = img.height || img.naturalHeight || 1;
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0, w, h);
+      const { data } = ctx.getImageData(0, 0, w, h);
+      let sum = 0, n = 0;
+      for (let i = 0; i < data.length; i += 4){
+        sum += data[i] + data[i+1] + data[i+2];
+        n++;
+      }
+      return (sum / (n * 3)) < 4;
+    } catch(e){
+      return false;
     }
-    return { base: LOMBARDIA_BASE, name: rawValue };
+  }
+
+  // ============================================================
+  // COSTRUZIONE URL DI EXPORT (per le vie bbox-based)
+  // ============================================================
+  // Dimensione della richiesta di test: alcuni servizi ArcGIS (mosaici con
+  // funzioni di elaborazione) rifiutano export troppo piccoli con un generico
+  // "Unable to complete operation" — usiamo una dimensione realistica (non
+  // pochi pixel) per non far scattare questo rifiuto durante la sola verifica.
+  const PROBE_PX = 320;
+  function probeBbox(center, cfg){
+    const r = PROBE_PX / 2; // metri, corrisponde a ~1 m/px su PROBE_PX pixel
+    if (cfg.toMeters){
+      const c = cfg.toMeters(center.lon, center.lat);
+      return [c.x - r, c.y - r, c.x + r, c.y + r];
+    }
+    const dLon = r / (111320 * Math.cos(center.lat * Math.PI/180));
+    const dLat = r / 110540;
+    return [center.lon - dLon, center.lat - dLat, center.lon + dLon, center.lat + dLat];
+  }
+
+  function buildExportUrl(base, serviceName, cfg, bbox, pxW, pxH){
+    const bboxStr = bbox.map(v => v.toFixed(cfg.dec)).join(',');
+    if (cfg.via === 'mapserver'){
+      return `${cfg.msBase}/export`
+        + `?bbox=${bboxStr}&bboxSR=${cfg.sr}&imageSR=${cfg.sr}`
+        + `&size=${pxW},${pxH}&format=${cfg.format}&transparent=true`
+        + `&layers=show:${cfg.layerId}&f=image`;
+    }
+    if (cfg.via === 'wms'){
+      return `https://www.cartografia.servizirl.it/${cfg.host}/services/BaseMap/${cfg.name}/ImageServer/WMSServer`
+        + `?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=${encodeURIComponent(cfg.name)}&STYLES=`
+        + `&CRS=EPSG:${cfg.sr}&BBOX=${bboxStr}&WIDTH=${pxW}&HEIGHT=${pxH}&FORMAT=image%2Fpng`;
+    }
+    return `${base}/${serviceName}/ImageServer/exportImage`
+      + `?bbox=${bboxStr}&bboxSR=${cfg.sr}&imageSR=${cfg.sr}`
+      + `&size=${pxW},${pxH}`
+      + (cfg.format && cfg.format !== 'default' ? `&format=${cfg.format}` : '')
+      + (cfg.interp ? '&interpolation=RSP_BilinearInterpolation' : '')
+      + '&f=image';
+  }
+
+  // ============================================================
+  // PROBE — CACHE NATIVA ARCGIS (ImageServer/tile/{level}/{row}/{col})
+  // È l'unica via per i servizi pubblicati come cache (2021, 2018-19):
+  // exportImage è spento, ma le tile precalcolate esistono e il viewer
+  // ufficiale le usa. Leggiamo tileInfo dai metadati e ne ricostruiamo
+  // la griglia, come già si fa per ESRI/OSM.
+  // ============================================================
+  async function probeCacheFallback(base, name, desiredRes, center, meta){
+    const errors = [];
+    if (!meta){
+      try { meta = await fetchServiceJson(`${base}/${name}/ImageServer?f=pjson`); }
+      catch(e){ throw new Error('metadati non leggibili: ' + e.message); }
+    }
+    const ti = meta.tileInfo;
+    if (!ti || !Array.isArray(ti.lods) || !ti.lods.length)
+      throw new Error('il servizio non ha tileInfo: non è pubblicato come cache');
+
+    const srj = ti.spatialReference || {};
+    const sr = srj.latestWkid || srj.wkid || 3857;
+    const tw = ti.cols || 256, th = ti.rows || 256;
+    const ox = ti.origin.x, oy = ti.origin.y;
+    const c = lonLatToSR(center.lon, center.lat, sr);
+
+    // lods ordinati dal più fine al più grossolano; scegliamo il più fine con
+    // risoluzione >= a quella richiesta; se serve, proviamo anche i più grossolani
+    const byRes = ti.lods.slice().sort((a,b) => a.resolution - b.resolution);
+    let startIdx = byRes.findIndex(l => l.resolution >= desiredRes);
+    if (startIdx === -1) startIdx = byRes.length - 1; // richiesta più fine del massimo disponibile
+    const order = [];
+    for (let i = startIdx; i >= 0 && order.length < 4; i--) order.push(byRes[i]);
+
+    for (const lod of order){
+      const r = lod.resolution;
+      const col = Math.floor((c.x - ox) / (tw * r));
+      const row = Math.floor((oy - c.y) / (th * r));
+      const url = `${base}/${name}/ImageServer/tile/${lod.level}/${row}/${col}`;
+      try {
+        const resp = await fetch(url, { mode: 'cors' });
+        if (resp.status === 404){ errors.push(`lod ${lod.level} (${r} m/px): tile inesistente (404 — livello non in cache)`); continue; }
+        if (!resp.ok){ errors.push(`lod ${lod.level}: HTTP ${resp.status}`); continue; }
+        const blob = await resp.blob();
+        let img = null;
+        try { img = await decodeImageBlob(blob); } catch(e){}
+        if (!img){
+          const txt = await blob.text().catch(() => '');
+          errors.push(`lod ${lod.level}: ` + (describeArcgisError(txt) || 'risposta non-immagine'));
+          continue;
+        }
+        if (isBlankImage(img)){ errors.push(`lod ${lod.level}: tile vuota (zona fuori dalla copertura della cache)`); continue; }
+        const label = `cache nativa ImageServer (lod ${lod.level}, ${r} m/px, EPSG:${sr}, tile ${tw}×${th})`;
+        console.info('[probe] funzionante:', label);
+        return { base, name, via: 'arcgistile', tileInfo: ti, lod, sr, tileW: tw, tileH: th, label };
+      } catch(e){
+        errors.push(`lod ${lod.level}: ` + (e.message === 'Failed to fetch' ? 'richiesta bloccata (CORS/rete)' : e.message));
+      }
+    }
+    throw new Error('cache presente ma nessuna tile scaricabile — ' + errors.join(' | '));
+  }
+
+  // ============================================================
+  // PROBE — FALLBACK MAPSERVER COMPOSITO
+  // ============================================================
+  async function probeMapServerFallback(serviceName, center){
+    const norm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g,'');
+    const target = norm(serviceName);
+    const yearMatch = target.match(/20\d\d/);
+    const errors = [];
+    for (const host of ['arcgis2','arcgis1']){
+      const msBase = `https://www.cartografia.servizirl.it/${host}/rest/services/BaseMap/MapServer`;
+      try {
+        const meta = await fetchServiceJson(msBase + '?f=pjson');
+        const layers = meta.layers || [];
+        let hit = layers.find(l => norm(l.name) === target);
+        if (!hit && yearMatch) hit = layers.find(l => norm(l.name).includes(yearMatch) && norm(l.name).includes('ortofo'));
+        if (!hit) hit = layers.find(l => norm(l.name).includes(target) || target.includes(norm(l.name)));
+        if (!hit){ errors.push(host + ': nessun layer corrispondente a "' + serviceName + '"'); continue; }
+        const cfg = {
+          via: 'mapserver', msBase, layerId: hit.id,
+          sr: 3857, format: 'png24', toMeters: lonLatToMercator, dec: 2, interp: false,
+          label: `MapServer (${host}) layer ${hit.id} "${hit.name}"`
+        };
+        const url = buildExportUrl(null, null, cfg, probeBbox(center, cfg), PROBE_PX, PROBE_PX);
+        const resp = await fetch(url, { mode: 'cors' });
+        if (!resp.ok){
+          const why = await describeBadResponse(resp);
+          errors.push(cfg.label + ': HTTP ' + resp.status + (why ? ' — ' + why : ''));
+          continue;
+        }
+        let decoded;
+        try { decoded = await decodeImageBlob(await resp.blob()); }
+        catch(e){ errors.push(cfg.label + ': immagine non decodificabile'); continue; }
+        if (isBlankImage(decoded)){ errors.push(cfg.label + ': immagine vuota/nera'); continue; }
+        return cfg;
+      } catch(e){
+        errors.push(host + ': ' + e.message);
+      }
+    }
+    throw new Error(errors.join(' | '));
+  }
+
+  // ============================================================
+  // PROBE — FALLBACK WMS
+  // ============================================================
+  async function probeWmsFallback(serviceName, center){
+    const errors = [];
+    for (const host of ['arcgis1','arcgis2']){
+      const cfg = { via: 'wms', host, name: serviceName, sr: 32632, format: 'image/png', toMeters: lonLatToUTM32N, dec: 2, label: `WMS (${host}) "${serviceName}"` };
+      const url = buildExportUrl(null, null, cfg, probeBbox(center, cfg), PROBE_PX, PROBE_PX);
+      try {
+        const resp = await fetch(url, { mode: 'cors' });
+        if (!resp.ok){
+          const why = await describeBadResponse(resp);
+          errors.push(cfg.label + ': HTTP ' + resp.status + (why ? ' — ' + why : ''));
+          continue;
+        }
+        const blob = await resp.blob();
+        let decoded = null;
+        try { decoded = await decodeImageBlob(blob); } catch(e){}
+        if (!decoded){
+          const txt = await blob.text().catch(() => '');
+          errors.push(cfg.label + ': ' + (describeArcgisError(txt) || 'risposta non-immagine (XML di errore WMS?)'));
+          continue;
+        }
+        if (isBlankImage(decoded)){ errors.push(cfg.label + ': immagine vuota/nera'); continue; }
+        return cfg;
+      } catch(e){
+        errors.push(cfg.label + ': ' + (e.message === 'Failed to fetch' ? 'richiesta bloccata (CORS/rete)' : e.message));
+      }
+    }
+    throw new Error(errors.join(' | '));
+  }
+
+  // ============================================================
+  // PROBE PRINCIPALE — ordine delle vie:
+  // 1) exportImage nel SR nativo + alternative (se non escluso dalle capability)
+  // 2) cache nativa ArcGIS (se c'è tileInfo)
+  // 3) layer del MapServer composito
+  // 4) WMS
+  // ============================================================
+  async function probeLombardiaConfig(candidates, center, desiredRes){
+    const reasons = [];
+
+    for (const cand of candidates){
+      const { base, name: serviceName, host } = cand;
+      const tag = candidates.length > 1 ? `[${host}/${serviceName}] ` : '';
+
+      // 1) metadati: SR nativo, capability, tileInfo
+      let nativeWkid = null, meta = null;
+      try {
+        meta = await fetchServiceJson(`${base}/${serviceName}/ImageServer?f=pjson`);
+        const srj = meta.spatialReference || {};
+        nativeWkid = srj.latestWkid || srj.wkid || null;
+        console.info(`[probe] "${serviceName}" (${host}) — SR nativo: ${nativeWkid} | capabilities: ${meta.capabilities || 'non dichiarate'} | tileInfo: ${meta.tileInfo ? 'presente (cache)' : 'assente'}`);
+      } catch(e){
+        reasons.push(tag + 'metadati: ' + e.message);
+        console.warn('[probe] metadati non leggibili:', e.message);
+      }
+
+      // Se il servizio dichiara di essere solo-tile, salta direttamente alla via cache
+      const caps = String((meta && meta.capabilities) || '').toLowerCase();
+      const cacheOnly = meta && meta.tileInfo && caps && !caps.includes('image') && !caps.includes('export');
+      if (cacheOnly){
+        console.info(`[probe] ${tag}capability solo-tile: salto exportImage, provo direttamente la cache nativa`);
+        try {
+          const cfg = await probeCacheFallback(base, serviceName, desiredRes, center, meta);
+          return cfg;
+        } catch(e){
+          reasons.push(tag + 'cache nativa: ' + e.message);
+        }
+        continue; // niente altro da provare per questo candidato
+      }
+
+      // 2) exportImage nel SR nativo e nelle alternative note
+      const cfgs = [];
+      const seen = new Set();
+      const pushCfg = (sr, toMeters, dec, label) => {
+        for (const f of ['default','jpgpng','png24']){
+          const key = sr + '|' + f;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          cfgs.push({ sr, format: f, toMeters, dec, interp: f === 'png24', label: label + ' + formato ' + f });
+        }
+      };
+      if (nativeWkid && nativeWkid !== 3857 && nativeWkid !== 4326){
+        pushCfg(nativeWkid, lonLatToUTM32N, 2, `EPSG:${nativeWkid} (nativo)`);
+      } else if (nativeWkid === 4326){
+        pushCfg(4326, null, 7, 'EPSG:4326 (nativo)');
+      } else if (nativeWkid === 3857){
+        pushCfg(3857, lonLatToMercator, 2, 'EPSG:3857 (nativo)');
+      }
+      pushCfg(6708, lonLatToUTM32N, 2, 'EPSG:6708 (RDN2008/UTM32N)');
+      pushCfg(32632, lonLatToUTM32N, 2, 'EPSG:32632');
+      pushCfg(25832, lonLatToUTM32N, 2, 'EPSG:25832');
+      pushCfg(3857, lonLatToMercator, 2, 'Web Mercator 3857');
+      pushCfg(4326, null, 7, 'WGS84 gradi 4326');
+
+      for (const cfg of cfgs){
+        const url = buildExportUrl(base, serviceName, cfg, probeBbox(center, cfg), PROBE_PX, PROBE_PX);
+        try {
+          const resp = await fetch(url, { mode: 'cors' });
+          if (!resp.ok){
+            const why = await describeBadResponse(resp);
+            reasons.push(tag + cfg.label + ': HTTP ' + resp.status + (why ? ' — ' + why : ''));
+            continue;
+          }
+          const blob = await resp.blob();
+          let decoded = null;
+          try { decoded = await decodeImageBlob(blob); } catch(e){}
+          if (!decoded){
+            const txt = await blob.text().catch(() => '');
+            reasons.push(tag + cfg.label + ': ' + (describeArcgisError(txt) || 'contenuto non-immagine'));
+            continue;
+          }
+          if (isBlankImage(decoded)){
+            reasons.push(tag + cfg.label + ': immagine vuota/nera');
+            continue;
+          }
+          console.info('[probe] configurazione funzionante:', tag + cfg.label);
+          return { base, name: serviceName, ...cfg };
+        } catch(e){
+          reasons.push(tag + cfg.label + ': ' + (e.message === 'Failed to fetch' ? 'richiesta bloccata (CORS/rete)' : e.message));
+        }
+      }
+
+      // 3) cache nativa (se i metadati la dichiarano)
+      if (meta && meta.tileInfo){
+        console.warn(`[probe] ${tag}exportImage rifiutato; tento la cache nativa ArcGIS...`);
+        try {
+          const cfg = await probeCacheFallback(base, serviceName, desiredRes, center, meta);
+          return cfg;
+        } catch(e){
+          reasons.push(tag + 'cache nativa: ' + e.message);
+        }
+      }
+
+      // 4) layer del MapServer composito
+      console.warn(`[probe] ${tag}tento il fallback via MapServer...`);
+      try {
+        const cfg = await probeMapServerFallback(serviceName, center);
+        console.info('[fallback] funzionante:', tag + cfg.label);
+        return { base, name: serviceName, ...cfg };
+      } catch(e){
+        reasons.push(tag + 'fallback MapServer: ' + e.message);
+      }
+
+      // 5) WMS
+      console.warn(`[probe] ${tag}tento il fallback via WMS...`);
+      try {
+        const cfg = await probeWmsFallback(serviceName, center);
+        console.info('[fallback] funzionante:', tag + cfg.label);
+        return { base, name: serviceName, ...cfg };
+      } catch(e){
+        reasons.push(tag + 'fallback WMS: ' + e.message);
+      }
+    }
+
+    console.warn(`[probe] dettagli di tutti i tentativi:\n - ` + reasons.join('\n - '));
+    throw new Error('nessuna via di export accettata dal server (dettagli in console, cerca [probe]). Primo motivo: ' + reasons[0]);
   }
 
   // ============================================================
@@ -467,12 +914,13 @@
   const widthKm = $('widthKm');
   const heightKm = $('heightKm');
   const resSelect = $('resSelect');
-  const resHint = $('resHint');
   const fieldRes = $('fieldRes');
   const zoomSelect = $('zoomSelect');
   const fieldZoom = $('fieldZoom');
   const yearSelect = $('yearSelect');
   const fieldYear = $('fieldYear');
+  const customSvcInput = $('customSvcInput');
+  const fieldCustomSvc = $('fieldCustomSvc');
   const esriNotice = $('esriNotice');
   const osmNotice = $('osmNotice');
   const verifyBtn = $('verifyBtn');
@@ -508,7 +956,7 @@
   const RING_CIRCUMFERENCE = 2 * Math.PI * 60;
 
   // ============================================================
-  // SWITCH PROVIDER — cambia UI e vincoli in base alla scelta
+  // SWITCH PROVIDER
   // ============================================================
   function setProvider(p){
     currentProvider = p;
@@ -518,57 +966,17 @@
 
     fieldYear.classList.toggle('hidden', p !== 'lombardia');
     fieldRes.classList.toggle('hidden', p !== 'lombardia');
+    fieldCustomSvc.classList.toggle('hidden', p !== 'lombardia');
     fieldZoom.classList.toggle('hidden', p === 'lombardia');
     esriNotice.classList.toggle('hidden', p !== 'esri');
     osmNotice.classList.toggle('hidden', p !== 'osm');
 
-    if (p === 'lombardia'){
-      crsTag.textContent = 'EPSG:4326';
-    } else if (p === 'esri'){
-      crsTag.textContent = 'XYZ tile';
-    } else {
-      crsTag.textContent = 'XYZ tile';
-    }
+    crsTag.textContent = p === 'lombardia' ? 'EPSG:4326' : 'XYZ tile';
     computeEstimate();
   }
   provBtnLombardia.addEventListener('click', () => setProvider('lombardia'));
   provBtnEsri.addEventListener('click', () => setProvider('esri'));
   provBtnOsm.addEventListener('click', () => setProvider('osm'));
-
-  // ============================================================
-  // CONVERSIONE COORDINATE
-  // ============================================================
-  function lonLatToMercator(lon, lat){
-    const x = lon * Math.PI / 180 * EARTH_R;
-    const y = Math.log(Math.tan(Math.PI/4 + (lat * Math.PI/180)/2)) * EARTH_R;
-    return { x, y };
-  }
-
-  // Conversione lat/lon -> coordinate pixel globali nello schema Slippy Map (usato da ESRI e OSM)
-  function lonLatToGlobalPixel(lon, lat, zoom){
-    const scale = XYZ_TILE_PX * Math.pow(2, zoom);
-    const x = (lon + 180) / 360 * scale;
-    const sinLat = Math.sin(lat * Math.PI / 180);
-    const y = (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale;
-    return { x, y };
-  }
-
-  function metersPerPixelAtZoom(lat, zoom){
-    return 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom);
-  }
-
-  function parseCenter(str){
-    const parts = str.split(',').map(s => parseFloat(s.trim()));
-    if (parts.length !== 2 || parts.some(isNaN)) return null;
-    const [lat, lon] = parts;
-    if (lat < -85 || lat > 85 || lon < -180 || lon > 180) return null;
-    return { lat, lon };
-  }
-
-  function setStatus(msg, kind){
-    statusText.textContent = msg;
-    statusLine.className = 'status-line' + (kind ? ' ' + kind : '');
-  }
 
   // ============================================================
   // STIMA
@@ -606,20 +1014,19 @@
         Dimensione immagine finale: <b>${widthPx.toLocaleString('it-IT')} × ${heightPx.toLocaleString('it-IT')} px</b> (${totalMPix.toFixed(0)} MP)<br>
         Riquadri da scaricare: <b>${totalTiles}</b> (griglia ${tilesX}×${tilesY})<br>
         Peso stimato: <b>~${estMB.toFixed(0)} MB</b><br>
-        Tempo stimato: <b>~${Math.ceil(totalTiles / CONCURRENCY * 1.2)} sec</b>
+        Tempo stimato: <b>~${Math.ceil(totalTiles / CONCURRENCY * 1.2)} sec</b><br>
+        <span style="color:#55698080;">Nota: in modalità cache di tile il numero reale di richieste dipende dal livello di cache rilevato.</span>
         ${warnHtml}
       `;
       return { center, w, h, res, widthPx, heightPx, tilesX, tilesY, totalTiles, mode: 'exportImage' };
 
     } else {
-      // ESRI / OSM: schema a tile XYZ standard, la "risoluzione" è determinata dal livello di zoom.
       const zoom = parseInt(zoomSelect.value, 10);
       const res = metersPerPixelAtZoom(center.lat, zoom);
       const widthPx = Math.round((w * 1000) / res);
       const heightPx = Math.round((h * 1000) / res);
       const totalMPix = (widthPx * heightPx) / 1e6;
 
-      // quanti tile XYZ da 256px servono per coprire l'area
       const centerPx = lonLatToGlobalPixel(center.lon, center.lat, zoom);
       const halfWpx = widthPx / 2;
       const halfHpx = heightPx / 2;
@@ -630,7 +1037,7 @@
       const tilesX = tileXmax - tileXmin + 1;
       const tilesY = tileYmax - tileYmin + 1;
       const totalTiles = tilesX * tilesY;
-      const estMB = totalMPix * (currentProvider === 'esri' ? 0.6 : 0.3); // jpg vs png più leggero
+      const estMB = totalMPix * (currentProvider === 'esri' ? 0.6 : 0.3);
 
       let warnHtml = '';
       if (widthPx > MAX_CANVAS_PX || heightPx > MAX_CANVAS_PX){
@@ -660,55 +1067,57 @@
   });
 
   // ============================================================
-  // VERIFICA SERVIZIO (Lombardia) — controlla che l'anno scelto risponda
+  // VERIFICA SERVIZIO — prova un vero export con tutte le vie
   // ============================================================
   verifyBtn.addEventListener('click', async () => {
-    const { base, name: serviceName } = resolveServiceUrl(yearSelect.value);
-    const testUrl = `${base}/${serviceName}/ImageServer?f=json`;
-    setStatus('Verifica del servizio in corso...', null);
+    const custom = parseCustomServiceUrl(customSvcInput.value);
+    const candidates = custom || resolveServiceCandidates(yearSelect.value);
+    const center = parseCenter(centerInput.value) || { lat: 45.4642, lon: 9.19 };
+    setStatus(`Verifica di "${candidates[0].name}" (tutte le vie: exportImage, cache, MapServer, WMS)...`, null);
     verifyBtn.disabled = true;
     try {
-      const resp = await fetch(testUrl);
-      const txt = await resp.text();
-      let json;
-      try { json = JSON.parse(txt); } catch(e){ json = null; }
-      if (json && !json.error && (json.name || json.serviceDescription)){
-        setStatus(`Servizio "${serviceName}" raggiungibile e valido.`, 'ok');
-      } else if (json && json.error){
-        setStatus(`Servizio "${serviceName}" non trovato (${json.error.message || 'errore sconosciuto'}).`, 'error');
-      } else {
-        setStatus(`Risposta inattesa dal servizio "${serviceName}". Potrebbe comunque funzionare: prova a generare la mappa.`, 'error');
-      }
+      const cfg = await probeLombardiaConfig(candidates, center, parseFloat(resSelect.value));
+      setStatus(`Servizio "${cfg.name}" OK: via funzionante → ${cfg.label}.`, 'ok');
     } catch(e){
-      setStatus(`Impossibile contattare il servizio: ${e.message}.`, 'error');
+      setStatus(`Servizio "${candidates[0].name}": ${e.message}`, 'error');
     }
     verifyBtn.disabled = false;
   });
 
   // ============================================================
-  // GRIGLIA — LOMBARDIA (ArcGIS ImageServer, coordinate esatte via exportImage)
+  // GRIGLIA — LOMBARDIA via exportImage / MapServer / WMS (bbox liberi)
   // ============================================================
-  function buildTileGridLombardia(params){
-    const { center, w, h, res, widthPx, heightPx, tilesX, tilesY } = params;
-    const centerM = lonLatToMercator(center.lon, center.lat);
-    const halfWm = (w * 1000) / 2;
-    const halfHm = (h * 1000) / 2;
-    const xmin = centerM.x - halfWm;
-    const ymax = centerM.y + halfHm;
+  function buildTileGridLombardia(params, cfg){
+    const { center, w, h, widthPx, heightPx, tilesX, tilesY } = params;
+
+    let xmin, ymax, fullW, fullH;
+    if (cfg.sr === 4326){
+      fullW = (w * 1000) / (111320 * Math.cos(center.lat * Math.PI/180));
+      fullH = (h * 1000) / 110540;
+      xmin = center.lon - fullW / 2;
+      ymax = center.lat + fullH / 2;
+    } else {
+      const c = cfg.toMeters(center.lon, center.lat);
+      fullW = w * 1000;
+      fullH = h * 1000;
+      xmin = c.x - fullW / 2;
+      ymax = c.y + fullH / 2;
+    }
+
     const tileWpx = Math.ceil(widthPx / tilesX);
     const tileHpx = Math.ceil(heightPx / tilesY);
-    const tileWm = tileWpx * res;
-    const tileHm = tileHpx * res;
+    const tileWu = fullW * (tileWpx / widthPx);
+    const tileHu = fullH * (tileHpx / heightPx);
 
     const tiles = [];
     for (let gy = 0; gy < tilesY; gy++){
       for (let gx = 0; gx < tilesX; gx++){
-        const txmin = xmin + gx * tileWm;
-        const tymax = ymax - gy * tileHm;
-        const txmax = Math.min(txmin + tileWm, xmin + widthPx * res);
-        const tymin = tymax - tileHm;
-        const pxW = Math.round((txmax - txmin) / res);
-        const pxH = Math.round((tymax - tymin) / res);
+        const txmin = xmin + gx * tileWu;
+        const tymax = ymax - gy * tileHu;
+        const txmax = Math.min(txmin + tileWu, xmin + fullW);
+        const tymin = tymax - tileHu;
+        const pxW = Math.max(1, Math.round((txmax - txmin) * widthPx / fullW));
+        const pxH = Math.max(1, Math.round((tymax - tymin) * heightPx / fullH));
         tiles.push({
           gx, gy, bbox: [txmin, tymin, txmax, tymax], pxW, pxH,
           destX: gx * tileWpx, destY: gy * tileHpx
@@ -718,38 +1127,92 @@
     return { tiles, tileWpx, tileHpx };
   }
 
-  function fetchTileLombardia(base, serviceName, tile, attempt){
+  async function fetchTileLombardia(base, serviceName, cfg, tile, attempt){
     attempt = attempt || 1;
-    const url = `${base}/${serviceName}/ImageServer/exportImage`
-      + `?bbox=${tile.bbox.join(',')}`
-      + `&bboxSR=3857&imageSR=3857`
-      + `&size=${tile.pxW},${tile.pxH}`
-      + `&format=png24&interpolation=RSP_BilinearInterpolation`
-      + `&f=image`;
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => resolve(img);
-      img.onerror = () => {
-        if (attempt < 3){
-          setTimeout(() => fetchTileLombardia(base, serviceName, tile, attempt + 1).then(resolve).catch(reject), 500 * attempt);
-        } else {
-          reject(new Error('tile fallito dopo 3 tentativi'));
-        }
-      };
-      img.src = url;
-    });
+    const url = buildExportUrl(base, serviceName, cfg, tile.bbox, tile.pxW, tile.pxH);
+    try {
+      const resp = await fetch(url, { mode: 'cors' });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      return await decodeImageBlob(await resp.blob());
+    } catch(e){
+      if (attempt < 3){
+        await new Promise(r => setTimeout(r, 600 * attempt));
+        return fetchTileLombardia(base, serviceName, cfg, tile, attempt + 1);
+      }
+      throw new Error('tile ' + tile.gx + ',' + tile.gy + ': ' + e.message);
+    }
   }
 
   // ============================================================
-  // GRIGLIA — SCHEMA XYZ (ESRI World Imagery / OpenStreetMap)
-  // Ogni tile ha indici interi (tileX, tileY) a un dato zoom: posizionamento
-  // matematico esatto, stesso principio del provider Lombardia ma con
-  // coordinate a griglia intera invece che bbox in metri.
+  // GRIGLIA — CACHE NATIVA ARCGIS (es. 2018-19, ed eventuali servizi futuri)
+  // Ricostruisce la griglia dal tileInfo del servizio: origine, dimensione
+  // tile e risoluzione del livello scelto. Stesso principio di ESRI/OSM ma
+  // con la griglia propria del servizio.
+  // ============================================================
+  function buildTileGridCache(params, cfg){
+    const ti = cfg.tileInfo, lod = cfg.lod;
+    const tw = cfg.tileW, th = cfg.tileH;
+    const ox = ti.origin.x, oy = ti.origin.y;
+    const r = lod.resolution;
+
+    const halfWm = (params.w * 1000) / 2;
+    const halfHm = (params.h * 1000) / 2;
+    const c = lonLatToSR(params.center.lon, params.center.lat, cfg.sr);
+    let xmin = c.x - halfWm, xmax = c.x + halfWm;
+    let ymin = c.y - halfHm, ymax = c.y + halfHm;
+
+    // pixel "globali" della cache: x cresce verso est dall'origine, y verso sud
+    const gpx0 = (xmin - ox) / r, gpx1 = (xmax - ox) / r;
+    const gpy0 = (oy - ymax) / r, gpy1 = (oy - ymin) / r;
+
+    const colMin = Math.floor(gpx0 / tw), colMax = Math.floor((gpx1 - 1e-9) / tw);
+    const rowMin = Math.floor(gpy0 / th), rowMax = Math.floor((gpy1 - 1e-9) / th);
+
+    const canvasW = Math.round(gpx1 - gpx0);
+    const canvasH = Math.round(gpy1 - gpy0);
+
+    const tiles = [];
+    for (let row = rowMin; row <= rowMax; row++){
+      for (let col = colMin; col <= colMax; col++){
+        tiles.push({
+          gx: col - colMin, gy: row - rowMin,
+          level: lod.level, row, col,
+          destX: Math.round(col * tw - gpx0),
+          destY: Math.round(row * th - gpy0)
+        });
+      }
+    }
+    return {
+      tiles, canvasW, canvasH,
+      tilesX: colMax - colMin + 1,
+      tilesY: rowMax - rowMin + 1
+    };
+  }
+
+  async function fetchTileCache(cfg, tile, attempt){
+    attempt = attempt || 1;
+    const url = `${cfg.base}/${cfg.name}/ImageServer/tile/${tile.level}/${tile.row}/${tile.col}`;
+    try {
+      const resp = await fetch(url, { mode: 'cors' });
+      if (resp.status === 404) throw new Error('404: tile non presente in cache (fuori copertura o livello non generato)');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      return await decodeImageBlob(await resp.blob());
+    } catch(e){
+      if (e.message.indexOf('404') !== -1)
+        throw new Error('tile ' + tile.gx + ',' + tile.gy + ': ' + e.message);
+      if (attempt < 3){
+        await new Promise(r => setTimeout(r, 600 * attempt));
+        return fetchTileCache(cfg, tile, attempt + 1);
+      }
+      throw new Error('tile ' + tile.gx + ',' + tile.gy + ': ' + e.message);
+    }
+  }
+
+  // ============================================================
+  // GRIGLIA — SCHEMA XYZ (ESRI / OSM)
   // ============================================================
   function buildTileGridXYZ(params){
-    const { tileXmin, tileYmin, tilesX, tilesY, centerPx, widthPx, heightPx, zoom } = params;
-    // origine pixel globale del canvas finale (angolo nord-ovest dell'area richiesta)
+    const { tileXmin, tileYmin, tilesX, tilesY, centerPx, widthPx, heightPx } = params;
     const halfWpx = widthPx / 2;
     const halfHpx = heightPx / 2;
     const canvasOriginX = centerPx.x - halfWpx;
@@ -760,39 +1223,30 @@
       for (let gx = 0; gx < tilesX; gx++){
         const tileX = tileXmin + gx;
         const tileY = tileYmin + gy;
-        // posizione di questo tile (in pixel globali) rispetto all'origine del canvas
-        const tileGlobalPxX = tileX * XYZ_TILE_PX;
-        const tileGlobalPxY = tileY * XYZ_TILE_PX;
-        const destX = Math.round(tileGlobalPxX - canvasOriginX);
-        const destY = Math.round(tileGlobalPxY - canvasOriginY);
+        const destX = Math.round(tileX * XYZ_TILE_PX - canvasOriginX);
+        const destY = Math.round(tileY * XYZ_TILE_PX - canvasOriginY);
         tiles.push({ gx, gy, tileX, tileY, destX, destY });
       }
     }
     return tiles;
   }
 
-  function fetchTileXYZ(provider, tileX, tileY, zoom, attempt){
+  async function fetchTileXYZ(provider, tileX, tileY, zoom, attempt){
     attempt = attempt || 1;
-    let url;
-    if (provider === 'esri'){
-      url = `${ESRI_TILE_URL}/${zoom}/${tileY}/${tileX}`;
-    } else {
-      // OSM richiede sottodomini a rotazione e rispetto della tile usage policy (basso volume, no hammering)
-      url = `${OSM_TILE_URL}/${zoom}/${tileX}/${tileY}.png`;
+    const url = provider === 'esri'
+      ? `${ESRI_TILE_URL}/${zoom}/${tileY}/${tileX}`
+      : `${OSM_TILE_URL}/${zoom}/${tileX}/${tileY}.png`;
+    try {
+      const resp = await fetch(url, { mode: 'cors' });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status + ' — ' + url);
+      return await decodeImageBlob(await resp.blob());
+    } catch(e){
+      if (attempt < 3){
+        await new Promise(r => setTimeout(r, 600 * attempt));
+        return fetchTileXYZ(provider, tileX, tileY, zoom, attempt + 1);
+      }
+      throw e;
     }
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => resolve(img);
-      img.onerror = () => {
-        if (attempt < 3){
-          setTimeout(() => fetchTileXYZ(provider, tileX, tileY, zoom, attempt + 1).then(resolve).catch(reject), 600 * attempt);
-        } else {
-          reject(new Error('tile fallito dopo 3 tentativi'));
-        }
-      };
-      img.src = url;
-    });
   }
 
   // ============================================================
@@ -809,7 +1263,7 @@
   }
 
   async function runAcquisition(){
-    const params = computeEstimate();
+    let params = computeEstimate();
     if (!params){
       setStatus('Parametri non validi.', 'error');
       return;
@@ -823,10 +1277,35 @@
     progressRing.style.strokeDasharray = RING_CIRCUMFERENCE;
     progressRing.style.strokeDashoffset = RING_CIRCUMFERENCE;
 
-    let tiles, serviceName, serviceBase;
+    let tiles, serviceName, serviceBase, lomCfg = null;
     if (currentProvider === 'lombardia'){
-      ({ tiles } = buildTileGridLombardia(params));
-      ({ base: serviceBase, name: serviceName } = resolveServiceUrl(yearSelect.value));
+      const custom = parseCustomServiceUrl(customSvcInput.value);
+      const candidates = custom || resolveServiceCandidates(yearSelect.value);
+      progressLbl.textContent = 'Test del servizio...';
+      progressSub.textContent = 'ricerca della via di export accettata (exportImage / cache / MapServer / WMS)';
+      try {
+        lomCfg = await probeLombardiaConfig(candidates, params.center, params.res);
+      } catch(e){
+        progressOverlay.classList.add('hidden');
+        resetToolbarAfterRun();
+        setStatus('Generazione impossibile: ' + e.message, 'error');
+        return;
+      }
+      serviceBase = lomCfg.base;
+      serviceName = lomCfg.name;
+
+      if (lomCfg.via === 'arcgistile'){
+        // la risoluzione effettiva è quella del livello di cache scelto
+        params = { ...params, res: lomCfg.lod.resolution };
+        const g = buildTileGridCache(params, lomCfg);
+        tiles = g.tiles;
+        params.widthPx = g.canvasW;
+        params.heightPx = g.canvasH;
+        params.tilesX = g.tilesX;
+        params.tilesY = g.tilesY;
+      } else {
+        ({ tiles } = buildTileGridLombardia(params, lomCfg));
+      }
     } else {
       tiles = buildTileGridXYZ(params);
     }
@@ -851,7 +1330,7 @@
       masterCtx = masterCanvas.getContext('2d');
     }
 
-    let done = 0, errors = 0;
+    let done = 0, errors = 0, firstError = '', blankTiles = 0;
     const total = tiles.length;
     updateProgressUI(0, total, 0);
 
@@ -861,8 +1340,14 @@
       try {
         let img, drawW, drawH;
         if (currentProvider === 'lombardia'){
-          img = await fetchTileLombardia(serviceBase, serviceName, tile);
-          drawW = tile.pxW; drawH = tile.pxH;
+          if (lomCfg.via === 'arcgistile'){
+            img = await fetchTileCache(lomCfg, tile);
+            drawW = lomCfg.tileW; drawH = lomCfg.tileH;
+          } else {
+            img = await fetchTileLombardia(serviceBase, serviceName, lomCfg, tile);
+            drawW = tile.pxW; drawH = tile.pxH;
+          }
+          if (isBlankImage(img)) blankTiles++;
         } else {
           img = await fetchTileXYZ(currentProvider, tile.tileX, tile.tileY, params.zoom);
           drawW = XYZ_TILE_PX; drawH = XYZ_TILE_PX;
@@ -885,6 +1370,8 @@
         cellEls[idx].classList.add('err');
         errors++;
         done++;
+        if (!firstError) firstError = e.message;
+        console.warn('[tile fallito]', e.message);
       }
       updateProgressUI(done, total, errors);
     }
@@ -926,16 +1413,21 @@
     zoomHud.style.display = 'flex';
     fitToViewport(params.widthPx, params.heightPx);
     pxSize.textContent = currentProvider === 'lombardia'
-      ? `${params.res} m/px`
+      ? (lomCfg.via === 'arcgistile'
+          ? `${params.res} m/px (cache lod ${lomCfg.lod.level})`
+          : `${params.res} m/px`)
       : `zoom ${params.zoom} (~${params.res.toFixed(2)} m/px)`;
 
     progressOverlay.classList.add('hidden');
     resetToolbarAfterRun();
 
     if (errors > 0){
-      setStatus(`Completato con ${errors} riquadri falliti su ${total}.`, 'error');
+      setStatus(`Falliti ${errors} riquadri su ${total}. Primo errore: ${firstError}`, 'error');
+    } else if (blankTiles === total && total > 0){
+      setStatus('Mappa generata ma tutti i riquadri sono vuoti: l\'area è probabilmente fuori dalla copertura del servizio scelto.', 'error');
     } else {
-      setStatus(`Mappa generata: ${total} riquadri uniti per coordinate esatte.`, 'ok');
+      const via = currentProvider === 'lombardia' ? ` (via ${lomCfg.label})` : '';
+      setStatus(`Mappa generata: ${total} riquadri uniti per coordinate esatte${via}.`, 'ok');
     }
   }
 
@@ -1008,7 +1500,7 @@
   });
 
   // ============================================================
-  // EXPORT — con overlay di progresso (stesso stile della generazione)
+  // EXPORT
   // ============================================================
   const downloadOverlay = $('downloadOverlay');
   const downloadRing = $('downloadRing');
@@ -1044,7 +1536,6 @@
 
     try {
       if (canvases.length > 0){
-        // mosaico multi-tessera: ogni tessera è un file separato, il progresso avanza per tessera
         const total = canvases.length;
         for (let i = 0; i < canvases.length; i++){
           const c = canvases[i];
@@ -1052,13 +1543,11 @@
           const blob = await canvasToBlobAsync(c.canvas);
           triggerBlobDownload(blob, `ortofoto_r${c.gy}_c${c.gx}.png`);
           setDownloadProgress(((i+1) / total) * 100, `Tessera ${i+1} di ${total} scaricata`);
-          await new Promise(r => setTimeout(r, 120)); // lascia respiro al browser tra un download e l'altro
+          await new Promise(r => setTimeout(r, 120));
         }
         setDownloadProgress(100, 'Completato');
         setStatus(`Scaricate ${canvases.length} tessere separate (immagine troppo grande per un unico file).`, 'ok');
       } else {
-        // singolo file grande: la codifica PNG è un'unica operazione bloccante,
-        // quindi simuliamo un avanzamento fluido mentre il browser codifica in background
         const canvas = stageInner.querySelector('canvas');
         setDownloadProgress(8, 'Codifica immagine in PNG...');
 
@@ -1087,7 +1576,7 @@
   });
 
   // init
-  computeEstimate();
+  setProvider('lombardia');
 })();
 </script>
 </body>
