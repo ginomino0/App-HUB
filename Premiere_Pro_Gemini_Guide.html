@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guida di Montaggio · Premiere Pro + Gemini</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+:root {
+  --bg: #14151a;
+  --panel: #1c1f26;
+  --panel-2: #22262f;
+  --border: #2a2e37;
+  --text: #eef0f2;
+  --text-dim: #8b92a1;
+  --amber: #a78bfa;
+  --amber-dim: #57427f;
+  --cyan: #49c8bd;
+  --cyan-dim: #244745;
+  --danger: #e5675f;
+  --radius-sm: 6px;
+  --radius: 12px;
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+}
+
+/* ---------- Header ---------- */
+
+header.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-mark {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 22px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(155deg, var(--amber), #7557d6);
+  color: #140b29;
+}
+
+header.app-header h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 20px;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+header.app-header .sub {
+  color: var(--text-dim);
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+
+/* ---------- Buttons ---------- */
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 9px 15px;
+  font-size: 13px;
+  font-family: var(--sans);
+  transition: border-color .15s, background .15s, color .15s;
+}
+
+button:hover { border-color: #454b58; }
+
+button.primary {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: #160d2b;
+  font-weight: 600;
+}
+
+button.primary:hover { background: #f0ae4d; }
+
+button.ghost-danger {
+  background: transparent;
+  color: var(--text-dim);
+}
+
+button.ghost-danger:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* ---------- Layout ---------- */
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.panel h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 17px;
+  margin: 0 0 12px;
+  color: var(--text);
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.panel-head h2 { margin: 0; }
+
+.hint-inline {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.hint {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin: 8px 0 0;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.hint code {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 12px;
+  color: var(--amber);
+}
+
+/* ---------- Pannello versione Premiere Pro ---------- */
+
+#ps-settings-panel { padding: 14px 20px; }
+
+.ps-settings-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.ps-settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ps-settings-field label {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+
+#ps-version-select {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 8px 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+  min-width: 190px;
+}
+
+#ps-version-select:focus { outline: none; border-color: var(--amber-dim); }
+
+.ps-online-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  padding-bottom: 8px;
+}
+
+.ps-online-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--amber);
+  cursor: pointer;
+}
+
+/* ---------- Barra superiore: immagine + richiesta ---------- */
+
+.top-row {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+#upload-panel {
+  width: 140px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+#upload-panel .status,
+#upload-panel .hint {
+  font-size: 11.5px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.lock-badge {
+  font-size: 11px;
+  color: var(--amber);
+  border: 1px solid var(--amber-dim);
+  background: rgba(232, 163, 61, .08);
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+#dropzone {
+  width: 100%;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 16px 10px;
+  text-align: center;
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  transition: border-color .15s, color .15s;
+}
+
+#dropzone:hover { border-color: var(--amber-dim); color: var(--text); }
+#dropzone.dragover { border-color: var(--amber); color: var(--text); }
+#dropzone.disabled { cursor: not-allowed; opacity: .4; }
+#dropzone[hidden] { display: none; } /* l'ID sopra ha display:flex, che altrimenti vince su [hidden] */
+
+.dz-icon { font-size: 18px; }
+
+#preview-img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  display: none;
+  border: 1px solid var(--border);
+  cursor: zoom-in;
+  transition: border-color .15s;
+}
+
+#preview-img:hover { border-color: var(--amber-dim); }
+
+#request-panel {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+textarea#user-request {
+  flex: 1;
+  height: 100%;
+  min-height: 90px;
+  resize: none;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 11px 12px;
+  font-family: var(--sans);
+  font-size: 15px;
+}
+
+textarea#user-request:focus { outline: none; border-color: var(--amber-dim); }
+
+#btn-send { align-self: flex-end; }
+
+#request-hint { flex-basis: 100%; margin-top: 10px; }
+
+/* ---------- Lightbox ---------- */
+
+dialog.lightbox {
+  border: none;
+  background: transparent;
+  padding: 0;
+  max-width: 92vw;
+  max-height: 92vh;
+}
+
+dialog.lightbox::backdrop { background: rgba(6, 7, 9, .88); }
+
+dialog.lightbox img {
+  display: block;
+  max-width: 92vw;
+  max-height: 84vh;
+  border-radius: var(--radius);
+  margin: 0 auto;
+}
+
+.lightbox-close {
+  display: block;
+  margin: 0 0 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+/* ---------- Screenshot aggiuntivi: rail a sinistra + contenuto dello screenshot selezionato ---------- */
+
+.extra-gallery {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.photo-rail {
+  width: 96px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.photo-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.photo-pill img {
+  width: 100%;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.photo-pill span {
+  font-size: 10.5px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.photo-pill.active { border-color: var(--cyan); }
+.photo-pill.active span { color: var(--cyan); }
+
+.photo-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.photo-content-empty { margin: 8px 0 0; }
+
+.photo-content-img {
+  max-width: 220px;
+  max-height: 160px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--cyan-dim);
+}
+
+.extra-qa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.extra-qa .q {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.extra-qa .a {
+  font-size: 13px;
+  line-height: 1.55;
+  margin-top: 3px;
+  color: var(--text);
+}
+
+.extra-ask-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.extra-ask-row textarea {
+  width: 100%;
+  min-height: 42px;
+  resize: vertical;
+  background: var(--panel-2);
+  border: 1px solid var(--cyan-dim);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 8px 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+}
+
+.extra-ask-row textarea:focus { outline: none; border-color: var(--cyan); }
+
+.extra-ask-send {
+  align-self: flex-end;
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: #0c211f;
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+/* ---------- Guide: contenuto sopra + barra a schede in basso (docked) ---------- */
+
+#guides-panel { padding: 0; overflow: hidden; }
+#guides-panel #guides-empty { padding: 20px; margin: 0; }
+
+.guides-dock {
+  display: flex;
+  flex-direction: column;
+}
+
+.guide-content {
+  padding: 20px;
+  min-height: 80px;
+}
+
+.guide-content-empty { margin: 0; }
+
+.tab-intro, .tab-outro {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.tab-outro {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+}
+
+.guide-tabstrip {
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-2);
+  overflow-x: auto;
+}
+
+.guide-tab-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border-bottom: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  max-width: 160px;
+}
+
+.guide-tab-pill .kind {
+  font-family: var(--serif);
+  font-size: 10.5px;
+  color: var(--text-dim);
+}
+
+.guide-tab-pill .label {
+  font-size: 11.5px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.guide-tab-pill.active { border-color: var(--amber); background: rgba(232, 163, 61, .08); }
+.guide-tab-pill.active .kind { color: var(--amber); }
+
+
+/* ---------- Steps (contact-sheet style) ---------- */
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  margin-top: 6px;
+}
+
+.step {
+  display: flex;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.step:last-child { border-bottom: none; }
+
+.step-num {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--text-dim);
+  width: 32px;
+  flex-shrink: 0;
+  text-align: right;
+  padding-top: 2px;
+}
+
+.step-main { flex: 1; min-width: 0; }
+
+.step-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.step-toggle {
+  border: 1px solid var(--cyan-dim);
+  background: transparent;
+  color: var(--cyan);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-toggle:hover { border-color: var(--cyan); background: rgba(73, 200, 189, .08); }
+.step-toggle.open { background: var(--cyan); color: #0c211f; }
+
+.step-body {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text);
+  margin-top: 6px;
+}
+
+.step-body strong { color: var(--text); }
+
+/* deep dive (approfondimento) */
+
+.deepdive {
+  margin-top: 12px;
+  padding: 14px;
+  border-left: 2px solid var(--cyan-dim);
+  background: rgba(73, 200, 189, .05);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deepdive-entry .q {
+  font-size: 12.5px;
+  color: var(--cyan);
+  font-weight: 600;
+}
+.deepdive-entry .a {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 4px;
+  color: var(--text);
+}
+
+.deepdive-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.deepdive-input-row textarea {
+  width: 100%;
+  min-height: 44px;
+  resize: vertical;
+  background: var(--panel);
+  border: 1px solid var(--cyan-dim);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 8px 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+}
+
+.deepdive-input-row textarea:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+
+.deepdive-send {
+  align-self: flex-end;
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: #0c211f;
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 8px 12px;
+}
+
+/* ---------- Status text ---------- */
+
+.status { font-size: 12px; color: var(--text-dim); }
+.status.error { color: var(--danger); }
+.status.ok { color: var(--cyan); }
+
+/* ---------- API key dialog ---------- */
+
+dialog#apikey-dialog {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--text);
+  padding: 22px;
+  width: 380px;
+  max-width: 90vw;
+  font-family: var(--sans);
+}
+
+dialog#apikey-dialog::backdrop { background: rgba(0,0,0,.65); }
+
+dialog#apikey-dialog h2 {
+  font-family: var(--serif);
+  font-size: 16px;
+  margin: 0 0 6px;
+}
+
+dialog#apikey-dialog input {
+  width: 100%;
+  padding: 10px 11px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  margin: 10px 0;
+  font-family: var(--sans);
+}
+
+/* ---------- Spinner ---------- */
+
+.spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--border);
+  border-top-color: var(--amber);
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin .7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 720px) {
+  .top-row { flex-direction: column; align-items: center; }
+  #request-panel { width: 100%; }
+  .guide-tab-pill .kind { display: none; }
+}
+
+</style>
+</head>
+<body>
+  <header class="app-header">
+  <div class="brand">
+    <span class="brand-mark">Pr</span>
+    <div>
+      <h1>Guida di Montaggio</h1>
+      <div class="sub">Carica uno screenshot di Premiere, descrivi cosa vuoi ottenere, segui la procedura</div>
+    </div>
+  </div>
+  <div class="row">
+    <span id="api-status" class="status">API key non impostata</span>
+    <button id="btn-open-apikey">Chiave API</button>
+    <button id="btn-reset" class="ghost-danger">Ricomincia da zero</button>
+  </div>
+</header>
+
+  <dialog id="apikey-dialog">
+  <h2 style="margin-top:0;font-size:15px;">Inserisci la tua Gemini API Key</h2>
+  <p class="status">La chiave resta solo nel tuo browser (localStorage), non viene inviata a nessun server se non a Google.</p>
+  <input type="password" id="apikey-input" placeholder="AIza..." autocomplete="off" />
+  <div class="row" style="justify-content:flex-end;">
+    <button id="btn-apikey-cancel">Annulla</button>
+    <button id="btn-apikey-save" class="primary">Salva</button>
+  </div>
+</dialog>
+
+
+  <main class="container">
+    <section class="panel" id="ps-settings-panel">
+  <div class="ps-settings-row">
+    <div class="ps-settings-field">
+      <label for="ps-version-select">Versione Premiere Pro</label>
+      <select id="ps-version-select"></select>
+    </div>
+    <label class="ps-online-toggle">
+      <input type="checkbox" id="ps-online-checkbox" />
+      <span>Account Adobe collegato / online</span>
+    </label>
+  </div>
+  <p class="hint">Gemini adatta pannelli, menu, scorciatoie, effetti e funzioni disponibili in base a questa scelta.</p>
+</section>
+
+    <section class="panel top-row">
+      <div id="upload-panel">
+  <div id="dropzone">
+    <span class="dz-icon">◧</span>
+    <span>Trascina qui uno screenshot</span>
+    <input type="file" id="file-input" accept="image/*" hidden />
+  </div>
+  <img id="preview-img" alt="Anteprima screenshot caricato — clicca per ingrandire" title="Clicca per ingrandire" />
+  <span class="lock-badge" id="lock-badge" hidden>bloccata</span>
+  <p class="status" id="upload-status"></p>
+  <p class="hint" id="upload-locked-hint" hidden>
+    Bloccato. Per cambiarlo: "Ricomincia da zero".
+  </p>
+</div>
+
+<dialog id="image-lightbox" class="lightbox">
+  <button id="lightbox-close" class="lightbox-close" title="Chiudi">‹ Chiudi</button>
+  <img id="lightbox-img" alt="Immagine ingrandita" />
+</dialog>
+
+      <div id="request-panel">
+  <textarea id="user-request" data-cmd placeholder="Cosa vuoi fare in Premiere Pro? Es: Voglio stabilizzare questa clip, correggere il colore, migliorare l'audio..."></textarea>
+  <button id="btn-send" class="primary">Genera guida</button>
+</div>
+<p class="hint" id="request-hint">Scrivi normalmente per una guida passo-passo, oppure digita <code>#</code> per vedere i comandi (es. <code>#domanda</code> per una spiegazione senza passi). Invio per inviare, Maiusc+Invio per andare a capo.</p>
+<span id="send-status" class="status"></span>
+
+    </section>
+    <section class="panel" id="extra-images-panel">
+  <div class="panel-head">
+    <h2>Screenshot aggiuntivi</h2>
+    <button id="btn-attach-screenshot" type="button">+ Allega screenshot Premiere</button>
+    <input type="file" id="screenshot-input" accept="image/*" hidden />
+  </div>
+  <div id="extra-gallery" class="extra-gallery"></div>
+</section>
+
+    <section class="panel" id="guides-panel">
+  <p class="hint" id="guides-empty">Genera la prima guida Premiere per vederla comparire qui come scheda.</p>
+  <div id="guides-list" class="guides-dock"></div>
+</section>
+
+    <p class="hint" style="text-align:center;margin:0 0 4px;">Premiere Guide · Gemini multimodale · stato e API key salvati solo nel browser</p>
+  </main>
+
+<script>
+// storage.js — gestione persistenza locale (API key + stato del progetto)
+
+const STORAGE_KEYS = {
+  API_KEY: "prguide_gemini_api_key",
+  PROJECT_STATE: "prguide_project_state_v3",
+  PS_SETTINGS: "prguide_premiere_settings",
+};
+
+const Storage = {
+  getApiKey() {
+    return localStorage.getItem(STORAGE_KEYS.API_KEY) || "";
+  },
+  setApiKey(key) {
+    localStorage.setItem(STORAGE_KEYS.API_KEY, key.trim());
+  },
+  clearApiKey() {
+    localStorage.removeItem(STORAGE_KEYS.API_KEY);
+  },
+
+  getPsSettings() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.PS_SETTINGS)) || null;
+    } catch {
+      return null;
+    }
+  },
+  setPsSettings(settings) {
+    localStorage.setItem(STORAGE_KEYS.PS_SETTINGS, JSON.stringify(settings));
+  },
+
+  /**
+   * Stato completo del progetto: screenshot base (per anteprima dopo reload),
+   * galleria immagini aggiuntive, e le schede/guide generate con i loro approfondimenti.
+   */
+  saveProjectState(state) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.PROJECT_STATE, JSON.stringify(state));
+    } catch (e) {
+      console.warn("Impossibile salvare lo stato (probabilmente troppo grande):", e);
+    }
+  },
+  loadProjectState() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.PROJECT_STATE)) || null;
+    } catch {
+      return null;
+    }
+  },
+  clearProjectState() {
+    localStorage.removeItem(STORAGE_KEYS.PROJECT_STATE);
+  },
+};
+
+</script>
+
+<script>
+// commands.js — registro dei comandi "#nome" ed helper per l'autocompletamento
+// Per aggiungere un nuovo comando in futuro, basta aggiungere una riga qui: il resto del
+// sistema (suggerimento fantasma, riconoscimento nel testo inviato) funziona già da solo.
+// Nota: i comandi usano UN SOLO cancelletto iniziale, niente cancelletto di chiusura.
+
+const COMMANDS = [
+  { tag: "domanda", desc: "Spiegazione discorsiva, senza guida numerata a passi" },
+  // esempio futuro: { tag: "veloce", desc: "Solo un parere rapido sull'ultimo screenshot" },
+];
+
+const Commands = {
+  /**
+   * Se il cursore si trova subito dopo un "#" ancora "aperto" (non seguito da uno spazio),
+   * ritorna { start, partial }. Altrimenti null.
+   */
+  detectPartial(text, cursorPos) {
+    const upto = text.slice(0, cursorPos);
+    const lastHash = upto.lastIndexOf("#");
+    if (lastHash === -1) return null;
+    const after = upto.slice(lastHash + 1);
+    if (/\s/.test(after) || after.includes("#")) return null;
+    return { start: lastHash, partial: after };
+  },
+
+  /** Primo comando il cui nome inizia con "partial" (case-insensitive). */
+  matchFor(partial) {
+    const p = partial.toLowerCase();
+    return COMMANDS.find((c) => c.tag.startsWith(p)) || null;
+  },
+};
+
+</script>
+
+<script>
+// gemini.js — comunicazione con Gemini API (REST) + gestione cronologia chat
+
+// Catena di modelli: si prova nell'ordine, passando al successivo solo se il precedente fallisce.
+const GEMINI_MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"];
+const GEMINI_ENDPOINT = (model, key) =>
+  `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+
+// Elenco versioni Premiere Pro selezionabili, dalla più vecchia alla più recente.
+const PS_VERSIONS = [
+  "Premiere Pro CS6 (2012)",
+  "Premiere Pro CC 2014",
+  "Premiere Pro CC 2015",
+  "Premiere Pro CC 2017",
+  "Premiere Pro CC 2018",
+  "Premiere Pro CC 2019",
+  "Premiere Pro 2020",
+  "Premiere Pro 2021",
+  "Premiere Pro 2022",
+  "Premiere Pro 2023",
+  "Premiere Pro 2024",
+  "Premiere Pro 2025",
+  "Premiere Pro 2026",
+];
+const PS_DEFAULT_VERSION = PS_VERSIONS[PS_VERSIONS.length - 1]; // la più recente
+
+// Impostazioni correnti (versione + online/offline), modificabili da UI tramite GeminiChat.setPsSettings
+let psSettings = { version: PS_DEFAULT_VERSION, online: false };
+
+function buildSystemInstruction() {
+  const { version, online } = psSettings;
+
+  const offlineRule = online
+    ? `8. L'utente ha un account Adobe collegato e una connessione internet attiva: quando è pertinente e realmente disponibile in ${version}, puoi suggerire anche funzioni o servizi collegati come Frame.io, Adobe Stock, Creative Cloud Libraries, collaborazione/revisione, sincronizzazione e funzioni online. Distingui sempre chiaramente ciò che richiede internet/account da ciò che funziona localmente.`
+    : `8. Premiere Pro dell'utente funziona in modalità completamente OFFLINE: nessuna connessione internet e nessun account Adobe collegato. Non suggerire come passaggio necessario Frame.io, Adobe Stock, Creative Cloud Libraries, collaborazione/revisione cloud, sincronizzazione cloud o qualunque funzione che richieda login/rete. Proponi sempre l'equivalente locale/offline con pannelli, effetti, keyframe, maschere, tracce, proxy, esportazione locale e strumenti nativi disponibili nella versione selezionata.`;
+
+  return `
+Sei un assistente esperto di Adobe ${version} desktop, con interfaccia in italiano quando possibile.
+Il tuo compito è guidare l'utente passo-passo, in modo estremamente preciso e operativo, nel montaggio e nella correzione di video, audio, grafica e sequenze in Adobe Premiere Pro.
+L'utente può mostrarti screenshot dell'interfaccia, della Timeline, del Monitor Programma/Sorgente, dei pannelli Controllo effetti, Lumetri, Audio, Testo, Esporta o altri pannelli. Analizzali visivamente e usa ciò che è realmente visibile come contesto.
+Tieni conto che stai guidando specificamente su questa versione: usa nomi di menu, pannelli, effetti, scorciatoie e funzioni disponibili in QUESTA versione. Se una funzione comune nelle versioni più recenti non esiste ancora in ${version}, proponi l'alternativa più affidabile disponibile in quella versione invece di darla per scontata.
+
+REGOLE DI RISPOSTA (da seguire sempre):
+1. Analizza la richiesta e tutti gli screenshot allegati, tenendo conto di TUTTO lo stato del progetto emerso finora: sequenze, tracce video/audio, clip, tagli, transizioni, effetti, maschere, keyframe, livelli di regolazione, grafica, titoli, sottotitoli, proxy, multicamera, mix audio, correzione colore ed esportazioni già create.
+2. Rispondi SEMPRE con una guida numerata. Ogni passo inizia con la dicitura esatta "Passo N:" seguita da un titolo brevissimo (max 6 parole), poi vai a capo e scrivi i dettagli operativi nelle righe successive. Ogni passo deve contenere, quando pertinente:
+   - Il nome esatto del menu/comando/pannello/effetto da usare (es: "Finestra > Lumetri Color", "Effetti > Effetti video > Distorsione > Stabilizzatore alterazione").
+   - La scorciatoia da tastiera quando esiste, indicando Windows e macOS se differiscono.
+   - Dove cliccare nell'interfaccia e su quale clip/traccia/sequenza lavorare.
+   - Valori numerici iniziali consigliati per parametri, percentuali, dB, fotogrammi, durata transizioni, scala, posizione, opacità, feather, intensità, bitrate, ecc.; specifica quando sono valori di partenza da rifinire a occhio/orecchio.
+   - Se crei o rinomini una sequenza, traccia, clip nidificata, livello di regolazione, preset, grafica o altro elemento, indica il nome esatto consigliato così potrai ricordarlo nei passaggi successivi.
+   - Se servono keyframe, indica proprietà, punto iniziale/finale, interpolazione e criterio temporale (timecode o distanza in fotogrammi) quando utile.
+3. Alla fine della risposta aggiungi sempre una sezione:
+   "### Stato attuale del progetto"
+   con un elenco puntato di sequenze, tracce, clip principali, effetti, maschere, keyframe, livelli di regolazione, elementi grafici/audio e impostazioni importanti create o modificate fino a questo punto.
+4. Se la richiesta è ambigua, fai la migliore assunzione ragionevole e procedi comunque con una guida completa, segnalando l'assunzione in una riga.
+5. Non uscire mai dal contesto di Adobe Premiere Pro. Puoi citare Media Encoder solo quando è direttamente parte del flusso di esportazione da Premiere e compatibile con la versione selezionata; non deviare verso altri editor.
+6. Sii tecnico, diretto e operativo. Evita frasi di cortesia superflue.
+7. Se l'utente allega un nuovo screenshot del proprio lavoro in Premiere Pro, confrontalo con lo stato atteso in base ai passaggi dati finora: verifica pannelli, Timeline, tracce, clip, effetti, parametri e risultato visivo; segnala discrepanze o errori visibili e correggi la guida prima di proseguire.
+${offlineRule}
+9. Se il messaggio contiene un'istruzione tra parentesi quadre che indica una modalità diversa per quel turno (es. "MODALITÀ DOMANDA"), segui quell'istruzione al posto della regola 2 solo per quella risposta specifica.
+10. Prima di scrivere la risposta, verifica mentalmente che i passaggi siano realistici per ${version}. Quando esistono più metodi validi, scegli quello più affidabile, reversibile e diretto per questa versione e mantieni lo stesso approccio nelle richieste successive, salvo che un nuovo screenshot dimostri che serve correggerlo.
+11. Non inventare pulsanti, pannelli, effetti, scorciatoie o funzioni. Se non sei certo che una funzione esista nella versione selezionata, usa un metodo classico sicuramente compatibile o dichiara chiaramente il limite.
+12. Per problemi di montaggio usa terminologia Premiere precisa: testina di riproduzione, punto di attacco/stacco, In/Out, ripple edit, rolling edit, slip, slide, nesting, rendering anteprima, conforming, proxy, tracce target/source patching quando pertinenti.
+`.trim();
+}
+
+// Cronologia dei "contents" da inviare all'API (formato Gemini)
+let chatHistory = [];
+let imageAttached = false;
+
+const GeminiChat = {
+  reset() {
+    chatHistory = [];
+    imageAttached = false;
+  },
+
+  hasImage() {
+    return imageAttached;
+  },
+
+  /** Aggiorna versione Premiere Pro e stato online/offline usati nelle richieste successive. */
+  setPsSettings({ version, online }) {
+    if (version) psSettings.version = version;
+    if (typeof online === "boolean") psSettings.online = online;
+  },
+
+  getPsSettings() {
+    return { ...psSettings };
+  },
+
+  /**
+   * Invia un messaggio. Se viene fornita un'immagine (base64 + mimeType) in QUALSIASI turno,
+   * viene allegata a quel turno specifico (es. uno screenshot del lavoro in corso), senza
+   * cancellare la cronologia precedente: Gemini vedrà sia la screenshot iniziale che questo nuovo screenshot.
+   */
+  async sendMessage({ apiKey, text, imageBase64, imageMimeType }) {
+    if (!apiKey) throw new Error("API key mancante");
+
+    const parts = [];
+
+    if (imageBase64) {
+      parts.push({
+        inline_data: {
+          mime_type: imageMimeType || "image/jpeg",
+          data: imageBase64,
+        },
+      });
+      imageAttached = true;
+    }
+
+    parts.push({ text });
+
+    chatHistory.push({ role: "user", parts });
+
+    const body = {
+      system_instruction: {
+        parts: [{ text: buildSystemInstruction() }],
+      },
+      contents: chatHistory,
+      generationConfig: {
+        maxOutputTokens: 8192,
+      },
+    };
+
+    let lastErrorText = "";
+    let usedModel = null;
+    let data = null;
+
+    for (const model of GEMINI_MODELS) {
+      try {
+        const res = await fetch(GEMINI_ENDPOINT(model, apiKey), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+          lastErrorText = `${model} → Errore API (${res.status}): ${await res.text()}`;
+          continue; // prova il modello successivo
+        }
+
+        data = await res.json();
+        usedModel = model;
+        break; // successo, esci dal ciclo
+      } catch (networkErr) {
+        lastErrorText = `${model} → Errore di rete: ${networkErr.message}`;
+        continue;
+      }
+    }
+
+    if (!data) {
+      // rimuove l'ultimo turno utente fallito dalla cronologia per non corromperla
+      chatHistory.pop();
+      throw new Error(
+        `Tutti i modelli disponibili hanno fallito. Ultimo errore: ${lastErrorText}`
+      );
+    }
+
+    const candidate = data.candidates?.[0];
+    let modelText =
+      candidate?.content?.parts?.map((p) => p.text).filter(Boolean).join("\n") ||
+      "[Nessuna risposta testuale ricevuta]";
+
+    const truncated = candidate?.finishReason === "MAX_TOKENS";
+    if (truncated) {
+      modelText += "\n\n⚠️ RISPOSTA TRONCATA: il limite di lunghezza è stato raggiunto. Scrivi \"continua\" per ricevere il resto della guida.";
+    }
+
+    chatHistory.push({ role: "model", parts: [{ text: modelText }] });
+
+    return { text: modelText, truncated, usedModel };
+  },
+};
+
+</script>
+
+<script>
+// guide-parser.js — divide la risposta di Gemini in: intro, passi numerati, sezione finale
+//
+// Nota robustezza: NON richiediamo che il titolo del passo finisca a fine riga (Gemini a volte
+// scrive tutto il passo in un unico paragrafo, con **grassetto** dentro alla stessa riga: un
+// vincolo troppo rigido faceva fallire il riconoscimento e l'intera risposta finiva come testo
+// piatto). Riconosciamo solo l'inizio "Passo N" ovunque si trovi; tutto il resto del passo
+// (compreso l'eventuale titolo) diventa il corpo, mostrato per intero sotto il numero.
+
+const GuideParser = {
+  parse(text) {
+    const stepHeaderRe = /(^|\n)\s*\*{0,2}Passo\s+(\d+)\s*[:.]?\*{0,2}\s*/gi;
+    const matches = [];
+    let m;
+    while ((m = stepHeaderRe.exec(text)) !== null) {
+      matches.push({
+        index: m.index + m[1].length, // salta il newline iniziale catturato
+        number: m[2],
+        headerLength: m[0].length - m[1].length,
+      });
+    }
+
+    if (matches.length === 0) {
+      return { intro: text.trim(), steps: [], outro: "" };
+    }
+
+    const intro = text.slice(0, matches[0].index).trim();
+
+    // individua dove inizia la sezione finale, se presente
+    const outroRe = /\n\s*#{1,4}\s*Stato attuale del progetto/i;
+    const outroMatch = outroRe.exec(text);
+    const outroStart = outroMatch ? outroMatch.index : text.length;
+
+    const steps = matches.map((match, i) => {
+      const contentStart = match.index + match.headerLength;
+      const contentEnd =
+        i + 1 < matches.length ? matches[i + 1].index : outroStart;
+      return {
+        number: match.number,
+        title: `Passo ${match.number}`,
+        content: text.slice(contentStart, contentEnd).trim(),
+      };
+    });
+
+    const outro = outroMatch ? text.slice(outroMatch.index).trim() : "";
+
+    return { intro, steps, outro };
+  },
+};
+
+</script>
+
+<script>
+// ui.js — rendering DOM: upload (con blocco+lightbox), rail screenshot+contenuto, guide con barra in basso
+
+const UI = {
+  els: {},
+
+  cacheEls() {
+    this.els = {
+      apiStatus: document.getElementById("api-status"),
+      btnOpenApikey: document.getElementById("btn-open-apikey"),
+      btnReset: document.getElementById("btn-reset"),
+      apikeyDialog: document.getElementById("apikey-dialog"),
+      apikeyInput: document.getElementById("apikey-input"),
+      btnApikeySave: document.getElementById("btn-apikey-save"),
+      btnApikeyCancel: document.getElementById("btn-apikey-cancel"),
+
+      dropzone: document.getElementById("dropzone"),
+      fileInput: document.getElementById("file-input"),
+      previewImg: document.getElementById("preview-img"),
+      uploadStatus: document.getElementById("upload-status"),
+      lockBadge: document.getElementById("lock-badge"),
+      uploadLockedHint: document.getElementById("upload-locked-hint"),
+      lightbox: document.getElementById("image-lightbox"),
+      lightboxImg: document.getElementById("lightbox-img"),
+      lightboxClose: document.getElementById("lightbox-close"),
+
+      btnAttachScreenshot: document.getElementById("btn-attach-screenshot"),
+      screenshotInput: document.getElementById("screenshot-input"),
+      extraGallery: document.getElementById("extra-gallery"),
+
+      userRequest: document.getElementById("user-request"),
+      btnSend: document.getElementById("btn-send"),
+      sendStatus: document.getElementById("send-status"),
+
+      guidesEmpty: document.getElementById("guides-empty"),
+      guidesList: document.getElementById("guides-list"),
+
+      psVersionSelect: document.getElementById("ps-version-select"),
+      psOnlineCheckbox: document.getElementById("ps-online-checkbox"),
+    };
+  },
+
+  // ---------- Versione Premiere Pro / online-offline ----------
+
+  populatePsVersions(versions, selectedVersion) {
+    this.els.psVersionSelect.innerHTML = versions
+      .map((v) => `<option value="${escapeHtml(v)}" ${v === selectedVersion ? "selected" : ""}>${escapeHtml(v)}</option>`)
+      .join("");
+  },
+
+  setPsOnline(online) {
+    this.els.psOnlineCheckbox.checked = !!online;
+  },
+
+  // ---------- API status / dialog ----------
+
+  setApiStatus(hasKey) {
+    this.els.apiStatus.textContent = hasKey ? "API key impostata" : "API key non impostata";
+    this.els.apiStatus.className = "status" + (hasKey ? " ok" : "");
+  },
+
+  openApikeyDialog(currentKey) {
+    this.els.apikeyInput.value = currentKey || "";
+    this.els.apikeyDialog.showModal();
+  },
+
+  closeApikeyDialog() {
+    this.els.apikeyDialog.close();
+  },
+
+  // ---------- Upload panel (screenshot base, con blocco + lightbox) ----------
+
+  showPreview(dataUrl) {
+    this.els.previewImg.src = dataUrl;
+    this.els.previewImg.style.display = "block";
+  },
+
+  clearPreview() {
+    this.els.previewImg.src = "";
+    this.els.previewImg.style.display = "none";
+  },
+
+  setUploadStatus(msg, isError = false) {
+    this.els.uploadStatus.textContent = msg;
+    this.els.uploadStatus.className = "status" + (isError ? " error" : "");
+  },
+
+  setUploadLocked(locked) {
+    this.els.lockBadge.hidden = !locked;
+    this.els.uploadLockedHint.hidden = !locked;
+    this.els.dropzone.hidden = locked;
+  },
+
+  openLightbox(src) {
+    this.els.lightboxImg.src = src;
+    this.els.lightbox.showModal();
+  },
+
+  closeLightbox() {
+    this.els.lightbox.close();
+  },
+
+  // ---------- Richiesta ----------
+
+  setSendStatus(msg, isError = false) {
+    this.els.sendStatus.innerHTML = msg;
+    this.els.sendStatus.className = "status" + (isError ? " error" : "");
+  },
+
+  setSending(isSending) {
+    this.els.btnSend.disabled = isSending;
+    if (isSending) {
+      this.setSendStatus('<span class="spinner"></span> Gemini sta analizzando...');
+    }
+  },
+
+  // ---------- Screenshot aggiuntivi: rail a sinistra + contenuto dello screenshot selezionato ----------
+
+  renderExtraGallery(images, activeId) {
+    const railHtml = images
+      .map(
+        (img) => `
+        <button class="photo-pill ${img.id === activeId ? "active" : ""}" data-photo-select="${img.id}">
+          <img src="${img.dataUrl}" alt="" />
+          <span>${escapeHtml(img.caption)}</span>
+        </button>`
+      )
+      .join("");
+
+    const active = images.find((i) => i.id === activeId);
+    const contentHtml = active ? this._renderPhotoContent(active) : `<p class="hint photo-content-empty">Seleziona uno screenshot qui a fianco, oppure allegane una nuova.</p>`;
+
+    this.els.extraGallery.innerHTML = `
+      <div class="photo-rail">${railHtml}</div>
+      <div class="photo-content">${contentHtml}</div>`;
+  },
+
+  _renderPhotoContent(img) {
+    const qaHtml = img.qas
+      .map(
+        (qa) => `
+        <div class="extra-qa">
+          <div class="q">Tu: ${escapeHtml(qa.question)}</div>
+          <div class="a">${formatInline(qa.answer)}</div>
+        </div>`
+      )
+      .join("");
+
+    return `
+      <img class="photo-content-img" src="${img.dataUrl}" alt="${escapeHtml(img.caption)}" />
+      <div class="extra-qa-list">${qaHtml}</div>
+      <div class="extra-ask-row">
+        <textarea placeholder="Fai una domanda su questo screenshot, anche in un secondo momento..." data-cmd data-extra-textarea="${img.id}"></textarea>
+        <button class="extra-ask-send" data-extra-ask-send="${img.id}">Chiedi</button>
+      </div>`;
+  },
+
+  // ---------- Guide: contenuto della scheda attiva + barra in basso ----------
+
+  renderGuidesList(tabs, activeId) {
+    this.els.guidesEmpty.hidden = tabs.length > 0;
+
+    if (tabs.length === 0) {
+      this.els.guidesList.innerHTML = "";
+      return;
+    }
+
+    const active = tabs.find((t) => t.id === activeId);
+    const contentHtml = active
+      ? this._renderTabBody(active)
+      : `<p class="hint guide-content-empty">Seleziona una scheda qui sotto per vederne il contenuto.</p>`;
+
+    const stripHtml = tabs
+      .map((tab) => {
+        const kind = tab.type === "domanda" ? "Domanda" : "Guida";
+        return `
+        <button class="guide-tab-pill ${tab.id === activeId ? "active" : ""}" data-tab-toggle="${tab.id}">
+          <span class="kind">${kind}</span>
+          <span class="label">${escapeHtml(truncate(tab.requestText, 40))}</span>
+        </button>`;
+      })
+      .join("");
+
+    this.els.guidesList.innerHTML = `
+      <div class="guide-content">${contentHtml}</div>
+      <div class="guide-tabstrip">${stripHtml}</div>`;
+  },
+
+  _renderTabBody(tab) {
+    const introHtml = tab.intro ? `<div class="tab-intro">${formatInline(tab.intro)}</div>` : "";
+    const outroHtml = tab.outro ? `<div class="tab-outro">${formatInline(tab.outro)}</div>` : "";
+
+    let domandaBlock = "";
+    if (tab.type === "domanda") {
+      const dd = tab.domandaDeepdive || { open: false, entries: [] };
+      const entriesHtml = dd.entries
+        .map(
+          (e) => `
+          <div class="deepdive-entry">
+            <div class="q">Tu: ${escapeHtml(e.question)}</div>
+            <div class="a">${formatInline(e.answer)}</div>
+          </div>`
+        )
+        .join("");
+      const ddBody = dd.open
+        ? `
+        <div class="deepdive">
+          ${entriesHtml}
+          <div class="deepdive-input-row">
+            <textarea placeholder="Fai un'altra domanda..." data-cmd data-domanda-textarea="${tab.id}"></textarea>
+          </div>
+          <button class="deepdive-send" data-domanda-send="${tab.id}">Chiedi approfondimento</button>
+        </div>`
+        : "";
+      domandaBlock = `
+        <div class="step-title-row" style="margin-top:10px;">
+          <button class="step-toggle ${dd.open ? "open" : ""}" data-domanda-toggle="${tab.id}" title="${dd.open ? "Richiudi approfondimento" : "Approfondisci"}">${dd.open ? "▾" : "▸"}</button>
+          <span class="step-title">Approfondisci</span>
+        </div>
+        ${ddBody}`;
+    }
+
+    const stepsHtml = tab.steps
+      .map((step, i) => {
+        const deepdiveEntries = step.deepdives
+          .map(
+            (dd) => `
+            <div class="deepdive-entry">
+              <div class="q">Tu: ${escapeHtml(dd.question)}</div>
+              <div class="a">${formatInline(dd.answer)}</div>
+            </div>`
+          )
+          .join("");
+
+        const deepdiveBlock = step.open
+          ? `
+          <div class="deepdive">
+            ${deepdiveEntries}
+            <div class="deepdive-input-row">
+              <textarea placeholder="Spiega qui il problema o fai una domanda su questo passo..." data-cmd data-deepdive-textarea="${tab.id}:${i}"></textarea>
+            </div>
+            <button class="deepdive-send" data-deepdive-send="${tab.id}:${i}">Chiedi approfondimento</button>
+          </div>`
+          : "";
+
+        return `
+        <div class="step">
+          <div class="step-num">${step.number}</div>
+          <div class="step-main">
+            <div class="step-title-row">
+              <button class="step-toggle ${step.open ? "open" : ""}" data-step-toggle="${tab.id}:${i}" title="${step.open ? "Richiudi approfondimento" : "Approfondisci questo passo"}">${step.open ? "▾" : "▸"}</button>
+              <span class="step-title">${escapeHtml(step.title)}</span>
+            </div>
+            <div class="step-body">${formatInline(step.content)}</div>
+            ${deepdiveBlock}
+          </div>
+        </div>`;
+      })
+      .join("");
+
+    const stepsWrap = tab.steps.length ? `<div class="steps">${stepsHtml}</div>` : "";
+    return `${introHtml}${domandaBlock}${stepsWrap}${outroHtml}`;
+  },
+};
+
+// ---------- helper di formattazione (condivisi) ----------
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function truncate(s, n) {
+  if (!s) return "";
+  return s.length > n ? s.slice(0, n).trim() + "…" : s;
+}
+
+// Formattazione leggera: **bold**, ### titoli, a capo — usata dentro intro/step/outro
+function formatInline(text) {
+  let html = escapeHtml(text || "");
+  html = html.replace(/^#{1,4}\s*(.*)$/gm, "<strong>$1</strong>");
+  html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/\n/g, "<br>");
+  return html;
+}
+
+</script>
+
+<script>
+// app.js — punto di ingresso: carica i componenti (fetch), gestisce stato progetto e binding eventi
+
+let project = {
+  baseImage: null,        // { base64, mimeType, dataUrl, name }
+  locked: false,          // true dopo il primo caricamento screenshot base
+  extraImages: [],         // [{ id, dataUrl, base64, mimeType, caption, imageSent, qas:[{question,answer}] }]
+  activePhotoId: null,     // quale screenshot è selezionato nella colonna a sinistra (una alla volta)
+  tabs: [],                // [{ id, requestText, type:'guida'|'domanda', intro, steps:[...], outro }]
+  activeGuideId: null,     // quale scheda guida è selezionata nella barra in basso (una alla volta)
+};
+
+async function loadComponent(targetSelector, path) {
+  const res = await fetch(path);
+  if (!res.ok) throw new Error(`Impossibile caricare componente: ${path}`);
+  const html = await res.text();
+  document.querySelector(targetSelector).innerHTML = html;
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      const base64 = result.split(",")[1];
+      resolve({ base64, dataUrl: result });
+    };
+    reader.onerror = () => reject(new Error("Lettura file fallita"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function persist() {
+  Storage.saveProjectState(project);
+}
+
+function newId() {
+  return `id${Date.now()}${Math.floor(Math.random() * 1000)}`;
+}
+
+/**
+ * Riconosce il prefisso "#domanda" (un solo cancelletto, senza chiusura) a inizio testo.
+ * Ritorna { mode: 'guida'|'domanda', cleanText }.
+ */
+function parseRequestMode(rawText) {
+  const m = rawText.match(/^\s*#\s*domanda\s*/i);
+  if (m) {
+    return { mode: "domanda", cleanText: rawText.slice(m[0].length).trim() };
+  }
+  return { mode: "guida", cleanText: rawText.trim() };
+}
+
+function buildMessageText(mode, cleanText) {
+  if (mode === "domanda") {
+    return (
+      `[MODALITÀ DOMANDA: per questa risposta NON usare una guida numerata a passi. ` +
+      `Rispondi con una spiegazione discorsiva breve e diretta, senza intestazioni "Passo N" e senza la sezione "Stato attuale del progetto".]\n\n` +
+      cleanText
+    );
+  }
+  return cleanText;
+}
+
+// ---------- Screenshot base (bloccata dopo il primo caricamento) ----------
+
+function handleBaseFile(file) {
+  if (project.locked) {
+    UI.setUploadStatus("Lo screenshot di partenza è bloccato. Usa la sezione \"Screenshot aggiuntivi\" per continuare.", true);
+    return;
+  }
+  if (!file || !file.type.startsWith("image/")) {
+    UI.setUploadStatus("Seleziona uno screenshot o un file immagine valido.", true);
+    return;
+  }
+  fileToBase64(file).then(({ base64, dataUrl }) => {
+    project.baseImage = { base64, mimeType: file.type, dataUrl, name: file.name };
+    project.locked = true;
+    UI.showPreview(dataUrl);
+    UI.setUploadStatus(`Screenshot caricato: ${file.name}`);
+    UI.setUploadLocked(true);
+    persist();
+  }).catch((err) => UI.setUploadStatus(err.message, true));
+}
+
+// ---------- Screenshot aggiuntivi: rail a sinistra, uno screenshot selezionato alla volta ----------
+
+function findPhoto(cardId) {
+  return project.extraImages.find((c) => c.id === cardId) || null;
+}
+
+function renderPhotos() {
+  UI.renderExtraGallery(project.extraImages, project.activePhotoId);
+}
+
+function selectPhoto(cardId) {
+  project.activePhotoId = project.activePhotoId === cardId ? null : cardId; // click sulla già attiva la richiude
+  renderPhotos();
+  persist();
+}
+
+function handleAttachScreenshot(file) {
+  if (!file || !file.type.startsWith("image/")) return;
+  fileToBase64(file).then(({ base64, dataUrl }) => {
+    const card = {
+      id: newId(),
+      base64,
+      mimeType: file.type,
+      dataUrl,
+      caption: `Screenshot #${project.extraImages.length + 1}`,
+      imageSent: false,
+      qas: [],
+    };
+    project.extraImages.push(card);
+    project.activePhotoId = card.id; // la appena allegata si apre subito
+    renderPhotos();
+    persist();
+  });
+}
+
+async function askExtraImage(cardId, questionRaw) {
+  const card = findPhoto(cardId);
+  if (!card || !questionRaw.trim()) return;
+
+  const apiKey = Storage.getApiKey();
+  if (!apiKey) {
+    UI.openApikeyDialog("");
+    return;
+  }
+
+  const { mode, cleanText } = parseRequestMode(questionRaw);
+
+  const baseContext = card.imageSent
+    ? `Riguardo allo "${card.caption}" mostrata in precedenza in questa conversazione, ho una nuova domanda: ${cleanText}\n` +
+      `Rispondi tenendo conto di tutti i passaggi ed eventuali altri screenshot visti finora.`
+    : cleanText;
+
+  const finalText = buildMessageText(mode, baseContext);
+
+  try {
+    const { text: raw } = await GeminiChat.sendMessage({
+      apiKey,
+      text: finalText,
+      imageBase64: card.imageSent ? null : card.base64,
+      imageMimeType: card.imageSent ? null : card.mimeType,
+    });
+    card.imageSent = true;
+
+    if (mode === "domanda") {
+      card.qas.push({ question: cleanText, answer: raw });
+    } else {
+      // richiesta di guida: crea una nuova scheda in "Guide generate", ripartendo da questa screenshot aggiornato
+      const parsed = GuideParser.parse(raw);
+      const tab = {
+        id: newId(),
+        requestText: cleanText,
+        type: "guida",
+        intro: parsed.intro,
+        steps: parsed.steps.map((s) => ({ ...s, deepdives: [], open: false })),
+        outro: parsed.outro,
+      };
+      project.tabs.push(tab);
+      project.activeGuideId = tab.id;
+      renderGuides();
+      card.qas.push({
+        question: cleanText,
+        answer: `✅ Guida creata a partire da questo screenshot — vedi la nuova scheda qui sotto in "Guide generate".`,
+      });
+    }
+
+    renderPhotos();
+    persist();
+  } catch (err) {
+    card.qas.push({ question: cleanText, answer: `⚠️ ${err.message}` });
+    renderPhotos();
+  }
+}
+
+// ---------- Invio richiesta principale → crea una nuova scheda (guida o domanda) ----------
+
+async function handleSend() {
+  const apiKey = Storage.getApiKey();
+  if (!apiKey) {
+    UI.setSendStatus("Imposta prima la tua API key (pulsante in alto).", true);
+    UI.openApikeyDialog("");
+    return;
+  }
+  if (!project.baseImage) {
+    UI.setSendStatus("Carica prima uno screenshot di Premiere Pro nella sezione iniziale.", true);
+    return;
+  }
+  const rawText = UI.els.userRequest.value.trim();
+  if (!rawText) {
+    UI.setSendStatus("Scrivi cosa vuoi fare o modificare.", true);
+    return;
+  }
+
+  UI.setSending(true);
+
+  const { mode, cleanText } = parseRequestMode(rawText);
+  const finalText = buildMessageText(mode, cleanText);
+
+  const imageToSend = !GeminiChat.hasImage() ? project.baseImage : { base64: null, mimeType: null };
+
+  try {
+    const { text: responseText, truncated, usedModel } = await GeminiChat.sendMessage({
+      apiKey,
+      text: finalText,
+      imageBase64: imageToSend.base64,
+      imageMimeType: imageToSend.mimeType,
+    });
+
+    let tab;
+    if (mode === "domanda") {
+      tab = {
+        id: newId(),
+        requestText: cleanText,
+        type: "domanda",
+        intro: responseText.trim(),
+        steps: [],
+        outro: "",
+        domandaDeepdive: { open: false, entries: [] },
+      };
+    } else {
+      const parsed = GuideParser.parse(responseText);
+      tab = {
+        id: newId(),
+        requestText: cleanText,
+        type: "guida",
+        intro: parsed.intro,
+        steps: parsed.steps.map((s) => ({ ...s, deepdives: [], open: false })),
+        outro: parsed.outro,
+      };
+    }
+
+    project.tabs.push(tab);
+    project.activeGuideId = tab.id; // la nuova scheda si apre, le altre restano disponibili nella barra
+
+    renderGuides();
+    persist();
+
+    let statusMsg = "";
+    let isWarning = truncated;
+    if (truncated) {
+      statusMsg = "Guida troncata: scrivi \"continua\" nella prossima richiesta per il resto.";
+    } else if (usedModel && usedModel !== "gemini-3.5-flash-lite") {
+      statusMsg = `Modello principale non disponibile, risposta generata con ${usedModel}.`;
+      isWarning = true;
+    }
+    UI.setSendStatus(statusMsg, isWarning);
+    UI.els.userRequest.value = "";
+  } catch (err) {
+    UI.setSendStatus(err.message, true);
+  } finally {
+    UI.setSending(false);
+  }
+}
+
+// ---------- Guide: selezione (una alla volta), passi, approfondimenti ----------
+
+function findTab(tabId) {
+  return project.tabs.find((t) => t.id === tabId) || null;
+}
+
+function renderGuides() {
+  UI.renderGuidesList(project.tabs, project.activeGuideId);
+}
+
+function selectGuide(tabId) {
+  project.activeGuideId = project.activeGuideId === tabId ? null : tabId; // click sulla già attiva la richiude
+  renderGuides();
+  persist();
+}
+
+function toggleStep(tabId, stepIndex) {
+  const tab = findTab(tabId);
+  if (!tab) return;
+  tab.steps[stepIndex].open = !tab.steps[stepIndex].open;
+  renderGuides();
+  persist();
+}
+
+const GUIDE_UPDATE_MARKER = /###\s*AGGIORNAMENTO GUIDA/i;
+
+async function sendDeepdive(tabId, stepIndex, questionRaw) {
+  const tab = findTab(tabId);
+  if (!tab) return;
+  const step = tab.steps[stepIndex];
+  if (!questionRaw.trim()) return;
+
+  const apiKey = Storage.getApiKey();
+  if (!apiKey) {
+    UI.openApikeyDialog("");
+    return;
+  }
+
+  const { mode, cleanText } = parseRequestMode(questionRaw);
+  const contextual =
+    `Riguardo al "Passo ${step.number}" della guida che mi hai appena dato, ho un problema o una domanda: ${cleanText}\n\n` +
+    `Istruzioni per la tua risposta:\n` +
+    `1. Scrivi prima una risposta diretta e breve (poche frasi) alla domanda.\n` +
+    `2. Se e SOLO SE la domanda comporta un cambiamento che si ripercuote sui passi successivi della guida, ` +
+    `aggiungi dopo la risposta la riga esatta "### AGGIORNAMENTO GUIDA" e poi riscrivi TUTTI i passi da questo punto in poi ` +
+    `(a partire da "Passo ${step.number}:"), con la numerazione corretta, fino all'ultimo passo della guida, ` +
+    `includendo se serve una sezione finale "### Stato attuale del progetto" aggiornata.\n` +
+    `3. Se la domanda NON richiede modifiche ai passi successivi (es. è solo un chiarimento), NON scrivere questa sezione: la guida resta invariata.`;
+  const finalText = buildMessageText(mode, contextual);
+
+  try {
+    const { text: raw } = await GeminiChat.sendMessage({ apiKey, text: finalText });
+    const markerMatch = GUIDE_UPDATE_MARKER.exec(raw);
+
+    if (markerMatch) {
+      // la domanda implica un cambiamento: sostituiamo la guida SOLO da questo passo in poi
+      const answerPart = raw.slice(0, markerMatch.index).trim();
+      const updatePart = raw.slice(markerMatch.index + markerMatch[0].length).trim();
+      const parsedUpdate = GuideParser.parse(updatePart);
+      const newSteps = parsedUpdate.steps.map((s) => ({ ...s, deepdives: [], open: false }));
+
+      if (newSteps.length > 0) {
+        newSteps[0].deepdives = [{ question: cleanText, answer: answerPart || "Guida aggiornata da questo passo in poi." }];
+        newSteps[0].open = true;
+        tab.steps = [...tab.steps.slice(0, stepIndex), ...newSteps];
+        if (parsedUpdate.outro) tab.outro = parsedUpdate.outro;
+      } else {
+        // fallback: nessun passo riconosciuto nell'aggiornamento, aggiorniamo solo il testo di questo passo
+        tab.steps[stepIndex].content = updatePart || tab.steps[stepIndex].content;
+        step.deepdives.push({ question: cleanText, answer: answerPart });
+        step.open = true;
+      }
+    } else {
+      // solo un chiarimento: la guida resta invariata, la risposta va nell'approfondimento
+      step.deepdives.push({ question: cleanText, answer: raw });
+      step.open = true;
+    }
+    renderGuides();
+    persist();
+  } catch (err) {
+    step.deepdives.push({ question: cleanText, answer: `⚠️ ${err.message}` });
+    renderGuides();
+  }
+}
+
+// ---------- Approfondimento sotto una "Domanda" (nessun passo, solo Q&A semplice) ----------
+
+function toggleDomandaDeepdive(tabId) {
+  const tab = findTab(tabId);
+  if (!tab) return;
+  tab.domandaDeepdive = tab.domandaDeepdive || { open: false, entries: [] };
+  tab.domandaDeepdive.open = !tab.domandaDeepdive.open;
+  renderGuides();
+  persist();
+}
+
+async function sendDomandaDeepdive(tabId, questionRaw) {
+  const tab = findTab(tabId);
+  if (!tab || !questionRaw.trim()) return;
+  tab.domandaDeepdive = tab.domandaDeepdive || { open: false, entries: [] };
+
+  const apiKey = Storage.getApiKey();
+  if (!apiKey) {
+    UI.openApikeyDialog("");
+    return;
+  }
+
+  const { mode, cleanText } = parseRequestMode(questionRaw);
+  const contextual =
+    `Riguardo alla risposta che mi hai appena dato, ho un'altra domanda: ${cleanText}\n` +
+    `Rispondi in modo diretto e specifico su questo punto.`;
+  const finalText = buildMessageText(mode, contextual);
+
+  try {
+    const { text: raw } = await GeminiChat.sendMessage({ apiKey, text: finalText });
+
+    if (mode === "domanda") {
+      tab.domandaDeepdive.entries.push({ question: cleanText, answer: raw });
+    } else {
+      // richiesta di guida: crea SEMPRE una nuova scheda in "Guide generate", mai inline qui
+      const parsed = GuideParser.parse(raw);
+      const newTab = {
+        id: newId(),
+        requestText: cleanText,
+        type: "guida",
+        intro: parsed.intro,
+        steps: parsed.steps.map((s) => ({ ...s, deepdives: [], open: false })),
+        outro: parsed.outro,
+      };
+      project.tabs.push(newTab);
+      project.activeGuideId = newTab.id;
+      tab.domandaDeepdive.entries.push({
+        question: cleanText,
+        answer: `✅ Guida creata a partire da questa risposta — vedi la nuova scheda qui sotto in "Guide generate".`,
+      });
+    }
+
+    tab.domandaDeepdive.open = true;
+    renderGuides();
+    persist();
+  } catch (err) {
+    tab.domandaDeepdive.entries.push({ question: cleanText, answer: `⚠️ ${err.message}` });
+    renderGuides();
+  }
+}
+
+// ---------- Eventi ----------
+
+function bindEvents() {
+  const { els } = UI;
+
+  els.btnOpenApikey.addEventListener("click", () => UI.openApikeyDialog(Storage.getApiKey()));
+  els.btnApikeyCancel.addEventListener("click", () => UI.closeApikeyDialog());
+  els.btnApikeySave.addEventListener("click", () => {
+    const key = els.apikeyInput.value.trim();
+    if (!key) return;
+    Storage.setApiKey(key);
+    UI.setApiStatus(true);
+    UI.closeApikeyDialog();
+  });
+
+  // versione Premiere Pro / online-offline
+  els.psVersionSelect.addEventListener("change", () => {
+    GeminiChat.setPsSettings({ version: els.psVersionSelect.value });
+    Storage.setPsSettings(GeminiChat.getPsSettings());
+  });
+  els.psOnlineCheckbox.addEventListener("change", () => {
+    GeminiChat.setPsSettings({ online: els.psOnlineCheckbox.checked });
+    Storage.setPsSettings(GeminiChat.getPsSettings());
+  });
+
+  // screenshot base
+  els.dropzone.addEventListener("click", () => {
+    if (!project.locked) els.fileInput.click();
+  });
+  els.fileInput.addEventListener("change", (e) => handleBaseFile(e.target.files[0]));
+  ["dragenter", "dragover"].forEach((evt) =>
+    els.dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      if (!project.locked) els.dropzone.classList.add("dragover");
+    })
+  );
+  ["dragleave", "drop"].forEach((evt) =>
+    els.dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      els.dropzone.classList.remove("dragover");
+    })
+  );
+  els.dropzone.addEventListener("drop", (e) => handleBaseFile(e.dataTransfer.files[0]));
+
+  // lightbox: ingrandisce l'screenshot di partenza al click
+  els.previewImg.addEventListener("click", () => {
+    if (project.baseImage) UI.openLightbox(project.baseImage.dataUrl);
+  });
+  els.lightboxClose.addEventListener("click", () => UI.closeLightbox());
+  els.lightbox.addEventListener("click", (e) => {
+    if (e.target === els.lightbox) UI.closeLightbox(); // click sul backdrop
+  });
+
+  // screenshot aggiuntivo → crea subito una card con la sua Q&A
+  els.btnAttachScreenshot.addEventListener("click", () => els.screenshotInput.click());
+  els.screenshotInput.addEventListener("change", (e) => {
+    handleAttachScreenshot(e.target.files[0]);
+    e.target.value = ""; // permette di riselezionare lo stesso file in seguito
+  });
+
+  // rail screenshot: selezione + invio domanda (event delegation)
+  els.extraGallery.addEventListener("click", (e) => {
+    const railBtn = e.target.closest("[data-photo-select]");
+    if (railBtn) {
+      selectPhoto(railBtn.dataset.photoSelect);
+      return;
+    }
+    const sendBtn = e.target.closest("[data-extra-ask-send]");
+    if (sendBtn) {
+      const cardId = sendBtn.dataset.extraAskSend;
+      const textarea = els.extraGallery.querySelector(`[data-extra-textarea="${cardId}"]`);
+      const question = textarea ? textarea.value : "";
+      sendBtn.disabled = true;
+      sendBtn.textContent = "...";
+      askExtraImage(cardId, question);
+    }
+  });
+
+  // invio richiesta principale
+  els.btnSend.addEventListener("click", handleSend);
+
+  // barra guide in basso: selezione, toggle passo, invio approfondimento (event delegation)
+  els.guidesList.addEventListener("click", (e) => {
+    const tabToggle = e.target.closest("[data-tab-toggle]");
+    if (tabToggle) {
+      selectGuide(tabToggle.dataset.tabToggle);
+      return;
+    }
+    const stepToggle = e.target.closest("[data-step-toggle]");
+    if (stepToggle) {
+      const [tabId, idx] = stepToggle.dataset.stepToggle.split(":");
+      toggleStep(tabId, Number(idx));
+      return;
+    }
+    const sendBtn = e.target.closest("[data-deepdive-send]");
+    if (sendBtn) {
+      const [tabId, idx] = sendBtn.dataset.deepdiveSend.split(":");
+      const textarea = els.guidesList.querySelector(`[data-deepdive-textarea="${tabId}:${idx}"]`);
+      const question = textarea ? textarea.value : "";
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Invio...";
+      sendDeepdive(tabId, Number(idx), question);
+      return;
+    }
+    const domandaToggle = e.target.closest("[data-domanda-toggle]");
+    if (domandaToggle) {
+      toggleDomandaDeepdive(domandaToggle.dataset.domandaToggle);
+      return;
+    }
+    const domandaSend = e.target.closest("[data-domanda-send]");
+    if (domandaSend) {
+      const tabId = domandaSend.dataset.domandaSend;
+      const textarea = els.guidesList.querySelector(`[data-domanda-textarea="${tabId}"]`);
+      const question = textarea ? textarea.value : "";
+      domandaSend.disabled = true;
+      domandaSend.textContent = "Invio...";
+      sendDomandaDeepdive(tabId, question);
+    }
+  });
+
+  // ricomincia da zero (unico modo per sostituire l'screenshot base)
+  els.btnReset.addEventListener("click", () => {
+    if (!confirm("Ricominciare da zero cancella screenshot, guide e cronologia. Continuare?")) return;
+    project = { baseImage: null, locked: false, extraImages: [], activePhotoId: null, tabs: [], activeGuideId: null };
+    GeminiChat.reset();
+    UI.clearPreview();
+    UI.setUploadLocked(false);
+    UI.setUploadStatus("");
+    renderPhotos();
+    renderGuides();
+    Storage.clearProjectState();
+  });
+
+  bindGlobalTextareaBehaviors();
+}
+
+/**
+ * Comportamenti condivisi da OGNI riquadro di testo (richiesta principale, domanda su una
+ * screenshot, approfondimento di un passo o di una risposta):
+ * - Invio per inviare (Maiusc+Invio per andare a capo)
+ * - suggerimento "fantasma" del comando "#domanda": mentre digiti dopo un "#", il resto della
+ *   parola viene già scritto e SELEZIONATO nel testo; premendo la freccia destra della
+ *   tastiera il cursore si sposta alla fine confermandolo, continuando a digitare invece lo
+ *   sovrascrivi (proprio come l'autocompletamento della barra indirizzi del browser).
+ */
+function bindGlobalTextareaBehaviors() {
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" || e.shiftKey) return;
+    const ta = e.target;
+    if (!(ta instanceof HTMLTextAreaElement)) return;
+
+    if (ta.id === "user-request") {
+      e.preventDefault();
+      handleSend();
+    } else if (ta.dataset.extraTextarea) {
+      e.preventDefault();
+      UI.els.extraGallery.querySelector(`[data-extra-ask-send="${ta.dataset.extraTextarea}"]`)?.click();
+    } else if (ta.dataset.deepdiveTextarea !== undefined) {
+      e.preventDefault();
+      UI.els.guidesList.querySelector(`[data-deepdive-send="${ta.dataset.deepdiveTextarea}"]`)?.click();
+    } else if (ta.dataset.domandaTextarea) {
+      e.preventDefault();
+      UI.els.guidesList.querySelector(`[data-domanda-send="${ta.dataset.domandaTextarea}"]`)?.click();
+    }
+  });
+
+  document.addEventListener("input", (e) => {
+    const ta = e.target;
+    if (!(ta instanceof HTMLTextAreaElement) || !ta.hasAttribute("data-cmd")) return;
+
+    const cursor = ta.selectionStart;
+    const detected = Commands.detectPartial(ta.value, cursor);
+    const match = detected ? Commands.matchFor(detected.partial) : null;
+    if (!match) return;
+
+    const remaining = match.tag.slice(detected.partial.length) + " ";
+    ta.value = ta.value.slice(0, cursor) + remaining + ta.value.slice(cursor);
+    ta.setSelectionRange(cursor, cursor + remaining.length); // selezionato: freccia destra conferma, digitare sovrascrive
+  });
+}
+
+// ---------- Ripristino stato salvato ----------
+
+function restoreProjectState() {
+  const saved = Storage.loadProjectState();
+  if (!saved) return;
+  project = Object.assign(
+    { baseImage: null, locked: false, extraImages: [], activePhotoId: null, tabs: [], activeGuideId: null },
+    saved
+  );
+
+  if (project.baseImage) {
+    UI.showPreview(project.baseImage.dataUrl);
+    UI.setUploadStatus(`Screenshot caricato: ${project.baseImage.name}`);
+  }
+  UI.setUploadLocked(project.locked);
+  renderPhotos();
+  renderGuides();
+
+  // Nota: la cronologia "di memoria" lato Gemini (GeminiChat) è in RAM e non sopravvive
+  // al reload della pagina; i dati visivi (schede, immagini, Q&A) restano invece salvati qui.
+}
+
+async function init() {
+  UI.cacheEls();
+  bindEvents();
+  UI.setApiStatus(!!Storage.getApiKey());
+
+  const savedPsSettings = Storage.getPsSettings() || GeminiChat.getPsSettings();
+  GeminiChat.setPsSettings(savedPsSettings);
+  UI.populatePsVersions(PS_VERSIONS, GeminiChat.getPsSettings().version);
+  UI.setPsOnline(GeminiChat.getPsSettings().online);
+
+  restoreProjectState();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+</script>
+</body>
+</html>
