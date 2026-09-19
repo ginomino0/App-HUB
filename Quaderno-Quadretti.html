@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quaderno A4 a Quadretti Interattivo</title>
+    <!-- Tailwind CSS per uno stile moderno e reattivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome per le icone degli strumenti -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+
+        /* Simulazione dell'ombra e proporzioni del foglio A4 */
+        .a4-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Nasconde le scrollbar nei contenitori personalizzati */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Cursori personalizzati in base allo strumento */
+        .cursor-pencil { cursor: crosshair; }
+        .cursor-eraser { cursor: cell; }
+        .cursor-line { cursor: crosshair; }
+        .cursor-rect { cursor: crosshair; }
+        .cursor-fill { cursor: copy; }
+
+        /* Effetti hover sui campioni di colore */
+        .color-swatch {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .color-swatch:hover {
+            transform: scale(1.15);
+        }
+        .color-swatch.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 3px #3b82f6;
+        }
+
+        /* Barra colori nominati a sinistra */
+        #named-colors-sidebar {
+            width: 208px;
+            transition: width 0.25s ease, opacity 0.2s ease;
+        }
+        #named-colors-sidebar.closed {
+            width: 0;
+            opacity: 0;
+            border-right-width: 0;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden text-slate-800 bg-slate-200">
+
+    <!-- Header e Toolbar Principale -->
+    <header class="bg-white border-b border-slate-300 shadow-sm z-20 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Titolo e Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-blue-600 text-white rounded-lg shadow">
+                    <i class="fa-solid fa-book-open text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight text-slate-800">Quaderno Interattivo</h1>
+                    <p class="text-xs text-slate-500">Disegno Pixel, Formati & Griglia</p>
+                </div>
+            </div>
+
+            <!-- Selettori Formato Carta e Dimensione Quadretto -->
+            <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                <!-- Formato Foglio -->
+                <div class="flex items-center gap-1.5 text-xs">
+                    <label for="paper-format" class="font-medium text-slate-600 hidden sm:inline">Foglio:</label>
+                    <select id="paper-format" class="bg-white border border-slate-300 text-slate-700 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-xs shadow-sm cursor-pointer">
+                        <option value="A4" selected>A4 (210 × 297 mm)</option>
+                        <option value="A3">A3 (297 × 420 mm)</option>
+                        <option value="A5">A5 (148 × 210 mm)</option>
+                        <option value="LETTER">Letter (216 × 279 mm)</option>
+                        <option value="SQUARE">Quadrato (250 × 250 mm)</option>
+                    </select>
+                </div>
+
+                <div class="h-4 w-px bg-slate-300"></div>
+
+                <!-- Dimensione Quadretti -->
+                <div class="flex items-center gap-1.5 text-xs">
+                    <label for="grid-size-select" class="font-medium text-slate-600 hidden sm:inline">Quadretti:</label>
+                    <select id="grid-size-select" class="bg-white border border-slate-300 text-slate-700 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-xs shadow-sm cursor-pointer">
+                        <option value="7">3 mm (Molto piccoli / Fitti)</option>
+                        <option value="9">4 mm (Piccoli)</option>
+                        <option value="12" selected>5 mm (Standard Scuola)</option>
+                        <option value="18">8 mm (Grandi)</option>
+                        <option value="24">10 mm (Molto grandi)</option>
+                    </select>
+                </div>
+
+                <div class="h-4 w-px bg-slate-300"></div>
+
+                <!-- Rotazione foglio 90° -->
+                <button id="btn-rotate" title="Ruota il foglio di 90° (scambia larghezza/altezza mantenendo il disegno)" class="p-1.5 bg-white border border-slate-300 rounded-lg text-slate-600 hover:text-blue-600 hover:shadow-sm transition flex items-center">
+                    <i class="fa-solid fa-rotate-right text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Selezione Strumenti -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner gap-1">
+                <button id="tool-pencil" title="Matita (Click & Trascina)" class="tool-btn px-3 py-2 rounded-lg text-slate-700 hover:bg-white hover:shadow-sm font-medium text-sm flex items-center gap-1.5 transition active bg-white shadow-sm text-blue-600">
+                    <i class="fa-solid fa-pencil text-base"></i>
+                    <span class="hidden sm:inline">Matita</span>
+                </button>
+                <button id="tool-eraser" title="Gomma" class="tool-btn px-3 py-2 rounded-lg text-slate-700 hover:bg-white hover:shadow-sm font-medium text-sm flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-eraser text-base"></i>
+                    <span class="hidden sm:inline">Gomma</span>
+                </button>
+                <button id="tool-line" title="Linea Dritta" class="tool-btn px-3 py-2 rounded-lg text-slate-700 hover:bg-white hover:shadow-sm font-medium text-sm flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-slash text-base"></i>
+                    <span class="hidden sm:inline">Linea</span>
+                </button>
+                <button id="tool-rect" title="Rettangolo / Quadrato" class="tool-btn px-3 py-2 rounded-lg text-slate-700 hover:bg-white hover:shadow-sm font-medium text-sm flex items-center gap-1.5 transition">
+                    <i class="fa-regular fa-square text-base"></i>
+                    <span class="hidden sm:inline">Rettangolo</span>
+                </button>
+                <button id="tool-fill" title="Secchiello di Riempimento" class="tool-btn px-3 py-2 rounded-lg text-slate-700 hover:bg-white hover:shadow-sm font-medium text-sm flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-fill-drip text-base"></i>
+                    <span class="hidden sm:inline">Riempi</span>
+                </button>
+            </div>
+
+            <!-- Opzioni Strumento Attivo e Utilità -->
+            <div class="flex items-center gap-2">
+                <!-- Toggle Opzione Rettangolo Pieno/Bordo -->
+                <div id="rect-options" class="hidden flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs gap-1">
+                    <button id="rect-fill-btn" class="px-2 py-1 rounded bg-white shadow-sm font-semibold text-slate-700">Pieno</button>
+                    <button id="rect-outline-btn" class="px-2 py-1 rounded text-slate-500 hover:text-slate-800">Solo Bordo</button>
+                </div>
+
+                <!-- Pulsanti Azione: Undo, Redo, Pulisci, Apri/Salva Progetto, Sviluppatore, Esporta -->
+                <div class="flex items-center gap-1">
+                    <button id="btn-undo" title="Annulla (Ctrl+Z)" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg hover:text-blue-600 disabled:opacity-40 transition">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                    <button id="btn-redo" title="Ripristina (Ctrl+Y)" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg hover:text-blue-600 disabled:opacity-40 transition">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                    <div class="h-6 w-px bg-slate-300 mx-1"></div>
+                    <button id="btn-clear" title="Svuolta Foglio" class="px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 border border-red-200 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span class="hidden md:inline">Pulisci</span>
+                    </button>
+                    <!-- Apri progetto JSON -->
+                    <button id="btn-open-project" title="Apri progetto salvato (.json)" class="px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <span class="hidden md:inline">Apri</span>
+                    </button>
+                    <!-- Salva progetto JSON -->
+                    <button id="btn-save-project" title="Salva progetto (.json) — riapribile per continuare il lavoro" class="px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 bg-blue-50 border border-blue-200 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span class="hidden md:inline">Salva</span>
+                    </button>
+                    <input type="file" id="project-file-input" accept=".json,application/json" class="hidden">
+                    <!-- NUOVO V3: Profilo sviluppatore (impostazioni + colori nominati riutilizzabili tra versioni) -->
+                    <button id="btn-dev-profile" title="Profilo sviluppatore: salva/carica impostazioni, colori nominati e nomi (senza il disegno)" class="px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-100 bg-amber-50 border border-amber-200 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <span class="hidden lg:inline">Sviluppatore</span>
+                    </button>
+                    <input type="file" id="profile-file-input" accept=".json,application/json" class="hidden">
+                    <button id="btn-export" title="Scarica Immagine PNG" class="px-3 py-1.5 text-xs font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-sm transition flex items-center gap-1">
+                        <i class="fa-solid fa-download"></i>
+                        <span class="hidden md:inline">Esporta</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Barra inferiore per la selezione del colore -->
+    <div class="bg-white border-b border-slate-300 py-2 px-4 flex-shrink-0 z-10 shadow-sm">
+        <div class="w-full mx-auto flex items-center gap-2 overflow-hidden">
+            
+            <!-- Tavolozza Colori Predefiniti (>20 colori) -->
+            <div class="flex items-center gap-1 flex-nowrap flex-1 min-w-0 justify-between" id="palette-container">
+                <!-- Colori generati dinamicamente via JS -->
+            </div>
+
+            <!-- Custom Color Picker e Indicatore Colore -->
+            <div class="flex items-center gap-2 border-l border-slate-300 pl-2 flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <label for="custom-color" class="text-xs font-medium text-slate-500 cursor-pointer">Personalizzato:</label>
+                    <div class="relative w-8 h-8 rounded-full border-2 border-slate-300 overflow-hidden shadow-sm flex items-center justify-center cursor-pointer">
+                        <input type="color" id="custom-color" value="#1d4ed8" class="absolute -top-2 -left-2 w-12 h-12 cursor-pointer border-none">
+                    </div>
+                </div>
+
+                <!-- Indicatore Colore e Strumento Attivo -->
+                <div class="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-200 text-xs">
+                    <span class="text-slate-500">Selezionato:</span>
+                    <div id="current-color-preview" class="w-4 h-4 rounded-full border border-slate-300" style="background-color: #1d4ed8;"></div>
+                    <span id="current-tool-text" class="font-semibold text-slate-700">Matita</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Area di lavoro con barra colori nominati a sinistra e foglio sempre affiancato (mai sovrapposti) -->
+    <div class="flex-1 flex min-h-0 overflow-hidden">
+
+        <!-- Barra laterale dei colori nominati -->
+        <aside id="named-colors-sidebar" class="flex-shrink-0 bg-white border-r border-slate-300 flex flex-col overflow-hidden">
+            <div class="px-3 pt-3 pb-3 border-b border-slate-200 flex-shrink-0">
+                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Colori nominati</p>
+                <button id="btn-add-named-color" title="Aggiungi un nuovo colore nominato" class="w-full flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg py-2 shadow-sm transition">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Aggiungi colore</span>
+                </button>
+            </div>
+            <div id="named-colors-list" class="flex-1 overflow-y-auto p-2 space-y-1.5 no-scrollbar"></div>
+            <div id="named-colors-empty" class="px-3 py-4 text-center text-[11px] leading-relaxed text-slate-400">
+                Nessun colore nominato.<br>Premi <span class="font-semibold text-slate-500">“+ Aggiungi colore”</span> per creare i campioni fissi del tuo progetto (es. START, TERRENO...).
+            </div>
+        </aside>
+
+        <!-- Pulsante freccetta per nascondere/riaprire la barra (sempre visibile sul lato sinistro) -->
+        <button id="sidebar-toggle" title="Mostra / nascondi i colori nominati" class="w-6 flex-shrink-0 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-blue-600 flex items-center justify-center transition">
+            <i id="sidebar-toggle-icon" class="fa-solid fa-chevron-left text-xs"></i>
+        </button>
+
+        <!-- Area Principale di Lavoro con scrolling per simulare foglio A4 -->
+        <main class="flex-1 overflow-auto p-4 md:p-8 flex justify-center items-start relative cursor-pencil" id="canvas-container">
+            
+            <!-- Contenitore Foglio A4 -->
+            <div class="relative bg-white rounded-sm a4-shadow transition-all duration-300 my-auto flex-shrink-0" id="a4-paper">
+                
+                <!-- Canvas per la griglia di sfondo (quadretti) -->
+                <canvas id="gridCanvas" class="absolute top-0 left-0 pointer-events-none rounded-sm z-0"></canvas>
+                
+                <!-- Canvas principale di disegno -->
+                <canvas id="drawCanvas" class="relative z-10 rounded-sm"></canvas>
+                
+                <!-- Canvas per anteprima forme (linee/rettangoli) -->
+                <canvas id="previewCanvas" class="absolute top-0 left-0 pointer-events-none rounded-sm z-20"></canvas>
+
+                <!-- Linea del margine sinistro (tipico dei quaderni scolastici) -->
+                <div id="margin-line" class="absolute top-0 bottom-0 left-12 w-px bg-red-300 pointer-events-none z-30 opacity-70"></div>
+            </div>
+
+        </main>
+
+        <!-- NUOVO V3: Barra zoom a destra (+ / − / percentuale / reset) -->
+        <div class="w-11 flex-shrink-0 bg-white border-l border-slate-300 shadow-sm flex flex-col items-center pt-3 gap-1 z-10">
+            <button id="btn-zoom-in" title="Zoom +10% (max 200%) — oppure usa la rotella del mouse sul foglio" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-600 flex items-center justify-center transition">
+                <i class="fa-solid fa-plus text-xs"></i>
+            </button>
+            <span id="zoom-label" title="Livello di zoom attuale" class="text-[10px] font-bold text-slate-600 my-0.5 select-none">100%</span>
+            <button id="btn-zoom-out" title="Zoom -10% (min 10%) — oppure usa la rotella del mouse sul foglio" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-600 flex items-center justify-center transition">
+                <i class="fa-solid fa-minus text-xs"></i>
+            </button>
+            <button id="btn-zoom-reset" title="Ripristina zoom 100%" class="mt-2 w-7 h-7 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 flex items-center justify-center transition">
+                <i class="fa-solid fa-arrows-rotate text-xs"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Finestra modale per aggiungere/modificare un colore nominato -->
+    <div id="named-color-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xs p-5">
+            <h3 id="modal-title" class="text-base font-bold text-slate-800 mb-4">Nuovo colore nominato</h3>
+
+            <div class="mb-4">
+                <label class="text-xs font-medium text-slate-500 block mb-1.5">Colore:</label>
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="relative w-9 h-9 rounded-full border-2 border-slate-300 overflow-hidden shadow-sm flex-shrink-0 cursor-pointer">
+                        <input type="color" id="modal-color-input" value="#000000" class="absolute -top-2 -left-2 w-14 h-14 cursor-pointer border-none">
+                    </div>
+                    <span id="modal-color-hex" class="text-xs font-mono font-semibold text-slate-600">#000000</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-1.5">Oppure prendilo dalla tavolozza:</p>
+                <div id="modal-palette" class="grid grid-cols-8 gap-1.5"></div>
+            </div>
+
+            <div class="mb-5">
+                <label for="modal-name-input" class="text-xs font-medium text-slate-500 block mb-1.5">Nome (univoco):</label>
+                <input type="text" id="modal-name-input" maxlength="24" placeholder="es. START" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="flex items-center justify-between gap-2">
+                <button id="modal-delete-btn" title="Elimina questo colore nominato" class="hidden px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 border border-red-200 rounded-lg transition">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+                <div class="flex gap-2 ml-auto">
+                    <button id="modal-cancel-btn" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 border border-slate-200 rounded-lg transition">Annulla</button>
+                    <button id="modal-confirm-btn" class="px-4 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition">Aggiungi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUOVO V3: Modale profilo sviluppatore -->
+    <div id="dev-profile-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5">
+            <h3 class="text-base font-bold text-slate-800 mb-1">Profilo sviluppatore</h3>
+            <p class="text-xs text-slate-500 leading-relaxed mb-3">Salva le impostazioni, i colori nominati e i loro nomi in un file separato dal disegno. Dopo un aggiornamento del programma potrai ricaricarli in un colpo solo, senza rifarli da zero.</p>
+            <ul class="text-[11px] text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-3 mb-4 space-y-1">
+                <li><i class="fa-solid fa-check text-green-600 mr-1"></i>Colori nominati con i loro nomi (START, TERRENO...)</li>
+                <li><i class="fa-solid fa-check text-green-600 mr-1"></i>Colore selezionato, formato, quadretti e zoom</li>
+                <li><i class="fa-solid fa-xmark text-red-500 mr-1"></i>Il disegno <span class="font-semibold">non</span> è incluso (per quello usa "Salva" progetto)</li>
+            </ul>
+            <div class="flex gap-2 justify-end">
+                <button id="dev-cancel-btn" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 border border-slate-200 rounded-lg transition">Chiudi</button>
+                <button id="dev-load-btn" class="px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 rounded-lg transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-folder-open"></i> Carica profilo
+                </button>
+                <button id="dev-save-btn" class="px-3 py-1.5 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i> Salva profilo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip per il nome completo del colore (dopo 2 secondi di mouse fermo) -->
+    <div id="name-tooltip" class="hidden fixed z-[60] bg-slate-900 text-white text-xs rounded-lg px-2.5 py-1.5 shadow-lg pointer-events-none whitespace-nowrap"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Definizioni Proporzioni e Dimensioni dei Formati Carta (in pixel base)
+            const PAPER_FORMATS = {
+                'A4': { width: 720, height: 1018 },
+                'A3': { width: 1018, height: 1440 },
+                'A5': { width: 508, height: 720 },
+                'LETTER': { width: 740, height: 956 },
+                'SQUARE': { width: 800, height: 800 }
+            };
+
+            // Parametri Griglia di Default
+            let currentFormatKey = 'A4';
+            let GRID_SIZE = 12; // Dimensione quadretto in px
+
+            // Stato orientamento foglio (rotazione 90°)
+            let isRotated = false;
+
+            let CANVAS_WIDTH = PAPER_FORMATS[currentFormatKey].width;
+            let CANVAS_HEIGHT = PAPER_FORMATS[currentFormatKey].height;
+
+            let GRID_COLS = Math.floor(CANVAS_WIDTH / GRID_SIZE);
+            let GRID_ROWS = Math.floor(CANVAS_HEIGHT / GRID_SIZE);
+
+            // Riferimenti ai Canvas
+            const gridCanvas = document.getElementById('gridCanvas');
+            const drawCanvas = document.getElementById('drawCanvas');
+            const previewCanvas = document.getElementById('previewCanvas');
+
+            const ctxGrid = gridCanvas.getContext('2d');
+            const ctxDraw = drawCanvas.getContext('2d');
+            const ctxPreview = previewCanvas.getContext('2d');
+
+            const a4Paper = document.getElementById('a4-paper');
+            const canvasContainer = document.getElementById('canvas-container');
+
+            /* ============================================================
+               NUOVO V3: ZOOM del foglio (solo visualizzazione)
+               Parte al 100%, step del 10%, min 10% / max 200%.
+               Si usa con la rotella del mouse sul foglio oppure con i
+               pulsanti + / − sulla barra a destra. L'esportazione PNG
+               e il disegno restano SEMPRE alla risoluzione piena.
+               ============================================================ */
+            let zoomLevel = 100;
+            const ZOOM_MIN = 10;
+            const ZOOM_MAX = 200;
+            const zoomLabel = document.getElementById('zoom-label');
+            const marginLine = document.getElementById('margin-line');
+
+            function applyZoom() {
+                const scale = zoomLevel / 100;
+                const w = CANVAS_WIDTH * scale;
+                const h = CANVAS_HEIGHT * scale;
+                [gridCanvas, drawCanvas, previewCanvas].forEach(c => {
+                    c.style.width = `${w}px`;
+                    c.style.height = `${h}px`;
+                });
+                a4Paper.style.width = `${w}px`;
+                a4Paper.style.height = `${h}px`;
+                // Il margine rosso segue la scala
+                marginLine.style.left = `${48 * scale}px`;
+                zoomLabel.textContent = `${zoomLevel}%`;
+            }
+
+            function setZoom(level) {
+                zoomLevel = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, Math.round(level / 10) * 10));
+                applyZoom();
+            }
+
+            function zoomIn() { setZoom(zoomLevel + 10); }
+            function zoomOut() { setZoom(zoomLevel - 10); }
+
+            document.getElementById('btn-zoom-in').addEventListener('click', zoomIn);
+            document.getElementById('btn-zoom-out').addEventListener('click', zoomOut);
+            document.getElementById('btn-zoom-reset').addEventListener('click', () => setZoom(100));
+
+            // Rotella del mouse sul foglio: zoom ±10% (min 10% / max 200%)
+            canvasContainer.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (e.deltaY < 0) zoomIn();
+                else if (e.deltaY > 0) zoomOut();
+            }, { passive: false });
+
+            // Riferimenti ai selettori
+            const paperFormatSelect = document.getElementById('paper-format');
+            const gridSizeSelect = document.getElementById('grid-size-select');
+
+            // Stato dell'Applicazione
+            let currentTool = 'pencil'; 
+            let currentColor = '#1d4ed8'; 
+            let fillRectMode = true; 
+            let isDrawing = false;
+            let startCol = -1;
+            let startRow = -1;
+            let lastCol = -1;
+            let lastRow = -1;
+
+            // Colori nominati del progetto (barra sinistra)
+            // NUOVO V3: elenco precaricato opzionale — scrivici i tuoi colori fissi
+            // e verranno caricati automaticamente a ogni avvio del programma.
+            const DEFAULT_NAMED_COLORS = [
+                // { name: 'START', color: '#000000' },
+                // { name: 'TERRENO', color: '#78350f' },
+                // { name: 'NEMICO', color: '#dc2626' }
+            ];
+            let namedColors = []; // es. [{ name: 'START', color: '#000000' }, ...]
+
+            // Matrice Dati per la memorizzazione dei quadretti
+            let gridData = Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
+
+            // Gestione Storia (Undo/Redo)
+            let history = [];
+            let historyStep = -1;
+            const MAX_HISTORY = 30;
+
+            // Dimensioni del foglio tenendo conto della rotazione 90°
+            function getOrientedDims() {
+                const base = PAPER_FORMATS[currentFormatKey];
+                return isRotated
+                    ? { w: base.height, h: base.width }
+                    : { w: base.width, h: base.height };
+            }
+
+            // Ridimensiona i canvas e il foglio (con lo zoom applicato)
+            function resizeCanvases() {
+                [gridCanvas, drawCanvas, previewCanvas].forEach(c => {
+                    c.width = CANVAS_WIDTH;
+                    c.height = CANVAS_HEIGHT;
+                });
+                applyZoom();
+            }
+
+            // Aggiorna le dimensioni del Canvas in base a Formato, Rotazione e Dimensione Quadretto
+            function updateCanvasDimensions(keepContent = true) {
+                const oldData = gridData;
+                const oldRows = GRID_ROWS;
+                const oldCols = GRID_COLS;
+
+                const dims = getOrientedDims();
+                CANVAS_WIDTH = dims.w;
+                CANVAS_HEIGHT = dims.h;
+
+                GRID_COLS = Math.floor(CANVAS_WIDTH / GRID_SIZE);
+                GRID_ROWS = Math.floor(CANVAS_HEIGHT / GRID_SIZE);
+
+                resizeCanvases();
+
+                // Inizializza la nuova matrice
+                gridData = Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
+
+                // Se richiesto, riadatta il contenuto esistente al nuovo formato/griglia
+                if (keepContent && oldData) {
+                    for (let r = 0; r < Math.min(oldRows, GRID_ROWS); r++) {
+                        for (let c = 0; c < Math.min(oldCols, GRID_COLS); c++) {
+                            gridData[r][c] = oldData[r][c];
+                        }
+                    }
+                }
+
+                drawGrid();
+                redrawFromMatrix();
+            }
+
+            // Disegna la Griglia a Quadretti Sfondo
+            function drawGrid() {
+                ctxGrid.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                ctxGrid.lineWidth = 1;
+                ctxGrid.strokeStyle = '#d1d5db'; 
+
+                ctxGrid.beginPath();
+                for (let x = 0; x <= CANVAS_WIDTH; x += GRID_SIZE) {
+                    ctxGrid.moveTo(x + 0.5, 0);
+                    ctxGrid.lineTo(x + 0.5, CANVAS_HEIGHT);
+                }
+                for (let y = 0; y <= CANVAS_HEIGHT; y += GRID_SIZE) {
+                    ctxGrid.moveTo(0, y + 0.5);
+                    ctxGrid.lineTo(CANVAS_WIDTH, y + 0.5);
+                }
+                ctxGrid.stroke();
+            }
+
+            // Ridisegna l'intero foglio dalla matrice dati
+            function redrawFromMatrix() {
+                ctxDraw.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                for (let r = 0; r < GRID_ROWS; r++) {
+                    for (let c = 0; c < GRID_COLS; c++) {
+                        const color = gridData[r][c];
+                        if (color !== null) {
+                            ctxDraw.fillStyle = color;
+                            ctxDraw.fillRect(c * GRID_SIZE + 0.5, r * GRID_SIZE + 0.5, GRID_SIZE - 0.5, GRID_SIZE - 0.5);
+                        }
+                    }
+                }
+            }
+
+            // Inizializzazione prima tavolozza e canvas
+            updateCanvasDimensions(false);
+            saveState();
+
+            // Eventi cambio formato o dimensione quadretti
+            paperFormatSelect.addEventListener('change', (e) => {
+                currentFormatKey = e.target.value;
+                isRotated = false; // nuovo formato: si riparte dall'orientamento predefinito
+                updateCanvasDimensions(true);
+                saveState();
+            });
+
+            gridSizeSelect.addEventListener('change', (e) => {
+                GRID_SIZE = parseInt(e.target.value, 10);
+                updateCanvasDimensions(true);
+                saveState();
+            });
+
+            // Rotazione reale del foglio di 90° (senso orario)
+            document.getElementById('btn-rotate').addEventListener('click', () => {
+                const oldData = gridData;
+                const oldRows = GRID_ROWS;
+                const oldCols = GRID_COLS;
+
+                // Ruota davvero i dati: trasposizione + ribaltamento (rotazione 90° oraria)
+                const newData = Array(oldCols).fill(null).map(() => Array(oldRows).fill(null));
+                for (let r = 0; r < oldRows; r++) {
+                    for (let c = 0; c < oldCols; c++) {
+                        newData[c][oldRows - 1 - r] = oldData[r][c];
+                    }
+                }
+                gridData = newData;
+
+                // Scambia larghezza e altezza (il quadrato resta quadrato, il disegno ruota)
+                isRotated = !isRotated;
+                const dims = getOrientedDims();
+                CANVAS_WIDTH = dims.w;
+                CANVAS_HEIGHT = dims.h;
+                GRID_COLS = Math.floor(CANVAS_WIDTH / GRID_SIZE);
+                GRID_ROWS = Math.floor(CANVAS_HEIGHT / GRID_SIZE);
+
+                resizeCanvases();
+                drawGrid();
+                redrawFromMatrix();
+                saveState();
+            });
+
+            // 20+ Colori Predefiniti
+            const colorPalette = [
+                '#000000', '#4b5563', '#9ca3af', '#ffffff', 
+                '#1d4ed8', '#2563eb', '#3b82f6', '#60a5fa', 
+                '#15803d', '#16a34a', '#4ade80', '#a3e635', 
+                '#b91c1c', '#dc2626', '#ef4444', '#f87171', 
+                '#c2410c', '#ea580c', '#f97316', '#fb923c', 
+                '#a16207', '#d97706', '#eab308', '#fde047', 
+                '#6b21a8', '#9333ea', '#c084fc', '#e879f9', 
+                '#831843', '#db2777', '#f472b6', '#78350f'  
+            ];
+
+            const paletteContainer = document.getElementById('palette-container');
+            colorPalette.forEach((color, index) => {
+                const button = document.createElement('button');
+                button.className = `color-swatch w-7 h-7 rounded-full border border-slate-300 shadow-sm flex-shrink-0 ${index === 4 ? 'active' : ''}`;
+                button.style.backgroundColor = color;
+                button.setAttribute('data-color', color);
+                button.title = color;
+
+                if (color.toLowerCase() === '#ffffff') {
+                    button.classList.add('relative');
+                    button.innerHTML = '<span class="text-slate-400 text-xs absolute inset-0 flex items-center justify-center">×</span>';
+                }
+
+                button.addEventListener('click', () => {
+                    setColor(color);
+                    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                    button.classList.add('active');
+                });
+
+                paletteContainer.appendChild(button);
+            });
+
+            function getGridCoords(e) {
+                const rect = drawCanvas.getBoundingClientRect();
+                const scaleX = CANVAS_WIDTH / rect.width;
+                const scaleY = CANVAS_HEIGHT / rect.height;
+
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+                const x = (clientX - rect.left) * scaleX;
+                const y = (clientY - rect.top) * scaleY;
+
+                const col = Math.floor(x / GRID_SIZE);
+                const row = Math.floor(y / GRID_SIZE);
+
+                return {
+                    col: Math.max(0, Math.min(GRID_COLS - 1, col)),
+                    row: Math.max(0, Math.min(GRID_ROWS - 1, row))
+                };
+            }
+
+            function setCell(col, row, color) {
+                if (col < 0 || col >= GRID_COLS || row < 0 || row >= GRID_ROWS) return;
+
+                gridData[row][col] = color;
+
+                if (color === null) {
+                    ctxDraw.clearRect(col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+                } else {
+                    ctxDraw.fillStyle = color;
+                    ctxDraw.fillRect(col * GRID_SIZE + 0.5, row * GRID_SIZE + 0.5, GRID_SIZE - 0.5, GRID_SIZE - 0.5);
+                }
+            }
+
+            function drawGridLine(c1, r1, c2, r2, color) {
+                const cells = getLineCells(c1, r1, c2, r2);
+                cells.forEach(cell => {
+                    setCell(cell.col, cell.row, color);
+                });
+            }
+
+            function getLineCells(col0, row0, col1, row1) {
+                const cells = [];
+                const dx = Math.abs(col1 - col0);
+                const dy = Math.abs(row1 - row0);
+                const sx = (col0 < col1) ? 1 : -1;
+                const sy = (row0 < row1) ? 1 : -1;
+                let err = dx - dy;
+
+                let c = col0;
+                let r = row0;
+
+                while (true) {
+                    cells.push({ col: c, row: r });
+                    if (c === col1 && r === row1) break;
+                    const e2 = 2 * err;
+                    if (e2 > -dy) { err -= dy; c += sx; }
+                    if (e2 < dx) { err += dx; r += sy; }
+                }
+                return cells;
+            }
+
+            function getRectCells(col0, row0, col1, row1, fill) {
+                const cells = [];
+                const minCol = Math.min(col0, col1);
+                const maxCol = Math.max(col0, col1);
+                const minRow = Math.min(row0, row1);
+                const maxRow = Math.max(row0, row1);
+
+                for (let r = minRow; r <= maxRow; r++) {
+                    for (let c = minCol; c <= maxCol; c++) {
+                        if (fill || r === minRow || r === maxRow || c === minCol || c === maxCol) {
+                            cells.push({ col: c, row: r });
+                        }
+                    }
+                }
+                return cells;
+            }
+
+            function floodFill(startC, startR, targetColor, replacementColor) {
+                if (targetColor === replacementColor) return;
+                
+                const queue = [{ col: startC, row: startR }];
+                const visited = Array(GRID_ROWS).fill(false).map(() => Array(GRID_COLS).fill(false));
+
+                while (queue.length > 0) {
+                    const { col, row } = queue.pop();
+
+                    if (col < 0 || col >= GRID_COLS || row < 0 || row >= GRID_ROWS) continue;
+                    if (visited[row][col]) continue;
+                    visited[row][col] = true;
+
+                    if (gridData[row][col] === targetColor) {
+                        setCell(col, row, replacementColor);
+
+                        queue.push({ col: col + 1, row: row });
+                        queue.push({ col: col - 1, row: row });
+                        queue.push({ col: col, row: row + 1 });
+                        queue.push({ col: col, row: row - 1 });
+                    }
+                }
+            }
+
+            function handleStart(e) {
+                e.preventDefault();
+                isDrawing = true;
+                const { col, row } = getGridCoords(e);
+                startCol = col;
+                startRow = row;
+                lastCol = col;
+                lastRow = row;
+
+                if (currentTool === 'pencil') {
+                    setCell(col, row, currentColor);
+                } else if (currentTool === 'eraser') {
+                    setCell(col, row, null);
+                } else if (currentTool === 'fill') {
+                    const targetColor = gridData[row][col];
+                    floodFill(col, row, targetColor, currentColor);
+                    saveState();
+                    isDrawing = false;
+                }
+            }
+
+            function handleMove(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+
+                const { col, row } = getGridCoords(e);
+
+                if (currentTool === 'pencil') {
+                    drawGridLine(lastCol, lastRow, col, row, currentColor);
+                    lastCol = col;
+                    lastRow = row;
+                } else if (currentTool === 'eraser') {
+                    drawGridLine(lastCol, lastRow, col, row, null);
+                    lastCol = col;
+                    lastRow = row;
+                } else if (currentTool === 'line' || currentTool === 'rect') {
+                    ctxPreview.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                    ctxPreview.fillStyle = currentColor;
+
+                    let previewCells = [];
+                    if (currentTool === 'line') {
+                        previewCells = getLineCells(startCol, startRow, col, row);
+                    } else if (currentTool === 'rect') {
+                        previewCells = getRectCells(startCol, startRow, col, row, fillRectMode);
+                    }
+
+                    previewCells.forEach(cell => {
+                        ctxPreview.fillRect(cell.col * GRID_SIZE + 0.5, cell.row * GRID_SIZE + 0.5, GRID_SIZE - 0.5, GRID_SIZE - 0.5);
+                    });
+                }
+            }
+
+            function handleEnd(e) {
+                if (!isDrawing) return;
+                isDrawing = false;
+
+                ctxPreview.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+                if (currentTool === 'line') {
+                    const cells = getLineCells(startCol, startRow, lastCol, lastRow);
+                    cells.forEach(cell => setCell(cell.col, cell.row, currentColor));
+                    saveState();
+                } else if (currentTool === 'rect') {
+                    const cells = getRectCells(startCol, startRow, lastCol, lastRow, fillRectMode);
+                    cells.forEach(cell => setCell(cell.col, cell.row, currentColor));
+                    saveState();
+                } else if (currentTool === 'pencil' || currentTool === 'eraser') {
+                    saveState();
+                }
+            }
+
+            drawCanvas.addEventListener('mousedown', handleStart);
+            drawCanvas.addEventListener('mousemove', (e) => {
+                const { col, row } = getGridCoords(e);
+                if (isDrawing) {
+                    lastCol = col;
+                    lastRow = row;
+                }
+                handleMove(e);
+            });
+            window.addEventListener('mouseup', handleEnd);
+
+            drawCanvas.addEventListener('touchstart', handleStart, { passive: false });
+            drawCanvas.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 0) {
+                    const { col, row } = getGridCoords(e);
+                    lastCol = col;
+                    lastRow = row;
+                }
+                handleMove(e);
+            }, { passive: false });
+            window.addEventListener('touchend', handleEnd);
+
+            function saveState() {
+                if (historyStep < history.length - 1) {
+                    history.splice(historyStep + 1);
+                }
+
+                const snapshot = {
+                    data: gridData.map(row => [...row]),
+                    format: currentFormatKey,
+                    gridSize: GRID_SIZE,
+                    rotated: isRotated
+                };
+                history.push(snapshot);
+
+                if (history.length > MAX_HISTORY) {
+                    history.shift();
+                } else {
+                    historyStep++;
+                }
+
+                updateUndoRedoButtons();
+            }
+
+            function undo() {
+                if (historyStep > 0) {
+                    historyStep--;
+                    restoreState(history[historyStep]);
+                    updateUndoRedoButtons();
+                }
+            }
+
+            function redo() {
+                if (historyStep < history.length - 1) {
+                    historyStep++;
+                    restoreState(history[historyStep]);
+                    updateUndoRedoButtons();
+                }
+            }
+
+            function restoreState(snapshot) {
+                currentFormatKey = snapshot.format;
+                GRID_SIZE = snapshot.gridSize;
+                isRotated = !!snapshot.rotated;
+
+                paperFormatSelect.value = currentFormatKey;
+                gridSizeSelect.value = GRID_SIZE.toString();
+
+                const dims = getOrientedDims();
+                CANVAS_WIDTH = dims.w;
+                CANVAS_HEIGHT = dims.h;
+
+                GRID_COLS = Math.floor(CANVAS_WIDTH / GRID_SIZE);
+                GRID_ROWS = Math.floor(CANVAS_HEIGHT / GRID_SIZE);
+
+                resizeCanvases();
+
+                gridData = snapshot.data.map(row => [...row]);
+
+                drawGrid();
+                redrawFromMatrix();
+            }
+
+            function updateUndoRedoButtons() {
+                document.getElementById('btn-undo').disabled = (historyStep <= 0);
+                document.getElementById('btn-redo').disabled = (historyStep >= history.length - 1);
+            }
+
+            document.getElementById('btn-undo').addEventListener('click', undo);
+            document.getElementById('btn-redo').addEventListener('click', redo);
+
+            window.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                    if (e.shiftKey) redo();
+                    else undo();
+                } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+                    redo();
+                } else if (e.key === 'Escape' && !namedColorModal.classList.contains('hidden')) {
+                    closeColorModal();
+                } else if (e.key === 'Escape' && !devProfileModal.classList.contains('hidden')) {
+                    devProfileModal.classList.add('hidden');
+                }
+            });
+
+            const toolButtons = {
+                pencil: document.getElementById('tool-pencil'),
+                eraser: document.getElementById('tool-eraser'),
+                line: document.getElementById('tool-line'),
+                rect: document.getElementById('tool-rect'),
+                fill: document.getElementById('tool-fill')
+            };
+
+            const currentToolText = document.getElementById('current-tool-text');
+            const rectOptions = document.getElementById('rect-options');
+
+            function setTool(toolName) {
+                currentTool = toolName;
+                Object.keys(toolButtons).forEach(key => {
+                    const btn = toolButtons[key];
+                    if (key === toolName) {
+                        btn.classList.add('bg-white', 'shadow-sm', 'text-blue-600');
+                        btn.classList.remove('text-slate-700');
+                    } else {
+                        btn.classList.remove('bg-white', 'shadow-sm', 'text-blue-600');
+                        btn.classList.add('text-slate-700');
+                    }
+                });
+
+                canvasContainer.className = canvasContainer.className.replace(/cursor-\w+/g, '');
+                canvasContainer.classList.add(`cursor-${toolName}`);
+
+                const toolNames = {
+                    pencil: 'Matita',
+                    eraser: 'Gomma',
+                    line: 'Linea',
+                    rect: 'Rettangolo',
+                    fill: 'Riempimento'
+                };
+                currentToolText.textContent = toolNames[toolName];
+
+                if (toolName === 'rect') {
+                    rectOptions.classList.remove('hidden');
+                } else {
+                    rectOptions.classList.add('hidden');
+                }
+            }
+
+            Object.keys(toolButtons).forEach(tool => {
+                toolButtons[tool].addEventListener('click', () => setTool(tool));
+            });
+
+            const rectFillBtn = document.getElementById('rect-fill-btn');
+            const rectOutlineBtn = document.getElementById('rect-outline-btn');
+
+            // NUOVO V3: funzione unica per sincronizzare i pulsanti Pieno/Bordo
+            function updateRectModeButtons() {
+                if (fillRectMode) {
+                    rectFillBtn.classList.add('bg-white', 'shadow-sm', 'font-semibold', 'text-slate-700');
+                    rectOutlineBtn.classList.remove('bg-white', 'shadow-sm', 'font-semibold', 'text-slate-700');
+                    rectOutlineBtn.classList.add('text-slate-500');
+                } else {
+                    rectOutlineBtn.classList.add('bg-white', 'shadow-sm', 'font-semibold', 'text-slate-700');
+                    rectFillBtn.classList.remove('bg-white', 'shadow-sm', 'font-semibold', 'text-slate-700');
+                    rectFillBtn.classList.add('text-slate-500');
+                }
+            }
+
+            rectFillBtn.addEventListener('click', () => {
+                fillRectMode = true;
+                updateRectModeButtons();
+                persistPrefs();
+            });
+
+            rectOutlineBtn.addEventListener('click', () => {
+                fillRectMode = false;
+                updateRectModeButtons();
+                persistPrefs();
+            });
+
+            const currentColorPreview = document.getElementById('current-color-preview');
+            const customColorPicker = document.getElementById('custom-color');
+
+            function setColor(color) {
+                currentColor = color;
+                currentColorPreview.style.backgroundColor = color;
+                customColorPicker.value = color.startsWith('#') ? color : '#1d4ed8';
+                
+                if (currentTool === 'eraser') {
+                    setTool('pencil');
+                }
+
+                // Aggiorna l'evidenziazione dei colori nominati
+                renderNamedColors();
+            }
+
+            customColorPicker.addEventListener('input', (e) => {
+                setColor(e.target.value);
+                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            });
+
+            document.getElementById('btn-clear').addEventListener('click', () => {
+                if (confirm('Sei sicuro di voler pulire l\'intero foglio? L\'operazione potrà comunque essere annullata.')) {
+                    gridData = Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
+                    ctxDraw.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                    saveState();
+                }
+            });
+
+            document.getElementById('btn-export').addEventListener('click', () => {
+                const exportCanvas = document.createElement('canvas');
+                exportCanvas.width = CANVAS_WIDTH;
+                exportCanvas.height = CANVAS_HEIGHT;
+                const exportCtx = exportCanvas.getContext('2d');
+
+                exportCtx.fillStyle = '#ffffff';
+                exportCtx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+                exportCtx.drawImage(gridCanvas, 0, 0);
+
+                if (currentFormatKey !== 'SQUARE') {
+                    exportCtx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+                    exportCtx.lineWidth = 1;
+                    exportCtx.beginPath();
+                    exportCtx.moveTo(48.5, 0);
+                    exportCtx.lineTo(48.5, CANVAS_HEIGHT);
+                    exportCtx.stroke();
+                }
+
+                exportCtx.drawImage(drawCanvas, 0, 0);
+
+                const link = document.createElement('a');
+                link.download = `quaderno_${currentFormatKey.toLowerCase()}_disegno_${new Date().toISOString().slice(0, 10)}.png`;
+                link.href = exportCanvas.toDataURL('image/png');
+                link.click();
+            });
+
+            /* ============================================================
+               FUNZIONALITÀ
+               1) Salvataggio / caricamento progetto in .json
+               2) Barra laterale colori nominati (con +, matita edit,
+                  tooltip dopo 2 secondi, nascondi/riapri con freccetta)
+               3) V3: Persistenza automatica nel browser (localStorage)
+               4) V3: Profilo sviluppatore (salva/carica impostazioni
+                  e colori nominati tra un aggiornamento e l'altro)
+               ============================================================ */
+
+            // --- Validazione colori e sanitizzazione colori nominati ---
+            function isValidHex(v) {
+                return typeof v === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(v);
+            }
+
+            function sanitizeNamedColors(arr) {
+                const out = [];
+                if (!Array.isArray(arr)) return out;
+                arr.forEach(nc => {
+                    if (nc && typeof nc.name === 'string' && isValidHex(nc.color)) {
+                        const name = nc.name.trim().slice(0, 24);
+                        if (name && !out.some(x => x.name.toLowerCase() === name.toLowerCase())) {
+                            out.push({ name: name, color: nc.color });
+                        }
+                    }
+                });
+                return out;
+            }
+
+            // --- NUOVO V3: Persistenza automatica nel browser ---
+            // I colori nominati, il colore selezionato e la modalità rettangolo
+            // vengono salvati nel browser e ricaricati automaticamente all'avvio.
+            const LS_PREFS_KEY = 'quaderno_prefs_v2';
+
+            function persistPrefs() {
+                try {
+                    localStorage.setItem(LS_PREFS_KEY, JSON.stringify({
+                        namedColors: namedColors,
+                        currentColor: currentColor,
+                        fillRectMode: fillRectMode
+                    }));
+                } catch (err) { /* storage non disponibile: ignora */ }
+            }
+
+            function loadPrefs() {
+                try {
+                    const raw = localStorage.getItem(LS_PREFS_KEY);
+                    if (!raw) return;
+                    const p = JSON.parse(raw);
+                    if (Array.isArray(p.namedColors)) namedColors = sanitizeNamedColors(p.namedColors);
+                    if (isValidHex(p.currentColor)) currentColor = p.currentColor;
+                    if (typeof p.fillRectMode === 'boolean') fillRectMode = p.fillRectMode;
+                } catch (err) { /* ignora */ }
+            }
+
+            // --- Salvataggio progetto (.json) ---
+            document.getElementById('btn-save-project').addEventListener('click', () => {
+                const project = {
+                    app: 'quaderno-interattivo',
+                    version: 2,
+                    savedAt: new Date().toISOString(),
+                    format: currentFormatKey,
+                    rotated: isRotated,
+                    gridSize: GRID_SIZE,
+                    currentColor: currentColor,
+                    namedColors: namedColors,
+                    gridData: gridData
+                };
+
+                const blob = new Blob([JSON.stringify(project)], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.download = `progetto_quaderno_${currentFormatKey.toLowerCase()}_${new Date().toISOString().slice(0, 10)}.json`;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            });
+
+            // --- Caricamento progetto (.json) ---
+            const projectFileInput = document.getElementById('project-file-input');
+
+            document.getElementById('btn-open-project').addEventListener('click', () => {
+                projectFileInput.click();
+            });
+
+            projectFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    projectFileInput.value = '';
+                    let data;
+                    try {
+                        data = JSON.parse(ev.target.result);
+                    } catch (err) {
+                        alert('Impossibile leggere il file: JSON non valido.');
+                        return;
+                    }
+
+                    if (!data || data.app !== 'quaderno-interattivo' || !PAPER_FORMATS[data.format] || !Array.isArray(data.gridData)) {
+                        alert('Questo file non è un progetto valido di Quaderno Interattivo.');
+                        return;
+                    }
+
+                    const hasWork = gridData.some(row => row.some(c => c !== null)) || namedColors.length > 0;
+                    if (hasWork && !confirm('Caricare questo progetto? Il lavoro attuale non salvato andrà perso.')) {
+                        return;
+                    }
+
+                    applyProject(data);
+                };
+                reader.readAsText(file);
+            });
+
+            function applyProject(data) {
+                // Formato e griglia (con validazione)
+                currentFormatKey = data.format;
+                GRID_SIZE = parseInt(data.gridSize, 10);
+                if (![7, 9, 12, 18, 24].includes(GRID_SIZE)) GRID_SIZE = 12;
+                isRotated = !!data.rotated;
+
+                paperFormatSelect.value = currentFormatKey;
+                gridSizeSelect.value = String(GRID_SIZE);
+
+                const dims = getOrientedDims();
+                CANVAS_WIDTH = dims.w;
+                CANVAS_HEIGHT = dims.h;
+                GRID_COLS = Math.floor(CANVAS_WIDTH / GRID_SIZE);
+                GRID_ROWS = Math.floor(CANVAS_HEIGHT / GRID_SIZE);
+
+                resizeCanvases();
+
+                // Disegno (adattato alle dimensioni calcolate, con validazione colori)
+                const loaded = data.gridData;
+                gridData = Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
+                for (let r = 0; r < Math.min(loaded.length, GRID_ROWS); r++) {
+                    for (let c = 0; c < Math.min(loaded[r].length, GRID_COLS); c++) {
+                        const v = loaded[r][c];
+                        gridData[r][c] = isValidHex(v) ? v : null;
+                    }
+                }
+
+                // Colori nominati (con validazione e nomi univoci)
+                namedColors = sanitizeNamedColors(data.namedColors);
+                renderNamedColors();
+
+                // Colore selezionato
+                if (isValidHex(data.currentColor)) {
+                    setColor(data.currentColor);
+                }
+
+                drawGrid();
+                redrawFromMatrix();
+
+                // Riparte la cronologia dal progetto caricato
+                history = [];
+                historyStep = -1;
+                saveState();
+            }
+
+            // --- Freccetta: nascondi / riapri la barra laterale ---
+            const sidebar = document.getElementById('named-colors-sidebar');
+            const sidebarToggleIcon = document.getElementById('sidebar-toggle-icon');
+            let sidebarOpen = true;
+
+            document.getElementById('sidebar-toggle').addEventListener('click', () => {
+                sidebarOpen = !sidebarOpen;
+                sidebar.classList.toggle('closed', !sidebarOpen);
+                sidebarToggleIcon.className = sidebarOpen
+                    ? 'fa-solid fa-chevron-left text-xs'
+                    : 'fa-solid fa-chevron-right text-xs';
+            });
+
+            // --- Tooltip del nome completo (dopo 2 secondi di mouse fermo) ---
+            const tooltipEl = document.getElementById('name-tooltip');
+            let tooltipTimer = null;
+
+            function hideNameTooltip() {
+                clearTimeout(tooltipTimer);
+                tooltipTimer = null;
+                tooltipEl.classList.add('hidden');
+            }
+
+            function attachNameTooltip(el, getText) {
+                const startTimer = () => {
+                    clearTimeout(tooltipTimer);
+                    tooltipTimer = setTimeout(() => {
+                        tooltipEl.textContent = getText();
+                        tooltipEl.classList.remove('hidden');
+                        tooltipEl.style.left = '0px';
+                        tooltipEl.style.top = '0px';
+
+                        const r = el.getBoundingClientRect();
+                        let left = r.right + 10;
+                        let top = r.top;
+                        const tw = tooltipEl.offsetWidth;
+                        const th = tooltipEl.offsetHeight;
+                        if (left + tw > window.innerWidth - 8) left = window.innerWidth - 8 - tw;
+                        if (top + th > window.innerHeight - 8) top = window.innerHeight - 8 - th;
+                        tooltipEl.style.left = left + 'px';
+                        tooltipEl.style.top = top + 'px';
+                    }, 2000); // 2 secondi con il mouse fermo
+                };
+                el.addEventListener('mouseenter', startTimer);
+                el.addEventListener('mousemove', startTimer); // ogni movimento resetta: appare solo da fermi
+                el.addEventListener('mouseleave', hideNameTooltip);
+                el.addEventListener('mousedown', hideNameTooltip);
+            }
+
+            document.getElementById('named-colors-list').addEventListener('scroll', hideNameTooltip);
+
+            // --- Renderizzazione della barra colori nominati ---
+            function renderNamedColors() {
+                hideNameTooltip();
+                const list = document.getElementById('named-colors-list');
+                const emptyMsg = document.getElementById('named-colors-empty');
+                list.innerHTML = '';
+                emptyMsg.classList.toggle('hidden', namedColors.length > 0);
+
+                namedColors.forEach((nc, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'group flex items-center gap-2 pl-2 pr-1 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl cursor-pointer transition select-none';
+                    if (currentColor.toLowerCase() === nc.color.toLowerCase()) {
+                        item.classList.remove('bg-slate-100');
+                        item.classList.add('bg-blue-50', 'ring-2', 'ring-blue-500');
+                    }
+
+                    // Pallino del colore, ben visibile
+                    const dot = document.createElement('span');
+                    dot.className = 'w-4 h-4 rounded-full border border-slate-400 shadow-sm flex-shrink-0';
+                    dot.style.backgroundColor = nc.color;
+
+                    // Nome (troncato se lungo; tooltip col nome intero dopo 2 secondi)
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'flex-1 min-w-0 truncate text-xs font-semibold text-slate-700 text-left';
+                    nameSpan.textContent = nc.name;
+
+                    // Pulsante matita per modificare
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'w-6 h-6 rounded-md text-slate-400 hover:text-blue-600 hover:bg-white flex items-center justify-center flex-shrink-0 transition';
+                    editBtn.title = 'Modifica colore';
+                    editBtn.innerHTML = '<i class="fa-solid fa-pen text-[9px]"></i>';
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openColorModal('edit', index);
+                    });
+
+                    item.appendChild(dot);
+                    item.appendChild(nameSpan);
+                    item.appendChild(editBtn);
+
+                    attachNameTooltip(nameSpan, () => `${nc.name} · ${nc.color.toUpperCase()}`);
+
+                    // Click sul rettangolino: seleziona il colore
+                    item.addEventListener('click', (e) => {
+                        if (e.target.closest('button')) return;
+                        setColor(nc.color);
+                        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                    });
+
+                    list.appendChild(item);
+                });
+
+                // NUOVO V3: salva automaticamente nel browser
+                persistPrefs();
+            }
+
+            // --- Finestra modale: aggiungi / modifica / elimina colore nominato ---
+            const namedColorModal = document.getElementById('named-color-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalColorInput = document.getElementById('modal-color-input');
+            const modalColorHex = document.getElementById('modal-color-hex');
+            const modalNameInput = document.getElementById('modal-name-input');
+            const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+            const modalCancelBtn = document.getElementById('modal-cancel-btn');
+            const modalDeleteBtn = document.getElementById('modal-delete-btn');
+            let modalMode = 'add';
+            let editingIndex = -1;
+
+            // Mini-tavolozza dentro la modale (stessi colori della barra superiore)
+            const modalPalette = document.getElementById('modal-palette');
+            colorPalette.forEach(color => {
+                const b = document.createElement('button');
+                b.className = 'w-5 h-5 rounded-full border border-slate-300 hover:scale-110 transition-transform';
+                b.style.backgroundColor = color;
+                b.title = color.toUpperCase();
+                b.addEventListener('click', () => {
+                    modalColorInput.value = color;
+                    modalColorHex.textContent = color.toUpperCase();
+                });
+                modalPalette.appendChild(b);
+            });
+
+            modalColorInput.addEventListener('input', () => {
+                modalColorHex.textContent = modalColorInput.value.toUpperCase();
+            });
+
+            function openColorModal(mode, index = -1) {
+                modalMode = mode;
+                editingIndex = index;
+
+                if (mode === 'add') {
+                    modalTitle.textContent = 'Nuovo colore nominato';
+                    modalColorInput.value = currentColor; // parte dal colore selezionato in alto
+                    modalNameInput.value = '';
+                    modalConfirmBtn.textContent = 'Aggiungi';
+                    modalDeleteBtn.classList.add('hidden');
+                } else {
+                    const nc = namedColors[index];
+                    modalTitle.textContent = 'Modifica colore';
+                    modalColorInput.value = nc.color;
+                    modalNameInput.value = nc.name;
+                    modalConfirmBtn.textContent = 'Salva';
+                    modalDeleteBtn.classList.remove('hidden');
+                }
+                modalColorHex.textContent = modalColorInput.value.toUpperCase();
+
+                namedColorModal.classList.remove('hidden');
+                setTimeout(() => modalNameInput.focus(), 50);
+            }
+
+            function closeColorModal() {
+                namedColorModal.classList.add('hidden');
+            }
+
+            modalConfirmBtn.addEventListener('click', () => {
+                const name = modalNameInput.value.trim();
+                if (!name) {
+                    alert('Inserisci un nome per il colore.');
+                    modalNameInput.focus();
+                    return;
+                }
+                const duplicate = namedColors.some((nc, i) => i !== editingIndex && nc.name.toLowerCase() === name.toLowerCase());
+                if (duplicate) {
+                    alert('Esiste già un colore con questo nome. Scegline un altro.');
+                    return;
+                }
+                const color = modalColorInput.value;
+
+                if (modalMode === 'add') {
+                    namedColors.push({ name: name, color: color });
+                } else {
+                    namedColors[editingIndex] = { name: name, color: color };
+                }
+
+                closeColorModal();
+                setColor(color);
+                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            });
+
+            modalDeleteBtn.addEventListener('click', () => {
+                if (editingIndex < 0) return;
+                const nc = namedColors[editingIndex];
+                if (confirm(`Eliminare il colore "${nc.name}"? I quadretti già disegnati non verranno modificati.`)) {
+                    namedColors.splice(editingIndex, 1);
+                    closeColorModal();
+                    renderNamedColors();
+                }
+            });
+
+            modalCancelBtn.addEventListener('click', closeColorModal);
+            namedColorModal.addEventListener('click', (e) => {
+                if (e.target === namedColorModal) closeColorModal();
+            });
+            modalNameInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') modalConfirmBtn.click();
+            });
+
+            // --- Pulsante + della barra laterale ---
+            document.getElementById('btn-add-named-color').addEventListener('click', () => {
+                openColorModal('add');
+            });
+
+            /* ============================================================
+               NUOVO V3: PROFILO SVILUPPATORE
+               Salva/carica le impostazioni (formato, quadretti, colore,
+               modalità rettangolo, zoom) e i colori nominati con i loro
+               nomi in un file .json separato dal disegno. Utile per
+               recuperare tutto dopo un aggiornamento del programma.
+               ============================================================ */
+            const devProfileModal = document.getElementById('dev-profile-modal');
+            const profileFileInput = document.getElementById('profile-file-input');
+
+            document.getElementById('btn-dev-profile').addEventListener('click', () => {
+                devProfileModal.classList.remove('hidden');
+            });
+
+            document.getElementById('dev-cancel-btn').addEventListener('click', () => {
+                devProfileModal.classList.add('hidden');
+            });
+
+            devProfileModal.addEventListener('click', (e) => {
+                if (e.target === devProfileModal) devProfileModal.classList.add('hidden');
+            });
+
+            // Salva profilo
+            document.getElementById('dev-save-btn').addEventListener('click', () => {
+                const profile = {
+                    app: 'quaderno-interattivo',
+                    type: 'profilo-sviluppatore',
+                    version: 2,
+                    savedAt: new Date().toISOString(),
+                    format: currentFormatKey,
+                    gridSize: GRID_SIZE,
+                    fillRectMode: fillRectMode,
+                    currentColor: currentColor,
+                    namedColors: namedColors,
+                    zoomLevel: zoomLevel
+                };
+
+                const blob = new Blob([JSON.stringify(profile, null, 2)], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.download = `profilo_sviluppatore_quaderno_${new Date().toISOString().slice(0, 10)}.json`;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            });
+
+            // Carica profilo
+            document.getElementById('dev-load-btn').addEventListener('click', () => {
+                profileFileInput.click();
+            });
+
+            profileFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    profileFileInput.value = '';
+                    let data;
+                    try {
+                        data = JSON.parse(ev.target.result);
+                    } catch (err) {
+                        alert('Impossibile leggere il file: JSON non valido.');
+                        return;
+                    }
+
+                    if (!data || data.type !== 'profilo-sviluppatore') {
+                        alert('Questo file non è un profilo sviluppatore valido. (Attenzione: i file "progetto" si caricano con il pulsante "Apri").');
+                        return;
+                    }
+
+                    applyProfile(data);
+                    devProfileModal.classList.add('hidden');
+                };
+                reader.readAsText(file);
+            });
+
+            function applyProfile(data) {
+                // Colori nominati
+                if (Array.isArray(data.namedColors)) {
+                    namedColors = sanitizeNamedColors(data.namedColors);
+                }
+
+                // Colore selezionato
+                if (isValidHex(data.currentColor)) {
+                    setColor(data.currentColor);
+                } else {
+                    renderNamedColors();
+                }
+
+                // Modalità rettangolo pieno/bordo
+                if (typeof data.fillRectMode === 'boolean') {
+                    fillRectMode = data.fillRectMode;
+                    updateRectModeButtons();
+                    persistPrefs();
+                }
+
+                // Zoom
+                if (typeof data.zoomLevel === 'number' && !isNaN(data.zoomLevel)) {
+                    setZoom(data.zoomLevel);
+                }
+
+                // Formato e quadretti: applicati solo se il foglio è vuoto
+                // oppure con conferma dell'utente (per non stravolgere il disegno)
+                const formatOk = data.format && PAPER_FORMATS[data.format];
+                const parsedGrid = parseInt(data.gridSize, 10);
+                const gridOk = [7, 9, 12, 18, 24].includes(parsedGrid);
+                const formatDiffers = formatOk && data.format !== currentFormatKey;
+                const gridDiffers = gridOk && parsedGrid !== GRID_SIZE;
+
+                if (formatDiffers || gridDiffers) {
+                    const hasDrawing = gridData.some(row => row.some(c => c !== null));
+                    if (!hasDrawing || confirm('Applicare anche formato foglio e dimensione quadretti del profilo? Il disegno attuale verrà adattato.')) {
+                        if (formatOk) {
+                            currentFormatKey = data.format;
+                            paperFormatSelect.value = currentFormatKey;
+                            isRotated = false;
+                        }
+                        if (gridOk) {
+                            GRID_SIZE = parsedGrid;
+                            gridSizeSelect.value = String(GRID_SIZE);
+                        }
+                        updateCanvasDimensions(true);
+                        saveState();
+                    }
+                }
+
+                renderNamedColors();
+            }
+
+            /* ============================================================
+               AVVIO: carica preferenze dal browser, poi colori predefiniti
+               scrivibili in DEFAULT_NAMED_COLORS, poi allinea l'interfaccia
+               ============================================================ */
+            loadPrefs();
+
+            // Se nel browser non c'è nulla di salvato, usa l'elenco precaricato
+            if (namedColors.length === 0 && DEFAULT_NAMED_COLORS.length > 0) {
+                namedColors = sanitizeNamedColors(DEFAULT_NAMED_COLORS);
+            }
+
+            // Allinea l'interfaccia al colore corrente (anche se caricato dalle preferenze)
+            currentColorPreview.style.backgroundColor = currentColor;
+            customColorPicker.value = currentColor;
+            document.querySelectorAll('.color-swatch').forEach(s => {
+                s.classList.toggle('active', (s.getAttribute('data-color') || '').toLowerCase() === currentColor.toLowerCase());
+            });
+            updateRectModeButtons();
+            applyZoom();
+
+            // Primo render della barra colori nominati
+            renderNamedColors();
+        });
+    </script>
+</body>
+</html>
