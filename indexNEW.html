@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App Hub – Le Mie Utility Web</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#d9dee4;--side:#6f4f53;--tx:#1f2933;--dk:#1d1719;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.6 Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #f0d9a8;outline-offset:2px}
+header{background:#353a40;color:#fff;padding:30px 24px 26px;text-align:center;position:relative}
+.brand h1{font-size:clamp(2.4rem,7vw,4.4rem);font-weight:800;letter-spacing:.06em;line-height:1}
+.brand p{color:#c4cbd3;font-size:1rem;margin-top:10px}
+.lang{position:absolute;top:14px;right:18px;display:flex;border:1px solid #636b74;border-radius:8px;overflow:hidden}
+.lang button{background:none;border:0;color:#c4cbd3;padding:6px 12px;cursor:pointer;font-size:.85rem}
+.lang button.on{background:#e8ecef;color:#353a40;font-weight:700}
+.menu-btn{display:none;position:absolute;top:14px;left:18px;background:none;border:1px solid #636b74;color:#fff;border-radius:8px;padding:6px 14px;cursor:pointer}
+.layout{display:grid;grid-template-columns:minmax(280px,30%) 1fr;align-items:start}
+aside{background:var(--side);position:sticky;top:0;height:100vh;overflow:auto;padding:18px 14px 40px}
+.search{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.28);border-radius:10px;padding:2px 12px;margin-bottom:16px}
+.search input{flex:1;min-width:0;background:none;border:0;outline:0;font:inherit;padding:10px 0;color:#fff}
+.search input::placeholder{color:rgba(255,255,255,.72)}
+.grp{margin-bottom:8px}
+.gh{width:100%;display:flex;align-items:center;gap:10px;background:var(--c);color:var(--dk);border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:800;text-align:left}
+.gh:hover{filter:brightness(1.06)}
+.gh .cnt{margin-left:auto;font-weight:700;font-size:.85rem;opacity:.75}
+.gh .chev{width:8px;height:8px;border-right:2px solid var(--dk);border-bottom:2px solid var(--dk);transform:rotate(45deg);transition:transform .15s;margin:0 2px 3px 6px}
+.grp.shut .chev{transform:rotate(-45deg);margin-bottom:0}
+.grp.shut ul{display:none}
+.grp ul{list-style:none;padding:5px 0 4px}
+.it{display:flex;gap:10px;align-items:center;padding:7px 10px;margin:1px 0;border-radius:6px;color:#f6ece9;font-size:.95rem;border-left:4px solid var(--c)}
+.it:hover{background:rgba(255,255,255,.12)}
+.it.sel{background:var(--c);color:var(--dk);font-weight:800}
+.it span:first-child{width:22px;text-align:center}
+main{padding:32px clamp(18px,4vw,48px) 60px;min-width:0}
+article{max-width:880px}
+.crumb{display:inline-block;background:var(--c);color:var(--dk);font-weight:700;font-size:.88rem;border-radius:999px;padding:3px 14px;margin-bottom:14px}
+.stage{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:linear-gradient(145deg,color-mix(in srgb,var(--c) 38%,#c9cfd6),color-mix(in srgb,var(--c) 62%,#c9cfd6));display:grid;place-items:center;border:1px solid #b7bec6}
+.stage .ph{text-align:center;color:color-mix(in srgb,var(--c) 25%,#1d1719)}
+.stage .ph b{display:block;font-size:4.5rem;line-height:1.1}
+.stage .ph span{font-weight:700;font-size:1.2rem}
+.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;cursor:zoom-in}
+.thumbs{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.thumbs img{height:72px;border-radius:8px;border:3px solid #b7bec6;cursor:pointer;background:#fff}
+.thumbs img.on{border-color:var(--c)}
+.head{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-top:26px}
+.head h2{font-size:1.9rem;font-weight:800;line-height:1.2;letter-spacing:-.01em}
+.go{background:#353a40;color:#fff;font-weight:700;border-radius:10px;padding:12px 26px;white-space:nowrap}
+.go:hover{background:#1f2429}
+.st{display:inline-block;font-size:.82rem;border-radius:999px;padding:2px 12px;margin-top:6px;background:color-mix(in srgb,var(--s) 22%,#fff);color:color-mix(in srgb,var(--s) 65%,#1f2933);font-weight:700}
+.desc{margin-top:18px;font-size:1.08rem;line-height:1.75;color:#2b333b;max-width:66ch}
+.none{color:#f1e3df;padding:10px 8px}
+.big{position:fixed;inset:0;z-index:60;background:rgba(20,26,32,.9);display:none;place-items:center;padding:16px;cursor:zoom-out}
+.big.open{display:grid}.big img{max-width:100%;max-height:100%;border-radius:8px}
+.veil{display:none}
+@media(max-width:820px){
+ header{padding:56px 18px 22px}.menu-btn{display:block}
+ .layout{display:block}
+ aside{position:fixed;z-index:40;left:0;top:0;width:86%;max-width:340px;transform:translateX(-102%);transition:transform .2s;box-shadow:0 0 40px rgba(0,0,0,.3)}
+ aside.open{transform:none}
+ .veil.open{display:block;position:fixed;inset:0;z-index:30;background:rgba(20,26,32,.5)}
+ main{padding-top:20px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <button class="menu-btn" id="mb"></button>
+  <div class="lang" role="group" aria-label="Lingua"><button id="l-it">IT</button><button id="l-en">EN</button></div>
+  <div class="brand"><h1>APP HUB</h1><p id="sub"></p></div>
+</header>
+<div class="layout">
+  <aside id="side">
+    <label class="search"><span aria-hidden="true">🔎</span><input id="q" type="search" autocomplete="off"></label>
+    <div id="nav"></div>
+  </aside>
+  <main id="main"></main>
+</div>
+<div class="veil" id="veil"></div>
+<div class="big" id="big"><img alt=""></div>
+
+<script>
+/* ============ CATALOGO ============
+   Nuova app: copia una riga di APPS e cambia i valori.
+   id  = nome degli screenshot nella cartella screenshots/
+         copertina: screenshots/<id>.png   altre: <id>-1.png, <id>-2.png, <id>-3.png
+   cat = una chiave di CATS     st = online | exp | dev
+   Nuova categoria: aggiungi una riga a CATS (nome IT/EN e colore). */
+const CATS={
+ giochi:{it:"Giochi",en:"Games",c:"#8ba3ee"},
+ offerte:{it:"Offerte e gratis",en:"Deals & freebies",c:"#e8c25f"},
+ foto:{it:"Foto e collage",en:"Photos & collages",c:"#ec9fc0"},
+ pixel:{it:"Pixel art e icone",en:"Pixel art & icons",c:"#8dd39e"},
+ guide:{it:"Guide e imparare",en:"Guides & learning",c:"#67cfc9"},
+ audio:{it:"Audio, video e streaming",en:"Audio, video & streaming",c:"#b9a0ea"},
+ testo:{it:"Testo e documenti",en:"Text & documents",c:"#eba274"},
+ mappe:{it:"Mappe e ricerca",en:"Maps & research",c:"#c7d96b"},
+ strumenti:{it:"Strumenti web",en:"Web tools",c:"#b8c0c8"}
+};
+const ST={online:{it:"Online",en:"Online",c:"#3f9a6e"},exp:{it:"Sperimentale",en:"Experimental",c:"#c08a2b"},dev:{it:"In sviluppo",en:"In development",c:"#4f7fb0"}};
+const H="https://ginomino0.github.io/App-HUB/";
+const APPS=[
+{id:"tetris",n:"Tetris",cat:"giochi",ic:"🧱",st:"online",u:H+"Tetris.html",it:"Il classico gioco dei blocchi in versione HTML5.",en:"The classic falling-blocks game in HTML5."},
+{id:"tris-evolution",n:"Tris Evolution",cat:"giochi",ic:"⭕",st:"online",u:H+"Tris-Evolution.html",it:"Sfida a Tris con grafica avanzata e modalità evoluta.",en:"Tic-tac-toe with advanced graphics and an evolved mode."},
+{id:"steam-gratis",n:"Steam Gratis",cat:"offerte",ic:"🎁",st:"online",u:"https://steamgratis.vercel.app/",it:"Vedi gli ultimi giochi gratuiti di Steam.",en:"See the latest free games on Steam."},
+{id:"telegram-amazon-radar",n:"Telegram Amazon Radar",cat:"offerte",ic:"📡",st:"online",u:"https://ginominoscan.vercel.app/",it:"Gli ultimi articoli in offerta da vari canali Telegram, in un’unica pagina.",en:"Latest deals from several Telegram channels on a single page."},
+{id:"collage-studio-master",n:"Collage Studio Master",cat:"foto",ic:"🖼️",st:"online",u:H+"Collage-Studio-Master.html",it:"Crea e componi collage di immagini personalizzati.",en:"Create and compose custom image collages."},
+{id:"photo-studio-web-pro",n:"Photo Studio Web Pro",cat:"foto",ic:"📷",st:"online",u:H+"Photo-Studio-Web-Pro.html",it:"Editor web completo per il fotoritocco.",en:"Full web editor for photo retouching."},
+{id:"imageresizer-pro",n:"ImageResizer Pro",cat:"foto",ic:"📐",st:"online",u:H+"ImageResizer-Pro.html",it:"Ridimensiona ed elabora immagini velocemente.",en:"Resize and process images quickly."},
+{id:"icon-hub",n:"Icon Hub",cat:"pixel",ic:"🔷",st:"online",u:H+"Icon-Hub.html",it:"Motore per la ricerca e la gestione di icone.",en:"Search engine and manager for icons."},
+{id:"pixelart-ico",n:"PixelArt Ico",cat:"pixel",ic:"👾",st:"online",u:H+"PixelArt-Ico.html",it:"Generatore ed editor di icone Pixel Art.",en:"Generator and editor for Pixel Art icons."},
+{id:"quaderno-quadretti",n:"Quaderno a quadretti",cat:"pixel",ic:"📓",st:"online",u:H+"Quaderno-Quadretti.html",it:"Utility per disegnare livelli di gioco in pixel.",en:"Utility to draw pixel game levels."},
+{id:"mini-photoshop-guide",n:"Mini Photoshop Guide",cat:"guide",ic:"🧭",st:"online",u:H+"photoshop-guide.html",it:"Carica una foto, descrivi cosa vuoi fare e ricevi la procedura esatta.",en:"Upload a photo, describe what you want and get the exact steps."},
+{id:"premiere-pro-guide",n:"Premiere Pro Guide",cat:"guide",ic:"🎬",st:"online",u:H+"Premiere_Pro_Gemini_Guide.html",it:"Carica uno screenshot di Premiere, descrivi cosa vuoi ottenere e segui la procedura.",en:"Upload a Premiere screenshot, describe your goal and follow the steps."},
+{id:"fai-da-te-per-tutti",n:"Fai da Te per Tutti",cat:"guide",ic:"🔧",st:"online",u:H+"fai-da-te-per-tutti.html",it:"Guide semplici per fare da soli i lavori domestici ed evitare spese inutili.",en:"Simple guides to do home repairs yourself and avoid unnecessary costs."},
+{id:"audio-lufs-normalizer",n:"Audio LUFS Normalizer",cat:"audio",ic:"🎚️",st:"online",u:H+"Audio-LUFS-Normalizer.html",it:"Analizza e normalizza il volume dei tuoi brani audio.",en:"Analyze and normalize the loudness of your audio tracks."},
+{id:"radio-web",n:"Radio Web",cat:"audio",ic:"📻",st:"online",u:H+"radioweb.html",it:"Player per ascoltare le stazioni radio in streaming.",en:"Player for listening to streaming radio stations."},
+{id:"yt-downloader",n:"YT Downloader",cat:"audio",ic:"⬇️",st:"online",u:H+"yt-downloader.html",it:"Strumento per scaricare e gestire i media.",en:"Tool to download and manage media."},
+{id:"iptv-stream-checker",n:"IPTV Stream Checker",cat:"audio",ic:"📺",st:"online",u:H+"IPTV-Stream-Checker.html",it:"Testa e verifica la validità di liste e flussi M3U.",en:"Test and verify M3U playlists and streams."},
+{id:"text-transformer",n:"Text Transformer",cat:"testo",ic:"🔤",st:"online",u:H+"Text-transformer.html",it:"Convertitore e manipolatore di testo e caratteri.",en:"Text and character converter and manipulator."},
+{id:"semplifica-documenti",n:"Semplifica i Documenti",cat:"testo",ic:"📄",st:"online",u:H+"Semplifica-documenti.html",it:"Incolla il testo e ricevi una spiegazione in linguaggio semplice, con i punti da controllare.",en:"Paste a text and get a plain-language explanation, with points to watch."},
+{id:"sticky-notes",n:"Sticky Notes",cat:"testo",ic:"📝",st:"online",u:H+"Sticky-Notes.html",it:"Appunti e note veloci salvate nel browser.",en:"Quick notes saved in your browser."},
+{id:"ortofoto-composer",n:"Ortofoto Composer",cat:"mappe",ic:"🗺️",st:"online",u:H+"ortofoto-composer.html",it:"Composizione e unione di mappe e ortofoto.",en:"Compose and merge maps and orthophotos."},
+{id:"atlante-vivo",n:"Atlante Vivo",cat:"mappe",ic:"🌍",st:"online",u:H+"Atlante-Vivo.html",it:"Enciclopedia geografica interattiva: cerca una località e ottieni schede su storia, cultura e curiosità.",en:"Interactive geographic encyclopedia: search a place and get pages on history, culture and trivia."},
+{id:"investigatore-storico",n:"Investigatore Storico",cat:"mappe",ic:"🕵️",st:"online",u:H+"Investigatore-Storico.html",it:"Ricerca su archivi storici e moderni, riassunti con Gemini, download del minilibro in TXT o PDF.",en:"Search historical and modern archives, Gemini summaries, download the mini-book as TXT or PDF."},
+{id:"rinomina-file",n:"Rinomina File",cat:"strumenti",ic:"🏷️",st:"online",u:H+"Rinomina-File.html",it:"Utility per rinominare file in sequenza, in blocco.",en:"Utility to rename files in sequence, in bulk."},
+{id:"qr-generator",n:"QR Generator",cat:"strumenti",ic:"🔳",st:"online",u:H+"qr-generator.html",it:"Crea codici QR personalizzati al volo.",en:"Create custom QR codes on the fly."},
+{id:"web-overlay-cookie-cleaner",n:"Web Overlay & Cookie Cleaner",cat:"strumenti",ic:"🧹",st:"online",u:H+"Web-Overlay-&-Cookie-Cleaner.html",it:"Rimuovi cookie banner, pop-up, video flottanti e sblocca lo scroll della pagina.",en:"Remove cookie banners, pop-ups and floating videos, and unlock page scrolling."}
+];
+/* Descrizioni lunghe (italiano). Per cambiarne una, modifica il testo dopo l’id. */
+const DESC={
+"tetris":"Il classico puzzle dei blocchi, da giocare direttamente nel browser senza installare nulla. I pezzi scendono dall’alto: li sposti e li ruoti per completare righe orizzontali, che spariscono e fanno salire il punteggio. Più la partita va avanti, più la caduta accelera. La partita finisce quando la pila di blocchi arriva in cima.",
+"tris-evolution":"Una versione moderna del Tris, il gioco dei tre simboli in fila, con grafica curata e una modalità evoluta che rende le partite meno scontate. Si sceglie la modalità, si toccano o si cliccano le caselle a turno e si cerca di allineare tre simboli prima dell’avversario. Ideale per partite veloci.",
+"steam-gratis":"Raccoglie in un’unica pagina i giochi di Steam che al momento sono gratuiti, così non devi cercarli nello store uno per uno. Basta aprirla e scorrere l’elenco: per ogni titolo puoi vedere i dettagli e passare alla pagina di Steam per riscattarlo. È un servizio esterno ospitato su Vercel.",
+"telegram-amazon-radar":"Riunisce in un’unica pagina le ultime offerte pubblicate su diversi canali Telegram dedicati agli sconti Amazon, senza dover aprire e controllare ogni canale. Si consulta scorrendo l’elenco aggiornato e aprendo l’offerta che interessa. Comodo per dare un’occhiata veloce prima di un acquisto. È ospitato su Vercel.",
+"collage-studio-master":"Editor per creare collage di foto. Carichi le immagini dal dispositivo, le disponi nella composizione scelta e personalizzi il risultato, regolando per esempio spazi e aspetto. Quando il collage è pronto lo scarichi come immagine, pronto da condividere sui social o da stampare.",
+"photo-studio-web-pro":"Editor di fotoritocco completo che funziona nel browser, senza programmi da installare. Carichi una foto, applichi correzioni e ritocchi vedendo subito l’effetto e poi scarichi l’immagine modificata. È pensato per i ritocchi di tutti i giorni, quando un software professionale sarebbe eccessivo.",
+"imageresizer-pro":"Cambia le dimensioni delle immagini e le prepara per l’uso: social, siti web o allegati leggeri. Carichi una o più immagini, imposti le misure o il formato che ti servono e scarichi il risultato. Utile quando una foto è troppo pesante o ha le proporzioni sbagliate.",
+"icon-hub":"Motore di ricerca e archivio per icone. Digiti una parola chiave, sfogli i risultati e scegli l’icona adatta a un sito, a un’app o a un progetto grafico. Serve a trovare e organizzare le icone in un solo posto, senza cercarle su più siti diversi.",
+"pixelart-ico":"Generatore ed editor di icone in stile pixel art. Disegni pixel per pixel su una griglia, scegli i colori e controlli l’aspetto dell’icona anche in formato piccolo mentre lavori. Al termine esporti il risultato. Va bene per icone di giochi, avatar e piccoli elementi grafici.",
+"quaderno-quadretti":"Un quaderno a quadretti digitale per disegnare livelli di gioco in pixel, come faresti a penna su un foglio. Colori le caselle per tracciare piattaforme, muri e ostacoli e ottieni una mappa del livello da usare come bozza per i tuoi giochi. Si usa cliccando o trascinando sulle caselle.",
+"mini-photoshop-guide":"Assistente che ti guida passo dopo passo in Photoshop. Carichi una foto, descrivi cosa vuoi ottenere, per esempio schiarire un volto o togliere uno sfondo, e ricevi la procedura esatta da seguire, con gli strumenti e i comandi da usare. Utile quando sai cosa vuoi fare ma non ricordi dove si trova ogni funzione.",
+"premiere-pro-guide":"Come la Mini Photoshop Guide, ma per Premiere Pro. Carichi uno screenshot del tuo progetto, scrivi cosa vuoi ottenere e segui la procedura indicata. Serve a risolvere i dubbi di montaggio senza cercare tutorial lunghi. Più lo screenshot e la richiesta sono chiari, più la risposta sarà precisa.",
+"fai-da-te-per-tutti":"Raccolta di guide semplici per imparare a fare da soli i piccoli lavori di casa e risparmiare sulle spese. Sono pensate per chi parte da zero: scegli il lavoro, segui la spiegazione e procedi con i materiali indicati. Un buon punto di partenza prima di chiamare un tecnico per un problema semplice.",
+"audio-lufs-normalizer":"Misura il volume percepito dei tuoi brani, in LUFS, e li porta a un livello uniforme, così tutte le tracce suonano con la stessa intensità. Carichi i file audio, guardi l’analisi, scegli il livello di destinazione e scarichi i brani normalizzati. Utile per playlist, podcast e piattaforme che richiedono un volume preciso.",
+"radio-web":"Player per ascoltare le stazioni radio in streaming dal browser. Scegli la stazione dall’elenco e premi play: l’audio parte subito, senza app da installare. Puoi lasciarlo aperto in una scheda mentre fai altro.",
+"yt-downloader":"Strumento per scaricare e gestire contenuti multimediali. Incolli il collegamento del video, scegli il formato che ti serve e avvii il download. Serve a tenere i file in locale, per esempio per ascoltarli o rivederli senza connessione.",
+"iptv-stream-checker":"Controlla se le liste M3U e i singoli flussi IPTV funzionano davvero. Carichi o incolli la lista, avvii il test e ottieni l’elenco dei canali raggiungibili e di quelli che non rispondono. Così scarti i link non funzionanti prima di usarli nel tuo player.",
+"text-transformer":"Trasforma testo e caratteri in pochi clic: cambia maiuscole e minuscole, modifica la formattazione o converti lo stile dei caratteri. Incolli il testo, scegli la trasformazione e copi il risultato. Comodo per sistemare titoli, elenchi o testi copiati da altre fonti.",
+"semplifica-documenti":"Rende comprensibili i testi difficili, come lettere ufficiali, contratti o comunicazioni burocratiche. Incolli il testo originale e ricevi una spiegazione in linguaggio semplice, con l’indicazione dei punti a cui prestare più attenzione, per esempio scadenze o obblighi. Aiuta a capire di cosa si parla, ma non sostituisce un consulente.",
+"sticky-notes":"Bacheca di note adesive per appunti veloci. Crei una nota, scrivi il promemoria e la lasci a portata di mano. Le note sono salvate nel browser, quindi le ritrovi alla riapertura, ma solo sullo stesso dispositivo e con lo stesso browser.",
+"ortofoto-composer":"Compone mappe e ortofoto unendo più immagini in un unico quadro. Carichi le porzioni, le disponi nella posizione giusta e ottieni un’immagine più ampia, utile per avere una visione d’insieme di un’area. Si usa per sopralluoghi, rilievi o semplice consultazione.",
+"atlante-vivo":"Enciclopedia geografica interattiva. Digiti il nome di una località e ottieni una scheda di approfondimento con storia, cultura e curiosità del posto. Si usa per prepararsi a un viaggio, per studiare o per la semplice curiosità di scoprire cosa c’è dietro il nome di un luogo.",
+"investigatore-storico":"Ricerca informazioni su un tema, un luogo o un personaggio incrociando più archivi storici e moderni. I risultati sono geolocalizzati e riassunti con Gemini, e alla fine puoi scaricare il minilibro completo in TXT o PDF. Si usa scrivendo l’argomento, controllando le fonti trovate e scegliendo il formato di download.",
+"rinomina-file":"Rinomina molti file in un colpo solo con una numerazione in sequenza. Selezioni i file, imposti il nome di base e il numero di partenza, controlli i nuovi nomi e applichi. Perfetto per foto, scansioni o immagini da mettere in ordine.",
+"qr-generator":"Crea al volo codici QR da un testo o da un indirizzo web. Scrivi o incolli il contenuto, personalizzi l’aspetto del codice e lo scarichi come immagine, pronta da stampare o da inserire in un documento.",
+"web-overlay-cookie-cleaner":"Ripulisce le pagine web da ciò che disturba la lettura: banner dei cookie, sovrapposizioni, pop-up, video flottanti e blocchi dello scroll. Segui le istruzioni nella pagina per attivarlo, poi lo usi sulla pagina da pulire per tornare a leggerla in pace."
+};
+
+const TX={it:{sub:"Utility web e Test App",ph:"Cerca un’app…",open:"Apri l’app",menu:"☰ Menu",none:"Nessuna app trovata."},
+en:{sub:"Web utilities & test apps",ph:"Search an app…",open:"Open app",menu:"☰ Menu",none:"No apps found."}};
+const $=s=>document.getElementById(s),norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+let L=localStorage.getItem("hubLang")||"it",Q="",SEL=(location.hash||"").slice(1)||APPS[0].id,shut=new Set(),tok=0;
+if(!APPS.some(a=>a.id===SEL))SEL=APPS[0].id;
+
+function nav(){
+  const q=norm(Q);let html="";
+  for(const k in CATS){
+    const list=APPS.filter(a=>a.cat===k&&(!q||norm(a.n+" "+a.it+" "+a.en).includes(q)));
+    if(!list.length)continue;
+    const closed=!q&&shut.has(k);
+    html+=`<section class="grp${closed?" shut":""}" style="--c:${CATS[k].c}"><button class="gh" data-k="${k}"><span>${CATS[k][L]}</span><span class="cnt">${list.length}</span><span class="chev"></span></button><ul>${list.map(a=>`<li><a class="it${a.id===SEL?" sel":""}" href="#${a.id}" data-id="${a.id}"><span>${a.ic}</span><span>${a.n}</span></a></li>`).join("")}</ul></section>`;
+  }
+  $("nav").innerHTML=html||`<p class="none">${TX[L].none}</p>`;
+}
+async function show(){
+  const a=APPS.find(x=>x.id===SEL),t=TX[L],c=CATS[a.cat],my=++tok;
+  $("main").innerHTML=`<article style="--c:${c.c}"><div class="crumb">${c[L]}</div>
+  <div class="stage" id="stage"><div class="ph"><b>${a.ic}</b><span>${a.n}</span></div></div><div class="thumbs" id="th"></div>
+  <div class="head"><div style="flex:1;min-width:200px"><h2>${a.n}</h2><span class="st" style="--s:${ST[a.st].c}">${ST[a.st][L]}</span></div><a class="go" href="${a.u}">${t.open}</a></div>
+  <p class="desc">${(L==="it"&&DESC[a.id])||a[L]}</p></article>`;
+  const urls=[a.id+".png",a.id+"-1.png",a.id+"-2.png",a.id+"-3.png"].map(f=>"screenshots/"+f);
+  const ok=(await Promise.all(urls.map(u=>new Promise(r=>{const i=new Image();i.onload=()=>r(u);i.onerror=()=>r(null);i.src=u})))).filter(Boolean);
+  if(my!==tok||!ok.length)return;
+  const im=document.createElement("img");im.src=ok[0];im.alt=a.n;im.onclick=()=>{$("big").firstChild.src=im.src;$("big").classList.add("open")};
+  $("stage").appendChild(im);
+  if(ok.length>1)ok.forEach((u,i)=>{const th=new Image();th.src=u;th.alt="";if(!i)th.className="on";
+    th.onclick=()=>{im.src=u;[...$("th").children].forEach(x=>x.classList.remove("on"));th.classList.add("on")};$("th").appendChild(th)});
+}
+function ui(){
+  const t=TX[L];document.documentElement.lang=L;
+  $("sub").textContent=t.sub;$("q").placeholder=t.ph;$("mb").textContent=t.menu;
+  $("l-it").classList.toggle("on",L==="it");$("l-en").classList.toggle("on",L==="en");
+  nav();show();
+}
+const drawer=o=>{$("side").classList.toggle("open",o);$("veil").classList.toggle("open",o)};
+$("nav").onclick=e=>{
+  const g=e.target.closest(".gh");
+  if(g){const k=g.dataset.k;shut.has(k)?shut.delete(k):shut.add(k);nav();return}
+  const a=e.target.closest(".it");
+  if(a){e.preventDefault();SEL=a.dataset.id;history.replaceState(null,"","#"+SEL);nav();show();drawer(false);scrollTo(0,0)}
+};
+$("q").oninput=e=>{Q=e.target.value;nav()};
+$("mb").onclick=()=>drawer(true);$("veil").onclick=()=>drawer(false);
+$("big").onclick=()=>$("big").classList.remove("open");
+document.onkeydown=e=>{if(e.key==="Escape"){$("big").classList.remove("open");drawer(false)}};
+["it","en"].forEach(l=>$("l-"+l).onclick=()=>{L=l;localStorage.setItem("hubLang",l);ui()});
+ui();
+</script>
+</body>
+</html>
