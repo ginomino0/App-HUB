@@ -196,7 +196,7 @@ async function show(){
   <div class="info"><span class="crumb">${c[L]}</span><h2>${a.n}</h2><span class="st" style="--s:${ST[a.st].c}">${ST[a.st][L]}</span>
   <a class="go" href="${a.u}"${ext}>${t.open}</a>
   <p class="desc">${(L==="it"&&DESC[a.id])||a[L]}</p></div></article>`;
-  const urls=[a.id+".png",a.id+"-1.png",a.id+"-2.png",a.id+"-3.png"].map(f=>"screenshots/"+f);
+  const urls=[a.id+".png",...Array.from({length:12},(_,i)=>a.id+"-"+(i+1)+".png")].map(f=>"screenshots/"+f);
   const ok=(await Promise.all(urls.map(u=>new Promise(r=>{const i=new Image();i.onload=()=>r(u);i.onerror=()=>r(null);i.src=u})))).filter(Boolean);
   if(my!==tok||!ok.length)return;
   const im=document.createElement("img");im.src=ok[0];im.alt=a.n;im.onclick=()=>{$("big").firstChild.src=im.src;$("big").classList.add("open")};
