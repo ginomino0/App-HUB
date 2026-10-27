@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impaginatore PDF Documenti</title>
+    <!-- Importazione libreria jsPDF via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        input[type="text"], input[type="file"] {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 350px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        textarea:focus, input:focus {
+            outline: 2px solid var(--primary);
+            border-color: transparent;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Impaginatore Documento PDF</h1>
+    
+    <div class="controls">
+        <div class="form-group">
+            <label for="docTitle">Titolo del Documento</label>
+            <input type="text" id="docTitle" placeholder="Inserisci il titolo del PDF...">
+        </div>
+        
+        <div class="form-group">
+            <label for="fileInput">Importa File TXT</label>
+            <input type="file" id="fileInput" accept=".txt">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="textContent">Testo del Documento</label>
+        <textarea id="textContent" placeholder="Incolla o scrivi qui il testo da convertire in PDF..."></textarea>
+    </div>
+
+    <button class="btn" onclick="generatePDF()">Scarica PDF Impaginato</button>
+</div>
+
+<script>
+    // Lettura file .txt
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('textContent').value = e.target.result;
+                if (!document.getElementById('docTitle').value) {
+                    // Imposta il nome del file come titolo predefinito
+                    document.getElementById('docTitle').value = file.name.replace('.txt', '');
+                }
+            };
+            reader.readAsText(file);
+        }
+    });
+
+    // Generazione ed esportazione PDF
+    function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: 'p',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        const title = document.getElementById('docTitle').value.trim() || 'Documento';
+        const text = document.getElementById('textContent').value.trim();
+
+        if (!text) {
+            alert('Inserisci o importa del testo prima di generare il PDF.');
+            return;
+        }
+
+        // Impostazioni di pagina e margini (A4: 210mm x 297mm)
+        const marginTop = 20;
+        const marginBottom = 20;
+        const marginLeft = 20;
+        const marginRight = 20;
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const contentWidth = pageWidth - marginLeft - marginRight;
+        
+        let currentY = marginTop;
+
+        // 1. Aggiunta Titolo
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        const splitTitle = doc.splitTextToSize(title, contentWidth);
+        doc.text(splitTitle, marginLeft, currentY);
+        currentY += (splitTitle.length * 8) + 5;
+
+        // Linea divisoria sotto il titolo
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(200, 200, 200);
+        doc.line(marginLeft, currentY, pageWidth - marginRight, currentY);
+        currentY += 10;
+
+        // 2. Aggiunta Testo Corpo
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+
+        // Divisione in paragrafi mantenendo le interruzioni di riga originali
+        const paragraphs = text.split('\n');
+
+        paragraphs.forEach(paragraph => {
+            if (paragraph.trim() === '') {
+                currentY += 4; // Spazio verticale per righe vuote
+                return;
+            }
+
+            // Calcola la spaziatura e le righe per il paragrafo
+            const lines = doc.splitTextToSize(paragraph, contentWidth);
+            const paragraphHeight = lines.length * 6;
+
+            // Controllo cambio pagina
+            if (currentY + paragraphHeight > pageHeight - marginBottom) {
+                doc.addPage();
+                currentY = marginTop;
+            }
+
+            doc.text(lines, marginLeft, currentY);
+            currentY += paragraphHeight + 2; // Spazio tra paragrafi
+        });
+
+        // 3. Numerazione Pagine nel piè di pagina
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(120, 120, 120);
+            doc.text(`Pagina ${i} di ${pageCount}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        }
+
+        // 4. Salvataggio
+        const fileName = title.toLowerCase().replace(/[^a-z0-9]/g, '_') + '.pdf';
+        doc.save(fileName);
+    }
+</script>
+
+</body>
+</html>

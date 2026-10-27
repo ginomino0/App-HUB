@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splitter Codice / Testo</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 650px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        p.subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--accent);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(56, 189, 248, 0.03);
+            margin-bottom: 20px;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: #7dd3fc;
+        }
+
+        .drop-zone p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .drop-zone span {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background-color: #0f172a;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--accent);
+        }
+
+        button {
+            background-color: var(--accent);
+            color: #0f172a;
+            font-weight: 600;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        button:disabled {
+            background-color: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .output-section {
+            margin-top: 25px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            display: none;
+        }
+
+        .output-header {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .file-list {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .file-item a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .file-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Splitter di Codice / Testo</h1>
+    <p class="subtitle">Suddividi file HTML, TXT o codice in blocchi di righe senza tagliare nessuna riga o parola interrotta.</p>
+
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <p id="fileLabel">Trascina qui il file oppure <span>Sfoglia</span></p>
+        <input type="file" id="fileInput" accept="*">
+    </div>
+
+    <div class="controls">
+        <div class="input-group">
+            <label for="maxLines">Max righe per file:</label>
+            <input type="number" id="maxLines" value="450" min="10">
+        </div>
+    </div>
+
+    <button id="splitBtn" disabled onclick="processFile()">Suddividi e Scarica</button>
+
+    <div class="output-section" id="outputSection">
+        <div class="output-header">File Generati:</div>
+        <ul class="file-list" id="fileList"></ul>
+        <button id="downloadAllBtn" onclick="downloadAll()">Scarica Tutti i File</button>
+    </div>
+</div>
+
+<script>
+    let selectedFile = null;
+    let generatedFiles = [];
+
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileLabel = document.getElementById('fileLabel');
+    const splitBtn = document.getElementById('splitBtn');
+    const outputSection = document.getElementById('outputSection');
+    const fileList = document.getElementById('fileList');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length > 0) handleFileSelect(files[0]);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
+    });
+
+    function handleFileSelect(file) {
+        selectedFile = file;
+        fileLabel.innerHTML = `File selezionato: <span>${file.name}</span> (${(file.size / 1024).toFixed(1)} KB)`;
+        splitBtn.disabled = false;
+        outputSection.style.display = 'none';
+        generatedFiles = [];
+    }
+
+    function processFile() {
+        if (!selectedFile) return;
+
+        const maxLines = parseInt(document.getElementById('maxLines').value, 10) || 450;
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const content = e.target.result;
+            // Corretto lo split per gestire la separazione delle righe
+            const lines = content.split('\n');
+            
+            generatedFiles = [];
+            fileList.innerHTML = '';
+            
+            const totalLines = lines.length;
+            const baseName = selectedFile.name.substring(0, selectedFile.name.lastIndexOf('.')) || selectedFile.name;
+
+            let currentChunk = [];
+            let chunkIndex = 1;
+
+            for (let i = 0; i < totalLines; i++) {
+                currentChunk.push(lines[i]);
+
+                if (currentChunk.length >= maxLines || i === totalLines - 1) {
+                    const chunkText = currentChunk.join('\n');
+                    const fileName = `${baseName}_parte_${String(chunkIndex).padStart(2, '0')}.txt`;
+                    
+                    generatedFiles.push({
+                        name: fileName,
+                        content: chunkText
+                    });
+
+                    currentChunk = [];
+                    chunkIndex++;
+                }
+            }
+
+            renderFileList();
+        };
+
+        reader.readAsText(selectedFile);
+    }
+
+    function renderFileList() {
+        outputSection.style.display = 'block';
+        fileList.innerHTML = '';
+
+        generatedFiles.forEach((file, idx) => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            
+            const lineCount = file.content.split('\n').length;
+            
+            const span = document.createElement('span');
+            span.textContent = `${file.name} (${lineCount} righe)`;
+
+            const a = document.createElement('a');
+            a.textContent = 'Scarica';
+            a.href = '#';
+            a.onclick = (e) => {
+                e.preventDefault();
+                downloadSingle(idx);
+            };
+
+            li.appendChild(span);
+            li.appendChild(a);
+            fileList.appendChild(li);
+        });
+    }
+
+    function downloadSingle(index) {
+        const file = generatedFiles[index];
+        const blob = new Blob([file.content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadAll() {
+        generatedFiles.forEach((_, idx) => {
+            setTimeout(() => downloadSingle(idx), idx * 200);
+        });
+    }
+</script>
+
+</body>
+</html>
